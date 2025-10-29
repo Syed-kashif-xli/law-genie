@@ -1,9 +1,61 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _lastWords = '';
+  File? _selectedFile;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSpeech();
+  }
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(result) {
+    setState(() {
+      _lastWords = result.recognizedWords;
+    });
+  }
+
+  void _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      setState(() {
+        _selectedFile = File(result.files.single.path!);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +83,9 @@ class ChatPage extends StatelessWidget {
       backgroundColor: const Color(0xFFF0F4F8),
       elevation: 0,
       leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left, size: 30, color: Color(0xFF4A4A4A)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        icon: const Icon(Iconsax.arrow_left, size: 30, color: Color(0xFF4A4A4A)),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -82,7 +134,7 @@ class ChatPage extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget _buildChatInputArea(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
@@ -107,13 +159,14 @@ class ChatPage extends StatelessWidget {
               ),
               child: IconButton(
                 icon: const Icon(Icons.attach_file, color: Color(0xFF4A4A4A)),
-                onPressed: () {},
+                onPressed: _pickFile,
               ),
             ),
             const SizedBox(width: 8),
             // Text Field
             Expanded(
               child: TextField(
+                controller: TextEditingController(text: _lastWords),
                 decoration: InputDecoration(
                   hintText: 'Ask your legal question...',
                   hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
@@ -129,10 +182,15 @@ class ChatPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.0),
                     borderSide: const BorderSide(color: Colors.deepPurple),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.mic, color: Color(0xFF4A4A4A)),
-                    onPressed: () {},
+                    icon: Icon(
+                        _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+                        color: const Color(0xFF4A4A4A)),
+                    onPressed: _speechToText.isNotListening
+                        ? _startListening
+                        : _stopListening,
                   ),
                 ),
               ),
@@ -160,8 +218,27 @@ class ChatPage extends StatelessWidget {
   }
 }
 
-class _AIMessageBubble extends StatelessWidget {
+class _AIMessageBubble extends StatefulWidget {
   const _AIMessageBubble();
+
+  @override
+  State<_AIMessageBubble> createState() => _AIMessageBubbleState();
+}
+
+class _AIMessageBubbleState extends State<_AIMessageBubble> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isPlaying = false;
+
+  final String messageText =
+      "Hello! I'm Law Genie, your AI legal assistant. How can I help you today? You can ask me questions, upload documents for analysis, or request legal document generation.";
+
+  Future<void> _speak() async {
+    setState(() => isPlaying = true);
+    await flutterTts.speak(messageText);
+    flutterTts.setCompletionHandler(() {
+      setState(() => isPlaying = false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +260,7 @@ class _AIMessageBubble extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16.0),
-               boxShadow: [
+              boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.2),
                   spreadRadius: 1,
@@ -196,7 +273,7 @@ class _AIMessageBubble extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hello! I'm Law Genie, your AI legal assistant. How can I help you today? You can ask me questions, upload documents for analysis, or request legal document generation.",
+                  messageText,
                   style: GoogleFonts.poppins(
                     fontSize: 15,
                     color: Colors.black87,
@@ -204,21 +281,33 @@ class _AIMessageBubble extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '21:52',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    const SizedBox(width: 12),
-                    Icon(Iconsax.volume_high, size: 16, color: Colors.grey[600]),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Listen', 
-                      style: TextStyle(fontSize: 12, color: Colors.grey[700], fontWeight: FontWeight.w500)
-                    ),
-                  ],
+                GestureDetector(
+                  onTap: _speak,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '21:52',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                      const SizedBox(width: 12),
+                      Icon(
+                        isPlaying ? Iconsax.pause : Iconsax.volume_high,
+                        size: 16,
+                        color: isPlaying ? Colors.deepPurple : Colors.grey[600],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        isPlaying ? 'Playing...' : 'Listen',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color:
+                              isPlaying ? Colors.deepPurple : Colors.grey[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
