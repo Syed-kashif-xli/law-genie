@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/home/home_page.dart';
 
 class MainLayout extends StatefulWidget {
@@ -14,11 +15,25 @@ class _MainLayoutState extends State<MainLayout> {
 
   final List<Widget> _pages = [
     const HomePage(),
+    // This is a placeholder, the actual navigation is handled in onTap
     const Center(child: Text('Chat Page')),
     const Center(child: Text('Library Page')),
     const Center(child: Text('Timeline Page')),
     const Center(child: Text('Profile Page')),
   ];
+
+  void _onTap(int index) {
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ChatPage()),
+      );
+    } else {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +41,7 @@ class _MainLayoutState extends State<MainLayout> {
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onTap: _onTap,
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         selectedItemColor: const Color(0xFF0D47A1),
