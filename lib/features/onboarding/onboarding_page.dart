@@ -1,9 +1,11 @@
 
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/auth/login_page.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -15,33 +17,49 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-
-  final List<Widget> _onboardingScreens = [
-    const OnboardingScreen(
-      icon: Iconsax.message_question5,
-      title: "Law Genie",
-      subtitle: "Your AI Legal Partner",
-      description: "Chat with Law Genie – Get instant AI-powered legal advice 24/7",
-    ),
-    const OnboardingScreen(
-      icon: Iconsax.document_text,
-      title: "Automated Document Analysis",
-      subtitle: "AI-Powered Insights",
-      description: "Upload and analyze legal documents instantly for key insights.",
-    ),
-    const OnboardingScreen(
-      icon: Iconsax.folder_open,
-      title: "Intelligent Case Management",
-      subtitle: "Smart Organization",
-      description: "Organize, track, and manage your legal cases with smart assistance.",
-    ),
-    const OnboardingScreen(
-      icon: Iconsax.shield_tick,
-      title: "Secure Client Collaboration",
-      subtitle: "Encrypted Communication",
-      description: "Communicate and share documents with clients in a secure, encrypted environment.",
-    ),
+  final List<GlobalKey<_AnimatedOnboardingScreenState>> _keys = [
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
+    GlobalKey(),
   ];
+
+  late final List<Widget> _onboardingScreens;
+
+  @override
+  void initState() {
+    super.initState();
+    _onboardingScreens = [
+      AnimatedOnboardingScreen(
+        key: _keys[0],
+        icon: Iconsax.message_question5,
+        title: "Law Genie",
+        subtitle: "Your AI Legal Partner",
+        description: "Chat with Law Genie – Get instant AI-powered legal advice 24/7",
+      ),
+      AnimatedOnboardingScreen(
+        key: _keys[1],
+        icon: Iconsax.document_text,
+        title: "Automated Document Analysis",
+        subtitle: "AI-Powered Insights",
+        description: "Upload and analyze legal documents instantly for key insights.",
+      ),
+      AnimatedOnboardingScreen(
+        key: _keys[2],
+        icon: Iconsax.folder_open,
+        title: "Intelligent Case Management",
+        subtitle: "Smart Organization",
+        description: "Organize, track, and manage your legal cases with smart assistance.",
+      ),
+      AnimatedOnboardingScreen(
+        key: _keys[3],
+        icon: Iconsax.shield_tick,
+        title: "Secure Client Collaboration",
+        subtitle: "Encrypted Communication",
+        description: "Communicate and share documents with clients in a secure, encrypted environment.",
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +120,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   const Spacer(flex: 1),
                   Expanded(
                     flex: 12,
-                    child: PageView(
+                    child: PageView.builder(
                       controller: _pageController,
                       onPageChanged: (int page) {
                         setState(() {
                           _currentPage = page;
                         });
                       },
-                      children: _onboardingScreens,
+                      itemCount: _onboardingScreens.length,
+                      itemBuilder: (context, index) {
+                        return VisibilityDetector(
+                          key: Key('onboarding_screen_$index'),
+                          onVisibilityChanged: (visibilityInfo) {
+                            if (visibilityInfo.visibleFraction > 0.5) {
+                              _keys[index].currentState?.startAnimation();
+                            }
+                          },
+                          child: _onboardingScreens[index],
+                        );
+                      },
                     ),
                   ),
                   const Spacer(flex: 1),
@@ -174,9 +203,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ),
     );
   }
+
    AnimatedContainer buildDot({int? index}) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.only(right: 8),
       height: 8,
       width: _currentPage == index ? 24 : 8,
@@ -188,19 +218,93 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 }
 
-class OnboardingScreen extends StatelessWidget {
+
+// A reusable animated widget
+class AnimatedContent extends StatelessWidget {
+  final Widget child;
+  final Animation<double> animation;
+  final double start;
+  final double end;
+
+  const AnimatedContent({
+    super.key,
+    required this.child,
+    required this.animation,
+    required this.start,
+    required this.end,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: CurvedAnimation(
+        parent: animation,
+        curve: Interval(start, end, curve: Curves.easeIn),
+      ),
+      child: ScaleTransition(
+        scale: CurvedAnimation(
+          parent: animation,
+          curve: Interval(start, end, curve: Curves.easeInOutBack),
+        ),
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.5),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Interval(start, end, curve: Curves.easeInOutBack),
+          )),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class AnimatedOnboardingScreen extends StatefulWidget {
   final IconData icon;
   final String title;
   final String subtitle;
   final String description;
 
-  const OnboardingScreen({
+  const AnimatedOnboardingScreen({
     super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.description,
   });
+
+  @override
+  State<AnimatedOnboardingScreen> createState() => _AnimatedOnboardingScreenState();
+}
+
+class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  bool _hasAnimated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+  }
+
+  void startAnimation() {
+    if (mounted && !_hasAnimated) {
+      _animationController.forward();
+      _hasAnimated = true;
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,58 +321,83 @@ class OnboardingScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(32),
               border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Glowing Icon
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blue.withOpacity(0.2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blueAccent.withOpacity(0.7),
-                        blurRadius: 30,
-                        spreadRadius: 5,
+            child: AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Glowing Icon
+                    AnimatedContent(
+                      animation: _animationController,
+                      start: 0.0,
+                      end: 0.5,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.blue.withOpacity(0.2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blueAccent.withOpacity(0.7),
+                              blurRadius: 30,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: Icon(widget.icon, color: Colors.white, size: 64),
                       ),
-                    ],
-                  ),
-                  child: Icon(icon, color: Colors.white, size: 64),
-                ),
-                const SizedBox(height: 24),
-                // Text Content
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 26,
+                    ),
+                    const SizedBox(height: 24),
+                    // Text Content
+                    AnimatedContent(
+                      animation: _animationController,
+                      start: 0.2,
+                      end: 0.7,
+                      child: Text(
+                        widget.title,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26,
+                        ),
                       ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  subtitle,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.lato(
-                        color: Colors.white.withOpacity(0.9),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
+                    ),
+                    const SizedBox(height: 12),
+                    AnimatedContent(
+                      animation: _animationController,
+                      start: 0.4,
+                      end: 0.9,
+                      child: Text(
+                        widget.subtitle,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.lato(
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                        ),
                       ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  description,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.lato(
-                        color: Colors.white.withOpacity(0.85),
-                        fontSize: 16,
-                        height: 1.5,
+                    ),
+                    const SizedBox(height: 16),
+                    AnimatedContent(
+                      animation: _animationController,
+                      start: 0.6,
+                      end: 1.0,
+                      child: Text(
+                        widget.description,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.lato(
+                          color: Colors.white.withOpacity(0.85),
+                          fontSize: 16,
+                          height: 1.5,
+                        ),
                       ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
