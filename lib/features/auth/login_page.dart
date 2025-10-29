@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:myapp/features/home/home_page.dart'; // Assuming HomePage is the destination after login
+import 'package:myapp/features/home/main_layout.dart'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -276,7 +276,7 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const HomePage(),
+            pageBuilder: (context, animation, secondaryAnimation) => const MainLayout(),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
             },
