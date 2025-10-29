@@ -5,11 +5,27 @@
   channel = "stable-24.05"; # or "unstable"
   # Use https://search.nixos.org/packages to find packages
   packages = [
+    pkgs.flutter
     pkgs.jdk21
     pkgs.unzip
+    pkgs.git
+    pkgs.gh
+    pkgs.cmake
+    pkgs.ninja
+    pkgs.gcc
+    pkgs.clang
+    pkgs.pkg-config
+    pkgs.glib
+    pkgs.gtk3
   ];
   # Sets environment variables in the workspace
-  env = {};
+  env = {
+    # This ensures that build tools like cmake can find the necessary libraries.
+    PKG_CONFIG_PATH = pkgs.lib.makeSearchPath "lib/pkgconfig" [
+      pkgs.gtk3
+      pkgs.glib
+    ];
+  };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [

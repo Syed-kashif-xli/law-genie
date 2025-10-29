@@ -2,26 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/onboarding/onboarding_page.dart';
-import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
-      child: const MyApp(),
-    ),
-  );
-}
-
-class ThemeProvider with ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.system;
-
-  ThemeMode get themeMode => _themeMode;
-
-  void toggleTheme() {
-    _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-    notifyListeners();
-  }
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -29,72 +12,89 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color primarySeedColor = Color(0xFF6B3E9A);
+    const Color primaryColor = Color(0xFF6B3E9A);
+    const Color accentColor = Colors.blueAccent;
+    const Color backgroundColor = Color(0xFF1A0B2E);
 
-    final TextTheme appTextTheme = TextTheme(
-      displayLarge: GoogleFonts.oswald(fontSize: 57, fontWeight: FontWeight.bold),
-      titleLarge: GoogleFonts.roboto(fontSize: 22, fontWeight: FontWeight.w500),
-      bodyMedium: GoogleFonts.openSans(fontSize: 14),
-      bodyLarge: GoogleFonts.openSans(fontSize: 16, color: Colors.white70),
-      headlineLarge: GoogleFonts.oswald(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+    final TextTheme appTextTheme = GoogleFonts.lexendTextTheme(
+      ThemeData.dark().textTheme,
+    ).copyWith(
+      displayLarge: const TextStyle(fontWeight: FontWeight.bold, fontSize: 57, color: Colors.white),
+      titleLarge: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.white),
+      bodyLarge: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.9)),
+      bodyMedium: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.8)),
     );
 
-    final ThemeData lightTheme = ThemeData(
+    final ThemeData futuristicTheme = ThemeData(
       useMaterial3: true,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: backgroundColor,
+      primaryColor: primaryColor,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: primarySeedColor,
-        brightness: Brightness.light,
+        seedColor: primaryColor,
+        brightness: Brightness.dark,
+        primary: primaryColor,
+        secondary: accentColor,
+        background: backgroundColor,
       ),
       textTheme: appTextTheme,
+
+      // Component Themes
       appBarTheme: AppBarTheme(
-        backgroundColor: primarySeedColor,
-        foregroundColor: Colors.white,
-        titleTextStyle: GoogleFonts.oswald(fontSize: 24, fontWeight: FontWeight.bold),
+        backgroundColor: backgroundColor.withOpacity(0.8),
+        elevation: 0,
+        titleTextStyle: appTextTheme.titleLarge?.copyWith(fontSize: 24),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
+
+      // Glassmorphism Card Theme
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: Colors.white.withOpacity(0.1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: Colors.white.withOpacity(0.2)),
+        ),
+      ),
+      
+      // Glowing Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
-          backgroundColor: primarySeedColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          textStyle: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.w500),
+          backgroundColor: accentColor.withOpacity(0.8),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          elevation: 0, // Shadow is handled separately for the glow
+        ),
+      ),
+      
+      // Glassmorphism TextField Theme
+      inputDecorationTheme: InputDecorationTheme(
+        labelStyle: const TextStyle(color: Colors.white70),
+        prefixIconColor: Colors.white70,
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.1),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: accentColor.withOpacity(0.8)),
         ),
       ),
     );
 
-    final ThemeData darkTheme = ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primarySeedColor,
-        brightness: Brightness.dark,
-      ),
-      textTheme: appTextTheme,
-      appBarTheme: AppBarTheme(
-        backgroundColor: Colors.grey[900],
-        foregroundColor: Colors.white,
-        titleTextStyle: GoogleFonts.oswald(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.black,
-          backgroundColor: Colors.deepPurple.shade200,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          textStyle: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-      ),
-    );
-
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        return MaterialApp(
-          title: 'Law Genie',
-          theme: lightTheme,
-          darkTheme: darkTheme,
-          themeMode: themeProvider.themeMode,
-          home: const OnboardingPage(),
-        );
-      },
+    return MaterialApp(
+      title: 'Law Genie',
+      theme: futuristicTheme,
+      home: const OnboardingPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

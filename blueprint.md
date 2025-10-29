@@ -6,33 +6,29 @@ Law Genie is an AI-powered legal assistant designed to make legal services more 
 
 ## Design & Style
 
-- **Theme:** Modern, clean, and professional with a "glassmorphism" aesthetic.
-- **Color Palette:** A primary palette of deep purple and a secondary palette of white and grey, creating a vibrant and energetic look and feel.
+- **Theme:** A modern and sophisticated "liquid glass" (Glassmorphism) aesthetic.
+- **Color Palette:** A vibrant palette built on deep purples and complemented by a range of dynamic, translucent colors for UI elements. This creates a fluid and visually engaging experience.
 - **Typography:** Google Fonts (Oswald for headings, Roboto and Open Sans for body text) are used for a clean and readable experience.
 - **Iconography:** `iconsax` and `font_awesome_flutter` packages are used for modern and clean icons.
-- **Layout:** Card-based layouts with clean spacing, gradients, and subtle shadows to create depth and a premium feel.
+- **Layout:** UI components like cards and buttons will have a frosted glass look with blurred backgrounds, gradients, and soft borders to create a sense of depth and fluidity.
 
 ## Implemented Features
 
 ### 1. Onboarding Experience
-- A multi-step onboarding process to introduce users to the app's features.
-- A visually engaging UI with a gradient background and smooth page indicators.
-- Refined visual design with a frosted glass effect for icon backgrounds.
+- A multi-step onboarding process with a "liquid glass" UI.
 
 ### 2. User Authentication
 - A sleek, modern login page that appears after onboarding.
-- Supports both email and phone number login.
-- Includes options for social login (Google & Apple).
 
 ### 3. Dashboard Home Page
 - A dashboard-style home page with a `GridView` of feature cards.
 - Reusable `FeatureCard` widget.
 
-## Current Plan: Refine Onboarding UI
+## Current Plan: Apply "Liquid Glass" UI to Home Page
 
-Based on user feedback, the UI of the onboarding screen will be enhanced.
+To create a cohesive and modern user experience, the "liquid glass" design will be applied to the home page.
 
 ### Steps:
-1.  **Apply Glassmorphism:** The container for the icon on the onboarding screens will be changed from a simple circle to a rounded square with a blurred background (frosted glass effect).
-2.  **Add Border:** A semi-transparent white border will be added to the container to give it a defined, line-like appearance.
-3.  **Update `onboarding_screen.dart`:** The `lib/features/onboarding/onboarding_screen.dart` file will be modified to implement this new design.
+1.  **Update Feature Cards:** The `FeatureCard` widget will be redesigned to have a frosted glass background, a semi-transparent border, and a subtle gradient.
+2.  **Dynamic Asset Colors:** The icons and backgrounds on the feature cards will use a more vibrant and varied color scheme to feel more dynamic and align with the "liquid glass" theme.
+3.  **Refactor `home_page.dart`:** The home page will be updated to orchestrate the new `FeatureCard` design and color scheme.

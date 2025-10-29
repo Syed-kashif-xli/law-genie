@@ -1,139 +1,277 @@
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/auth/login_page.dart';
-import 'package:myapp/features/onboarding/onboarding_screen.dart';
-import 'package:myapp/features/onboarding/onboarding_view_model.dart';
-import 'package:provider/provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class OnboardingPage extends StatelessWidget {
+class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
   @override
+  State<OnboardingPage> createState() => _OnboardingPageState();
+}
+
+class _OnboardingPageState extends State<OnboardingPage> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  final List<Widget> _onboardingScreens = [
+    const OnboardingScreen(
+      icon: Iconsax.message_question5,
+      title: "Law Genie",
+      subtitle: "Your AI Legal Partner",
+      description: "Chat with Law Genie – Get instant AI-powered legal advice 24/7",
+    ),
+    const OnboardingScreen(
+      icon: Iconsax.document_text,
+      title: "Automated Document Analysis",
+      subtitle: "AI-Powered Insights",
+      description: "Upload and analyze legal documents instantly for key insights.",
+    ),
+    const OnboardingScreen(
+      icon: Iconsax.folder_open,
+      title: "Intelligent Case Management",
+      subtitle: "Smart Organization",
+      description: "Organize, track, and manage your legal cases with smart assistance.",
+    ),
+    const OnboardingScreen(
+      icon: Iconsax.shield_tick,
+      title: "Secure Client Collaboration",
+      subtitle: "Encrypted Communication",
+      description: "Communicate and share documents with clients in a secure, encrypted environment.",
+    ),
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => OnboardingViewModel(),
-      child: Consumer<OnboardingViewModel>(
-        builder: (context, viewModel, _) {
-          return Scaffold(
-            body: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.deepPurple.shade800,
-                    Colors.purple.shade800,
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1A0B2E), Color(0xFF42218E)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Stack(
+          children: [
+            // Ambient circles for depth
+            Positioned(
+              top: -100,
+              left: -100,
+              child: Container(
+                width: 250,
+                height: 250,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF6B3E9A).withOpacity(0.4),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6B3E9A).withOpacity(0.6),
+                      blurRadius: 100,
+                      spreadRadius: 50,
+                    ),
                   ],
                 ),
               ),
+            ),
+            Positioned(
+              bottom: -150,
+              right: -150,
+              child: Container(
+                width: 350,
+                height: 350,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue.withOpacity(0.3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blueAccent.withOpacity(0.5),
+                      blurRadius: 150,
+                      spreadRadius: 70,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Main Content
+            SafeArea(
               child: Column(
                 children: [
+                  const Spacer(flex: 1),
                   Expanded(
+                    flex: 12,
                     child: PageView(
-                      controller: viewModel.pageController,
-                      onPageChanged: viewModel.onPageChanged,
-                      children: const [
-                        OnboardingScreen(
-                          icon: Iconsax.message_question,
-                          title: 'Chat with Law Genie',
-                          description:
-                              'Get instant AI-powered legal advice and answers to your questions 24/7.',
-                        ),
-                        OnboardingScreen(
-                          icon: Iconsax.document_text,
-                          title: 'Generate Legal Docs',
-                          description:
-                              'Create professional contracts, NDAs, and more with AI assistance.',
-                        ),
-                        OnboardingScreen(
-                          icon: Iconsax.shield_tick,
-                          title: 'Assess Legal Risks',
-                          description:
-                              'Analyze potential legal risks and get AI-powered recommendations.',
-                        ),
-                        OnboardingScreen(
-                          icon: Iconsax.calendar_1,
-                          title: 'Track Your Case Timeline',
-                          description:
-                              'Manage deadlines, hearings, and case milestones all in one place.',
-                        ),
-                      ],
+                      controller: _pageController,
+                      onPageChanged: (int page) {
+                        setState(() {
+                          _currentPage = page;
+                        });
+                      },
+                      children: _onboardingScreens,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      children: [
-                        SmoothPageIndicator(
-                          controller: viewModel.pageController,
-                          count: 4,
-                          effect: ExpandingDotsEffect(
-                            activeDotColor: Colors.white,
-                            dotColor: Color(0x80FFFFFF),
-                            dotHeight: 10,
-                            dotWidth: 10,
-                            expansionFactor: 4,
-                            spacing: 8,
+                  const Spacer(flex: 1),
+                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _onboardingScreens.length,
+                      (index) => buildDot(index: index),
+                    ),
+                  ),
+                  const Spacer(flex: 2),
+                  // Glowing Next Button
+                  GestureDetector(
+                    onTap: () {
+                      if (_currentPage < _onboardingScreens.length - 1) {
+                        _pageController.nextPage(
+                          duration: const Duration(milliseconds: 400),
+                          curve: Curves.easeInOut,
+                        );
+                      } else {
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                              return FadeTransition(opacity: animation, child: child);
+                            },
                           ),
+                        );
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 72),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: Colors.blueAccent.withOpacity(0.8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blueAccent.withOpacity(0.7),
+                            blurRadius: 25,
+                            spreadRadius: 2,
+                            offset: const Offset(0, 5),
+                          )
+                        ],
+                      ),
+                      child: Text(
+                        _currentPage == _onboardingScreens.length - 1 ? 'Get Started' : 'Next',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 32),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                                );
-                              },
-                              child: const Text(
-                                'Skip',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                if (viewModel.currentPage == 3) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                                  );
-                                } else {
-                                  viewModel.nextPage();
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.deepPurple,
-                                backgroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 16,
-                                ),
-                              ),
-                              child: Text(
-                                viewModel.currentPage == 3 ? 'Get Started' : 'Next',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ),
+                  const Spacer(flex: 2),
                 ],
               ),
             ),
-          );
-        },
+          ],
+        ),
+      ),
+    );
+  }
+   AnimatedContainer buildDot({int? index}) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      margin: const EdgeInsets.only(right: 8),
+      height: 8,
+      width: _currentPage == index ? 24 : 8,
+      decoration: BoxDecoration(
+        color: _currentPage == index ? Colors.blueAccent : const Color(0xFFD8D8D8).withOpacity(0.5),
+        borderRadius: BorderRadius.circular(4),
+      ),
+    );
+  }
+}
+
+class OnboardingScreen extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String description;
+
+  const OnboardingScreen({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Glowing Icon
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.blue.withOpacity(0.2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blueAccent.withOpacity(0.7),
+                        blurRadius: 30,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 64),
+                ),
+                const SizedBox(height: 24),
+                // Text Content
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 26,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.lato(
+                        color: Colors.white.withOpacity(0.9),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  description,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.lato(
+                        color: Colors.white.withOpacity(0.85),
+                        fontSize: 16,
+                        height: 1.5,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
