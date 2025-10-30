@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/chat/chat_page.dart';
@@ -103,7 +102,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const HomePage(),
         '/aiChat': (context) => const AIChatPage(),
-        '/generateDoc': (context) => const GenerateDocPage(),
+        '/generateDoc': (context) => DocumentGeneratorPage(),
         '/riskCheck': (context) => const RiskCheckPage(),
         '/caseTimeline': (context) => const CaseTimelinePage(),
       },
