@@ -9,20 +9,20 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: const Color(0xFF1A0B2E),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, size: 32, color: Color(0xFF0D47A1)), // Changed to standard menu icon
+            icon: const Icon(Icons.menu, size: 32, color: Colors.white), // Changed to standard menu icon
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
         flexibleSpace: Stack(
           children: [
             Positioned.fill(
-              child: Container(color: const Color(0xFFF0F4F8)),
+              child: Container(color: const Color(0xFF1A0B2E)),
             ),
             Align(
               alignment: Alignment.bottomLeft,
@@ -33,7 +33,7 @@ class HomePage extends StatelessWidget {
                     Flexible(
                       child: Text(
                         'Welcome back, Alex ',
-                        style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: const Color(0xFF0D47A1)),
+                        style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -44,9 +44,9 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-        actions: [
-          const Icon(Iconsax.notification, size: 32, color: Color(0xFF0D47A1)),
-          const SizedBox(width: 16),
+        actions: const [
+          Icon(Iconsax.notification, size: 32, color: Colors.white),
+          SizedBox(width: 16),
         ],
       ),
       drawer: const AppDrawer(),
@@ -76,7 +76,7 @@ class HomePage extends StatelessWidget {
   Widget _buildStatsSection() {
     return Column(
       children: [
-        _buildStatCard('AI Queries', '247', '+23%', Iconsax.cpu_charge, const Color(0xFF0D47A1)),
+        _buildStatCard('AI Queries', '247', '+23%', Iconsax.cpu_charge, const Color(0xFF00BFA6)),
         const SizedBox(height: 16),
         _buildStatCard('Documents', '45', '+12%', Iconsax.document_favorite, const Color(0xFF4CAF50)),
         const SizedBox(height: 16),
@@ -89,15 +89,9 @@ class HomePage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 10,
-          )
-        ],
+         border: Border.all(color: Colors.white.withOpacity(0.2)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -106,9 +100,9 @@ class HomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey)),
+                Text(title, style: GoogleFonts.poppins(fontSize: 16, color: Colors.white70)),
                 const SizedBox(height: 8),
-                Text(value, style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black)),
+                Text(value, style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -137,7 +131,7 @@ class HomePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Quick Actions', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
+        Text('Quick Actions', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
         const SizedBox(height: 16),
         GridView.count(
           shrinkWrap: true,
@@ -146,41 +140,39 @@ class HomePage extends StatelessWidget {
           mainAxisSpacing: 16,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            _buildQuickActionCard('AI Chat', 'Talk to Law Genie', Iconsax.messages_2),
-            _buildQuickActionCard('Generate Doc', 'Create documents', Iconsax.document_upload),
-            _buildQuickActionCard('Risk Check', 'Assess risks', Iconsax.shield_tick),
-            _buildQuickActionCard('Case Timeline', 'Track cases', Iconsax.calendar_edit),
+            _buildQuickActionCard(context, 'AI Chat', 'Talk to Law Genie', Iconsax.messages_2, '/aiChat'),
+            _buildQuickActionCard(context, 'Generate Doc', 'Create documents', Iconsax.document_upload, '/generateDoc'),
+            _buildQuickActionCard(context, 'Risk Check', 'Assess risks', Iconsax.shield_tick, '/riskCheck'),
+            _buildQuickActionCard(context, 'Case Timeline', 'Track cases', Iconsax.calendar_edit, '/caseTimeline'),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildQuickActionCard(String title, String subtitle, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
+  Widget _buildQuickActionCard(BuildContext context, String title, String subtitle, IconData icon, String route) {
+    return InkWell(
+      onTap: () => Navigator.pushNamed(context, route),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 10,
-          )
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 40, color: const Color(0xFF0D47A1)),
-          const SizedBox(height: 16),
-          Text(title, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
-          const SizedBox(height: 4),
-          Flexible(
-            child: Text(subtitle, style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey), textAlign: TextAlign.center),
-          ),
-        ],
+         border: Border.all(color: Colors.white.withOpacity(0.2)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: const Color(0xFF00BFA6)),
+            const SizedBox(height: 16),
+            Text(title, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+            const SizedBox(height: 4),
+            Flexible(
+              child: Text(subtitle, style: GoogleFonts.poppins(fontSize: 14, color: Colors.white70), textAlign: TextAlign.center),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -192,7 +184,7 @@ class HomePage extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Upcoming Events', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
+            Text('Upcoming Events', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
             Text('View All', style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue)),
           ],
         ),
@@ -208,27 +200,21 @@ class HomePage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 10,
-          )
-        ],
+         border: Border.all(color: Colors.white.withOpacity(0.2)),
       ),
       child: Row(
         children: [
-          const Icon(Iconsax.calendar_1, color: Color(0xFF0D47A1)),
+          const Icon(Iconsax.calendar_1, color: Color(0xFF00BFA6)),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                Text(title, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 4),
-                Text(time, style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey)),
+                Text(time, style: GoogleFonts.poppins(fontSize: 14, color: Colors.white70)),
               ],
             ),
           ),
@@ -254,14 +240,14 @@ class HomePage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+          colors: [Color(0xFF6B3E9A), Color(0xFF4A148C)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0D47A1).withOpacity(0.4),
+            color: const Color(0xFF6B3E9A).withOpacity(0.4),
             spreadRadius: 2,
             blurRadius: 10,
           )
@@ -325,7 +311,7 @@ class HomePage extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Legal News Feed', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
+            Text('Legal News Feed', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
             Text('View All', style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue)),
           ],
         ),
@@ -341,15 +327,9 @@ class HomePage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 10,
-          )
-        ],
+         border: Border.all(color: Colors.white.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,18 +340,18 @@ class HomePage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0D47A1).withOpacity(0.1),
+                  color: const Color(0xFF00BFA6).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(category, style: const TextStyle(color: Color(0xFF0D47A1), fontWeight: FontWeight.bold)),
+                child: Text(category, style: const TextStyle(color: Color(0xFF00BFA6), fontWeight: FontWeight.bold)),
               ),
-              Text(time, style: const TextStyle(color: Colors.grey)),
+              Text(time, style: const TextStyle(color: Colors.white70)),
             ],
           ),
           const SizedBox(height: 16),
-          Text(title, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+          Text(title, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
           const SizedBox(height: 8),
-          Text(source, style: const TextStyle(color: Colors.grey)),
+          Text(source, style: const TextStyle(color: Colors.white70)),
         ],
       ),
     );

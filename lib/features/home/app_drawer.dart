@@ -17,8 +17,8 @@ class AppDrawer extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.grey.shade200.withOpacity(0.5),
-              border: Border(right: BorderSide(color: Colors.grey.shade300)),
+              color: const Color(0xFF1A0B2E).withOpacity(0.9),
+               border: Border(right: BorderSide(color: Colors.white.withOpacity(0.2))),
             ),
             child: Column(
               children: [
@@ -55,25 +55,23 @@ class AppDrawer extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Colors.white,
                 ),
               ),
               Text(
                 'AI Legal Assistant',
-                style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[700]),
+                style: GoogleFonts.poppins(fontSize: 12, color: Colors.white70),
               ),
             ],
           ),
           const Spacer(),
           Material(
-            color: Colors.white,
+            color: Colors.white.withOpacity(0.2),
             shape: const CircleBorder(),
-            elevation: 2.0,
             child: IconButton(
               padding: EdgeInsets.zero,
-              icon: const Icon(Icons.close, size: 20),
+              icon: const Icon(Icons.close, size: 20, color: Colors.white),
               onPressed: () => Navigator.of(context).pop(),
-              color: Colors.black54,
             ),
           ),
         ],
@@ -155,22 +153,17 @@ class AppDrawer extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
         children: [
-          _buildMenuItem(Iconsax.home_2, 'Dashboard'),
-          _buildMenuItem(Iconsax.message, 'AI Chatbot'),
-          _buildMenuItem(Iconsax.document, 'Document Generator'),
-          _buildMenuItem(Iconsax.shield_tick, 'Risk Assessment'),
-          _buildMenuItem(Iconsax.search_normal_1, 'Case Law Finder'),
-          _buildMenuItem(Iconsax.edit, 'Auto Fill Assistant', isNew: true),
-          _buildMenuItem(Iconsax.folder_open, 'Document Library'),
-          _buildMenuItem(Iconsax.calendar_1, 'Case Timeline', isSelected: true),
-          _buildMenuItem(Iconsax.book_1, 'Legal Resources'),
-          _buildMenuItem(Iconsax.notification, 'Notifications', notificationCount: 3),
+          _buildMenuItem(context, Iconsax.home_2, 'Dashboard', '/home'),
+          _buildMenuItem(context, Iconsax.message, 'AI Chatbot', '/aiChat'),
+          _buildMenuItem(context, Iconsax.document, 'Document Generator', '/generateDoc'),
+          _buildMenuItem(context, Iconsax.shield_tick, 'Risk Assessment', '/riskCheck'),
+          _buildMenuItem(context, Iconsax.calendar_1, 'Case Timeline', '/caseTimeline', isSelected: true),
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title,
+  Widget _buildMenuItem(BuildContext context, IconData icon, String title, String route,
       {bool isNew = false,
       bool isSelected = false,
       int notificationCount = 0}) {
@@ -196,11 +189,11 @@ class AppDrawer extends StatelessWidget {
             : [],
       ),
       child: ListTile(
-        leading: Icon(icon, color: isSelected ? Colors.white : Colors.black54),
+        leading: Icon(icon, color: isSelected ? Colors.white : Colors.white70),
         title: Text(
           title,
           style: GoogleFonts.poppins(
-            color: isSelected ? Colors.white : Colors.black87,
+            color: isSelected ? Colors.white : Colors.white,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
           ),
         ),
@@ -231,7 +224,10 @@ class AppDrawer extends StatelessWidget {
               ),
           ],
         ),
-        onTap: () {},
+        onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, route);
+        },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),

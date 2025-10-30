@@ -24,11 +24,7 @@ Law Genie is an AI-powered legal assistant designed to make legal services more 
 - A dashboard-style home page with a `GridView` of feature cards.
 - Reusable `FeatureCard` widget.
 
-## Current Plan: Apply "Liquid Glass" UI to Home Page
-
-To create a cohesive and modern user experience, the "liquid glass" design will be applied to the home page.
-
-### Steps:
-1.  **Update Feature Cards:** The `FeatureCard` widget will be redesigned to have a frosted glass background, a semi-transparent border, and a subtle gradient.
-2.  **Dynamic Asset Colors:** The icons and backgrounds on the feature cards will use a more vibrant and varied color scheme to feel more dynamic and align with the "liquid glass" theme.
-3.  **Refactor `home_page.dart`:** The home page will be updated to orchestrate the new `FeatureCard` design and color scheme.
+### 4. Fully Functional Navigation
+- Implemented a complete navigation system using named routes.
+- The app's quick actions and drawer menu are now fully functional.
+- Added three new pages: `GenerateDocPage`, `RiskCheckPage`, and `CaseTimelinePage`.

@@ -8,11 +8,11 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+class AIChatPage extends StatefulWidget {
+  const AIChatPage({super.key});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<AIChatPage> createState() => _AIChatPageState();
 }
 
 class _Message {
@@ -22,7 +22,7 @@ class _Message {
   _Message({required this.text, required this.isUser});
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _AIChatPageState extends State<AIChatPage> {
   final TextEditingController _textController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
   final List<_Message> _messages = [
@@ -96,7 +96,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: const Color(0xFF1A0B2E),
       appBar: _buildAppBar(context),
       body: Column(
         children: [
@@ -132,10 +132,10 @@ class _ChatPageState extends State<ChatPage> {
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: const Color(0xFF1A0B2E),
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Iconsax.arrow_left, size: 30, color: Color(0xFF4A4A4A)),
+        icon: const Icon(Iconsax.arrow_left, size: 30, color: Colors.white),
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: Column(
@@ -146,14 +146,14 @@ class _ChatPageState extends State<ChatPage> {
             style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF1E2A5D),
+              color: Colors.white,
             ),
           ),
           Text(
             'Ready to assist you',
             style: GoogleFonts.poppins(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: Colors.white70,
             ),
           ),
         ],
@@ -175,7 +175,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.download_outlined, color: Color(0xFF4A4A4A)),
+          icon: const Icon(Icons.download_outlined, color: Colors.white),
           onPressed: () {},
         ),
         IconButton(
@@ -191,7 +191,7 @@ class _ChatPageState extends State<ChatPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF1A0B2E),
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -206,10 +206,10 @@ class _ChatPageState extends State<ChatPage> {
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: Colors.white.withOpacity(0.2)),
               ),
               child: IconButton(
-                icon: const Icon(Icons.attach_file, color: Color(0xFF4A4A4A)),
+                icon: const Icon(Icons.attach_file, color: Colors.white),
                 onPressed: _pickFile,
               ),
             ),
@@ -217,17 +217,17 @@ class _ChatPageState extends State<ChatPage> {
             Expanded(
               child: TextField(
                 controller: _textController,
-                style: const TextStyle(color: Colors.black), // Makes the input text visible
+                style: const TextStyle(color: Colors.white), // Makes the input text visible
                 decoration: InputDecoration(
                   hintText: 'Ask your legal question...',
-                  hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+                  hintStyle: GoogleFonts.poppins(color: Colors.white70),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
@@ -237,7 +237,7 @@ class _ChatPageState extends State<ChatPage> {
                   suffixIcon: IconButton(
                     icon: Icon(
                         _speechToText.isListening ? Icons.mic : Icons.mic_off,
-                        color: const Color(0xFF4A4A4A)),
+                        color: Colors.white),
                     onPressed: _speechToText.isNotListening
                         ? _startListening
                         : _stopListening,
@@ -305,16 +305,9 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
           child: Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+               border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,7 +316,7 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
                   widget.message.text,
                   style: GoogleFonts.poppins(
                     fontSize: 15,
-                    color: Colors.black87,
+                    color: Colors.white,
                     height: 1.5,
                   ),
                 ),
@@ -335,20 +328,20 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
                     children: [
                       Text(
                         '21:52', // This should be dynamic
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 12, color: Colors.white70),
                       ),
                       const SizedBox(width: 12),
                       Icon(
                         isPlaying ? Iconsax.pause : Iconsax.volume_high,
                         size: 16,
-                        color: isPlaying ? Colors.deepPurple : Colors.grey[600],
+                        color: isPlaying ? Colors.deepPurple : Colors.white70,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         isPlaying ? 'Playing...' : 'Listen',
                         style: TextStyle(
                           fontSize: 12,
-                          color: isPlaying ? Colors.deepPurple : Colors.grey[700],
+                          color: isPlaying ? Colors.deepPurple : Colors.white70,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

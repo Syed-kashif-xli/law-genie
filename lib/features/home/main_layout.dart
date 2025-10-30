@@ -15,37 +15,52 @@ class _MainLayoutState extends State<MainLayout> {
 
   final List<Widget> _pages = [
     const HomePage(),
-    // This is a placeholder, the actual navigation is handled in onTap
-    const Center(child: Text('Chat Page')),
+    const AIChatPage(), // Use AIChatPage
     const Center(child: Text('Library Page')),
     const Center(child: Text('Timeline Page')),
     const Center(child: Text('Profile Page')),
   ];
 
   void _onTap(int index) {
-    if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ChatPage()),
-      );
-    } else {
-      setState(() {
-        _currentIndex = index;
-      });
+    // Updated to navigate to the correct pages
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/home');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/aiChat');
+        break;
+      case 2:
+        // Placeholder for Library Page
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/caseTimeline');
+        break;
+      case 4:
+        // Placeholder for Profile Page
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentIndex],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: _onTap,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          _onTap(index);
+        },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF0D47A1),
-        unselectedItemColor: Colors.grey,
+        backgroundColor: const Color(0xFF1A0B2E),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white.withOpacity(0.5),
         showSelectedLabels: true,
         showUnselectedLabels: true,
         items: const [
