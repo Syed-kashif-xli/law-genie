@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -14,11 +15,25 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
+class _Message {
+  final String text;
+  final bool isUser;
+
+  _Message({required this.text, required this.isUser});
+}
+
 class _ChatPageState extends State<ChatPage> {
+  final TextEditingController _textController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
+  final List<_Message> _messages = [
+    _Message(
+      text: "Hello! I'm Law Genie, your AI legal assistant. How can I help you today?",
+      isUser: false,
+    ),
+  ];
   bool _speechEnabled = false;
-  String _lastWords = '';
   File? _selectedFile;
+  bool _isTyping = false;
 
   @override
   void initState() {
@@ -43,18 +58,39 @@ class _ChatPageState extends State<ChatPage> {
 
   void _onSpeechResult(result) {
     setState(() {
-      _lastWords = result.recognizedWords;
+      _textController.text = result.recognizedWords;
     });
   }
 
   void _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
-
     if (result != null) {
       setState(() {
         _selectedFile = File(result.files.single.path!);
+        _sendMessage('File: ${_selectedFile!.path.split('/').last}');
       });
     }
+  }
+
+  void _sendMessage(String text) {
+    if (text.isEmpty && _selectedFile == null) return;
+
+    setState(() {
+      _messages.add(_Message(text: text, isUser: true));
+      _textController.clear();
+      _isTyping = true;
+    });
+
+    // Simulate AI response
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _messages.add(_Message(
+          text: "I am processing your request...",
+          isUser: false,
+        ));
+        _isTyping = false;
+      });
+    });
   }
 
   @override
@@ -65,13 +101,29 @@ class _ChatPageState extends State<ChatPage> {
       body: Column(
         children: [
           Expanded(
-            child: ListView(
+            child: ListView.builder(
               padding: const EdgeInsets.all(16.0),
-              children: const [
-                _AIMessageBubble(),
-              ],
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                return message.isUser
+                    ? _UserMessageBubble(message: message)
+                    : _AIMessageBubble(message: message);
+              },
             ),
           ),
+          if (_isTyping)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 8),
+                  Text("Law Genie is typing..."),
+                ],
+              ),
+            ),
           _buildChatInputArea(context),
         ],
       ),
@@ -151,7 +203,6 @@ class _ChatPageState extends State<ChatPage> {
       child: SafeArea(
         child: Row(
           children: [
-            // Attachment Button
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -163,10 +214,10 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
             const SizedBox(width: 8),
-            // Text Field
             Expanded(
               child: TextField(
-                controller: TextEditingController(text: _lastWords),
+                controller: _textController,
+                style: const TextStyle(color: Colors.black), // Makes the input text visible
                 decoration: InputDecoration(
                   hintText: 'Ask your legal question...',
                   hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
@@ -182,11 +233,10 @@ class _ChatPageState extends State<ChatPage> {
                     borderRadius: BorderRadius.circular(12.0),
                     borderSide: const BorderSide(color: Colors.deepPurple),
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   suffixIcon: IconButton(
                     icon: Icon(
-                        _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+                        _speechToText.isListening ? Icons.mic : Icons.mic_off,
                         color: const Color(0xFF4A4A4A)),
                     onPressed: _speechToText.isNotListening
                         ? _startListening
@@ -196,7 +246,6 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
             const SizedBox(width: 8),
-            // Send Button
             Container(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
@@ -208,7 +257,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
               child: IconButton(
                 icon: const Icon(Iconsax.send_2, color: Colors.white),
-                onPressed: () {},
+                onPressed: () => _sendMessage(_textController.text),
               ),
             ),
           ],
@@ -219,7 +268,8 @@ class _ChatPageState extends State<ChatPage> {
 }
 
 class _AIMessageBubble extends StatefulWidget {
-  const _AIMessageBubble();
+  final _Message message;
+  const _AIMessageBubble({required this.message});
 
   @override
   State<_AIMessageBubble> createState() => _AIMessageBubbleState();
@@ -229,12 +279,9 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
   final FlutterTts flutterTts = FlutterTts();
   bool isPlaying = false;
 
-  final String messageText =
-      "Hello! I'm Law Genie, your AI legal assistant. How can I help you today? You can ask me questions, upload documents for analysis, or request legal document generation.";
-
   Future<void> _speak() async {
     setState(() => isPlaying = true);
-    await flutterTts.speak(messageText);
+    await flutterTts.speak(widget.message.text);
     flutterTts.setCompletionHandler(() {
       setState(() => isPlaying = false);
     });
@@ -273,7 +320,7 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  messageText,
+                  widget.message.text,
                   style: GoogleFonts.poppins(
                     fontSize: 15,
                     color: Colors.black87,
@@ -287,7 +334,7 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '21:52',
+                        '21:52', // This should be dynamic
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       const SizedBox(width: 12),
@@ -301,8 +348,7 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
                         isPlaying ? 'Playing...' : 'Listen',
                         style: TextStyle(
                           fontSize: 12,
-                          color:
-                              isPlaying ? Colors.deepPurple : Colors.grey[700],
+                          color: isPlaying ? Colors.deepPurple : Colors.grey[700],
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -310,6 +356,38 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _UserMessageBubble extends StatelessWidget {
+  final _Message message;
+  const _UserMessageBubble({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Flexible(
+          child: Container(
+            margin: const EdgeInsets.only(top: 8, bottom: 8, left: 80),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: const BoxDecoration(
+              color: Colors.deepPurple,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
+            ),
+            child: Text(
+              message.text,
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
             ),
           ),
         ),

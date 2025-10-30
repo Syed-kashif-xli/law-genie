@@ -76,11 +76,11 @@ class HomePage extends StatelessWidget {
   Widget _buildStatsSection() {
     return Column(
       children: [
-        _buildStatCard('AI Queries', '247', '+23%', Iconsax.message_question, const Color(0xFF0D47A1)),
+        _buildStatCard('AI Queries', '247', '+23%', Iconsax.cpu_charge, const Color(0xFF0D47A1)),
         const SizedBox(height: 16),
-        _buildStatCard('Documents', '45', '+12%', Iconsax.document_text, const Color(0xFF4CAF50)),
+        _buildStatCard('Documents', '45', '+12%', Iconsax.document_favorite, const Color(0xFF4CAF50)),
         const SizedBox(height: 16),
-        _buildStatCard('Cases Tracked', '12', '+3', Iconsax.ruler, const Color(0xFFFF9800)),
+        _buildStatCard('Cases Tracked', '12', '+3', Iconsax.briefcase, const Color(0xFFFF9800)),
       ],
     );
   }
@@ -146,10 +146,10 @@ class HomePage extends StatelessWidget {
           mainAxisSpacing: 16,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            _buildQuickActionCard('AI Chat', 'Talk to Law Genie', Iconsax.message),
+            _buildQuickActionCard('AI Chat', 'Talk to Law Genie', Iconsax.messages_2),
             _buildQuickActionCard('Generate Doc', 'Create documents', Iconsax.document_upload),
             _buildQuickActionCard('Risk Check', 'Assess risks', Iconsax.shield_tick),
-            _buildQuickActionCard('Case Timeline', 'Track cases', Iconsax.calendar_1),
+            _buildQuickActionCard('Case Timeline', 'Track cases', Iconsax.calendar_edit),
           ],
         ),
       ],
