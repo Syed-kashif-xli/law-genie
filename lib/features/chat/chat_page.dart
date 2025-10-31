@@ -12,6 +12,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class AIChatPage extends StatefulWidget {
   const AIChatPage({super.key});
@@ -30,7 +31,7 @@ class _Message {
 class _AIChatPageState extends State<AIChatPage> {
   final TextEditingController _textController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
-  final List<_Message> _messages = [
+  final List<dynamic> _messages = [
     _Message(
       text: "Hello! I'm Law Genie, your AI legal assistant. How can I help you today?",
       isUser: false,
@@ -84,11 +85,13 @@ class _AIChatPageState extends State<AIChatPage> {
       _messages.add(_Message(text: text, isUser: true));
       _textController.clear();
       _isTyping = true;
+      _messages.add(_TypingIndicator());
     });
 
     // Simulate AI response
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 4), () {
       setState(() {
+        _messages.removeWhere((element) => element is _TypingIndicator);
         _messages.add(_Message(
           text: "I am processing your request...",
           isUser: false,
@@ -101,11 +104,13 @@ class _AIChatPageState extends State<AIChatPage> {
   Future<void> _generatePdf() async {
     final pdf = pw.Document();
 
+    final messagesToExport = _messages.where((m) => m is _Message).cast<_Message>().toList();
+
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         build: (pw.Context context) {
-          return _messages.map((message) {
+          return messagesToExport.map((message) {
             return pw.Container(
               alignment: message.isUser ? pw.Alignment.centerRight : pw.Alignment.centerLeft,
               child: pw.Container(
@@ -135,7 +140,11 @@ class _AIChatPageState extends State<AIChatPage> {
   }
 
   void _shareChat() {
-    final String chatHistory = _messages.map((m) => "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}").join('\n\n');
+    final String chatHistory = _messages
+        .where((m) => m is _Message)
+        .cast<_Message>()
+        .map((m) => "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}")
+        .join('\n\n');
     Share.share(chatHistory, subject: 'Chat History with Law Genie');
   }
 
@@ -152,24 +161,17 @@ class _AIChatPageState extends State<AIChatPage> {
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final message = _messages[index];
-                return message.isUser
-                    ? _UserMessageBubble(message: message)
-                    : _AIMessageBubble(message: message);
+                if (message is _Message) {
+                  return message.isUser
+                      ? _UserMessageBubble(message: message)
+                      : _AIMessageBubble(message: message);
+                } else if (message is _TypingIndicator) {
+                  return const _TypingIndicatorBubble();
+                }
+                return const SizedBox.shrink();
               },
             ),
           ),
-          if (_isTyping)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(width: 8),
-                  Text("Law Genie is typing..."),
-                ],
-              ),
-            ),
           _buildChatInputArea(context),
         ],
       ),
@@ -312,6 +314,57 @@ class _AIChatPageState extends State<AIChatPage> {
     );
   }
 }
+
+class _TypingIndicator {}
+
+class _TypingIndicatorBubble extends StatelessWidget {
+  const _TypingIndicatorBubble();
+
+ @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(right: 12, top: 4),
+            padding: const EdgeInsets.all(8),
+            decoration: const BoxDecoration(
+              color: Colors.deepPurple,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Iconsax.flash_1, color: Colors.white, size: 24),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
+            ),
+            child: AnimatedTextKit(
+              animatedTexts: [
+                TyperAnimatedText(
+                  '...',
+                  textStyle: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  speed: const Duration(milliseconds: 300),
+                ),
+              ],
+              repeatForever: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
 
 class _AIMessageBubble extends StatefulWidget {
   final _Message message;
