@@ -36,11 +36,10 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.only(left: 72, bottom: 12),
                 child: AnimatedTextKit(
                   animatedTexts: [
-                    ScaleAnimatedText(
+                    TypewriterAnimatedText(
                       'Welcome back',
                       textStyle: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-                      duration: const Duration(milliseconds: 1500),
-                      scalingFactor: 0.5,
+                      speed: const Duration(milliseconds: 100),
                     ),
                   ],
                   totalRepeatCount: 1,
