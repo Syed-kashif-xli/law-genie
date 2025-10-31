@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/home/app_drawer.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +21,7 @@ class HomePage extends StatelessWidget {
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, size: 32, color: Colors.white), // Changed to standard menu icon
+            icon: const Icon(Icons.menu, size: 32, color: Colors.white),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
@@ -28,17 +34,16 @@ class HomePage extends StatelessWidget {
               alignment: Alignment.bottomLeft,
               child: Padding(
                 padding: const EdgeInsets.only(left: 72, bottom: 12),
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        'Welcome back, Alex ',
-                        style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                child: AnimatedTextKit(
+                  animatedTexts: [
+                    ScaleAnimatedText(
+                      'Welcome back',
+                      textStyle: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                      duration: const Duration(milliseconds: 1500),
+                      scalingFactor: 0.5,
                     ),
-                    const Text('👋', style: TextStyle(fontSize: 24)),
                   ],
+                  totalRepeatCount: 1,
                 ),
               ),
             ),
