@@ -102,7 +102,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const HomePage(),
         '/aiChat': (context) => const AIChatPage(),
-        '/generateDoc': (context) => DocumentGeneratorPage(),
+        '/generateDoc': (context) => const DocumentGeneratorPage(),
         '/riskCheck': (context) => const RiskCheckPage(),
         '/caseTimeline': (context) => const CaseTimelinePage(),
       },

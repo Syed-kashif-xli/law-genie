@@ -7,6 +7,11 @@ import 'package:iconsax/iconsax.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AIChatPage extends StatefulWidget {
   const AIChatPage({super.key});
@@ -93,6 +98,47 @@ class _AIChatPageState extends State<AIChatPage> {
     });
   }
 
+  Future<void> _generatePdf() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return _messages.map((message) {
+            return pw.Container(
+              alignment: message.isUser ? pw.Alignment.centerRight : pw.Alignment.centerLeft,
+              child: pw.Container(
+                padding: const pw.EdgeInsets.all(10),
+                margin: const pw.EdgeInsets.symmetric(vertical: 4),
+                decoration: pw.BoxDecoration(
+                  color: message.isUser ? PdfColors.blue100 : PdfColors.grey200,
+                  borderRadius: pw.BorderRadius.circular(10),
+                ),
+                child: pw.Text(message.text),
+              ),
+            );
+          }).toList();
+        },
+      ),
+    );
+
+    try {
+      final output = await getTemporaryDirectory();
+      final file = File("${output.path}/chat_history.pdf");
+      await file.writeAsBytes(await pdf.save());
+      OpenFile.open(file.path);
+    } catch (e) {
+      // Handle error
+      print("Error generating or opening PDF: $e");
+    }
+  }
+
+  void _shareChat() {
+    final String chatHistory = _messages.map((m) => "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}").join('\n\n');
+    Share.share(chatHistory, subject: 'Chat History with Law Genie');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -176,11 +222,11 @@ class _AIChatPageState extends State<AIChatPage> {
         ),
         IconButton(
           icon: const Icon(Icons.download_outlined, color: Colors.white),
-          onPressed: () {},
+          onPressed: _generatePdf,
         ),
         IconButton(
-          icon: const Icon(Icons.add_circle, size: 28, color: Colors.deepPurple),
-          onPressed: () {},
+          icon: const Icon(Icons.share, color: Colors.white),
+          onPressed: _shareChat,
         ),
         const SizedBox(width: 8),
       ],
@@ -326,7 +372,7 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         '21:52', // This should be dynamic
                         style: TextStyle(fontSize: 12, color: Colors.white70),
                       ),

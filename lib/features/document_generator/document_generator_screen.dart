@@ -172,7 +172,7 @@ g    'Texas, USA',
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: const Color(0xFF8A2BE2), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFF8A2BE2), width: 1.5),
         ),
       ),
     );
@@ -181,7 +181,7 @@ g    'Texas, USA',
   Widget _buildDropdown(List<String> items, String? value, String hint,
       Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       hint: Text(hint, style: GoogleFonts.poppins(color: Colors.white54)),
       dropdownColor: const Color(0xFF1A0B2E),
       icon: const Icon(Iconsax.arrow_down_1, color: Colors.white54),
@@ -204,7 +204,7 @@ g    'Texas, USA',
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: const Color(0xFF8A2BE2), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFF8A2BE2), width: 1.5),
         ),
       ),
     );
@@ -229,7 +229,7 @@ g    'Texas, USA',
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: const Color(0xFF8A2BE2), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFF8A2BE2), width: 1.5),
         ),
       ),
       onTap: () async {

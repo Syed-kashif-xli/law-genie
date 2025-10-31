@@ -169,7 +169,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   Widget _buildDropdown(
       List<String> items, String? value, String hint, Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       hint: Text(hint, style: GoogleFonts.poppins(color: Colors.grey[400])),
       items: items.map((String item) {
         return DropdownMenuItem<String>(
@@ -219,7 +219,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         ),
       ),
       onTap: () async {
-        FocusScope.of(context).requestFocus(new FocusNode()); // to prevent keyboard from appearing
+        FocusScope.of(context).requestFocus(FocusNode()); // to prevent keyboard from appearing
         DateTime? pickedDate = await showDatePicker(
           context: context,
           initialDate: DateTime.now(),
