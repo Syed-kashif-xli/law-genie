@@ -23,8 +23,10 @@ class MyApp extends StatelessWidget {
     final TextTheme appTextTheme = GoogleFonts.lexendTextTheme(
       ThemeData.dark().textTheme,
     ).copyWith(
-      displayLarge: const TextStyle(fontWeight: FontWeight.bold, fontSize: 57, color: Colors.white),
-      titleLarge: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.white),
+      displayLarge: const TextStyle(
+          fontWeight: FontWeight.bold, fontSize: 57, color: Colors.white),
+      titleLarge: const TextStyle(
+          fontWeight: FontWeight.bold, fontSize: 22, color: Colors.white),
       bodyLarge: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.9)),
       bodyMedium: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.8)),
     );
@@ -60,19 +62,20 @@ class MyApp extends StatelessWidget {
           side: BorderSide(color: Colors.white.withOpacity(0.2)),
         ),
       ),
-      
+
       // Glowing Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
           backgroundColor: accentColor.withOpacity(0.8),
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           elevation: 0, // Shadow is handled separately for the glow
         ),
       ),
-      
+
       // Glassmorphism TextField Theme
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: const TextStyle(color: Colors.white70),

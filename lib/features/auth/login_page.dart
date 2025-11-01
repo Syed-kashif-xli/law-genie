@@ -1,9 +1,9 @@
-
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:myapp/features/home/main_layout.dart'; 
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:myapp/features/home/main_layout.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -83,12 +83,19 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
                     Text(
                       'Welcome Back',
-                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineLarge
+                          ?.copyWith(
+                              color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Sign in to your Law Genie account',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white70),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(color: Colors.white70),
                     ),
                     const SizedBox(height: 32),
 
@@ -101,14 +108,16 @@ class _LoginPageState extends State<LoginPage> {
                           if (_isEmailLogin)
                             _buildTextField('Email', Iconsax.sms, isEmail: true)
                           else
-                            _buildTextField('Phone', Iconsax.call, isPhoneNumber: true),
+                            _buildPhoneField(),
                           const SizedBox(height: 16),
                           if (_isEmailLogin)
-                            _buildTextField('Password', Iconsax.lock_1, isPassword: true),
+                            _buildTextField('Password', Iconsax.lock_1,
+                                isPassword: true),
                           const SizedBox(height: 16),
                           const Align(
                             alignment: Alignment.centerRight,
-                            child: Text('Forgot password?', style: TextStyle(color: Colors.white70)),
+                            child: Text('Forgot password?',
+                                style: TextStyle(color: Colors.white70)),
                           ),
                         ],
                       ),
@@ -124,7 +133,8 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 32),
 
                     // Social Logins
-                    const Text('Or continue with', style: TextStyle(color: Colors.white70)),
+                    const Text('Or continue with',
+                        style: TextStyle(color: Colors.white70)),
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -140,8 +150,12 @@ class _LoginPageState extends State<LoginPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account? ", style: TextStyle(color: Colors.white70)),
-                        Text('Sign Up', style: TextStyle(color: Colors.blue.shade300, fontWeight: FontWeight.bold)),
+                        const Text("Don't have an account? ",
+                            style: TextStyle(color: Colors.white70)),
+                        Text('Sign Up',
+                            style: TextStyle(
+                                color: Colors.blue.shade300,
+                                fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ],
@@ -180,8 +194,10 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: Row(
         children: [
-          _buildToggleItem('Email', _isEmailLogin, () => setState(() => _isEmailLogin = true)),
-          _buildToggleItem('Phone', !_isEmailLogin, () => setState(() => _isEmailLogin = false)),
+          _buildToggleItem('Email', _isEmailLogin,
+              () => setState(() => _isEmailLogin = true)),
+          _buildToggleItem('Phone', !_isEmailLogin,
+              () => setState(() => _isEmailLogin = false)),
         ],
       ),
     );
@@ -195,7 +211,9 @@ class _LoginPageState extends State<LoginPage> {
           duration: const Duration(milliseconds: 300),
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.blueAccent.withOpacity(0.7) : Colors.transparent,
+            color: isSelected
+                ? Colors.blueAccent.withOpacity(0.7)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(30),
             boxShadow: isSelected
                 ? [
@@ -208,17 +226,20 @@ class _LoginPageState extends State<LoginPage> {
                 : [],
           ),
           child: Center(
-            child: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: Text(title,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, IconData icon, {bool isPassword = false, bool isEmail = false, bool isPhoneNumber = false}) {
+  Widget _buildTextField(String label, IconData icon,
+      {bool isPassword = false, bool isEmail = false}) {
     return TextField(
       obscureText: isPassword,
-      keyboardType: isEmail ? TextInputType.emailAddress : (isPhoneNumber ? TextInputType.phone : TextInputType.text),
+      keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
@@ -242,6 +263,34 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _buildPhoneField() {
+    return IntlPhoneField(
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: 'Phone Number',
+        labelStyle: const TextStyle(color: Colors.white70),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.1),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.blueAccent.withOpacity(0.8)),
+        ),
+      ),
+      initialCountryCode: 'IN',
+      onChanged: (phone) {
+        print(phone.completeNumber);
+      },
+    );
+  }
+
   Widget _buildTermsAndConditions() {
     return GestureDetector(
       onTap: () => setState(() => _agreedToTerms = !_agreedToTerms),
@@ -249,14 +298,21 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: 24, 
+            width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: _agreedToTerms ? Colors.blueAccent : Colors.white.withOpacity(0.1),
+              color: _agreedToTerms
+                  ? Colors.blueAccent
+                  : Colors.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: _agreedToTerms ? Colors.transparent : Colors.white.withOpacity(0.2)),
+              border: Border.all(
+                  color: _agreedToTerms
+                      ? Colors.transparent
+                      : Colors.white.withOpacity(0.2)),
             ),
-            child: _agreedToTerms ? const Icon(Icons.check, color: Colors.white, size: 18) : null,
+            child: _agreedToTerms
+                ? const Icon(Icons.check, color: Colors.white, size: 18)
+                : null,
           ),
           const SizedBox(width: 12),
           const Flexible(
@@ -276,8 +332,10 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const MainLayout(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const MainLayout(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
             },
           ),
@@ -301,7 +359,8 @@ class _LoginPageState extends State<LoginPage> {
         child: const Center(
           child: Text(
             'Continue',
-            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
       ),

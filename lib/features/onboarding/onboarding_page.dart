@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,28 +33,32 @@ class _OnboardingPageState extends State<OnboardingPage> {
         icon: Iconsax.message_question5,
         title: "Law Genie",
         subtitle: "Your AI Legal Partner",
-        description: "Chat with Law Genie – Get instant AI-powered legal advice 24/7",
+        description:
+            "Chat with Law Genie – Get instant AI-powered legal advice 24/7",
       ),
       AnimatedOnboardingScreen(
         key: _keys[1],
         icon: Iconsax.document_text,
         title: "Automated Document Analysis",
         subtitle: "AI-Powered Insights",
-        description: "Upload and analyze legal documents instantly for key insights.",
+        description:
+            "Upload and analyze legal documents instantly for key insights.",
       ),
       AnimatedOnboardingScreen(
         key: _keys[2],
         icon: Iconsax.folder_open,
         title: "Intelligent Case Management",
         subtitle: "Smart Organization",
-        description: "Organize, track, and manage your legal cases with smart assistance.",
+        description:
+            "Organize, track, and manage your legal cases with smart assistance.",
       ),
       AnimatedOnboardingScreen(
         key: _keys[3],
         icon: Iconsax.shield_tick,
         title: "Secure Client Collaboration",
         subtitle: "Encrypted Communication",
-        description: "Communicate and share documents with clients in a secure, encrypted environment.",
+        description:
+            "Communicate and share documents with clients in a secure, encrypted environment.",
       ),
     ];
   }
@@ -141,7 +144,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
                   const Spacer(flex: 1),
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       _onboardingScreens.length,
@@ -161,16 +164,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         Navigator.pushReplacement(
                           context,
                           PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              return FadeTransition(opacity: animation, child: child);
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const LoginPage(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              return FadeTransition(
+                                  opacity: animation, child: child);
                             },
                           ),
                         );
                       }
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 72),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 72),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         color: Colors.blueAccent.withOpacity(0.8),
@@ -184,7 +192,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ],
                       ),
                       child: Text(
-                        _currentPage == _onboardingScreens.length - 1 ? 'Get Started' : 'Next',
+                        _currentPage == _onboardingScreens.length - 1
+                            ? 'Get Started'
+                            : 'Next',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 22,
@@ -203,20 +213,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
-   AnimatedContainer buildDot({int? index}) {
+  AnimatedContainer buildDot({int? index}) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.only(right: 8),
       height: 8,
       width: _currentPage == index ? 24 : 8,
       decoration: BoxDecoration(
-        color: _currentPage == index ? Colors.blueAccent : const Color(0xFFD8D8D8).withOpacity(0.5),
+        color: _currentPage == index
+            ? Colors.blueAccent
+            : const Color(0xFFD8D8D8).withOpacity(0.5),
         borderRadius: BorderRadius.circular(4),
       ),
     );
   }
 }
-
 
 // A reusable animated widget
 class AnimatedContent extends StatelessWidget {
@@ -275,7 +286,8 @@ class AnimatedOnboardingScreen extends StatefulWidget {
   });
 
   @override
-  State<AnimatedOnboardingScreen> createState() => _AnimatedOnboardingScreenState();
+  State<AnimatedOnboardingScreen> createState() =>
+      _AnimatedOnboardingScreenState();
 }
 
 class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>

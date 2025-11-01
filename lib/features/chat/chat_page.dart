@@ -1,8 +1,11 @@
+
 import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:file_picker/file_picker.dart';
@@ -13,6 +16,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+
+import '../documents/document_viewer_page.dart';
+
+const String _apiKey = 'AIzaSyC6NWmWsSowYUpYMOKCJ2EO1fD8-9UXB6s';
 
 class AIChatPage extends StatefulWidget {
   const AIChatPage({super.key});
@@ -28,23 +35,44 @@ class _Message {
   _Message({required this.text, required this.isUser});
 }
 
+class _DocumentMessage {
+  final String title;
+  final String content;
+
+  _DocumentMessage({required this.title, required this.content});
+}
+
 class _AIChatPageState extends State<AIChatPage> {
   final TextEditingController _textController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
   final List<dynamic> _messages = [
     _Message(
-      text: "Hello! I'm Law Genie, your AI legal assistant. How can I help you today?",
+      text:
+          "🧞‍♂️ I’m Law Genie — your Indian AI Legal Assistant.",
       isUser: false,
     ),
   ];
   bool _speechEnabled = false;
   File? _selectedFile;
   bool _isTyping = false;
+  late final GenerativeModel _model;
+  late final ChatSession _chat;
 
   @override
   void initState() {
     super.initState();
     _initSpeech();
+    _initGenerativeModel();
+  }
+
+  Future<void> _initGenerativeModel() async {
+    final geminiPrompt = await rootBundle.loadString('GEMINI.md');
+    _model = GenerativeModel(
+      model: 'gemini-2.5-flash',
+      apiKey: _apiKey,
+      systemInstruction: Content.text(geminiPrompt),
+    );
+    _chat = _model.startChat();
   }
 
   void _initSpeech() async {
@@ -78,7 +106,7 @@ class _AIChatPageState extends State<AIChatPage> {
     }
   }
 
-  void _sendMessage(String text) {
+  void _sendMessage(String text) async {
     if (text.isEmpty && _selectedFile == null) return;
 
     setState(() {
@@ -88,23 +116,50 @@ class _AIChatPageState extends State<AIChatPage> {
       _messages.add(_TypingIndicator());
     });
 
-    // Simulate AI response
-    Future.delayed(const Duration(seconds: 4), () {
+    try {
+      var response = await _chat.sendMessage(Content.text(text));
+      var responseText = response.text;
+
       setState(() {
         _messages.removeWhere((element) => element is _TypingIndicator);
-        _messages.add(_Message(
-          text: "I am processing your request...",
-          isUser: false,
-        ));
+        _handleAIResponse(responseText ?? "");
         _isTyping = false;
       });
-    });
+    } catch (e) {
+      setState(() {
+        _messages.removeWhere((element) => element is _TypingIndicator);
+        _messages.add(_Message(text: 'Error: ${e.toString()}', isUser: false));
+        _isTyping = false;
+      });
+    }
+  }
+
+  void _handleAIResponse(String responseText) {
+    final docStartIndex = responseText.indexOf('[START_DOCUMENT:');
+    final docEndIndex = responseText.indexOf('[END_DOCUMENT]');
+
+    if (docStartIndex != -1 && docEndIndex != -1) {
+      final titleStartIndex = docStartIndex + '[START_DOCUMENT:'.length;
+      final titleEndIndex = responseText.indexOf(']', titleStartIndex);
+      final title = responseText.substring(titleStartIndex, titleEndIndex);
+      final content = responseText.substring(titleEndIndex + 1, docEndIndex).trim();
+      _messages.add(_DocumentMessage(title: title, content: content));
+    } else {
+      _messages.add(_Message(text: responseText, isUser: false));
+    }
   }
 
   Future<void> _generatePdf() async {
     final pdf = pw.Document();
 
-    final messagesToExport = _messages.where((m) => m is _Message).cast<_Message>().toList();
+    final messagesToExport = _messages.map((m) {
+      if (m is _Message) {
+        return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
+      } else if (m is _DocumentMessage) {
+        return "Law Genie: [Generated Document: ${m.title}]";
+      }
+      return null;
+    }).where((item) => item != null).toList();
 
     pdf.addPage(
       pw.MultiPage(
@@ -112,16 +167,9 @@ class _AIChatPageState extends State<AIChatPage> {
         build: (pw.Context context) {
           return messagesToExport.map((message) {
             return pw.Container(
-              alignment: message.isUser ? pw.Alignment.centerRight : pw.Alignment.centerLeft,
-              child: pw.Container(
-                padding: const pw.EdgeInsets.all(10),
-                margin: const pw.EdgeInsets.symmetric(vertical: 4),
-                decoration: pw.BoxDecoration(
-                  color: message.isUser ? PdfColors.blue100 : PdfColors.grey200,
-                  borderRadius: pw.BorderRadius.circular(10),
-                ),
-                child: pw.Text(message.text),
-              ),
+              padding: const pw.EdgeInsets.all(10),
+              margin: const pw.EdgeInsets.symmetric(vertical: 4),
+              child: pw.Text(message!),
             );
           }).toList();
         },
@@ -140,11 +188,14 @@ class _AIChatPageState extends State<AIChatPage> {
   }
 
   void _shareChat() {
-    final String chatHistory = _messages
-        .where((m) => m is _Message)
-        .cast<_Message>()
-        .map((m) => "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}")
-        .join('\n\n');
+    final String chatHistory = _messages.map((m) {
+      if (m is _Message) {
+        return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
+      } else if (m is _DocumentMessage) {
+        return "Law Genie: [Generated Document: ${m.title}]";
+      }
+      return null;
+    }).where((item) => item != null).join('\n\n');
     Share.share(chatHistory, subject: 'Chat History with Law Genie');
   }
 
@@ -165,6 +216,8 @@ class _AIChatPageState extends State<AIChatPage> {
                   return message.isUser
                       ? _UserMessageBubble(message: message)
                       : _AIMessageBubble(message: message);
+                } else if (message is _DocumentMessage) {
+                  return _DocumentMessageBubble(message: message);
                 } else if (message is _TypingIndicator) {
                   return const _TypingIndicatorBubble();
                 }
@@ -265,23 +318,27 @@ class _AIChatPageState extends State<AIChatPage> {
             Expanded(
               child: TextField(
                 controller: _textController,
-                style: const TextStyle(color: Colors.white), // Makes the input text visible
+                style: const TextStyle(
+                    color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Ask your legal question...',
                   hintStyle: GoogleFonts.poppins(color: Colors.white70),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                    borderSide:
+                        BorderSide(color: Colors.white.withOpacity(0.2)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                    borderSide:
+                        BorderSide(color: Colors.white.withOpacity(0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
                     borderSide: const BorderSide(color: Colors.deepPurple),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   suffixIcon: IconButton(
                     icon: Icon(
                         _speechToText.isListening ? Icons.mic : Icons.mic_off,
@@ -320,7 +377,7 @@ class _TypingIndicator {}
 class _TypingIndicatorBubble extends StatelessWidget {
   const _TypingIndicatorBubble();
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -364,16 +421,6 @@ class _TypingIndicatorBubble extends StatelessWidget {
   }
 }
 
-
-
-class _AIMessageBubble extends StatefulWidget {
-  final _Message message;
-  const _AIMessageBubble({required this.message});
-
-  @override
-  State<_AIMessageBubble> createState() => _AIMessageBubbleState();
-}
-
 class _AIMessageBubbleState extends State<_AIMessageBubble> {
   final FlutterTts flutterTts = FlutterTts();
   bool isPlaying = false;
@@ -406,7 +453,7 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16.0),
-               border: Border.all(color: Colors.white.withOpacity(0.2)),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -480,6 +527,89 @@ class _UserMessageBubble extends StatelessWidget {
             child: Text(
               message.text,
               style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AIMessageBubble extends StatefulWidget {
+  final _Message message;
+  const _AIMessageBubble({required this.message});
+
+  @override
+  State<_AIMessageBubble> createState() => _AIMessageBubbleState();
+}
+
+class _DocumentMessageBubble extends StatelessWidget {
+  final _DocumentMessage message;
+  const _DocumentMessageBubble({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(right: 12, top: 4),
+          padding: const EdgeInsets.all(8),
+          decoration: const BoxDecoration(
+            color: Colors.deepPurple,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Iconsax.document, color: Colors.white, size: 24),
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message.title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Here is the document you requested. You can view, edit, or download it.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DocumentViewerPage(document: message.content),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Iconsax.eye, size: 18),
+                  label: const Text('View Document'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.deepPurple,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

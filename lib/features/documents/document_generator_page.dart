@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:iconsax/iconsax.dart';
+
+const String _apiKey = 'AIzaSyC6NWmWsSowYUpYMOKCJ2EO1fD8-9UXB6s';
 
 class DocumentGeneratorPage extends StatefulWidget {
   const DocumentGeneratorPage({super.key});
@@ -17,20 +21,105 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
 
   String? _selectedDocumentType;
   String? _selectedJurisdiction;
+  String? _generatedDocument;
+  bool _isGenerating = false;
+
+  late final GenerativeModel _model;
 
   final List<String> _documentTypes = [
-    'Non-Disclosure Agreement',
+    'Affidavit',
+    'Agreement for Sale',
+    'Bail Application',
+    'Cheque Bounce Notice',
+    'Consumer Complaint',
+    'Divorce Petition',
+    'Durable Power of Attorney',
+    'Franchise Agreement',
+    'Gift Deed',
+    'Indemnity Bond',
+    'Joint Venture Agreement',
     'Lease Agreement',
-    'Employment Contract',
-    'Service Agreement'
+    'Legal Notice',
+    'Living Will',
+    'Mortgage Deed',
+    'Non-Disclosure Agreement (NDA)',
+    'Partnership Deed',
+    'Paternity Acknowledgment',
+    'Pleading Paper',
+    'Power of Attorney',
+    'Prenuptial Agreement',
+    'Promissory Note',
+    'Property Sale Agreement',
+    'Relinquishment Deed',
+    'Rental Agreement',
+    'Sale Deed',
+    'Service Level Agreement (SLA)',
+    'Settlement Agreement',
+    'Special Power of Attorney',
+    'Trust Deed',
+    'Will',
+    'Adoption Deed',
+    'Arbitration Agreement',
+    'Assignment Deed',
+    'Co-founder\'s Agreement',
+    'Consultancy Agreement',
+    'Contract for Services',
+    'Copyright License Agreement',
+    'Debt Settlement Agreement',
+    'Employee Offer Letter',
+    'End-User License Agreement (EULA)',
+    'Escrow Agreement',
+    'Founders\'s Agreement',
+    'Freelancer Agreement',
+    'Hypothecation Deed',
+    'Intellectual Property (IP) Assignment Agreement',
+    'Internship Agreement',
+    'Loan Agreement',
+    'Memorandum of Understanding (MoU)',
+    'Music License Agreement',
+    'No Objection Certificate (NOC)',
+    'Partition Deed',
+    'Postnuptial Agreement',
+    'Release Agreement',
+    'Rent Receipt',
+    'Resignation Letter',
+    'Share Purchase Agreement',
+    'Shareholders\'s Agreement',
+    'Software Development Agreement',
+    'Software License Agreement',
+    'Sponsorship Agreement',
+    'Surrender of Tenancy',
+    'Term Sheet',
+    'Terms of Service',
+    'Trademark License Agreement',
+    'Vehicle Lease Agreement',
+    'Vendor Agreement',
+    'Website Privacy Policy',
+    'Website Terms and Conditions',
   ];
 
   final List<String> _jurisdictions = [
-    'California, USA',
-    'New York, USA',
-    'Texas, USA',
-    'Federal',
+    'Delhi',
+    'Maharashtra',
+    'Karnataka',
+    'Tamil Nadu',
+    'Uttar Pradesh',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _initGenerativeModel();
+  }
+
+  Future<void> _initGenerativeModel() async {
+    final geminiPrompt = await rootBundle.loadString('GEMINI.md');
+    _model = GenerativeModel(
+      model: 'gemini-2.5-flash',
+      apiKey: _apiKey,
+      systemInstruction: Content.text(geminiPrompt),
+    );
+  }
 
   @override
   void dispose() {
@@ -39,6 +128,70 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
     _additionalDetailsController.dispose();
     _effectiveDateController.dispose();
     super.dispose();
+  }
+
+  Future<void> _generateDocument() async {
+    if (_selectedDocumentType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a document type.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isGenerating = true;
+      _generatedDocument = null;
+    });
+
+    final prompt = """
+    Generate a '$_selectedDocumentType' with the following details:
+    - Party A: ${_partyANameController.text}
+    - Party B: ${_partyBNameController.text}
+    - Effective Date: ${_effectiveDateController.text}
+    - Jurisdiction: $_selectedJurisdiction
+    - Additional Details: ${_additionalDetailsController.text}
+
+    Please format the output as a legal document.
+    Remember to wrap the document in [START_DOCUMENT:$_selectedDocumentType] and [END_DOCUMENT] tags.
+    """
+;
+    try {
+      final response = await _model.generateContent([Content.text(prompt)]);
+      final responseText = response.text;
+
+      String documentContent = "Could not generate document.";
+
+      if (responseText != null) {
+          final docStartIndex = responseText.indexOf('[START_DOCUMENT:');
+          final docEndIndex = responseText.indexOf('[END_DOCUMENT]');
+
+          if (docStartIndex != -1 && docEndIndex != -1) {
+              final titleStartIndex = docStartIndex + '[START_DOCUMENT:'.length;
+              final titleEndIndex = responseText.indexOf(']', titleStartIndex);
+              if (titleEndIndex != -1 && titleEndIndex < docEndIndex) {
+                  documentContent = responseText.substring(titleEndIndex + 1, docEndIndex).trim();
+              } else {
+                  documentContent = responseText;
+              }
+          } else {
+            documentContent = responseText;
+          }
+      } else {
+          documentContent = "Could not generate document.";
+      }
+
+      setState(() {
+        _generatedDocument = documentContent;
+      });
+    } catch (e) {
+      setState(() {
+        _generatedDocument = "Error generating document: $e";
+      });
+    } finally {
+      setState(() {
+        _isGenerating = false;
+      });
+    }
   }
 
   @override
@@ -59,66 +212,63 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
               fontWeight: FontWeight.w600,
               fontSize: 20),
         ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(20.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 72.0, bottom: 8.0),
-              child: Text(
-                'Create professional legal documents with AI assistance',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
-        child: Container(
-          padding: const EdgeInsets.all(24.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                spreadRadius: 2,
-                blurRadius: 10,
-                offset: const Offset(0, 5),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 2,
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSectionTitle('Document Type'),
-              _buildDropdown(_documentTypes, _selectedDocumentType, 'Select document type',
-                  (val) => setState(() => _selectedDocumentType = val)),
-              const SizedBox(height: 20),
-              _buildSectionTitle('Party A Name'),
-              _buildTextField(_partyANameController, 'Enter name'),
-              const SizedBox(height: 20),
-              _buildSectionTitle('Party B Name'),
-              _buildTextField(_partyBNameController, 'Enter name'),
-              const SizedBox(height: 20),
-              _buildSectionTitle('Additional Details'),
-              _buildTextField(_additionalDetailsController, 'Provide specific terms, conditions, or requirements...',
-                  maxLines: 4),
-              const SizedBox(height: 20),
-              _buildSectionTitle('Effective Date'),
-              _buildDateField(),
-              const SizedBox(height: 20),
-              _buildSectionTitle('Jurisdiction'),
-              _buildDropdown(_jurisdictions, _selectedJurisdiction, 'Select jurisdiction',
-                  (val) => setState(() => _selectedJurisdiction = val)),
-              const SizedBox(height: 32),
-              _buildGenerateButton(),
-            ],
-          ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle('Document Type'),
+                  _buildDropdown(
+                      _documentTypes,
+                      _selectedDocumentType,
+                      'Select document type',
+                      (val) => setState(() => _selectedDocumentType = val)),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('Party A Name'),
+                  _buildTextField(_partyANameController, 'Enter name'),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('Party B Name'),
+                  _buildTextField(_partyBNameController, 'Enter name'),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('Additional Details'),
+                  _buildTextField(_additionalDetailsController,
+                      'Provide specific terms, conditions, or requirements...',
+                      maxLines: 4),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('Effective Date'),
+                  _buildDateField(),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('Jurisdiction'),
+                  _buildDropdown(
+                      _jurisdictions,
+                      _selectedJurisdiction,
+                      'Select jurisdiction',
+                      (val) => setState(() => _selectedJurisdiction = val)),
+                  const SizedBox(height: 32),
+                  _buildGenerateButton(),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildGeneratedDocumentDisplay(),
+          ],
         ),
       ),
     );
@@ -149,7 +299,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -166,22 +317,26 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
     );
   }
 
-  Widget _buildDropdown(
-      List<String> items, String? value, String hint, Function(String?) onChanged) {
+  Widget _buildDropdown(List<String> items, String? value, String hint,
+      Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       initialValue: value,
-      hint: Text(hint, style: GoogleFonts.poppins(color: Colors.grey[400])),
+      hint: Text(hint, style: GoogleFonts.poppins(color: Colors.grey[400]), overflow: TextOverflow.ellipsis),
       items: items.map((String item) {
         return DropdownMenuItem<String>(
           value: item,
-          child: Text(item, style: GoogleFonts.poppins(fontSize: 14)),
+          child: Text(item,
+              style: GoogleFonts.poppins(fontSize: 14),
+              overflow: TextOverflow.ellipsis),
         );
       }).toList(),
       onChanged: onChanged,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -191,6 +346,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
       ),
+      dropdownColor: Colors.white,
     );
   }
 
@@ -204,7 +360,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         filled: true,
         fillColor: Colors.white,
         suffixIcon: Icon(Iconsax.calendar_1, color: Colors.grey[600]),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -219,7 +376,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         ),
       ),
       onTap: () async {
-        FocusScope.of(context).requestFocus(FocusNode()); // to prevent keyboard from appearing
+        FocusScope.of(context)
+            .requestFocus(FocusNode()); // to prevent keyboard from appearing
         DateTime? pickedDate = await showDatePicker(
           context: context,
           initialDate: DateTime.now(),
@@ -227,7 +385,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
           lastDate: DateTime(2101),
         );
         if (pickedDate != null) {
-          String formattedDate = "${pickedDate.day.toString().padLeft(2,'0')}-${pickedDate.month.toString().padLeft(2,'0')}-${pickedDate.year}";
+          String formattedDate =
+              "${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}";
           setState(() {
             _effectiveDateController.text = formattedDate;
           });
@@ -255,21 +414,80 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         ],
       ),
       child: ElevatedButton.icon(
-        onPressed: () {},
-        icon: const Icon(Iconsax.document_text_1, color: Colors.white),
+        onPressed: _isGenerating ? null : _generateDocument,
+        icon: _isGenerating
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+              )
+            : const Icon(Iconsax.document_text_1, color: Colors.white),
         label: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
-          'Generate Document',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
-        )),
+              _isGenerating ? 'Generating...' : 'Generate Document',
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600, fontSize: 16),
+            )),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
+      ),
+    );
+  }
+
+  Widget _buildGeneratedDocumentDisplay() {
+    if (_isGenerating) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_generatedDocument == null || _generatedDocument!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(color: Colors.grey.shade300),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Generated Document',
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Divider(),
+          const SizedBox(height: 8),
+          SelectableText(
+            _generatedDocument!,
+            style: GoogleFonts.poppins(color: Colors.black87, height: 1.5),
+          ),
+        ],
       ),
     );
   }

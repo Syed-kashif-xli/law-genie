@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
@@ -31,7 +30,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
   final List<String> _jurisdictions = [
     'California, USA',
     'New York, USA',
-g    'Texas, USA',
+    'Texas, USA',
     'Federal',
   ];
 
