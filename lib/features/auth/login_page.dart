@@ -4,6 +4,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:myapp/features/home/main_layout.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,6 +18,37 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _isEmailLogin = true;
   bool _agreedToTerms = false;
+
+  Future<void> _signInWithGoogle() async {
+    try {
+      // It's best practice to initialize Firebase in your main.dart file
+      // await Firebase.initializeApp();
+      
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+        if (userCredential.user != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainLayout()),
+          );
+        }
+      }
+    } catch (e) {
+      print("Google Sign-In Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Google Sign-In Failed. Check debug console for errors."))
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -329,17 +363,19 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildGlowingButton() {
     return GestureDetector(
       onTap: () {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const MainLayout(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        );
+        // FIX: Removed direct navigation. 
+        // You should implement your email/phone authentication logic here.
+        if (_isEmailLogin) {
+          // TODO: Implement Email & Password sign-in
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Email/Password login not implemented yet."))
+          );
+        } else {
+          // TODO: Implement Phone number sign-in
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Phone login not implemented yet."))
+          );
+        }
       },
       child: Container(
         width: double.infinity,
@@ -368,18 +404,25 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildSocialButton(IconData icon) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
+    return GestureDetector(
+      onTap: () {
+        if (icon == FontAwesomeIcons.google) {
+          _signInWithGoogle();
+        }
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
+            ),
+            child: FaIcon(icon, color: Colors.white, size: 24),
           ),
-          child: FaIcon(icon, color: Colors.white, size: 24),
         ),
       ),
     );
