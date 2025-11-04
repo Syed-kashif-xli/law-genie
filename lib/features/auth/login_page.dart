@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   String _fullPhoneNumber = '';
 
   bool _isEmailLogin = true;
-  bool _agreedToTerms = false;
+  bool _agreedToTerms = true; // Set to true by default
   bool _isLoading = false;
   bool _codeSent = false;
   String? _verificationId;
@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   // Email & Password Sign-in
   Future<void> _signInWithEmailAndPassword() async {
     if (!_agreedToTerms) {
-      _showTermsDialog();
+      // Should not happen with _agreedToTerms = true, but keep for safety
       return;
     }
 
@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
   // Phone Number Verification
   Future<void> _verifyPhoneNumber() async {
     if (!_agreedToTerms) {
-      _showTermsDialog();
+      // Should not happen with _agreedToTerms = true, but keep for safety
       return;
     }
     if (_fullPhoneNumber.isEmpty) {
@@ -143,10 +143,6 @@ class _LoginPageState extends State<LoginPage> {
   
   // Google Sign-in
   Future<void> _signInWithGoogle() async {
-    if (!_agreedToTerms) {
-      _showTermsDialog();
-      return;
-    }
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -175,90 +171,6 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const MainLayout()),
-    );
-  }
-
-  void _showTermsDialog() {
-    bool checkboxValue = false;
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              backgroundColor: const Color(0xFF1A0B2E),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              title: Text('Terms and Conditions', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold)),
-              content: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '''Last updated: July 26, 2024
-
-Please read these terms and conditions carefully before using Our Service.
-
-By continuing, you agree to our Terms and Conditions and Privacy Policy.''',
-                        style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
-                      ),
-                      const SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () {
-                          setDialogState(() {
-                            checkboxValue = !checkboxValue;
-                          });
-                        },
-                        child: Row(
-                          children: [
-                            Checkbox(
-                              value: checkboxValue,
-                              onChanged: (value) {
-                                setDialogState(() {
-                                  checkboxValue = value ?? false;
-                                });
-                              },
-                              activeColor: Colors.blueAccent,
-                              checkColor: Colors.white,
-                              side: const BorderSide(color: Colors.white70),
-                            ),
-                            Expanded(
-                              child: Text('I agree to the Terms and Conditions', style: GoogleFonts.poppins(color: Colors.white, fontSize: 14)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('Cancel', style: GoogleFonts.poppins(color: Colors.white70)),
-                ),
-                ElevatedButton(
-                  onPressed: checkboxValue
-                      ? () {
-                          setState(() {
-                            _agreedToTerms = true;
-                          });
-                          Navigator.pop(context);
-                          _navigateToHome();
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  child: Text('Continue', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 
@@ -341,7 +253,7 @@ By continuing, you agree to our Terms and Conditions and Privacy Policy.''',
                       ),
                     ),
                     const SizedBox(height: 24),
-                    _buildTermsAndConditions(),
+                    // Removed _buildTermsAndConditions(),
                     const SizedBox(height: 24),
                     _buildGlowingButton(),
                     const SizedBox(height: 32),
@@ -494,34 +406,6 @@ By continuing, you agree to our Terms and Conditions and Privacy Policy.''',
       onChanged: (phone) {
           _fullPhoneNumber = phone.completeNumber;
       },
-    );
-  }
-
-  Widget _buildTermsAndConditions() {
-    return GestureDetector(
-      onTap: () => setState(() => _agreedToTerms = !_agreedToTerms),
-      child: Row(
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: _agreedToTerms ? Colors.blueAccent : Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: _agreedToTerms ? Colors.transparent : Colors.white.withOpacity(0.2)),
-            ),
-            child: _agreedToTerms ? const Icon(Icons.check, color: Colors.white, size: 18) : null,
-          ),
-          const SizedBox(width: 12),
-          const Flexible(
-            child: Text(
-              'I accept the Terms and Conditions and Privacy Policy.',
-              style: TextStyle(color: Colors.white70),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
