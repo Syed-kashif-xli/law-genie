@@ -1,3 +1,4 @@
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,6 +7,8 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:myapp/features/home/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:myapp/features/auth/terms_and_conditions_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -44,10 +47,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (userCredential.user != null && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainLayout()),
-        );
+        _checkTermsAndNavigate();
       }
     } on FirebaseAuthException catch (e) {
       String message = e.code == 'user-not-found'
@@ -85,10 +85,7 @@ class _LoginPageState extends State<LoginPage> {
         await FirebaseAuth.instance.signInWithCredential(credential);
         if (mounted) {
           setState(() => _isLoading = false);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MainLayout()),
-          );
+          _checkTermsAndNavigate();
         }
       },
       verificationFailed: (FirebaseAuthException e) {
@@ -136,10 +133,7 @@ class _LoginPageState extends State<LoginPage> {
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (userCredential.user != null && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainLayout()),
-        );
+        _checkTermsAndNavigate();
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -167,16 +161,30 @@ class _LoginPageState extends State<LoginPage> {
         UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
         if (userCredential.user != null && mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MainLayout()),
-          );
+          _checkTermsAndNavigate();
         }
       }
     } catch (e) {
       print("Google Sign-In Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Google Sign-In Failed. Please try again."))
+      );
+    }
+  }
+
+  Future<void> _checkTermsAndNavigate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool termsAccepted = prefs.getBool('accepted_terms') ?? false;
+
+    if (termsAccepted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainLayout()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const TermsAndConditionsPage()),
       );
     }
   }
