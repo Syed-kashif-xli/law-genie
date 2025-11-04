@@ -1,13 +1,12 @@
-
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:myapp/features/home/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:myapp/features/auth/terms_and_conditions_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -32,9 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   // Email & Password Sign-in
   Future<void> _signInWithEmailAndPassword() async {
     if (!_agreedToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please accept the terms and conditions.")),
-      );
+      _showTermsDialog();
       return;
     }
 
@@ -47,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (userCredential.user != null && mounted) {
-        _checkTermsAndNavigate();
+        _navigateToHome();
       }
     } on FirebaseAuthException catch (e) {
       String message = e.code == 'user-not-found'
@@ -66,9 +63,7 @@ class _LoginPageState extends State<LoginPage> {
   // Phone Number Verification
   Future<void> _verifyPhoneNumber() async {
     if (!_agreedToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please accept the terms and conditions.")),
-      );
+      _showTermsDialog();
       return;
     }
     if (_fullPhoneNumber.isEmpty) {
@@ -85,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
         await FirebaseAuth.instance.signInWithCredential(credential);
         if (mounted) {
           setState(() => _isLoading = false);
-          _checkTermsAndNavigate();
+          _navigateToHome();
         }
       },
       verificationFailed: (FirebaseAuthException e) {
@@ -133,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (userCredential.user != null && mounted) {
-        _checkTermsAndNavigate();
+        _navigateToHome();
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -148,6 +143,10 @@ class _LoginPageState extends State<LoginPage> {
   
   // Google Sign-in
   Future<void> _signInWithGoogle() async {
+    if (!_agreedToTerms) {
+      _showTermsDialog();
+      return;
+    }
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -161,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
         UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
         if (userCredential.user != null && mounted) {
-          _checkTermsAndNavigate();
+          _navigateToHome();
         }
       }
     } catch (e) {
@@ -172,21 +171,95 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _checkTermsAndNavigate() async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool termsAccepted = prefs.getBool('accepted_terms') ?? false;
+  void _navigateToHome() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MainLayout()),
+    );
+  }
 
-    if (termsAccepted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainLayout()),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const TermsAndConditionsPage()),
-      );
-    }
+  void _showTermsDialog() {
+    bool checkboxValue = false;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF1A0B2E),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              title: Text('Terms and Conditions', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold)),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '''Last updated: July 26, 2024
+
+Please read these terms and conditions carefully before using Our Service.
+
+By continuing, you agree to our Terms and Conditions and Privacy Policy.''',
+                        style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () {
+                          setDialogState(() {
+                            checkboxValue = !checkboxValue;
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Checkbox(
+                              value: checkboxValue,
+                              onChanged: (value) {
+                                setDialogState(() {
+                                  checkboxValue = value ?? false;
+                                });
+                              },
+                              activeColor: Colors.blueAccent,
+                              checkColor: Colors.white,
+                              side: const BorderSide(color: Colors.white70),
+                            ),
+                            Expanded(
+                              child: Text('I agree to the Terms and Conditions', style: GoogleFonts.poppins(color: Colors.white, fontSize: 14)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Cancel', style: GoogleFonts.poppins(color: Colors.white70)),
+                ),
+                ElevatedButton(
+                  onPressed: checkboxValue
+                      ? () {
+                          setState(() {
+                            _agreedToTerms = true;
+                          });
+                          Navigator.pop(context);
+                          _navigateToHome();
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: Text('Continue', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
 
