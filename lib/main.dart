@@ -7,7 +7,7 @@ import 'package:myapp/features/documents/document_generator_page.dart';
 import 'package:myapp/features/risk_check/risk_check_page.dart';
 import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/features/home/home_page.dart';
-// import 'package:myapp/features/onboarding/onboarding_page.dart'; // Temporarily disabled for login testing
+import 'package:myapp/features/onboarding/onboarding_page.dart'; // Re-enabled for onboarding flow
 
 // Asynchronous main function to allow for Firebase initialization
 Future<void> main() async {
@@ -101,8 +101,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Law Genie',
       theme: futuristicTheme,
-      // Start on the LoginPage to test authentication
-      home: const LoginPage(), 
+      // Start on the OnboardingPage
+      home: const OnboardingPage(), 
       debugShowCheckedModeBanner: false,
       routes: {
         '/home': (context) => const HomePage(),
