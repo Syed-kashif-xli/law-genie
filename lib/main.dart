@@ -1,13 +1,22 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/features/auth/login_page.dart'; // Changed initial route
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/documents/document_generator_page.dart';
 import 'package:myapp/features/risk_check/risk_check_page.dart';
 import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/features/home/home_page.dart';
-import 'package:myapp/features/onboarding/onboarding_page.dart';
+// import 'package:myapp/features/onboarding/onboarding_page.dart'; // Temporarily disabled for login testing
 
-void main() {
+// Asynchronous main function to allow for Firebase initialization
+Future<void> main() async {
+  // Ensure that widget binding is initialized before Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase
+  await Firebase.initializeApp();
+  
   runApp(const MyApp());
 }
 
@@ -44,16 +53,12 @@ class MyApp extends StatelessWidget {
         background: backgroundColor,
       ),
       textTheme: appTextTheme,
-
-      // Component Themes
       appBarTheme: AppBarTheme(
         backgroundColor: backgroundColor.withOpacity(0.8),
         elevation: 0,
         titleTextStyle: appTextTheme.titleLarge?.copyWith(fontSize: 24),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-
-      // Glassmorphism Card Theme
       cardTheme: CardThemeData(
         elevation: 0,
         color: Colors.white.withOpacity(0.1),
@@ -62,8 +67,6 @@ class MyApp extends StatelessWidget {
           side: BorderSide(color: Colors.white.withOpacity(0.2)),
         ),
       ),
-
-      // Glowing Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
@@ -72,11 +75,9 @@ class MyApp extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          elevation: 0, // Shadow is handled separately for the glow
+          elevation: 0,
         ),
       ),
-
-      // Glassmorphism TextField Theme
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: const TextStyle(color: Colors.white70),
         prefixIconColor: Colors.white70,
@@ -100,7 +101,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Law Genie',
       theme: futuristicTheme,
-      home: const OnboardingPage(),
+      // Start on the LoginPage to test authentication
+      home: const LoginPage(), 
       debugShowCheckedModeBanner: false,
       routes: {
         '/home': (context) => const HomePage(),
