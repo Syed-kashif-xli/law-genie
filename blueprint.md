@@ -2,29 +2,46 @@
 
 ## Overview
 
-Law Genie is an AI-powered legal assistant designed to make legal services more accessible and affordable. It provides users with tools to get instant legal advice, generate legal documents, assess risks, and track cases.
+Law Genie is a Flutter-based mobile application designed to be an AI-powered legal assistant. It aims to provide users with tools for legal research, document analysis, case management, and secure client communication. The app is built with a futuristic and visually appealing dark theme and integrates with Firebase for backend services.
 
-## Design & Style
+## Current Features
 
-- **Theme:** A modern and sophisticated "liquid glass" (Glassmorphism) aesthetic.
-- **Color Palette:** A vibrant palette built on deep purples and complemented by a range of dynamic, translucent colors for UI elements. This creates a fluid and visually engaging experience.
-- **Typography:** Google Fonts (Oswald for headings, Roboto and Open Sans for body text) are used for a clean and readable experience.
-- **Iconography:** `iconsax` and `font_awesome_flutter` packages are used for modern and clean icons.
-- **Layout:** UI components like cards and buttons will have a frosted glass look with blurred backgrounds, gradients, and soft borders to create a sense of depth and fluidity.
+*   **Onboarding:** A multi-page onboarding flow introduces users to the app's key features.
+*   **Authentication:** Users can log in to the application. The project is set up with Firebase Auth.
+*   **Home Page:** A central dashboard that provides an overview of AI queries, documents, and tracked cases. It also includes quick actions to navigate to different features.
+*   **AI Chat:** A chat interface to interact with an AI for legal advice.
+*   **Document Generation:** A feature to create legal documents.
+*   **Risk Check:** A tool to assess legal risks.
+*   **Case Timeline:** A feature to track and manage legal cases with a timeline view.
+*   **Notifications:** The app is configured to send local notifications.
 
-## Implemented Features
+## Style and Design
 
-### 1. Onboarding Experience
-- A multi-step onboarding process with a "liquid glass" UI.
+*   **Theme:** The app uses a custom "futuristic" dark theme.
+    *   **Primary Color:** `0xFF6B3E9A` (a deep purple)
+    *   **Accent Color:** `Colors.blueAccent`
+    *   **Background Color:** `0xFF1A0B2E` (a very dark purple)
+*   **Typography:** The `Lexend` font from Google Fonts is used for the text theme.
+*   **UI Components:** The UI is built with standard Material Design components, styled to match the futuristic theme. This includes custom styles for `AppBar`, `Card`, `ElevatedButton`, and `InputDecoration`.
 
-### 2. User Authentication
-- A sleek, modern login page that appears after onboarding.
+## Project Structure
 
-### 3. Dashboard Home Page
-- A dashboard-style home page with a `GridView` of feature cards.
-- Reusable `FeatureCard` widget.
+The project is organized into the following main directories:
 
-### 4. Fully Functional Navigation
-- Implemented a complete navigation system using named routes.
-- The app's quick actions and drawer menu are now fully functional.
-- Added three new pages: `GenerateDocPage`, `RiskCheckPage`, and `CaseTimelinePage`.
+*   `lib/features`: Contains the UI and business logic for each feature of the application, such as `auth`, `chat`, `home`, etc.
+*   `lib/services`: Includes services for interacting with external systems, such as `FirestoreService` and `NotificationService`.
+*   `lib/core`: Shared constants and utilities.
+
+## Planned Improvements
+
+### Home Page Refactoring
+
+To improve the performance, maintainability, and scalability of the home page (`lib/features/home/home_page.dart`), the following changes will be implemented:
+
+1.  **Componentize the UI:** The different sections of the home page (Stats, Quick Actions, Upcoming Events, AI Usage, and Legal News) will be broken down into smaller, reusable `StatelessWidget` classes. This will make the code more organized and allow Flutter to optimize rendering by rebuilding only the widgets that have changed.
+
+2.  **Introduce Data Models:** `Case` and `Timeline` data models will be created to represent the application's data structure. This will replace the current hardcoded data, making it easier to manage and preparing the app for integration with a backend service like Firestore.
+
+3.  **Performance Optimization:** `const` constructors will be added to all eligible widgets to prevent unnecessary rebuilds and improve the overall performance of the home page.
+
+4.  **Create a New `feature_card.dart` Widget:** A new `FeatureCard` widget will be created to encapsulate the design and layout of the quick action cards, promoting reusability and simplifying the `home_page.dart` file.

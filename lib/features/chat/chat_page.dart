@@ -52,9 +52,7 @@ class _AIChatPageState extends State<AIChatPage> {
       isUser: false,
     ),
   ];
-  bool _speechEnabled = false;
   File? _selectedFile;
-  bool _isTyping = false;
   late final GenerativeModel _model;
   late final ChatSession _chat;
 
@@ -76,7 +74,7 @@ class _AIChatPageState extends State<AIChatPage> {
   }
 
   void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
+    await _speechToText.initialize();
     setState(() {});
   }
 
@@ -112,7 +110,6 @@ class _AIChatPageState extends State<AIChatPage> {
     setState(() {
       _messages.add(_Message(text: text, isUser: true));
       _textController.clear();
-      _isTyping = true;
       _messages.add(_TypingIndicator());
     });
 
@@ -123,13 +120,11 @@ class _AIChatPageState extends State<AIChatPage> {
       setState(() {
         _messages.removeWhere((element) => element is _TypingIndicator);
         _handleAIResponse(responseText ?? "");
-        _isTyping = false;
       });
     } catch (e) {
       setState(() {
         _messages.removeWhere((element) => element is _TypingIndicator);
         _messages.add(_Message(text: 'Error: ${e.toString()}', isUser: false));
-        _isTyping = false;
       });
     }
   }
@@ -183,6 +178,7 @@ class _AIChatPageState extends State<AIChatPage> {
       OpenFile.open(file.path);
     } catch (e) {
       // Handle error
+      // ignore: avoid_print
       print("Error generating or opening PDF: $e");
     }
   }
@@ -554,7 +550,7 @@ class _DocumentMessageBubble extends StatelessWidget {
       children: [
         Container(
           margin: const EdgeInsets.only(right: 12, top: 4),
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(.0),
           decoration: const BoxDecoration(
             color: Colors.deepPurple,
             shape: BoxShape.circle,

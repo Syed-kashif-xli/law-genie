@@ -1,13 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:myapp/features/home/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,10 +21,12 @@ class _LoginPageState extends State<LoginPage> {
   String _fullPhoneNumber = '';
 
   bool _isEmailLogin = true;
-  bool _agreedToTerms = true; // Set to true by default
+  final bool _agreedToTerms = true; // Set to true by default
   bool _isLoading = false;
   bool _codeSent = false;
   String? _verificationId;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // Email & Password Sign-in
   Future<void> _signInWithEmailAndPassword() async {
@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
         _navigateToHome();
       }
     } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
       String message = e.code == 'user-not-found'
           ? 'No user found for that email.'
           : e.code == 'wrong-password'
@@ -67,6 +68,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     if (_fullPhoneNumber.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please enter a valid phone number.")),
       );
@@ -113,6 +115,7 @@ class _LoginPageState extends State<LoginPage> {
   // OTP Sign-in
   Future<void> _signInWithOTP() async {
     if (_verificationId == null || _otpController.text.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please enter the OTP.")),
       );
@@ -131,6 +134,7 @@ class _LoginPageState extends State<LoginPage> {
         _navigateToHome();
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to sign in: $e")),
       );
@@ -144,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
   // Google Sign-in
   Future<void> _signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser != null) {
         final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -160,7 +164,9 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
     } catch (e) {
+      // ignore: avoid_print
       print("Google Sign-In Error: $e");
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Google Sign-In Failed. Please try again."))
       );

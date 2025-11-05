@@ -85,10 +85,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 height: 250,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF6B3E9A).withOpacity(0.4),
+                  color: const Color(0xFF6B3E9A).withAlpha(102),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6B3E9A).withOpacity(0.6),
+                      color: const Color(0xFF6B3E9A).withAlpha(153),
                       blurRadius: 100,
                       spreadRadius: 50,
                     ),
@@ -104,10 +104,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 height: 350,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue.withOpacity(0.3),
+                  color: Colors.blue.withAlpha(77),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueAccent.withOpacity(0.5),
+                      color: Colors.blueAccent.withAlpha(128),
                       blurRadius: 150,
                       spreadRadius: 70,
                     ),
@@ -181,10 +181,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           vertical: 20, horizontal: 72),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        color: Colors.blueAccent.withOpacity(0.8),
+                        color: Colors.blueAccent.withAlpha(204),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.blueAccent.withOpacity(0.7),
+                            color: Colors.blueAccent.withAlpha(178),
                             blurRadius: 25,
                             spreadRadius: 2,
                             offset: const Offset(0, 5),
@@ -222,7 +222,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       decoration: BoxDecoration(
         color: _currentPage == index
             ? Colors.blueAccent
-            : const Color(0xFFD8D8D8).withOpacity(0.5),
+            : const Color(0xFFD8D8D8).withAlpha(128),
         borderRadius: BorderRadius.circular(4),
       ),
     );
@@ -328,9 +328,9 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
             width: MediaQuery.of(context).size.width * 0.9,
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withAlpha(38),
               borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
+              border: Border.all(color: Colors.white.withAlpha(51)),
             ),
             child: AnimatedBuilder(
               animation: _animationController,
@@ -348,10 +348,10 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.blue.withOpacity(0.2),
+                          color: Colors.blue.withAlpha(51),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blueAccent.withOpacity(0.7),
+                              color: Colors.blueAccent.withAlpha(178),
                               blurRadius: 30,
                               spreadRadius: 5,
                             ),
@@ -385,7 +385,7 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
                         widget.subtitle,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.lato(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withAlpha(230),
                           fontWeight: FontWeight.w600,
                           fontSize: 18,
                         ),
@@ -400,7 +400,7 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
                         widget.description,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.lato(
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withAlpha(217),
                           fontSize: 16,
                           height: 1.5,
                         ),

@@ -224,7 +224,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
                 borderRadius: BorderRadius.circular(16.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withAlpha(25),
                     spreadRadius: 2,
                     blurRadius: 10,
                     offset: const Offset(0, 5),
@@ -321,7 +321,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
       isExpanded: true,
-      initialValue: value,
+      value: value,
       hint: Text(hint, style: GoogleFonts.poppins(color: Colors.grey[400]), overflow: TextOverflow.ellipsis),
       items: items.map((String item) {
         return DropdownMenuItem<String>(
@@ -407,7 +407,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF5C9DFF).withOpacity(0.4),
+            color: const Color(0xFF5C9DFF).withAlpha(102),
             blurRadius: 10,
             offset: const Offset(0, 5),
           )
@@ -463,7 +463,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         border: Border.all(color: Colors.grey.shade300),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withAlpha(25),
             spreadRadius: 1,
             blurRadius: 5,
           ),

@@ -17,9 +17,9 @@ class AppDrawer extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF1A0B2E).withOpacity(0.9),
+              color: const Color(0xFF1A0B2E).withAlpha(230),
               border: Border(
-                  right: BorderSide(color: Colors.white.withOpacity(0.2))),
+                  right: BorderSide(color: Colors.white.withAlpha(51))),
             ),
             child: Column(
               children: [
@@ -67,7 +67,7 @@ class AppDrawer extends StatelessWidget {
           ),
           const Spacer(),
           Material(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withAlpha(51),
             shape: const CircleBorder(),
             child: IconButton(
               padding: EdgeInsets.zero,
@@ -93,7 +93,7 @@ class AppDrawer extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.deepPurple.withOpacity(0.4),
+            color: Colors.deepPurple.withAlpha(102),
             blurRadius: 10,
             offset: const Offset(0, 5),
           )
@@ -118,7 +118,7 @@ class AppDrawer extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withAlpha(230),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
@@ -136,7 +136,7 @@ class AppDrawer extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: 247 / 500,
-              backgroundColor: Colors.white.withOpacity(0.3),
+              backgroundColor: Colors.white.withAlpha(77),
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
               minHeight: 6,
             ),
@@ -145,7 +145,7 @@ class AppDrawer extends StatelessWidget {
           Text(
             '247/500 queries used',
             style: GoogleFonts.poppins(
-                color: Colors.white.withOpacity(0.8), fontSize: 12),
+                color: Colors.white.withAlpha(204), fontSize: 12),
           ),
         ],
       ),
@@ -190,7 +190,7 @@ class AppDrawer extends StatelessWidget {
         boxShadow: isSelected
             ? [
                 BoxShadow(
-                  color: Colors.deepPurple.withOpacity(0.4),
+                  color: Colors.deepPurple.withAlpha(102),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 )

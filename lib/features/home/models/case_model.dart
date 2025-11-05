@@ -1,17 +1,7 @@
-import 'package:myapp/features/home/models/timeline_model.dart';
-
-class CaseModel {
+class Case {
   final String title;
-  final String caseNumber;
-  final String court;
+  final String description;
   final String status;
-  final List<TimelineModel> timeline;
 
-  CaseModel({
-    required this.title,
-    required this.caseNumber,
-    required this.court,
-    required this.status,
-    required this.timeline,
-  });
+  Case({required this.title, required this.description, required this.status});
 }

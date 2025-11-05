@@ -48,8 +48,8 @@ class MyApp extends StatelessWidget {
           fontWeight: FontWeight.bold, fontSize: 57, color: Colors.white),
       titleLarge: const TextStyle(
           fontWeight: FontWeight.bold, fontSize: 22, color: Colors.white),
-      bodyLarge: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.9)),
-      bodyMedium: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.8)),
+      bodyLarge: TextStyle(fontSize: 16, color: Colors.white.withAlpha(230)),
+      bodyMedium: TextStyle(fontSize: 14, color: Colors.white.withAlpha(204)),
     );
 
     final ThemeData futuristicTheme = ThemeData(
@@ -66,23 +66,23 @@ class MyApp extends StatelessWidget {
       ),
       textTheme: appTextTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: backgroundColor.withOpacity(0.8),
+        backgroundColor: backgroundColor.withAlpha(204),
         elevation: 0,
         titleTextStyle: appTextTheme.titleLarge?.copyWith(fontSize: 24),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withAlpha(25),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: Colors.white.withOpacity(0.2)),
+          side: BorderSide(color: Colors.white.withAlpha(51)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
-          backgroundColor: accentColor.withOpacity(0.8),
+          backgroundColor: accentColor.withAlpha(204),
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -94,18 +94,18 @@ class MyApp extends StatelessWidget {
         labelStyle: const TextStyle(color: Colors.white70),
         prefixIconColor: Colors.white70,
         filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
+        fillColor: Colors.white.withAlpha(25),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+          borderSide: BorderSide(color: Colors.white.withAlpha(51)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: accentColor.withOpacity(0.8)),
+          borderSide: BorderSide(color: accentColor.withAlpha(204)),
         ),
       ),
     );

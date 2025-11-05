@@ -70,7 +70,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
             Text(
               'Create professional legal documents with AI assistance',
               style: GoogleFonts.poppins(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withAlpha(178),
                 fontSize: 14,
               ),
             ),
@@ -126,10 +126,10 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
         child: Container(
           padding: const EdgeInsets.all(24.0),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withAlpha(25),
             borderRadius: BorderRadius.circular(20.0),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withAlpha(51),
             ),
           ),
           child: child,
@@ -146,7 +146,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
         style: GoogleFonts.poppins(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: Colors.white.withOpacity(0.9),
+          color: Colors.white.withAlpha(230),
         ),
       ),
     );
@@ -162,7 +162,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
         hintText: hint,
         hintStyle: GoogleFonts.poppins(color: Colors.white54),
         filled: true,
-        fillColor: Colors.black.withOpacity(0.2),
+        fillColor: Colors.black.withAlpha(51),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
@@ -180,7 +180,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
   Widget _buildDropdown(List<String> items, String? value, String hint,
       Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
-      initialValue: value,
+      value: value,
       hint: Text(hint, style: GoogleFonts.poppins(color: Colors.white54)),
       dropdownColor: const Color(0xFF1A0B2E),
       icon: const Icon(Iconsax.arrow_down_1, color: Colors.white54),
@@ -194,7 +194,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
       onChanged: onChanged,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.black.withOpacity(0.2),
+        fillColor: Colors.black.withAlpha(51),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
@@ -218,7 +218,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
         hintText: 'dd-mm-yyyy',
         hintStyle: GoogleFonts.poppins(color: Colors.white54),
         filled: true,
-        fillColor: Colors.black.withOpacity(0.2),
+        fillColor: Colors.black.withAlpha(51),
         suffixIcon: const Icon(Iconsax.calendar_1, color: Colors.white54),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -279,7 +279,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF8A2BE2).withOpacity(0.5),
+              color: const Color(0xFF8A2BE2).withAlpha(128),
               blurRadius: 15,
               offset: const Offset(0, 8),
             )

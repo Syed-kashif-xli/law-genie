@@ -11,10 +11,10 @@ class CaseTimelinePage extends StatefulWidget {
   const CaseTimelinePage({super.key});
 
   @override
-  _CaseTimelinePageState createState() => _CaseTimelinePageState();
+  CaseTimelinePageState createState() => CaseTimelinePageState();
 }
 
-class _CaseTimelinePageState extends State<CaseTimelinePage> {
+class CaseTimelinePageState extends State<CaseTimelinePage> {
   final NotificationService _notificationService = NotificationService();
 
   Color _getStatusColor(TimelineStatus status) {
@@ -25,8 +25,6 @@ class _CaseTimelinePageState extends State<CaseTimelinePage> {
         return Colors.yellow;
       case TimelineStatus.upcoming:
         return Colors.red;
-      default:
-        return Colors.grey;
     }
   }
 
@@ -123,8 +121,8 @@ class _CaseTimelinePageState extends State<CaseTimelinePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddEventDialog(context),
-        child: const Icon(Icons.add),
         tooltip: 'Add Event',
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -145,6 +143,7 @@ class _CaseTimelinePageState extends State<CaseTimelinePage> {
     );
 
     if (selectedDate != null) {
+      if (!mounted) return;
       TimeOfDay? selectedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(item.date),
@@ -165,7 +164,7 @@ class _CaseTimelinePageState extends State<CaseTimelinePage> {
           body: item.description,
           scheduledDate: scheduledDate,
         );
-
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Reminder set for ${DateFormat.yMMMMd().add_jm().format(scheduledDate)}')),
         );
@@ -178,10 +177,10 @@ class AddEventDialog extends StatefulWidget {
   const AddEventDialog({super.key});
 
   @override
-  _AddEventDialogState createState() => _AddEventDialogState();
+  AddEventDialogState createState() => AddEventDialogState();
 }
 
-class _AddEventDialogState extends State<AddEventDialog> {
+class AddEventDialogState extends State<AddEventDialog> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
