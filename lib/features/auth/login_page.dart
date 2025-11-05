@@ -21,24 +21,71 @@ class _LoginPageState extends State<LoginPage> {
   String _fullPhoneNumber = '';
 
   bool _isEmailLogin = true;
-  final bool _agreedToTerms = true; // Set to true by default
+  bool _agreedToTerms = false; // Changed to false
   bool _isLoading = false;
   bool _codeSent = false;
   String? _verificationId;
+  bool _isSignUp = false;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  // Email & Password Sign-in
-  Future<void> _signInWithEmailAndPassword() async {
+  Future<void> _handleAuthAction() async {
     if (!_agreedToTerms) {
-      // Should not happen with _agreedToTerms = true, but keep for safety
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You must agree to the terms and conditions.')),
+      );
       return;
     }
+    if (_isEmailLogin) {
+      if (_isSignUp) {
+        _signUpWithEmailAndPassword();
+      } else {
+        _signInWithEmailAndPassword();
+      }
+    } else {
+      if (_codeSent) {
+        _signInWithOTP();
+      } else {
+        _verifyPhoneNumber();
+      }
+    }
+  }
 
+  Future<void> _signUpWithEmailAndPassword() async {
     setState(() => _isLoading = true);
 
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (userCredential.user != null && mounted) {
+        _navigateToHome();
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      String message = e.code == 'weak-password'
+          ? 'The password provided is too weak.'
+          : e.code == 'email-already-in-use'
+              ? 'An account already exists for that email.'
+              : 'An error occurred. Please try again.';
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _signInWithEmailAndPassword() async {
+    setState(() => _isLoading = true);
+
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -53,7 +100,8 @@ class _LoginPageState extends State<LoginPage> {
           : e.code == 'wrong-password'
               ? 'Wrong password provided for that user.'
               : 'An error occurred. Please try again.';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -61,12 +109,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // Phone Number Verification
   Future<void> _verifyPhoneNumber() async {
-    if (!_agreedToTerms) {
-      // Should not happen with _agreedToTerms = true, but keep for safety
-      return;
-    }
     if (_fullPhoneNumber.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -112,7 +155,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // OTP Sign-in
   Future<void> _signInWithOTP() async {
     if (_verificationId == null || _otpController.text.isEmpty) {
       if (!mounted) return;
@@ -128,7 +170,8 @@ class _LoginPageState extends State<LoginPage> {
         verificationId: _verificationId!,
         smsCode: _otpController.text.trim(),
       );
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (userCredential.user != null && mounted) {
         _navigateToHome();
@@ -144,20 +187,21 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
   }
-  
-  // Google Sign-in
+
   Future<void> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
 
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
 
         if (userCredential.user != null && mounted) {
           _navigateToHome();
@@ -167,9 +211,8 @@ class _LoginPageState extends State<LoginPage> {
       // ignore: avoid_print
       print("Google Sign-In Error: $e");
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Google Sign-In Failed. Please try again."))
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Google Sign-In Failed. Please try again.")));
     }
   }
 
@@ -179,7 +222,6 @@ class _LoginPageState extends State<LoginPage> {
       MaterialPageRoute(builder: (context) => const MainLayout()),
     );
   }
-
 
   @override
   void dispose() {
@@ -204,10 +246,15 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: Stack(
           children: [
-            // Ambient light effects
-            Positioned( top: -100, left: -100, child: _buildAmbientLight(const Color(0xFF6B3E9A), 250, 100, 50)),
-            Positioned( bottom: -150, right: -150, child: _buildAmbientLight(Colors.blue, 350, 150, 70)),
-            // Main Content
+            Positioned(
+                top: -100,
+                left: -100,
+                child: _buildAmbientLight(
+                    const Color(0xFF6B3E9A), 250, 100, 50)),
+            Positioned(
+                bottom: -150,
+                right: -150,
+                child: _buildAmbientLight(Colors.blue, 350, 150, 70)),
             SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24.0),
@@ -217,22 +264,35 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: screenHeight * 0.05),
                     const Icon(Iconsax.user, color: Colors.white, size: 50),
                     const SizedBox(height: 16),
-                    Text('Welcome Back', style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text(
+                        _isSignUp ? 'Create Account' : 'Welcome Back',
+                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    Text('Sign in to your Law Genie account', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white70)),
+                    Text(
+                        _isSignUp
+                            ? 'Create a new Law Genie account'
+                            : 'Sign in to your Law Genie account',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(color: Colors.white70)),
                     const SizedBox(height: 32),
                     _buildGlassCard(
                       child: Column(
                         children: [
                           _buildLoginTypeToggle(),
                           const SizedBox(height: 24),
-                          
                           if (_isEmailLogin) ...[
-                            _buildTextField('Email', Iconsax.sms, controller: _emailController, isEmail: true),
+                            _buildTextField('Email', Iconsax.sms,
+                                controller: _emailController, isEmail: true),
                             const SizedBox(height: 16),
-                            _buildTextField('Password', Iconsax.lock_1, controller: _passwordController, isPassword: true),
+                            _buildTextField('Password', Iconsax.lock_1,
+                                controller: _passwordController,
+                                isPassword: true),
                           ] else if (_codeSent) ...[
-                            _buildTextField('OTP', Iconsax.password_check, controller: _otpController),
+                            _buildTextField('OTP', Iconsax.password_check,
+                                controller: _otpController),
                             const SizedBox(height: 8),
                             Align(
                               alignment: Alignment.centerRight,
@@ -242,43 +302,56 @@ class _LoginPageState extends State<LoginPage> {
                                   _otpController.clear();
                                   _verificationId = null;
                                 }),
-                                child: const Text('Change Number', style: TextStyle(color: Colors.white70)),
+                                child: const Text('Change Number',
+                                    style: TextStyle(color: Colors.white70)),
                               ),
                             )
                           ] else ...[
                             _buildPhoneField(),
                           ],
-                          
                           const SizedBox(height: 16),
                           if (_isEmailLogin)
                             const Align(
                               alignment: Alignment.centerRight,
-                              child: Text('Forgot password?', style: TextStyle(color: Colors.white70)),
+                              child: Text('Forgot password?',
+                                  style: TextStyle(color: Colors.white70)),
                             ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Removed _buildTermsAndConditions(),
+                    _buildTermsAndConditions(), // Added terms and conditions checkbox
                     const SizedBox(height: 24),
                     _buildGlowingButton(),
                     const SizedBox(height: 32),
-                    const Text('Or continue with', style: TextStyle(color: Colors.white70)),
+                    const Text('Or continue with',
+                        style: TextStyle(color: Colors.white70)),
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildSocialButton(FontAwesomeIcons.google),
+                        _buildSocialButton(
+                            FontAwesomeIcons.google, _signInWithGoogle),
                         const SizedBox(width: 24),
-                        _buildSocialButton(FontAwesomeIcons.apple),
+                        _buildSocialButton(FontAwesomeIcons.apple, () {}),
                       ],
                     ),
                     SizedBox(height: screenHeight * 0.05),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account? ", style: TextStyle(color: Colors.white70)),
-                        Text('Sign Up', style: TextStyle(color: Colors.blue.shade300, fontWeight: FontWeight.bold)),
+                        Text(
+                            _isSignUp
+                                ? "Already have an account? "
+                                : "Don't have an account? ",
+                            style: const TextStyle(color: Colors.white70)),
+                        GestureDetector(
+                          onTap: () => setState(() => _isSignUp = !_isSignUp),
+                          child: Text(_isSignUp ? 'Sign In' : 'Sign Up',
+                              style: TextStyle(
+                                  color: Colors.blue.shade300,
+                                  fontWeight: FontWeight.bold)),
+                        ),
                       ],
                     ),
                   ],
@@ -291,7 +364,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildAmbientLight(Color color, double size, double blurRadius, double spreadRadius) {
+  Widget _buildAmbientLight(
+      Color color, double size, double blurRadius, double spreadRadius) {
     return Container(
       width: size,
       height: size,
@@ -363,21 +437,33 @@ class _LoginPageState extends State<LoginPage> {
           duration: const Duration(milliseconds: 300),
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.blueAccent.withOpacity(0.7) : Colors.transparent,
+            color: isSelected
+                ? Colors.blueAccent.withOpacity(0.7)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(30),
             boxShadow: isSelected
-                ? [BoxShadow(color: Colors.blueAccent.withOpacity(0.5), blurRadius: 15, spreadRadius: 1)]
+                ? [
+                    BoxShadow(
+                        color: Colors.blueAccent.withOpacity(0.5),
+                        blurRadius: 15,
+                        spreadRadius: 1)
+                  ]
                 : [],
           ),
           child: Center(
-            child: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: Text(title,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, IconData icon, {bool isPassword = false, bool isEmail = false, required TextEditingController controller}) {
+  Widget _buildTextField(String label, IconData icon,
+      {bool isPassword = false,
+      bool isEmail = false,
+      required TextEditingController controller}) {
     return TextField(
       controller: controller,
       obscureText: isPassword,
@@ -389,9 +475,16 @@ class _LoginPageState extends State<LoginPage> {
         prefixIcon: Icon(icon, color: Colors.white70, size: 20),
         filled: true,
         fillColor: Colors.white.withOpacity(0.1),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white.withOpacity(0.2))),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.blueAccent.withOpacity(0.8))),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.2))),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide:
+                BorderSide(color: Colors.blueAccent.withOpacity(0.8))),
       ),
     );
   }
@@ -404,26 +497,49 @@ class _LoginPageState extends State<LoginPage> {
         labelStyle: const TextStyle(color: Colors.white70),
         filled: true,
         fillColor: Colors.white.withOpacity(0.1),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white.withOpacity(0.2))),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.blueAccent.withOpacity(0.8))),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.2))),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide:
+                BorderSide(color: Colors.blueAccent.withOpacity(0.8))),
       ),
       initialCountryCode: 'IN',
       onChanged: (phone) {
-          _fullPhoneNumber = phone.completeNumber;
+        _fullPhoneNumber = phone.completeNumber;
       },
+    );
+  }
+
+  Widget _buildTermsAndConditions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Checkbox(
+          value: _agreedToTerms,
+          onChanged: (value) {
+            setState(() {
+              _agreedToTerms = value!;
+            });
+          },
+          checkColor: Colors.white,
+          activeColor: Colors.blueAccent,
+        ),
+        const Text(
+          'I agree to the Terms and Conditions',
+          style: TextStyle(color: Colors.white70),
+        ),
+      ],
     );
   }
 
   Widget _buildGlowingButton() {
     return GestureDetector(
-      onTap: _isLoading ? null : () {
-        if (_isEmailLogin) {
-          _signInWithEmailAndPassword();
-        } else {
-          _codeSent ? _signInWithOTP() : _verifyPhoneNumber();
-        }
-      },
+      onTap: _isLoading ? null : _handleAuthAction,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 18),
@@ -443,22 +559,22 @@ class _LoginPageState extends State<LoginPage> {
           child: _isLoading
               ? const CircularProgressIndicator(color: Colors.white)
               : Text(
-                  _isEmailLogin ? 'Continue' : (_codeSent ? 'Verify OTP' : 'Send OTP'),
-                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  _isEmailLogin
+                      ? (_isSignUp ? 'Sign Up' : 'Continue')
+                      : (_codeSent ? 'Verify OTP' : 'Send OTP'),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
                 ),
         ),
       ),
     );
   }
 
-  Widget _buildSocialButton(IconData icon) {
+  Widget _buildSocialButton(IconData icon, VoidCallback onPressed) {
     return GestureDetector(
-      onTap: () {
-        if (icon == FontAwesomeIcons.google) {
-          _signInWithGoogle();
-        }
-        // TODO: Implement Apple Sign In
-      },
+      onTap: onPressed,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: BackdropFilter(
