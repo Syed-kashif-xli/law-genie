@@ -7,7 +7,7 @@ class NewsService {
   final String baseUrl = 'https://newsapi.org/v2/everything';
 
   Future<List<NewsArticle>> fetchLegalNews() async {
-    final response = await http.get(Uri.parse('$baseUrl?q=legal&apiKey=$apiKey'));
+    final response = await http.get(Uri.parse('$baseUrl?q=legal&pageSize=5&apiKey=$apiKey'));
 
     if (response.statusCode == 200) {
       final result = json.decode(response.body);

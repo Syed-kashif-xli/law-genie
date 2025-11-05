@@ -19,6 +19,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  void initState() {
+    super.initState();
+    // Initial fetch of news
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<NewsProvider>(context, listen: false).fetchNews();
+    });
+  }
+
+  Future<void> _refreshNews() async {
+    await Provider.of<NewsProvider>(context, listen: false).fetchNews();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A0B2E),
@@ -38,23 +51,27 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: const SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 24),
-              _StatsSection(),
-              SizedBox(height: 24),
-              _QuickActions(),
-              SizedBox(height: 24),
-              _UpcomingEvents(),
-              SizedBox(height: 24),
-              _AiUsage(),
-              SizedBox(height: 24),
-              _LegalNewsFeed(),
-            ],
+      body: RefreshIndicator(
+        onRefresh: _refreshNews,
+        child: const SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 24),
+                _StatsSection(),
+                SizedBox(height: 24),
+                _QuickActions(),
+                SizedBox(height: 24),
+                _UpcomingEvents(),
+                SizedBox(height: 24),
+                _AiUsage(),
+                SizedBox(height: 24),
+                _LegalNewsFeed(),
+              ],
+            ),
           ),
         ),
       ),
@@ -491,47 +508,44 @@ class _LegalNewsFeed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => NewsProvider()..fetchNews(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Legal News Feed',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Legal News Feed',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
-              Text(
-                'View All',
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Consumer<NewsProvider>(
-            builder: (context, provider, child) {
-              if (provider.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: provider.news.length,
-                itemBuilder: (context, index) {
-                  final item = provider.news[index];
-                  return NewsCard(news: item);
-                },
-              );
-            },
-          ),
-        ],
-      ),
+            ),
+            Text(
+              'View All',
+              style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Consumer<NewsProvider>(
+          builder: (context, provider, child) {
+            if (provider.isLoading && provider.news.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: provider.news.length,
+              itemBuilder: (context, index) {
+                final item = provider.news[index];
+                return NewsCard(news: item);
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 }
