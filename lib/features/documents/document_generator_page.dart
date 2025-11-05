@@ -321,7 +321,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
       isExpanded: true,
-      value: value,
+      initialValue: value,
       hint: Text(hint, style: GoogleFonts.poppins(color: Colors.grey[400]), overflow: TextOverflow.ellipsis),
       items: items.map((String item) {
         return DropdownMenuItem<String>(

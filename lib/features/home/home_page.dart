@@ -6,6 +6,9 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:myapp/features/home/models/case_model.dart';
 import 'package:myapp/features/home/models/timeline_model.dart';
 import 'package:myapp/features/home/widgets/feature_card.dart';
+import 'package:myapp/features/home/widgets/news_card.dart';
+import 'package:myapp/features/home/providers/news_provider.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -488,103 +491,45 @@ class _LegalNewsFeed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Case> news = [
-      Case(
-        title: 'New Data Privacy Regulations',
-        description: 'Legal Gazette',
-        status: '2h ago',
-      ),
-      Case(
-        title: 'Supreme Court Ruling on IP Rights',
-        description: 'Law Journal',
-        status: '5h ago',
-      ),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Legal News Feed',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            Text(
-              'View All',
-              style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: news.length,
-          itemBuilder: (context, index) {
-            final item = news[index];
-            return _NewsCard(news: item);
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _NewsCard extends StatelessWidget {
-  final Case news;
-
-  const _NewsCard({required this.news});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(25),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withAlpha(51)),
-      ),
+    return ChangeNotifierProvider(
+      create: (_) => NewsProvider()..fetchNews(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF00BFA6).withAlpha(25),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  'Privacy Law', // This is hardcoded, can be improved
-                  style: TextStyle(
-                    color: Color(0xFF00BFA6),
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                'Legal News Feed',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-              Text(news.status, style: const TextStyle(color: Colors.white70)),
+              Text(
+                'View All',
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+              ),
             ],
           ),
           const SizedBox(height: 16),
-          Text(
-            news.title,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          Consumer<NewsProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: provider.news.length,
+                itemBuilder: (context, index) {
+                  final item = provider.news[index];
+                  return NewsCard(news: item);
+                },
+              );
+            },
           ),
-          const SizedBox(height: 8),
-          Text(news.description, style: const TextStyle(color: Colors.white70)),
         ],
       ),
     );

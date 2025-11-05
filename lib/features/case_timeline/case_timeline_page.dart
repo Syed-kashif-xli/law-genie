@@ -232,7 +232,7 @@ class AddEventDialogState extends State<AddEventDialog> {
                 ],
               ),
               DropdownButtonFormField<TimelineStatus>(
-                value: _selectedStatus,
+                initialValue: _selectedStatus,
                 onChanged: (newValue) {
                   setState(() {
                     _selectedStatus = newValue!;

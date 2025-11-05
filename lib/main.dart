@@ -1,32 +1,28 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:myapp/features/auth/login_page.dart'; // Changed initial route
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/documents/document_generator_page.dart';
+import 'package:myapp/features/home/providers/news_provider.dart';
 import 'package:myapp/features/risk_check/risk_check_page.dart';
 import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/features/home/home_page.dart';
-import 'package:myapp/features/onboarding/onboarding_page.dart'; // Re-enabled for onboarding flow
+import 'package:myapp/features/onboarding/onboarding_page.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
-// Asynchronous main function to allow for Firebase initialization
 Future<void> main() async {
-  // Ensure that widget binding is initialized before Firebase
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase
   await Firebase.initializeApp();
-
-  // Initialize NotificationService
   await NotificationService().init();
-  
+
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => TimelineProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => TimelineProvider()),
+        ChangeNotifierProvider(create: (context) => NewsProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -113,8 +109,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Law Genie',
       theme: futuristicTheme,
-      // Start on the OnboardingPage
-      home: const OnboardingPage(), 
+      home: const OnboardingPage(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/home': (context) => const HomePage(),

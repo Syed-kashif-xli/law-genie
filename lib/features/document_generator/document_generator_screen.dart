@@ -180,7 +180,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
   Widget _buildDropdown(List<String> items, String? value, String hint,
       Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       hint: Text(hint, style: GoogleFonts.poppins(color: Colors.white54)),
       dropdownColor: const Color(0xFF1A0B2E),
       icon: const Icon(Iconsax.arrow_down_1, color: Colors.white54),
