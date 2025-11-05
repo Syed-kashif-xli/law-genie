@@ -49,7 +49,7 @@
     <true/>
     <key>io.flutter.embedded_views_preview</key>
     <true/>
-    <key>io.flutter.embedding.android.EnableImpeller</key>
+    <key>FLTEnableImpeller</key>
     <true/>
 </dict>
 </plist>

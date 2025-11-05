@@ -7,16 +7,19 @@ import 'package:url_launcher/url_launcher.dart';
 class NewsCard extends StatelessWidget {
   final NewsArticle news;
 
-  const NewsCard({required this.news});
+  const NewsCard({super.key, required this.news});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () async {
-        if (await canLaunch(news.url)) {
-          await launch(news.url);
+        final Uri url = Uri.parse(news.url);
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url);
         } else {
-          throw 'Could not launch ${news.url}';
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not launch URL')),
+          );
         }
       },
       child: Container(
@@ -38,8 +41,19 @@ class NewsCard extends StatelessWidget {
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const SizedBox(
+                      height: 200,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  },
                   errorBuilder: (context, error, stackTrace) {
-                    return const SizedBox(height: 200, child: Center(child: Icon(Icons.error, color: Colors.red)));
+                    return const SizedBox(
+                        height: 200, 
+                        child: Center(child: Icon(Icons.error, color: Colors.red)));
                   },
                 ),
               ),
@@ -93,7 +107,11 @@ class NewsCard extends StatelessWidget {
     if (date.isEmpty) {
       return '';
     }
-    final dateTime = DateTime.parse(date);
-    return DateFormat.yMMMd().format(dateTime);
+    try {
+      final dateTime = DateTime.parse(date);
+      return DateFormat.yMMMd().format(dateTime);
+    } catch (e) {
+      return '';
+    }
   }
 }

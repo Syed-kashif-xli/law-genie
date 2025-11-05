@@ -123,25 +123,25 @@ class _StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        const _StatCard(
+        _StatCard(
           title: 'AI Queries',
           value: '247',
           change: '+23%',
           icon: Iconsax.cpu_charge,
           iconColor: Color(0xFF00BFA6),
         ),
-        const SizedBox(height: 16),
-        const _StatCard(
+        SizedBox(height: 16),
+        _StatCard(
           title: 'Documents',
           value: '45',
           change: '+12%',
           icon: Iconsax.document_favorite,
           iconColor: Color(0xFF4CAF50),
         ),
-        const SizedBox(height: 16),
-        const _StatCard(
+        SizedBox(height: 16),
+        _StatCard(
           title: 'Cases Tracked',
           value: '12',
           change: '+3',
