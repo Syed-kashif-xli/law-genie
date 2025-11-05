@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:myapp/features/case_timeline/timeline_provider.dart';
 import 'package:myapp/features/home/app_drawer.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:myapp/features/home/models/case_model.dart';
-import 'package:myapp/features/home/models/timeline_model.dart';
+import 'package:myapp/features/home/widgets/event_card.dart';
 import 'package:myapp/features/home/widgets/feature_card.dart';
 import 'package:myapp/features/home/widgets/news_card.dart';
 import 'package:myapp/features/home/providers/news_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/home/pages/all_news_page.dart';
+import 'package:myapp/features/home/pages/all_events_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,14 +23,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Initial fetch of news
+    // Initial fetch of news and events
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<NewsProvider>(context, listen: false).fetchNews();
     });
   }
 
-  Future<void> _refreshNews() async {
-    await Provider.of<NewsProvider>(context, listen: false).fetchNews();
+  Future<void> _refreshData() async {
+    await Future.wait([
+      Provider.of<NewsProvider>(context, listen: false).fetchNews(),
+    ]);
   }
 
   @override
@@ -53,7 +56,7 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: const AppDrawer(),
       body: RefreshIndicator(
-        onRefresh: _refreshNews,
+        onRefresh: _refreshData,
         child: const SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: Padding(
@@ -289,21 +292,6 @@ class _UpcomingEvents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<TimelineModel> events = [
-      TimelineModel(
-        title: 'Contract Review Deadline',
-        time: 'Tomorrow - 2:00 PM',
-        type: 'deadline',
-        icon: Iconsax.calendar_1,
-      ),
-      TimelineModel(
-        title: 'Court Hearing - Smith v. Johnson',
-        time: 'Oct 25 - 10:00 AM',
-        type: 'hearing',
-        icon: Iconsax.calendar_1,
-      ),
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -318,88 +306,38 @@ class _UpcomingEvents extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            Text(
-              'View All',
-              style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AllEventsPage()),
+                );
+              },
+              child: Text(
+                'View All',
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+              ),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: events.length,
-          itemBuilder: (context, index) {
-            final event = events[index];
-            return _EventCard(event: event);
+        Consumer<TimelineProvider>(
+          builder: (context, provider, child) {
+            if (provider.isLoading && provider.timeline.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: provider.timeline.length > 2 ? 2 : provider.timeline.length,
+              itemBuilder: (context, index) {
+                final event = provider.timeline[index];
+                return EventCard(event: event);
+              },
+            );
           },
         ),
       ],
-    );
-  }
-}
-
-class _EventCard extends StatelessWidget {
-  final TimelineModel event;
-
-  const _EventCard({required this.event});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(25),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withAlpha(51)),
-      ),
-      child: Row(
-        children: [
-          Icon(event.icon, color: const Color(0xFF00BFA6)),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  event.title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  event.time,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: event.type == 'deadline'
-                  ? Colors.orange.withAlpha(51)
-                  : Colors.red.withAlpha(51),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              event.type,
-              style: TextStyle(
-                color: event.type == 'deadline' ? Colors.orange : Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
