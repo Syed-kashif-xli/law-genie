@@ -9,6 +9,7 @@ import 'package:myapp/features/home/widgets/feature_card.dart';
 import 'package:myapp/features/home/widgets/news_card.dart';
 import 'package:myapp/features/home/providers/news_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:myapp/features/home/pages/all_news_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -516,15 +517,23 @@ class _LegalNewsFeed extends StatelessWidget {
           children: [
             Text(
               'Legal News Feed',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.lato(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-            Text(
-              'View All',
-              style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AllNewsPage()),
+                );
+              },
+              child: Text(
+                'View All',
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+              ),
             ),
           ],
         ),
@@ -537,7 +546,7 @@ class _LegalNewsFeed extends StatelessWidget {
             return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: provider.news.length,
+              itemCount: provider.news.length > 3 ? 3 : provider.news.length,
               itemBuilder: (context, index) {
                 final item = provider.news[index];
                 return NewsCard(news: item);
