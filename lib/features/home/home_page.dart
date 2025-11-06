@@ -269,10 +269,10 @@ class _QuickActions extends StatelessWidget {
               route: '/generateDoc',
             ),
             FeatureCard(
-              title: 'Risk Check',
-              subtitle: 'Assess risks',
-              icon: Iconsax.shield_tick,
-              route: '/riskCheck',
+              title: 'Chat History',
+              subtitle: 'View past chats',
+              icon: Iconsax.archive_book,
+              route: '/chatHistory',
             ),
             FeatureCard(
               title: 'Case Timeline',
@@ -379,8 +379,6 @@ class _AiUsage extends StatelessWidget {
           const _UsageBar(title: 'Queries', value: 247, total: 500),
           const SizedBox(height: 16),
           const _UsageBar(title: 'Documents', value: 45, total: 100),
-          const SizedBox(height: 16),
-          const _UsageBar(title: 'Risk Checks', value: 23, total: 50),
           const SizedBox(height: 24),
           Center(
             child: ElevatedButton(

@@ -2,10 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
+import 'package:myapp/features/chat/chat_history_page.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/documents/document_generator_page.dart';
 import 'package:myapp/features/home/providers/news_provider.dart';
-import 'package:myapp/features/risk_check/risk_check_page.dart';
 import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/features/home/home_page.dart';
 import 'package:myapp/features/onboarding/onboarding_page.dart';
@@ -115,8 +115,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/aiChat': (context) => const AIChatPage(),
         '/generateDoc': (context) => const DocumentGeneratorPage(),
-        '/riskCheck': (context) => const RiskCheckPage(),
         '/caseTimeline': (context) => const CaseTimelinePage(),
+        '/chatHistory': (context) => const ChatHistoryPage(),
       },
     );
   }
