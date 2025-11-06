@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/home/home_page.dart';
+import 'package:myapp/features/profile/profile_page.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -15,31 +17,16 @@ class _MainLayoutState extends State<MainLayout> {
 
   final List<Widget> _pages = [
     const HomePage(),
-    const AIChatPage(), // Use AIChatPage
+    const AIChatPage(),
     const Center(child: Text('Library Page')),
-    const Center(child: Text('Timeline Page')),
-    const Center(child: Text('Profile Page')),
+    const CaseTimelinePage(),
+    const ProfilePage(),
   ];
 
   void _onTap(int index) {
-    // Updated to navigate to the correct pages
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/home');
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/aiChat');
-        break;
-      case 2:
-        // Placeholder for Library Page
-        break;
-      case 3:
-        Navigator.pushNamed(context, '/caseTimeline');
-        break;
-      case 4:
-        // Placeholder for Profile Page
-        break;
-    }
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override
@@ -51,12 +38,7 @@ class _MainLayoutState extends State<MainLayout> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          _onTap(index);
-        },
+        onTap: _onTap,
         type: BottomNavigationBarType.fixed,
         backgroundColor: const Color(0xFF1A0B2E),
         selectedItemColor: Colors.white,
