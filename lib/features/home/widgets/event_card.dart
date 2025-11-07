@@ -73,8 +73,6 @@ class EventCard extends StatelessWidget {
         return Colors.blue;
       case TimelineStatus.upcoming:
         return Colors.orange;
-      default:
-        return Colors.grey;
     }
   }
 }

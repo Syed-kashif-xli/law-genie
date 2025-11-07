@@ -60,7 +60,7 @@ class _MainLayoutState extends State<MainLayout> {
         type: BottomNavigationBarType.fixed,
         backgroundColor: const Color(0xFF1A0B2E),
         selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white.withOpacity(0.5),
+        unselectedItemColor: Colors.white.withAlpha(128),
         showSelectedLabels: true,
         showUnselectedLabels: true,
         items: const [

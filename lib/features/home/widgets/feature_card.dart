@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,21 +18,20 @@ class FeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: () => Navigator.pushNamed(context, route),
-      borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withAlpha(25),
+          color: const Color(0xFF19173A),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withAlpha(51)),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40, color: const Color(0xFF00BFA6)),
-            const SizedBox(height: 16),
+            Icon(icon, size: 32, color: const Color(0xFF02F1C3)),
+            const SizedBox(height: 12),
             Text(
               title,
               style: GoogleFonts.poppins(
@@ -41,14 +41,11 @@ class FeatureCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            Flexible(
-              child: Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Colors.white70,
-                ),
-                textAlign: TextAlign.center,
+            Text(
+              subtitle,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.white70,
               ),
             ),
           ],

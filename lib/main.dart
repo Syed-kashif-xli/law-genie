@@ -1,8 +1,12 @@
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/models/chat_model.dart';
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
-import 'package:myapp/features/chat/chat_history_page.dart';
+import 'package:myapp/providers/chat_provider.dart';
+import 'package:myapp/screens/chat_history_screen.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/documents/document_generator_page.dart';
 import 'package:myapp/features/home/providers/news_provider.dart';
@@ -16,12 +20,17 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await NotificationService().init();
+  await Hive.initFlutter();
+  Hive.registerAdapter(ChatSessionAdapter());
+  Hive.registerAdapter(ChatMessageAdapter());
+
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => TimelineProvider()),
         ChangeNotifierProvider(create: (context) => NewsProvider()),
+        ChangeNotifierProvider(create: (context) => ChatProvider()),
       ],
       child: const MyApp(),
     ),
@@ -34,8 +43,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color primaryColor = Color(0xFF6B3E9A);
-    const Color accentColor = Colors.blueAccent;
-    const Color backgroundColor = Color(0xFF1A0B2E);
+    const Color accentColor = Color(0xFF02F1C3);
+    const Color backgroundColor = Color(0xFF0A032A);
 
     final TextTheme appTextTheme = GoogleFonts.lexendTextTheme(
       ThemeData.dark().textTheme,
@@ -62,23 +71,22 @@ class MyApp extends StatelessWidget {
       ),
       textTheme: appTextTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: backgroundColor.withAlpha(204),
+        backgroundColor: const Color(0xFF19173A),
         elevation: 0,
         titleTextStyle: appTextTheme.titleLarge?.copyWith(fontSize: 24),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: Colors.white.withAlpha(25),
+        color: const Color(0xFF19173A),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: Colors.white.withAlpha(51)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: accentColor.withAlpha(204),
+          foregroundColor: const Color(0xFF0A032A),
+          backgroundColor: accentColor,
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -90,18 +98,18 @@ class MyApp extends StatelessWidget {
         labelStyle: const TextStyle(color: Colors.white70),
         prefixIconColor: Colors.white70,
         filled: true,
-        fillColor: Colors.white.withAlpha(25),
+        fillColor: const Color(0xFF19173A),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withAlpha(51)),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: accentColor.withAlpha(204)),
+          borderSide: const BorderSide(color: accentColor),
         ),
       ),
     );
@@ -116,7 +124,18 @@ class MyApp extends StatelessWidget {
         '/aiChat': (context) => const AIChatPage(),
         '/generateDoc': (context) => const DocumentGeneratorPage(),
         '/caseTimeline': (context) => const CaseTimelinePage(),
-        '/chatHistory': (context) => const ChatHistoryPage(),
+        '/chatHistory': (context) => const ChatHistoryScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/aiChat') {
+          final args = settings.arguments as ChatSession?;
+          return MaterialPageRoute(
+            builder: (context) {
+              return AIChatPage(chatSession: args);
+            },
+          );
+        }
+        return null;
       },
     );
   }

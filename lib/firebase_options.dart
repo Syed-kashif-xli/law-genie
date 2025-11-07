@@ -52,6 +52,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '89322291997',
     projectId: 'law-genie-56982041-cd466',
     authDomain: 'law-genie-56982041-cd466.firebaseapp.com',
+    databaseURL: 'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'law-genie-56982041-cd466.firebasestorage.app',
   );
 
@@ -60,6 +61,7 @@ class DefaultFirebaseOptions {
     appId: '1:89322291997:android:62dba2028e984884b997f4',
     messagingSenderId: '89322291997',
     projectId: 'law-genie-56982041-cd466',
+    databaseURL: 'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'law-genie-56982041-cd466.firebasestorage.app',
   );
 
@@ -68,6 +70,7 @@ class DefaultFirebaseOptions {
     appId: '1:89322291997:ios:3e6887d449e0e49eb997f4',
     messagingSenderId: '89322291997',
     projectId: 'law-genie-56982041-cd466',
+    databaseURL: 'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'law-genie-56982041-cd466.firebasestorage.app',
     androidClientId: '89322291997-3jpqinq9oqo52fjuf1qqn57tf5j25765.apps.googleusercontent.com',
     iosClientId: '89322291997-gits7uhcft2s2n4jl956p1krnmp7p27f.apps.googleusercontent.com',

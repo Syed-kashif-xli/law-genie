@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A0B2E),
+      backgroundColor: const Color(0xFF0A032A),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -91,7 +92,7 @@ class _WelcomeMessage extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: Container(color: const Color(0xFF1A0B2E)),
+          child: Container(color: const Color(0xFF0A032A)),
         ),
         Align(
           alignment: Alignment.bottomLeft,
@@ -130,7 +131,7 @@ class _StatsSection extends StatelessWidget {
           value: '247',
           change: '+23%',
           icon: Iconsax.cpu_charge,
-          iconColor: Color(0xFF00BFA6),
+          iconColor: Color(0xFF02F1C3),
         ),
         SizedBox(height: 16),
         _StatCard(
@@ -138,7 +139,7 @@ class _StatsSection extends StatelessWidget {
           value: '45',
           change: '+12%',
           icon: Iconsax.document_favorite,
-          iconColor: Color(0xFF4CAF50),
+          iconColor: Color(0xFF02F1C3),
         ),
         SizedBox(height: 16),
         _StatCard(
@@ -146,7 +147,7 @@ class _StatsSection extends StatelessWidget {
           value: '12',
           change: '+3',
           icon: Iconsax.briefcase,
-          iconColor: Color(0xFFFF9800),
+          iconColor: Color(0xFF02F1C3),
         ),
       ],
     );
@@ -173,9 +174,8 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(25),
+        color: const Color(0xFF19173A),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withAlpha(51)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -315,7 +315,7 @@ class _UpcomingEvents extends StatelessWidget {
               },
               child: Text(
                 'View All',
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+                style: GoogleFonts.poppins(fontSize: 16, color: const Color(0xFF02F1C3)),
               ),
             ),
           ],
@@ -351,18 +351,11 @@ class _AiUsage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF6B3E9A), Color(0xFF4A148C)],
+          colors: [Color(0xFF19173A), Color(0xFF0A032A)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6B3E9A).withAlpha(102),
-            spreadRadius: 2,
-            blurRadius: 10,
-          )
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -384,7 +377,7 @@ class _AiUsage extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
+                backgroundColor: const Color(0xFF02F1C3),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -393,7 +386,7 @@ class _AiUsage extends StatelessWidget {
               child: const Text(
                 'Upgrade Plan',
                 style: TextStyle(
-                  color: Color(0xFF0D47A1),
+                  color: Color(0xFF0A032A),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -432,7 +425,7 @@ class _UsageBar extends StatelessWidget {
         LinearProgressIndicator(
           value: value / total,
           backgroundColor: Colors.white.withAlpha(77),
-          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF02F1C3)),
           borderRadius: BorderRadius.circular(10),
         ),
       ],
@@ -468,7 +461,7 @@ class _LegalNewsFeed extends StatelessWidget {
               },
               child: Text(
                 'View All',
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+                style: GoogleFonts.poppins(fontSize: 16, color: const Color(0xFF02F1C3)),
               ),
             ),
           ],

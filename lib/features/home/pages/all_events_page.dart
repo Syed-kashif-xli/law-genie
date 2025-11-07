@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/features/case_timeline/timeline_model.dart';
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
 import 'package:myapp/features/home/widgets/event_card.dart';
 import 'package:provider/provider.dart';

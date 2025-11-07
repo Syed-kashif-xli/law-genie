@@ -1,47 +1,43 @@
-# Law Genie - App Blueprint
+# Law Genie - AI-Powered Legal Assistant
 
-## Overview
+**Overview:**
 
-Law Genie is a Flutter-based mobile application designed to be an AI-powered legal assistant. It aims to provide users with tools for legal research, document analysis, case management, and secure client communication. The app is built with a futuristic and visually appealing dark theme and integrates with Firebase for backend services.
+Law Genie is a Flutter application designed to be a comprehensive legal assistant. It leverages AI to provide legal insights, document generation, case management, and up-to-date legal news. The app is built with a focus on a modern, intuitive user experience, with a dark, futuristic theme.
 
-## Current Features
+**Key Features:**
 
-*   **Onboarding:** A multi-page onboarding flow introduces users to the app's key features.
-*   **Authentication:** Users can log in to the application. The project is set up with Firebase Auth.
-*   **Home Page:** A central dashboard that provides an overview of AI queries, documents, and tracked cases. It also includes quick actions to navigate to different features.
-*   **AI Chat:** A chat interface to interact with an AI for legal advice.
-*   **Document Generation:** A feature to create legal documents.
-*   **Risk Check:** A tool to assess legal risks.
-*   **Case Timeline:** A feature to track and manage legal cases with a timeline view.
-*   **Notifications:** The app is configured to send local notifications.
+*   **AI Chat:** A core feature of the app, the AI Chat allows users to ask legal questions and receive detailed answers from a Gemini-powered AI. The chat interface is designed to be intuitive and user-friendly, with support for markdown rendering of AI responses.
+*   **Document Generation:** Users can generate legal documents based on templates and user-provided information. The app can generate documents like Non-Disclosure Agreements (NDAs).
+*   **Case Timeline:** A tool for managing and visualizing the key events of a legal case. Users can add, edit, and track the status of different milestones in their case.
+*   **Legal News:** The app fetches and displays the latest legal news from various sources, keeping users informed about current events in the legal world.
+*   **Onboarding:** A smooth and visually appealing onboarding experience to introduce new users to the app's features.
 
-## Style and Design
+**Design and Theming:**
 
-*   **Theme:** The app uses a custom "futuristic" dark theme.
-    *   **Primary Color:** `0xFF6B3E9A` (a deep purple)
-    *   **Accent Color:** `Colors.blueAccent`
-    *   **Background Color:** `0xFF1A0B2E` (a very dark purple)
-*   **Typography:** The `Lexend` font from Google Fonts is used for the text theme.
-*   **UI Components:** The UI is built with standard Material Design components, styled to match the futuristic theme. This includes custom styles for `AppBar`, `Card`, `ElevatedButton`, and `InputDecoration`.
+*   **Theme:** The app uses a dark, futuristic theme with a color palette based on deep purple, accented with a vibrant teal. The typography is based on the Lexend and Poppins font families from Google Fonts.
+*   **UI Components:** The app uses custom-styled widgets to create a consistent and modern look and feel. This includes custom-themed buttons, text fields, cards, and bottom navigation.
+*   **Layout:** The app is designed to be responsive and work well on both mobile and web platforms.
 
-## Project Structure
+**Technical Details:**
 
-The project is organized into the following main directories:
+*   **State Management:** The app uses the `provider` package for state management, with `ChangeNotifier` to manage the state of different features.
+*   **Navigation:** The app uses a combination of named routes and `onGenerateRoute` for navigation, with a `MainLayout` widget that includes a bottom navigation bar for easy access to the main features.
+*   **Persistence:** The app uses `hive` for local storage of chat history.
+*   **AI Integration:** The app uses the `google_generative_ai` package to interact with the Gemini AI model.
+*   **Dependencies:** The app uses a number of open-source packages, including:
+    *   `flutter_markdown` for rendering markdown in the chat.
+    *   `url_launcher` for opening links in the browser.
+    *   `intl` for date formatting.
+    *   `iconsax` for modern icons.
+    *   `timeline_tile` for creating the case timeline.
+    *   `http` for making network requests to the news API.
 
-*   `lib/features`: Contains the UI and business logic for each feature of the application, such as `auth`, `chat`, `home`, etc.
-*   `lib/services`: Includes services for interacting with external systems, such as `FirestoreService` and `NotificationService`.
-*   `lib/core`: Shared constants and utilities.
+**Fixes and Improvements in this session:**
 
-## Planned Improvements
-
-### Home Page Refactoring
-
-To improve the performance, maintainability, and scalability of the home page (`lib/features/home/home_page.dart`), the following changes will be implemented:
-
-1.  **Componentize the UI:** The different sections of the home page (Stats, Quick Actions, Upcoming Events, AI Usage, and Legal News) will be broken down into smaller, reusable `StatelessWidget` classes. This will make the code more organized and allow Flutter to optimize rendering by rebuilding only the widgets that have changed.
-
-2.  **Introduce Data Models:** `Case` and `Timeline` data models will be created to represent the application's data structure. This will replace the current hardcoded data, making it easier to manage and preparing the app for integration with a backend service like Firestore.
-
-3.  **Performance Optimization:** `const` constructors will be added to all eligible widgets to prevent unnecessary rebuilds and improve the overall performance of the home page.
-
-4.  **Create a New `feature_card.dart` Widget:** A new `FeatureCard` widget will be created to encapsulate the design and layout of the quick action cards, promoting reusability and simplifying the `home_page.dart` file.
+*   Fixed a `deprecated_member_use` warning related to the `Share` class.
+*   Fixed a `missing_required_param` warning in the `AIChatPage`.
+*   Fixed several `use_build_context_synchronously` warnings by checking if the widget is still mounted before using the `BuildContext`.
+*   Fixed `unnecessary_import` warnings by removing unused imports.
+*   Fixed `deprecated_member_use` warnings related to `withOpacity` by replacing it with `withAlpha`.
+*   Fixed an `invalid_assignment` warning by adding a missing type annotation.
+*   Fixed an `unreachable_switch_case` warning by removing the `default` case from a switch statement on an enum.

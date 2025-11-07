@@ -14,15 +14,20 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:uuid/uuid.dart';
 
+import 'package:myapp/models/chat_model.dart' as my_models;
+import 'package:myapp/providers/chat_provider.dart';
 import '../documents/document_viewer_page.dart';
 
 const String _apiKey = 'AIzaSyC6NWmWsSowYUpYMOKCJ2EO1fD8-9UXB6s';
 
 class AIChatPage extends StatefulWidget {
-  const AIChatPage({super.key});
+  final my_models.ChatSession? chatSession;
+  const AIChatPage({super.key, this.chatSession});
 
   @override
   State<AIChatPage> createState() => _AIChatPageState();
@@ -45,32 +50,87 @@ class _DocumentMessage {
 class _AIChatPageState extends State<AIChatPage> {
   final TextEditingController _textController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
-  final List<dynamic> _messages = [
-    _Message(
-      text:
-          "🧞‍♂️ I’m Law Genie — your Indian AI Legal Assistant.",
-      isUser: false,
-    ),
-  ];
+  final List<dynamic> _messages = [];
   File? _selectedFile;
   late final GenerativeModel _model;
   late final ChatSession _chat;
+  late String _sessionId;
+  late ChatProvider _chatProvider;
 
   @override
   void initState() {
     super.initState();
     _initSpeech();
     _initGenerativeModel();
+    _loadSession();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _chatProvider = Provider.of<ChatProvider>(context, listen: false);
+  }
+
+  @override
+  void dispose() {
+    _saveChatSession();
+    super.dispose();
   }
 
   Future<void> _initGenerativeModel() async {
     final geminiPrompt = await rootBundle.loadString('GEMINI.md');
     _model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       apiKey: _apiKey,
       systemInstruction: Content.text(geminiPrompt),
     );
     _chat = _model.startChat();
+  }
+
+  void _loadSession() {
+    if (widget.chatSession != null) {
+      _sessionId = widget.chatSession!.sessionId;
+      for (var message in widget.chatSession!.messages) {
+        _messages.add(_Message(text: message.userMessage, isUser: true));
+        _messages.add(_Message(text: message.botResponse, isUser: false));
+      }
+    } else {
+      _sessionId = const Uuid().v4();
+      _messages.add(_Message(
+        text:
+            "🧞‍♂️ I’m Law Genie — your Indian AI Legal Assistant.",
+        isUser: false,
+      ));
+    }
+  }
+
+  void _saveChatSession() {
+    if (_messages.length > 1) {
+      final chatMessages = <my_models.ChatMessage>[];
+      for (int i = 0; i < _messages.length; i++) {
+        if (_messages[i] is _Message && (_messages[i] as _Message).isUser) {
+          final userMessage = _messages[i] as _Message;
+          if (i + 1 < _messages.length &&
+              _messages[i + 1] is _Message &&
+              !(_messages[i + 1] as _Message).isUser) {
+            final botMessage = _messages[i + 1] as _Message;
+            chatMessages.add(my_models.ChatMessage(
+              userMessage: userMessage.text,
+              botResponse: botMessage.text,
+            ));
+          }
+        }
+      }
+
+      if (chatMessages.isNotEmpty) {
+        final session = my_models.ChatSession(
+          sessionId: _sessionId,
+          timestamp: DateTime.now(),
+          messages: chatMessages,
+        );
+        _chatProvider.addChatSession(session);
+      }
+    }
   }
 
   void _initSpeech() async {
@@ -147,7 +207,7 @@ class _AIChatPageState extends State<AIChatPage> {
   Future<void> _generatePdf() async {
     final pdf = pw.Document();
 
-    final messagesToExport = _messages.map((m) {
+    final List<String?> messagesToExport = _messages.map((m) {
       if (m is _Message) {
         return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
       } else if (m is _DocumentMessage) {
@@ -198,7 +258,7 @@ class _AIChatPageState extends State<AIChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A0B2E),
+      backgroundColor: const Color(0xFF0A032A),
       appBar: _buildAppBar(context),
       body: Column(
         children: [
@@ -229,7 +289,7 @@ class _AIChatPageState extends State<AIChatPage> {
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: const Color(0xFF1A0B2E),
+      backgroundColor: const Color(0xFF19173A),
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Iconsax.arrow_left, size: 30, color: Colors.white),
@@ -259,7 +319,7 @@ class _AIChatPageState extends State<AIChatPage> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.deepPurple.withOpacity(0.8),
+            color: const Color(0xFF02F1C3),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -267,7 +327,7 @@ class _AIChatPageState extends State<AIChatPage> {
             style: GoogleFonts.poppins(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: const Color(0xFF0A032A),
             ),
           ),
         ),
@@ -288,7 +348,7 @@ class _AIChatPageState extends State<AIChatPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       decoration: const BoxDecoration(
-        color: Color(0xFF1A0B2E),
+        color: Color(0xFF19173A),
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -303,7 +363,7 @@ class _AIChatPageState extends State<AIChatPage> {
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withOpacity(0.2)),
+                border: Border.all(color: Colors.white.withAlpha(51)),
               ),
               child: IconButton(
                 icon: const Icon(Icons.attach_file, color: Colors.white),
@@ -322,16 +382,16 @@ class _AIChatPageState extends State<AIChatPage> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
                     borderSide:
-                        BorderSide(color: Colors.white.withOpacity(0.2)),
+                        BorderSide.none,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
                     borderSide:
-                        BorderSide(color: Colors.white.withOpacity(0.2)),
+                        BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide: const BorderSide(color: Colors.deepPurple),
+                    borderSide: const BorderSide(color: Color(0xFF02F1C3)),
                   ),
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -350,7 +410,7 @@ class _AIChatPageState extends State<AIChatPage> {
             Container(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Colors.blue, Colors.purple],
+                  colors: [Color(0xFF02F1C3), Color(0xFF0A032A)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -384,7 +444,7 @@ class _TypingIndicatorBubble extends StatelessWidget {
             margin: const EdgeInsets.only(right: 12, top: 4),
             padding: const EdgeInsets.all(8),
             decoration: const BoxDecoration(
-              color: Colors.deepPurple,
+              color: Color(0xFF19173A),
               shape: BoxShape.circle,
             ),
             child: const Icon(Iconsax.flash_1, color: Colors.white, size: 24),
@@ -392,9 +452,8 @@ class _TypingIndicatorBubble extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: const Color(0xFF19173A),
               borderRadius: BorderRadius.circular(16.0),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: AnimatedTextKit(
               animatedTexts: [
@@ -438,7 +497,7 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
           margin: const EdgeInsets.only(right: 12, top: 4),
           padding: const EdgeInsets.all(8),
           decoration: const BoxDecoration(
-            color: Colors.deepPurple,
+            color: Color(0xFF19173A),
             shape: BoxShape.circle,
           ),
           child: const Icon(Iconsax.flash_1, color: Colors.white, size: 24),
@@ -447,9 +506,8 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
           child: Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: const Color(0xFF19173A),
               borderRadius: BorderRadius.circular(16.0),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,14 +534,14 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
                       Icon(
                         isPlaying ? Iconsax.pause : Iconsax.volume_high,
                         size: 16,
-                        color: isPlaying ? Colors.deepPurple : Colors.white70,
+                        color: isPlaying ? const Color(0xFF02F1C3) : Colors.white70,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         isPlaying ? 'Playing...' : 'Listen',
                         style: TextStyle(
                           fontSize: 12,
-                          color: isPlaying ? Colors.deepPurple : Colors.white70,
+                          color: isPlaying ? const Color(0xFF02F1C3) : Colors.white70,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -513,7 +571,7 @@ class _UserMessageBubble extends StatelessWidget {
             margin: const EdgeInsets.only(top: 8, bottom: 8, left: 80),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: const BoxDecoration(
-              color: Colors.deepPurple,
+              color: Color(0xFF02F1C3),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
@@ -522,7 +580,7 @@ class _UserMessageBubble extends StatelessWidget {
             ),
             child: Text(
               message.text,
-              style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
+              style: GoogleFonts.poppins(color: const Color(0xFF0A032A), fontSize: 15),
             ),
           ),
         ),
@@ -550,9 +608,9 @@ class _DocumentMessageBubble extends StatelessWidget {
       children: [
         Container(
           margin: const EdgeInsets.only(right: 12, top: 4),
-          padding: const EdgeInsets.all(.0),
+          padding: const EdgeInsets.all(8.0),
           decoration: const BoxDecoration(
-            color: Colors.deepPurple,
+            color: Color(0xFF19173A),
             shape: BoxShape.circle,
           ),
           child: const Icon(Iconsax.document, color: Colors.white, size: 24),
@@ -561,9 +619,8 @@ class _DocumentMessageBubble extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: const Color(0xFF19173A),
               borderRadius: BorderRadius.circular(16.0),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -598,8 +655,8 @@ class _DocumentMessageBubble extends StatelessWidget {
                   icon: const Icon(Iconsax.eye, size: 18),
                   label: const Text('View Document'),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.deepPurple,
+                    foregroundColor: const Color(0xFF0A032A),
+                    backgroundColor: const Color(0xFF02F1C3),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
