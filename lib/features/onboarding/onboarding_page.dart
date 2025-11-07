@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/auth/login_page.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -61,6 +60,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
             "Communicate and share documents with clients in a secure, encrypted environment.",
       ),
     ];
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _keys[0].currentState?.startAnimation();
+      }
+    });
   }
 
   @override
@@ -76,7 +80,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         ),
         child: Stack(
           children: [
-            // Ambient circles for depth
+            // Ambient circles for depth (Optimized)
             Positioned(
               top: -100,
               left: -100,
@@ -85,12 +89,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 height: 250,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF6B3E9A).withAlpha(102),
+                  color: const Color(0xFF6B3E9A).withAlpha(60),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6B3E9A).withAlpha(153),
-                      blurRadius: 100,
-                      spreadRadius: 50,
+                      color: const Color(0xFF6B3E9A).withAlpha(80),
+                      blurRadius: 40, // Reduced for performance
+                      spreadRadius: 20, // Reduced for performance
                     ),
                   ],
                 ),
@@ -104,12 +108,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 height: 350,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue.withAlpha(77),
+                  color: Colors.blue.withAlpha(50),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueAccent.withAlpha(128),
-                      blurRadius: 150,
-                      spreadRadius: 70,
+                      color: Colors.blueAccent.withAlpha(80),
+                      blurRadius: 60, // Reduced for performance
+                      spreadRadius: 30, // Reduced for performance
                     ),
                   ],
                 ),
@@ -128,16 +132,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         setState(() {
                           _currentPage = page;
                         });
+                        _keys[page].currentState?.startAnimation();
                       },
                       itemCount: _onboardingScreens.length,
                       itemBuilder: (context, index) {
-                        return VisibilityDetector(
-                          key: Key('onboarding_screen_$index'),
-                          onVisibilityChanged: (visibilityInfo) {
-                            if (visibilityInfo.visibleFraction > 0.5) {
-                              _keys[index].currentState?.startAnimation();
-                            }
-                          },
+                        return RepaintBoundary(
                           child: _onboardingScreens[index],
                         );
                       },
@@ -157,8 +156,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     onTap: () {
                       if (_currentPage < _onboardingScreens.length - 1) {
                         _pageController.nextPage(
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeInOut,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.fastOutSlowIn, // Smoother curve
                         );
                       } else {
                         Navigator.pushReplacement(
@@ -172,22 +171,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               return FadeTransition(
                                   opacity: animation, child: child);
                             },
+                            transitionDuration:
+                                const Duration(milliseconds: 400),
                           ),
                         );
                       }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 72),
+                          vertical: 18, horizontal: 64),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        color: Colors.blueAccent.withAlpha(204),
+                        color: Colors.blueAccent.withAlpha(180),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.blueAccent.withAlpha(178),
-                            blurRadius: 25,
-                            spreadRadius: 2,
-                            offset: const Offset(0, 5),
+                            color: Colors.blueAccent.withAlpha(120),
+                            blurRadius: 15, // Reduced for performance
+                            spreadRadius: 0,
+                            offset: const Offset(0, 4),
                           )
                         ],
                       ),
@@ -197,7 +198,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             : 'Next',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 22,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -215,33 +216,30 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   AnimatedContainer buildDot({int? index}) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 200),
       margin: const EdgeInsets.only(right: 8),
       height: 8,
       width: _currentPage == index ? 24 : 8,
       decoration: BoxDecoration(
         color: _currentPage == index
             ? Colors.blueAccent
-            : const Color(0xFFD8D8D8).withAlpha(128),
+            : const Color(0xFFD8D8D8).withAlpha(100),
         borderRadius: BorderRadius.circular(4),
       ),
     );
   }
 }
 
-// A reusable animated widget
 class AnimatedContent extends StatelessWidget {
   final Widget child;
   final Animation<double> animation;
   final double start;
-  final double end;
 
   const AnimatedContent({
     super.key,
     required this.child,
     required this.animation,
     required this.start,
-    required this.end,
   });
 
   @override
@@ -249,23 +247,17 @@ class AnimatedContent extends StatelessWidget {
     return FadeTransition(
       opacity: CurvedAnimation(
         parent: animation,
-        curve: Interval(start, end, curve: Curves.easeIn),
+        curve: Interval(start, 1.0, curve: Curves.easeOut),
       ),
-      child: ScaleTransition(
-        scale: CurvedAnimation(
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.15),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
           parent: animation,
-          curve: Interval(start, end, curve: Curves.easeInOutBack),
-        ),
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.5),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: Interval(start, end, curve: Curves.easeInOutBack),
-          )),
-          child: child,
-        ),
+          curve: Interval(start, 1.0, curve: Curves.easeOut),
+        )),
+        child: child,
       ),
     );
   }
@@ -293,21 +285,19 @@ class AnimatedOnboardingScreen extends StatefulWidget {
 class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  bool _hasAnimated = false;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 450), // Fast animation
     );
   }
 
   void startAnimation() {
-    if (mounted && !_hasAnimated) {
-      _animationController.forward();
-      _hasAnimated = true;
+    if (mounted) {
+      _animationController.forward(from: 0.0);
     }
   }
 
@@ -323,14 +313,14 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
       child: ClipRRect(
         borderRadius: BorderRadius.circular(32),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
           child: Container(
             width: MediaQuery.of(context).size.width * 0.9,
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
             decoration: BoxDecoration(
-              color: Colors.white.withAlpha(38),
+              color: Colors.white.withAlpha(25),
               borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: Colors.white.withAlpha(51)),
+              border: Border.all(color: Colors.white.withAlpha(35)),
             ),
             child: AnimatedBuilder(
               animation: _animationController,
@@ -339,72 +329,42 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Glowing Icon
                     AnimatedContent(
                       animation: _animationController,
                       start: 0.0,
-                      end: 0.5,
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.blue.withAlpha(51),
+                          color: Colors.blue.withAlpha(40),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blueAccent.withAlpha(178),
-                              blurRadius: 30,
-                              spreadRadius: 5,
+                              color: Colors.blueAccent.withAlpha(100),
+                              blurRadius: 18, // Reduced for performance
+                              spreadRadius: 2,
                             ),
                           ],
                         ),
-                        child: Icon(widget.icon, color: Colors.white, size: 64),
+                        child: Icon(widget.icon, color: Colors.white, size: 60),
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Text Content
                     AnimatedContent(
                       animation: _animationController,
                       start: 0.2,
-                      end: 0.7,
-                      child: Text(
-                        widget.title,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 26,
-                        ),
-                      ),
+                      child: Text(widget.title, textAlign: TextAlign.center, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24, letterSpacing: 0.5)),
                     ),
                     const SizedBox(height: 12),
                     AnimatedContent(
                       animation: _animationController,
-                      start: 0.4,
-                      end: 0.9,
-                      child: Text(
-                        widget.subtitle,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.lato(
-                          color: Colors.white.withAlpha(230),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                        ),
-                      ),
+                      start: 0.3,
+                      child: Text(widget.subtitle, textAlign: TextAlign.center, style: GoogleFonts.lato(color: Colors.white.withAlpha(220), fontWeight: FontWeight.w600, fontSize: 16)),
                     ),
                     const SizedBox(height: 16),
                     AnimatedContent(
                       animation: _animationController,
-                      start: 0.6,
-                      end: 1.0,
-                      child: Text(
-                        widget.description,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.lato(
-                          color: Colors.white.withAlpha(217),
-                          fontSize: 16,
-                          height: 1.5,
-                        ),
-                      ),
+                      start: 0.4,
+                      child: Text(widget.description, textAlign: TextAlign.center, style: GoogleFonts.lato(color: Colors.white.withAlpha(200), fontSize: 15, height: 1.4)),
                     ),
                   ],
                 );
