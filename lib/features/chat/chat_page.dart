@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:io';
 
@@ -80,7 +79,7 @@ class _AIChatPageState extends State<AIChatPage> {
   Future<void> _initGenerativeModel() async {
     final geminiPrompt = await rootBundle.loadString('GEMINI.md');
     _model = GenerativeModel(
-      model: 'gemini-1.5-pro',
+      model: 'gemini-2.5-pro',
       apiKey: _apiKey,
       systemInstruction: Content.text(geminiPrompt),
     );
@@ -97,8 +96,7 @@ class _AIChatPageState extends State<AIChatPage> {
     } else {
       _sessionId = const Uuid().v4();
       _messages.add(_Message(
-        text:
-            "🧞‍♂️ I’m Law Genie — your Indian AI Legal Assistant.",
+        text: "🧞‍♂️ I’m Law Genie — your Indian AI Legal Assistant.",
         isUser: false,
       ));
     }
@@ -197,7 +195,8 @@ class _AIChatPageState extends State<AIChatPage> {
       final titleStartIndex = docStartIndex + '[START_DOCUMENT:'.length;
       final titleEndIndex = responseText.indexOf(']', titleStartIndex);
       final title = responseText.substring(titleStartIndex, titleEndIndex);
-      final content = responseText.substring(titleEndIndex + 1, docEndIndex).trim();
+      final content =
+          responseText.substring(titleEndIndex + 1, docEndIndex).trim();
       _messages.add(_DocumentMessage(title: title, content: content));
     } else {
       _messages.add(_Message(text: responseText, isUser: false));
@@ -207,14 +206,17 @@ class _AIChatPageState extends State<AIChatPage> {
   Future<void> _generatePdf() async {
     final pdf = pw.Document();
 
-    final List<String?> messagesToExport = _messages.map((m) {
-      if (m is _Message) {
-        return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
-      } else if (m is _DocumentMessage) {
-        return "Law Genie: [Generated Document: ${m.title}]";
-      }
-      return null;
-    }).where((item) => item != null).toList();
+    final List<String?> messagesToExport = _messages
+        .map((m) {
+          if (m is _Message) {
+            return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
+          } else if (m is _DocumentMessage) {
+            return "Law Genie: [Generated Document: ${m.title}]";
+          }
+          return null;
+        })
+        .where((item) => item != null)
+        .toList();
 
     pdf.addPage(
       pw.MultiPage(
@@ -244,14 +246,17 @@ class _AIChatPageState extends State<AIChatPage> {
   }
 
   void _shareChat() {
-    final String chatHistory = _messages.map((m) {
-      if (m is _Message) {
-        return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
-      } else if (m is _DocumentMessage) {
-        return "Law Genie: [Generated Document: ${m.title}]";
-      }
-      return null;
-    }).where((item) => item != null).join('\n\n');
+    final String chatHistory = _messages
+        .map((m) {
+          if (m is _Message) {
+            return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
+          } else if (m is _DocumentMessage) {
+            return "Law Genie: [Generated Document: ${m.title}]";
+          }
+          return null;
+        })
+        .where((item) => item != null)
+        .join('\n\n');
     Share.share(chatHistory, subject: 'Chat History with Law Genie');
   }
 
@@ -374,20 +379,17 @@ class _AIChatPageState extends State<AIChatPage> {
             Expanded(
               child: TextField(
                 controller: _textController,
-                style: const TextStyle(
-                    color: Colors.white),
+                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Ask your legal question...',
                   hintStyle: GoogleFonts.poppins(color: Colors.white70),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide:
-                        BorderSide.none,
+                    borderSide: BorderSide.none,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
-                    borderSide:
-                        BorderSide.none,
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
@@ -534,14 +536,18 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
                       Icon(
                         isPlaying ? Iconsax.pause : Iconsax.volume_high,
                         size: 16,
-                        color: isPlaying ? const Color(0xFF02F1C3) : Colors.white70,
+                        color: isPlaying
+                            ? const Color(0xFF02F1C3)
+                            : Colors.white70,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         isPlaying ? 'Playing...' : 'Listen',
                         style: TextStyle(
                           fontSize: 12,
-                          color: isPlaying ? const Color(0xFF02F1C3) : Colors.white70,
+                          color: isPlaying
+                              ? const Color(0xFF02F1C3)
+                              : Colors.white70,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -580,7 +586,8 @@ class _UserMessageBubble extends StatelessWidget {
             ),
             child: Text(
               message.text,
-              style: GoogleFonts.poppins(color: const Color(0xFF0A032A), fontSize: 15),
+              style: GoogleFonts.poppins(
+                  color: const Color(0xFF0A032A), fontSize: 15),
             ),
           ),
         ),

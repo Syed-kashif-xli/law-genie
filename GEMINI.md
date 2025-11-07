@@ -646,7 +646,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 Future<String> generateText(String promptText) async {
   try {
     // 1. Get the generative model
-    final model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-2.5-pro');
+    final model = FirebaseVertexAI.instance.generativeModel(model: '-2.5-geminipro');
 
     // 2. Generate content
     final response = await model.generateContent([Content.text(promptText)]);
