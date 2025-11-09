@@ -43,81 +43,83 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF6B3E9A);
-    const Color accentColor = Color(0xFF02F1C3);
-    const Color backgroundColor = Color(0xFF0A032A);
+    const Color primaryColor = Color(0xFF2C55A9);
+    const Color accentColor = Color(0xFF83D0F5);
+    const Color backgroundColor = Color(0xFFF0F4F8);
+    const Color textColor = Color(0xFF1E293B);
 
     final TextTheme appTextTheme = GoogleFonts.lexendTextTheme(
-      ThemeData.dark().textTheme,
+      Theme.of(context).textTheme,
     ).copyWith(
       displayLarge: const TextStyle(
-          fontWeight: FontWeight.bold, fontSize: 57, color: Colors.white),
+          fontWeight: FontWeight.bold, fontSize: 57, color: textColor),
       titleLarge: const TextStyle(
-          fontWeight: FontWeight.bold, fontSize: 22, color: Colors.white),
-      bodyLarge: TextStyle(fontSize: 16, color: Colors.white.withAlpha(230)),
-      bodyMedium: TextStyle(fontSize: 14, color: Colors.white.withAlpha(204)),
+          fontWeight: FontWeight.bold, fontSize: 22, color: textColor),
+      bodyLarge: TextStyle(fontSize: 16, color: textColor.withAlpha(230)),
+      bodyMedium: TextStyle(fontSize: 14, color: textColor.withAlpha(204)),
     );
 
-    final ThemeData futuristicTheme = ThemeData(
+    final ThemeData newTheme = ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: backgroundColor,
       primaryColor: primaryColor,
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         primary: primaryColor,
         secondary: accentColor,
         background: backgroundColor,
       ),
       textTheme: appTextTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0xFF19173A),
+        backgroundColor: Colors.white,
         elevation: 0,
         titleTextStyle: appTextTheme.titleLarge?.copyWith(fontSize: 24),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: textColor),
       ),
       cardTheme: CardThemeData(
-        elevation: 0,
-        color: const Color(0xFF19173A),
+        elevation: 1,
+        color: Colors.white,
+        shadowColor: Colors.black.withOpacity(0.05),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          foregroundColor: const Color(0xFF0A032A),
-          backgroundColor: accentColor,
+          foregroundColor: Colors.white,
+          backgroundColor: primaryColor,
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          elevation: 0,
+          elevation: 2,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        labelStyle: const TextStyle(color: Colors.white70),
-        prefixIconColor: Colors.white70,
+        labelStyle: const TextStyle(color: textColor),
+        prefixIconColor: textColor,
         filled: true,
-        fillColor: const Color(0xFF19173A),
+        fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: accentColor),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
         ),
       ),
     );
 
     return MaterialApp(
       title: 'Law Genie',
-      theme: futuristicTheme,
+      theme: newTheme,
       home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
       routes: {

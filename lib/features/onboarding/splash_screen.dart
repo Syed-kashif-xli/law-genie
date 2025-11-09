@@ -1,10 +1,9 @@
 
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/onboarding/onboarding_page.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:iconsax/iconsax.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,20 +12,53 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _logoAnimationController;
+  late Animation<double> _logoScaleAnimation;
+
+  late AnimationController _textAnimationController;
+  late Animation<Offset> _textSlideAnimation;
+  late Animation<double> _textFadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
+
+    // Logo animation
+    _logoAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+    _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(
+          parent: _logoAnimationController, curve: Curves.easeInOut),
+    );
 
-    _animationController.forward();
+    // Text animation
+    _textAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _textSlideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.5),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _textAnimationController,
+      curve: Curves.easeOut,
+    ));
+    _textFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _textAnimationController,
+        curve: Curves.easeIn,
+      ),
+    );
+
+    // Start animations
+    _logoAnimationController.forward();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _textAnimationController.forward();
+    });
 
     Timer(const Duration(seconds: 4), () {
       Navigator.pushReplacement(
@@ -38,7 +70,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _logoAnimationController.dispose();
+    _textAnimationController.dispose();
     super.dispose();
   }
 
@@ -94,65 +127,40 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               ),
             ),
             Center(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(35),
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF531DE2),
-                            Color(0xFF7E3FF2),
-                          ],
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnimatedBuilder(
+                      animation: _logoAnimationController,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _logoScaleAnimation.value,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30.0),
+                            child: SvgPicture.asset(
+                              'assets/images/law_genie_icon.svg',
+                              width: 150,
+                              height: 150,
+                            ),
+                          ),
+                        );
+                      }),
+                  const SizedBox(height: 20),
+                  FadeTransition(
+                    opacity: _textFadeAnimation,
+                    child: SlideTransition(
+                      position: _textSlideAnimation,
+                      child: Text(
+                        'Law Genie',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.25),
-                            spreadRadius: 2,
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: const Stack(
-                        children: [
-                          Center(
-                            child: Icon(
-                              FontAwesomeIcons.scaleBalanced,
-                              color: Colors.white,
-                              size: 70,
-                            ),
-                          ),
-                          Positioned(
-                            top: 18,
-                            right: 18,
-                            child: Icon(
-                              Iconsax.magic_star5,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Law Genie',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],

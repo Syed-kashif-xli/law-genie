@@ -46,6 +46,7 @@ dependencies:
   build_runner: ^2.4.13
   uuid: ^4.4.0
   timezone: ^0.10.1
+  flutter_svg: ^2.2.2
 
 dev_dependencies:
   flutter_test:
@@ -57,3 +58,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/law_genie_icon.svg
