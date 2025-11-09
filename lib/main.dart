@@ -13,6 +13,7 @@ import 'package:myapp/features/home/providers/news_provider.dart';
 import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/features/home/home_page.dart';
 import 'package:myapp/features/onboarding/onboarding_page.dart';
+import 'package:myapp/features/onboarding/splash_screen.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
@@ -117,7 +118,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Law Genie',
       theme: futuristicTheme,
-      home: const OnboardingPage(),
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/home': (context) => const HomePage(),
@@ -125,6 +126,7 @@ class MyApp extends StatelessWidget {
         '/generateDoc': (context) => const DocumentGeneratorPage(),
         '/caseTimeline': (context) => const CaseTimelinePage(),
         '/chatHistory': (context) => const ChatHistoryScreen(),
+        '/onboarding': (context) => const OnboardingPage(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/aiChat') {
