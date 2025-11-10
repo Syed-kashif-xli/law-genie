@@ -1,8 +1,10 @@
 import 'dart:ui';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/auth/login_page.dart';
+import 'package:myapp/features/onboarding/terms_and_conditions_page.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -161,15 +163,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
                   if (_currentPage == _onboardingScreens.length - 1)
+                    const Spacer(),
+                  if (_currentPage == _onboardingScreens.length - 1)
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40.0, vertical: 20.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 40.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Theme(
-                            data:
-                                ThemeData(unselectedWidgetColor: Colors.white70),
+                            data: ThemeData(
+                                unselectedWidgetColor: Colors.white70),
                             child: Checkbox(
                               value: _agreedToTerms,
                               onChanged: (bool? value) {
@@ -182,10 +185,33 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             ),
                           ),
                           Flexible(
-                            child: Text(
-                              'I agree to the Terms and Conditions',
-                              style: GoogleFonts.lato(
-                                  color: Colors.white, fontSize: 14),
+                            child: RichText(
+                              text: TextSpan(
+                                text: 'I agree to the ',
+                                style: GoogleFonts.lato(
+                                    color: Colors.white, fontSize: 14),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: 'Terms and Conditions',
+                                      style: GoogleFonts.lato(
+                                        color: Colors.blueAccent,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        decoration:
+                                            TextDecoration.underline,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const TermsAndConditionsPage(),
+                                            ),
+                                          );
+                                        }),
+                                ],
+                              ),
                             ),
                           ),
                         ],
