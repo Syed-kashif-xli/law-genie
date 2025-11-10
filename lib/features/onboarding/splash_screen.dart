@@ -1,7 +1,6 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/onboarding/onboarding_page.dart';
 
@@ -137,8 +136,8 @@ class _SplashScreenState extends State<SplashScreen>
                           scale: _logoScaleAnimation.value,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(30.0),
-                            child: SvgPicture.asset(
-                              'assets/images/law_genie_icon.svg',
+                            child: Image.asset(
+                              'assets/images/logo.png',
                               width: 150,
                               height: 150,
                             ),
