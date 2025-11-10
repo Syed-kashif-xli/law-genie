@@ -14,7 +14,9 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  bool _agreedToTerms = false;
   final List<GlobalKey<_AnimatedOnboardingScreenState>> _keys = [
+    GlobalKey(),
     GlobalKey(),
     GlobalKey(),
     GlobalKey(),
@@ -58,6 +60,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
         subtitle: "Encrypted Communication",
         description:
             "Communicate and share documents with clients in a secure, encrypted environment.",
+      ),
+      AnimatedOnboardingScreen(
+        key: _keys[4],
+        icon: Iconsax.document,
+        title: "Terms and Conditions",
+        subtitle: "Usage Agreement",
+        description:
+            "By using this app, you agree to our terms and conditions.",
       ),
     ];
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -150,6 +160,37 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       (index) => buildDot(index: index),
                     ),
                   ),
+                  if (_currentPage == _onboardingScreens.length - 1)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40.0, vertical: 20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Theme(
+                            data:
+                                ThemeData(unselectedWidgetColor: Colors.white70),
+                            child: Checkbox(
+                              value: _agreedToTerms,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _agreedToTerms = value ?? false;
+                                });
+                              },
+                              activeColor: Colors.blueAccent,
+                              checkColor: Colors.white,
+                            ),
+                          ),
+                          Flexible(
+                            child: Text(
+                              'I agree to the Terms and Conditions',
+                              style: GoogleFonts.lato(
+                                  color: Colors.white, fontSize: 14),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   const Spacer(flex: 2),
                   // Glowing Next Button
                   GestureDetector(
@@ -160,21 +201,31 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           curve: Curves.fastOutSlowIn, // Smoother curve
                         );
                       } else {
-                        Navigator.pushReplacement(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    const LoginPage(),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              return FadeTransition(
-                                  opacity: animation, child: child);
-                            },
-                            transitionDuration:
-                                const Duration(milliseconds: 400),
-                          ),
-                        );
+                        if (_agreedToTerms) {
+                          Navigator.pushReplacement(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation,
+                                      secondaryAnimation) =>
+                                  const LoginPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                    opacity: animation, child: child);
+                              },
+                              transitionDuration:
+                                  const Duration(milliseconds: 400),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Please agree to the Terms and Conditions to continue.'),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                        }
                       }
                     },
                     child: Container(
@@ -352,19 +403,35 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
                     AnimatedContent(
                       animation: _animationController,
                       start: 0.2,
-                      child: Text(widget.title, textAlign: TextAlign.center, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24, letterSpacing: 0.5)),
+                      child: Text(widget.title,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              letterSpacing: 0.5)),
                     ),
                     const SizedBox(height: 12),
                     AnimatedContent(
                       animation: _animationController,
                       start: 0.3,
-                      child: Text(widget.subtitle, textAlign: TextAlign.center, style: GoogleFonts.lato(color: Colors.white.withAlpha(220), fontWeight: FontWeight.w600, fontSize: 16)),
+                      child: Text(widget.subtitle,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.lato(
+                              color: Colors.white.withAlpha(220),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16)),
                     ),
                     const SizedBox(height: 16),
                     AnimatedContent(
                       animation: _animationController,
                       start: 0.4,
-                      child: Text(widget.description, textAlign: TextAlign.center, style: GoogleFonts.lato(color: Colors.white.withAlpha(200), fontSize: 15, height: 1.4)),
+                      child: Text(widget.description,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.lato(
+                              color: Colors.white.withAlpha(200),
+                              fontSize: 15,
+                              height: 1.4)),
                     ),
                   ],
                 );
