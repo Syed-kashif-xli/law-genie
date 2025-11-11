@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:uuid/uuid.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:myapp/models/chat_model.dart' as my_models;
 import 'package:myapp/providers/chat_provider.dart';
@@ -133,12 +134,21 @@ class _AIChatPageState extends State<AIChatPage> {
 
   void _initSpeech() async {
     await _speechToText.initialize();
+    await Permission.microphone.request();
     setState(() {});
   }
 
   void _startListening() async {
-    await _speechToText.listen(onResult: _onSpeechResult);
-    setState(() {});
+    if (await Permission.microphone.request().isGranted) {
+      await _speechToText.listen(onResult: _onSpeechResult);
+      setState(() {});
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Microphone permission is required for voice input.'),
+        ),
+      );
+    }
   }
 
   void _stopListening() async {
@@ -381,6 +391,8 @@ class _AIChatPageState extends State<AIChatPage> {
                 controller: _textController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
+                  fillColor: const Color(0xFF0A032A),
+                  filled: true,
                   hintText: 'Ask your legal question...',
                   hintStyle: GoogleFonts.poppins(color: Colors.white70),
                   border: OutlineInputBorder(
