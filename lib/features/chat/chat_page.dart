@@ -57,6 +57,7 @@ class _AttachmentMessage {
 class _AIChatPageState extends State<AIChatPage> {
   final TextEditingController _textController = TextEditingController();
   final SpeechToText _speechToText = SpeechToText();
+  final ScrollController _scrollController = ScrollController();
   final List<dynamic> _messages = [];
   File? _selectedFile;
   late final GenerativeModel _model;
@@ -81,7 +82,20 @@ class _AIChatPageState extends State<AIChatPage> {
   @override
   void dispose() {
     _saveChatSession();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   Future<void> _initGenerativeModel() async {
@@ -91,7 +105,13 @@ class _AIChatPageState extends State<AIChatPage> {
       apiKey: _apiKey,
       systemInstruction: Content.text(geminiPrompt),
     );
-    _chat = _model.startChat();
+
+    // Load chat history
+    final history = widget.chatSession?.messages.map((m) {
+      return [Content.text(m.userMessage), Content.model([TextPart(m.botResponse)])];
+    }).expand((x) => x).toList() ?? [];
+
+    _chat = _model.startChat(history: history);
   }
 
   void _loadSession() {
@@ -108,6 +128,7 @@ class _AIChatPageState extends State<AIChatPage> {
         isUser: false,
       ));
     }
+    _scrollToBottom();
   }
 
   void _saveChatSession() {
@@ -193,6 +214,7 @@ class _AIChatPageState extends State<AIChatPage> {
       _textController.clear();
       _selectedFile = null;
       _messages.add(_TypingIndicator());
+      _scrollToBottom();
     });
 
     try {
@@ -210,11 +232,13 @@ class _AIChatPageState extends State<AIChatPage> {
       setState(() {
         _messages.removeWhere((element) => element is _TypingIndicator);
         _handleAIResponse(responseText ?? "");
+        _scrollToBottom();
       });
     } catch (e) {
       setState(() {
         _messages.removeWhere((element) => element is _TypingIndicator);
         _messages.add(_Message(text: 'Error: ${e.toString()}', isUser: false));
+        _scrollToBottom();
       });
     }
   }
@@ -233,6 +257,7 @@ class _AIChatPageState extends State<AIChatPage> {
     } else {
       _messages.add(_Message(text: responseText, isUser: false));
     }
+    _scrollToBottom();
   }
 
   Future<void> _generatePdf() async {
@@ -305,6 +330,7 @@ class _AIChatPageState extends State<AIChatPage> {
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16.0),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
@@ -330,7 +356,7 @@ class _AIChatPageState extends State<AIChatPage> {
               color: Colors.grey[200],
               child: Row(
                 children: [
-                  const Icon(Icons.attachment),
+                  const Icon(Iconsax.document),
                   const SizedBox(width: 8),
                   Expanded(child: Text(_selectedFile!.path.split('/').last)),
                   IconButton(
@@ -757,28 +783,16 @@ class _AttachmentMessageBubble extends StatelessWidget {
               color: const Color(0xFF02F1C3),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
-                if (message.text != null && message.text!.isNotEmpty)
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Text(
-                        message.text!,
-                        style: GoogleFonts.poppins(
-                            color: const Color(0xFF0A032A), fontSize: 15),
-                      ),
-                    ),
-                  ),
                 if (isImage)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.0),
                     child: Image.file(
                       message.file,
-                      width: 80,
-                      height: 80,
+                      width: 150,
+                      height: 150,
                       fit: BoxFit.cover,
                     ),
                   )
@@ -796,6 +810,15 @@ class _AttachmentMessageBubble extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                if (message.text != null && message.text!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      message.text!,
+                      style: GoogleFonts.poppins(
+                          color: const Color(0xFF0A032A), fontSize: 15),
+                    ),
                   ),
               ],
             ),

@@ -294,102 +294,104 @@ class _LoginPageState extends State<LoginPage> {
                 child: _buildAmbientLight(Colors.blue, 350, 150, 70)),
             SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: screenHeight * 0.05),
-                    const Icon(Iconsax.user, color: Colors.white, size: 50),
-                    const SizedBox(height: 16),
-                    Text(
-                        _isSignUp ? 'Create Account' : 'Welcome Back',
-                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Text(
-                        _isSignUp
-                            ? 'Create a new Law Genie account'
-                            : 'Sign in to your Law Genie account',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            ?.copyWith(color: Colors.white70)),
-                    const SizedBox(height: 32),
-                    _buildGlassCard(
-                      child: Column(
-                        children: [
-                          _buildLoginTypeToggle(),
-                          const SizedBox(height: 24),
-                          if (_isEmailLogin) ...[
-                            _buildTextField('Email', Iconsax.sms,
-                                controller: _emailController, isEmail: true),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: screenHeight * 0.05),
+                      const Icon(Iconsax.user, color: Colors.white, size: 50),
+                      const SizedBox(height: 16),
+                      Text(
+                          _isSignUp ? 'Create Account' : 'Welcome Back',
+                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                              color: Colors.white, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text(
+                          _isSignUp
+                              ? 'Create a new Law Genie account'
+                              : 'Sign in to your Law Genie account',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: Colors.white70)),
+                      const SizedBox(height: 32),
+                      _buildGlassCard(
+                        child: Column(
+                          children: [
+                            _buildLoginTypeToggle(),
+                            const SizedBox(height: 24),
+                            if (_isEmailLogin) ...[
+                              _buildTextField('Email', Iconsax.sms,
+                                  controller: _emailController, isEmail: true),
+                              const SizedBox(height: 16),
+                              _buildTextField('Password', Iconsax.lock_1,
+                                  controller: _passwordController,
+                                  isPassword: true),
+                            ] else if (_codeSent) ...[
+                              _buildTextField('OTP', Iconsax.password_check,
+                                  controller: _otpController),
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () => setState(() {
+                                    _codeSent = false;
+                                    _otpController.clear();
+                                    _verificationId = null;
+                                  }),
+                                  child: const Text('Change Number',
+                                      style: TextStyle(color: Colors.white70)),
+                                ),
+                              )
+                            ] else ...[
+                              _buildPhoneField(),
+                            ],
                             const SizedBox(height: 16),
-                            _buildTextField('Password', Iconsax.lock_1,
-                                controller: _passwordController,
-                                isPassword: true),
-                          ] else if (_codeSent) ...[
-                            _buildTextField('OTP', Iconsax.password_check,
-                                controller: _otpController),
-                            const SizedBox(height: 8),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () => setState(() {
-                                  _codeSent = false;
-                                  _otpController.clear();
-                                  _verificationId = null;
-                                }),
-                                child: const Text('Change Number',
+                            if (_isEmailLogin)
+                              const Align(
+                                alignment: Alignment.centerRight,
+                                child: Text('Forgot password?',
                                     style: TextStyle(color: Colors.white70)),
                               ),
-                            )
-                          ] else ...[
-                            _buildPhoneField(),
                           ],
-                          const SizedBox(height: 16),
-                          if (_isEmailLogin)
-                            const Align(
-                              alignment: Alignment.centerRight,
-                              child: Text('Forgot password?',
-                                  style: TextStyle(color: Colors.white70)),
-                            ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      _buildGlowingButton(),
+                      const SizedBox(height: 32),
+                      const Text('Or continue with',
+                          style: TextStyle(color: Colors.white70)),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildSocialButton(
+                              FontAwesomeIcons.google, _signInWithGoogle),
+                          const SizedBox(width: 24),
+                          _buildSocialButton(FontAwesomeIcons.apple, () {}),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    _buildGlowingButton(),
-                    const SizedBox(height: 32),
-                    const Text('Or continue with',
-                        style: TextStyle(color: Colors.white70)),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildSocialButton(
-                            FontAwesomeIcons.google, _signInWithGoogle),
-                        const SizedBox(width: 24),
-                        _buildSocialButton(FontAwesomeIcons.apple, () {}),
-                      ],
-                    ),
-                    SizedBox(height: screenHeight * 0.05),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                            _isSignUp
-                                ? "Already have an account? "
-                                : "Don't have an account? ",
-                            style: const TextStyle(color: Colors.white70)),
-                        GestureDetector(
-                          onTap: () => setState(() => _isSignUp = !_isSignUp),
-                          child: Text(_isSignUp ? 'Sign In' : 'Sign Up',
-                              style: TextStyle(
-                                  color: Colors.blue.shade300,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ],
-                    ),
-                  ],
+                      SizedBox(height: screenHeight * 0.05),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                              _isSignUp
+                                  ? "Already have an account? "
+                                  : "Don't have an account? ",
+                              style: const TextStyle(color: Colors.white70)),
+                          GestureDetector(
+                            onTap: () => setState(() => _isSignUp = !_isSignUp),
+                            child: Text(_isSignUp ? 'Sign In' : 'Sign Up',
+                                style: TextStyle(
+                                    color: Colors.blue.shade300,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
