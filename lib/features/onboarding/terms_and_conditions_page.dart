@@ -54,6 +54,14 @@ class TermsAndConditionsPage extends StatelessWidget {
           style: GoogleFonts.lato(fontSize: 16, color: Colors.black87),
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        label: const Text('Accept and Continue'),
+        icon: const Icon(Icons.check),
+        backgroundColor: const Color(0xFF1A0B2E),
+      ),
     );
   }
 }

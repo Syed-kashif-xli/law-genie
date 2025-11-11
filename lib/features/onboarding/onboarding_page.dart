@@ -233,7 +233,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             PageRouteBuilder(
                               pageBuilder: (context, animation,
                                       secondaryAnimation) =>
-                                  const LoginPage(),
+                                  LoginPage(agreedToTerms: _agreedToTerms),
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
                                 return FadeTransition(
@@ -259,10 +259,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           vertical: 18, horizontal: 64),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        color: Colors.blueAccent.withAlpha(180),
+                        color: _agreedToTerms || _currentPage != _onboardingScreens.length - 1
+                            ? Colors.blueAccent.withAlpha(180)
+                            : Colors.grey.withAlpha(180),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.blueAccent.withAlpha(120),
+                            color: _agreedToTerms || _currentPage != _onboardingScreens.length - 1
+                                ? Colors.blueAccent.withAlpha(120)
+                                : Colors.grey.withAlpha(120),
                             blurRadius: 15, // Reduced for performance
                             spreadRadius: 0,
                             offset: const Offset(0, 4),
@@ -402,64 +406,66 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
             child: AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AnimatedContent(
-                      animation: _animationController,
-                      start: 0.0,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.blue.withAlpha(40),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blueAccent.withAlpha(100),
-                              blurRadius: 18, // Reduced for performance
-                              spreadRadius: 2,
-                            ),
-                          ],
+                return SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AnimatedContent(
+                        animation: _animationController,
+                        start: 0.0,
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue.withAlpha(40),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueAccent.withAlpha(100),
+                                blurRadius: 18, // Reduced for performance
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Icon(widget.icon, color: Colors.white, size: 60),
                         ),
-                        child: Icon(widget.icon, color: Colors.white, size: 60),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    AnimatedContent(
-                      animation: _animationController,
-                      start: 0.2,
-                      child: Text(widget.title,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                              letterSpacing: 0.5)),
-                    ),
-                    const SizedBox(height: 12),
-                    AnimatedContent(
-                      animation: _animationController,
-                      start: 0.3,
-                      child: Text(widget.subtitle,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.lato(
-                              color: Colors.white.withAlpha(220),
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16)),
-                    ),
-                    const SizedBox(height: 16),
-                    AnimatedContent(
-                      animation: _animationController,
-                      start: 0.4,
-                      child: Text(widget.description,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.lato(
-                              color: Colors.white.withAlpha(200),
-                              fontSize: 15,
-                              height: 1.4)),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      AnimatedContent(
+                        animation: _animationController,
+                        start: 0.2,
+                        child: Text(widget.title,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                letterSpacing: 0.5)),
+                      ),
+                      const SizedBox(height: 12),
+                      AnimatedContent(
+                        animation: _animationController,
+                        start: 0.3,
+                        child: Text(widget.subtitle,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lato(
+                                color: Colors.white.withAlpha(220),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16)),
+                      ),
+                      const SizedBox(height: 16),
+                      AnimatedContent(
+                        animation: _animationController,
+                        start: 0.4,
+                        child: Text(widget.description,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lato(
+                                color: Colors.white.withAlpha(200),
+                                fontSize: 15,
+                                height: 1.4)),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

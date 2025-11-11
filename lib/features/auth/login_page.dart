@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
@@ -6,9 +7,11 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:myapp/features/home/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:myapp/services/firestore_service.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final bool agreedToTerms;
+  const LoginPage({super.key, this.agreedToTerms = false});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -21,21 +24,15 @@ class _LoginPageState extends State<LoginPage> {
   String _fullPhoneNumber = '';
 
   bool _isEmailLogin = true;
-  bool _agreedToTerms = false; // Changed to false
   bool _isLoading = false;
   bool _codeSent = false;
   String? _verificationId;
   bool _isSignUp = false;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirestoreService _firestoreService = FirestoreService();
 
   Future<void> _handleAuthAction() async {
-    if (!_agreedToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You must agree to the terms and conditions.')),
-      );
-      return;
-    }
     if (_isEmailLogin) {
       if (_isSignUp) {
         _signUpWithEmailAndPassword();
@@ -62,7 +59,14 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (userCredential.user != null && mounted) {
-        _navigateToHome();
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'email': userCredential.user!.email,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+        _navigateToHome(userCredential.user!);
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -91,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (userCredential.user != null && mounted) {
-        _navigateToHome();
+        _navigateToHome(userCredential.user!);
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -122,10 +126,20 @@ class _LoginPageState extends State<LoginPage> {
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: _fullPhoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
-        await FirebaseAuth.instance.signInWithCredential(credential);
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
         if (mounted) {
+          if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userCredential.user!.uid)
+                .set({
+              'phoneNumber': userCredential.user!.phoneNumber,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+          }
           setState(() => _isLoading = false);
-          _navigateToHome();
+          _navigateToHome(userCredential.user!);
         }
       },
       verificationFailed: (FirebaseAuthException e) {
@@ -174,7 +188,16 @@ class _LoginPageState extends State<LoginPage> {
           await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (userCredential.user != null && mounted) {
-        _navigateToHome();
+        if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userCredential.user!.uid)
+              .set({
+            'phoneNumber': userCredential.user!.phoneNumber,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+        }
+        _navigateToHome(userCredential.user!);
       }
     } catch (e) {
       if (!mounted) return;
@@ -204,7 +227,18 @@ class _LoginPageState extends State<LoginPage> {
             await FirebaseAuth.instance.signInWithCredential(credential);
 
         if (userCredential.user != null && mounted) {
-          _navigateToHome();
+          if (userCredential.additionalUserInfo?.isNewUser ?? false) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userCredential.user!.uid)
+                .set({
+              'email': userCredential.user!.email,
+              'displayName': userCredential.user!.displayName,
+              'photoURL': userCredential.user!.photoURL,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+          }
+          _navigateToHome(userCredential.user!);
         }
       }
     } catch (e) {
@@ -216,7 +250,10 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _navigateToHome() {
+  void _navigateToHome(User user) async {
+    if (widget.agreedToTerms) {
+      await _firestoreService.saveTermsAcceptance(user.uid);
+    }
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const MainLayout()),
@@ -319,8 +356,6 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    _buildTermsAndConditions(), // Added terms and conditions checkbox
                     const SizedBox(height: 24),
                     _buildGlowingButton(),
                     const SizedBox(height: 32),
@@ -512,28 +547,6 @@ class _LoginPageState extends State<LoginPage> {
       onChanged: (phone) {
         _fullPhoneNumber = phone.completeNumber;
       },
-    );
-  }
-
-  Widget _buildTermsAndConditions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Checkbox(
-          value: _agreedToTerms,
-          onChanged: (value) {
-            setState(() {
-              _agreedToTerms = value!;
-            });
-          },
-          checkColor: Colors.white,
-          activeColor: Colors.blueAccent,
-        ),
-        const Text(
-          'I agree to the Terms and Conditions',
-          style: TextStyle(color: Colors.white70),
-        ),
-      ],
     );
   }
 

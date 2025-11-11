@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myapp/features/case_timeline/timeline_model.dart';
 
@@ -23,5 +22,13 @@ class FirestoreService {
   // Delete a timeline event
   Future<void> deleteTimelineEvent(String id) {
     return _db.collection('timeline').doc(id).delete();
+  }
+
+  // Save terms and conditions acceptance
+  Future<void> saveTermsAcceptance(String userId) {
+    return _db.collection('user_acceptance').add({
+      'acceptedAt': FieldValue.serverTimestamp(),
+      'userId': userId,
+    });
   }
 }
