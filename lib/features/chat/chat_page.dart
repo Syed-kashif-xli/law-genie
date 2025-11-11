@@ -18,6 +18,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:uuid/uuid.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:mime/mime.dart';
 
 import 'package:myapp/models/chat_model.dart' as my_models;
 import 'package:myapp/providers/chat_provider.dart';
@@ -45,6 +46,12 @@ class _DocumentMessage {
   final String content;
 
   _DocumentMessage({required this.title, required this.content});
+}
+
+class _AttachmentMessage {
+  final File file;
+  final String? text;
+  _AttachmentMessage({required this.file, this.text});
 }
 
 class _AIChatPageState extends State<AIChatPage> {
@@ -167,7 +174,6 @@ class _AIChatPageState extends State<AIChatPage> {
     if (result != null) {
       setState(() {
         _selectedFile = File(result.files.single.path!);
-        _sendMessage('File: ${_selectedFile!.path.split('/').last}');
       });
     }
   }
@@ -175,14 +181,30 @@ class _AIChatPageState extends State<AIChatPage> {
   void _sendMessage(String text) async {
     if (text.isEmpty && _selectedFile == null) return;
 
+    String userMessage = text;
+    File? attachedFile = _selectedFile;
+
     setState(() {
-      _messages.add(_Message(text: text, isUser: true));
+      if (attachedFile != null) {
+        _messages.add(_AttachmentMessage(file: attachedFile, text: text));
+      } else {
+        _messages.add(_Message(text: userMessage, isUser: true));
+      }
       _textController.clear();
+      _selectedFile = null;
       _messages.add(_TypingIndicator());
     });
 
     try {
-      var response = await _chat.sendMessage(Content.text(text));
+      final prompt = "Analyze the following attachment and question. The file might be compressed, so clarity may not be perfect. Do your best to accurately analyze the visual content. If there's any text, extract it. If the image is too blurry, politely ask the user to send a clearer version. Always combine the analysis of the image and the user's question to provide a smart, professional, and helpful answer, like a real legal assistant would. Question: $userMessage";
+
+      final content = [Content.multi([
+        TextPart(prompt),
+        if (attachedFile != null) 
+          DataPart(lookupMimeType(attachedFile.path) ?? 'application/octet-stream', await attachedFile.readAsBytes()),
+      ])];
+
+      var response = await _chat.sendMessage(content.first);
       var responseText = response.text;
 
       setState(() {
@@ -222,6 +244,8 @@ class _AIChatPageState extends State<AIChatPage> {
             return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
           } else if (m is _DocumentMessage) {
             return "Law Genie: [Generated Document: ${m.title}]";
+          } else if (m is _AttachmentMessage) {
+            return "You: [Attachment: ${m.file.path.split('/').last}] ${m.text ?? ''}";
           }
           return null;
         })
@@ -262,6 +286,8 @@ class _AIChatPageState extends State<AIChatPage> {
             return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
           } else if (m is _DocumentMessage) {
             return "Law Genie: [Generated Document: ${m.title}]";
+          } else if (m is _AttachmentMessage) {
+            return "You: [Attachment: ${m.file.path.split('/').last}] ${m.text ?? ''}";
           }
           return null;
         })
@@ -289,6 +315,8 @@ class _AIChatPageState extends State<AIChatPage> {
                       : _AIMessageBubble(message: message);
                 } else if (message is _DocumentMessage) {
                   return _DocumentMessageBubble(message: message);
+                } else if (message is _AttachmentMessage) {
+                  return _AttachmentMessageBubble(message: message);
                 } else if (message is _TypingIndicator) {
                   return const _TypingIndicatorBubble();
                 }
@@ -296,6 +324,26 @@ class _AIChatPageState extends State<AIChatPage> {
               },
             ),
           ),
+          if (_selectedFile != null)
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              color: Colors.grey[200],
+              child: Row(
+                children: [
+                  const Icon(Icons.attachment),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(_selectedFile!.path.split('/').last)),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      setState(() {
+                        _selectedFile = null;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
           _buildChatInputArea(context),
         ],
       ),
@@ -681,6 +729,74 @@ class _DocumentMessageBubble extends StatelessWidget {
                     ),
                   ),
                 ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AttachmentMessageBubble extends StatelessWidget {
+  final _AttachmentMessage message;
+  const _AttachmentMessageBubble({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    final isImage = ['jpg', 'jpeg', 'png', 'gif']
+        .any((ext) => message.file.path.toLowerCase().endsWith(ext));
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Flexible(
+          child: Container(
+            margin: const EdgeInsets.only(top: 8, bottom: 8, left: 80),
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: const Color(0xFF02F1C3),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (message.text != null && message.text!.isNotEmpty)
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        message.text!,
+                        style: GoogleFonts.poppins(
+                            color: const Color(0xFF0A032A), fontSize: 15),
+                      ),
+                    ),
+                  ),
+                if (isImage)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: Image.file(
+                      message.file,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Iconsax.document, color: Color(0xFF0A032A)),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          message.file.path.split('/').last,
+                          style: GoogleFonts.poppins(
+                              color: const Color(0xFF0A032A), fontSize: 15),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
