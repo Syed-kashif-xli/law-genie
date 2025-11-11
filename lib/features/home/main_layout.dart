@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:myapp/features/auth/login_page.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/home/home_page.dart';
 
@@ -18,29 +21,8 @@ class _MainLayoutState extends State<MainLayout> {
     const AIChatPage(), // Use AIChatPage
     const Center(child: Text('Library Page')),
     const Center(child: Text('Timeline Page')),
-    const Center(child: Text('Profile Page')),
+    const ProfilePage(),
   ];
-
-  void _onTap(int index) {
-    // Updated to navigate to the correct pages
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/home');
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/aiChat');
-        break;
-      case 2:
-        // Placeholder for Library Page
-        break;
-      case 3:
-        Navigator.pushNamed(context, '/caseTimeline');
-        break;
-      case 4:
-        // Placeholder for Profile Page
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +37,6 @@ class _MainLayoutState extends State<MainLayout> {
           setState(() {
             _currentIndex = index;
           });
-          _onTap(index);
         },
         type: BottomNavigationBarType.fixed,
         backgroundColor: const Color(0xFF1A0B2E),
@@ -85,6 +66,36 @@ class _MainLayoutState extends State<MainLayout> {
             label: 'Profile',
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
+  Future<void> _signOut(BuildContext context) async {
+    await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+      (Route<dynamic> route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile'),
+        backgroundColor: const Color(0xFF1A0B2E),
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () => _signOut(context),
+          child: const Text('Log Out'),
+        ),
       ),
     );
   }

@@ -1,8 +1,9 @@
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/features/home/main_layout.dart';
 import 'package:myapp/models/chat_model.dart';
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
 import 'package:myapp/providers/chat_provider.dart';
@@ -25,7 +26,6 @@ Future<void> main() async {
   Hive.registerAdapter(ChatSessionAdapter());
   Hive.registerAdapter(ChatMessageAdapter());
 
-
   runApp(
     MultiProvider(
       providers: [
@@ -33,13 +33,14 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => NewsProvider()),
         ChangeNotifierProvider(create: (context) => ChatProvider()),
       ],
-      child: const MyApp(),
+      child: MyApp(currentUser: FirebaseAuth.instance.currentUser),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final User? currentUser;
+  const MyApp({super.key, this.currentUser});
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +121,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Law Genie',
       theme: newTheme,
-      home: const SplashScreen(),
+      home: currentUser == null ? const SplashScreen() : const MainLayout(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/home': (context) => const HomePage(),
