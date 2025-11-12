@@ -107,9 +107,16 @@ class _AIChatPageState extends State<AIChatPage> {
     );
 
     // Load chat history
-    final history = widget.chatSession?.messages.map((m) {
-      return [Content.text(m.userMessage), Content.model([TextPart(m.botResponse)])];
-    }).expand((x) => x).toList() ?? [];
+    final history = widget.chatSession?.messages
+            .map((m) {
+              return [
+                Content.text(m.userMessage),
+                Content.model([TextPart(m.botResponse)])
+              ];
+            })
+            .expand((x) => x)
+            .toList() ??
+        [];
 
     _chat = _model.startChat(history: history);
   }
@@ -218,13 +225,18 @@ class _AIChatPageState extends State<AIChatPage> {
     });
 
     try {
-      final prompt = "Analyze the following attachment and question. The file might be compressed, so clarity may not be perfect. Do your best to accurately analyze the visual content. If there's any text, extract it. If the image is too blurry, politely ask the user to send a clearer version. Always combine the analysis of the image and the user's question to provide a smart, professional, and helpful answer, like a real legal assistant would. Question: $userMessage";
+      final prompt =
+          "Analyze the following attachment and question. The file might be compressed, so clarity may not be perfect. Do your best to accurately analyze the visual content. If there's any text, extract it. If the image is too blurry, politely ask the user to send a clearer version. Always combine the analysis of the image and the user's question to provide a smart, professional, and helpful answer, like a real legal assistant would. Question: $userMessage";
 
-      final content = [Content.multi([
-        TextPart(prompt),
-        if (attachedFile != null) 
-          DataPart(lookupMimeType(attachedFile.path) ?? 'application/octet-stream', await attachedFile.readAsBytes()),
-      ])];
+      final content = [
+        Content.multi([
+          TextPart(prompt),
+          if (attachedFile != null)
+            DataPart(
+                lookupMimeType(attachedFile.path) ?? 'application/octet-stream',
+                await attachedFile.readAsBytes()),
+        ])
+      ];
 
       var response = await _chat.sendMessage(content.first);
       var responseText = response.text;

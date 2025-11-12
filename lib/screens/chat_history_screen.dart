@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/features/chat/chat_page.dart';
@@ -17,12 +16,14 @@ class ChatHistoryScreen extends StatelessWidget {
           return Scaffold(
             backgroundColor: const Color(0xFF0A032A),
             appBar: AppBar(
-              title: const Text('Chat History', style: TextStyle(color: Colors.white)),
+              title: const Text('Chat History',
+                  style: TextStyle(color: Colors.white)),
               backgroundColor: const Color(0xFF19173A),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.white),
-                  onPressed: () => _showClearConfirmationDialog(context, chatProvider),
+                  onPressed: () =>
+                      _showClearConfirmationDialog(context, chatProvider),
                 ),
               ],
             ),
@@ -39,7 +40,8 @@ class ChatHistoryScreen extends StatelessWidget {
                       final session = chatProvider.chatSessions[index];
                       return Card(
                         color: const Color(0xFF19173A),
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         child: ListTile(
                           title: Text(
                             session.messages.first.userMessage,
@@ -55,7 +57,8 @@ class ChatHistoryScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AIChatPage(chatSession: session),
+                                builder: (context) =>
+                                    AIChatPage(chatSession: session),
                               ),
                             );
                           },
@@ -69,13 +72,15 @@ class ChatHistoryScreen extends StatelessWidget {
     );
   }
 
-  void _showClearConfirmationDialog(BuildContext context, ChatProvider chatProvider) {
+  void _showClearConfirmationDialog(
+      BuildContext context, ChatProvider chatProvider) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Clear Chat History?'),
-          content: const Text('Are you sure you want to delete all chat history?'),
+          content:
+              const Text('Are you sure you want to delete all chat history?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),

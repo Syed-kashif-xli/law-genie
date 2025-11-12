@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,8 +20,14 @@ class TimelineProvider with ChangeNotifier {
   // Fetch timeline events from Firestore
   Future<void> _fetchTimelineEvents() async {
     try {
-      _firestore.collection(_collectionPath).orderBy('date', descending: false).snapshots().listen((snapshot) {
-        _timeline = snapshot.docs.map((doc) => TimelineModel.fromMap(doc.data(), doc.id)).toList();
+      _firestore
+          .collection(_collectionPath)
+          .orderBy('date', descending: false)
+          .snapshots()
+          .listen((snapshot) {
+        _timeline = snapshot.docs
+            .map((doc) => TimelineModel.fromMap(doc.data(), doc.id))
+            .toList();
         _isLoading = false;
         notifyListeners();
       });
@@ -45,7 +50,10 @@ class TimelineProvider with ChangeNotifier {
   Future<void> updateTimelineEvent(TimelineModel event) async {
     if (event.id == null) return;
     try {
-      await _firestore.collection(_collectionPath).doc(event.id).update(event.toMap());
+      await _firestore
+          .collection(_collectionPath)
+          .doc(event.id)
+          .update(event.toMap());
     } catch (e) {
       // Handle error
     }

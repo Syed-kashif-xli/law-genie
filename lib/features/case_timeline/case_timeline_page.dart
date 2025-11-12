@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/features/case_timeline/timeline_model.dart';
@@ -44,7 +43,8 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
           final timelineData = timelineProvider.timeline;
 
           if (timelineData.isEmpty) {
-            return const Center(child: Text('No timeline events yet. Add one!'));
+            return const Center(
+                child: Text('No timeline events yet. Add one!'));
           }
 
           return ListView.builder(
@@ -70,8 +70,10 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                     ),
                   ),
                 ),
-                beforeLineStyle: LineStyle(color: _getStatusColor(item.status), thickness: 2),
-                afterLineStyle: LineStyle(color: _getStatusColor(item.status), thickness: 2),
+                beforeLineStyle: LineStyle(
+                    color: _getStatusColor(item.status), thickness: 2),
+                afterLineStyle: LineStyle(
+                    color: _getStatusColor(item.status), thickness: 2),
                 endChild: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Card(
@@ -86,7 +88,10 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                         children: [
                           Text(
                             item.title,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -94,14 +99,17 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           const SizedBox(height: 8),
-                          Text(item.description, style: Theme.of(context).textTheme.bodyMedium),
+                          Text(item.description,
+                              style: Theme.of(context).textTheme.bodyMedium),
                           if (item.status == TimelineStatus.upcoming)
                             Padding(
                               padding: const EdgeInsets.only(top: 16.0),
                               child: Align(
                                 alignment: Alignment.centerRight,
                                 child: IconButton(
-                                  icon: const Icon(Icons.notifications_active_outlined, color: Colors.blueAccent),
+                                  icon: const Icon(
+                                      Icons.notifications_active_outlined,
+                                      color: Colors.blueAccent),
                                   tooltip: 'Set Reminder',
                                   onPressed: () {
                                     _showReminderDialog(context, item);
@@ -134,7 +142,8 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
     );
   }
 
-  Future<void> _showReminderDialog(BuildContext context, TimelineModel item) async {
+  Future<void> _showReminderDialog(
+      BuildContext context, TimelineModel item) async {
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: item.date,
@@ -166,7 +175,9 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
         );
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Reminder set for ${DateFormat.yMMMMd().add_jm().format(scheduledDate)}')),
+          SnackBar(
+              content: Text(
+                  'Reminder set for ${DateFormat.yMMMMd().add_jm().format(scheduledDate)}')),
         );
       }
     }
@@ -200,18 +211,21 @@ class AddEventDialogState extends State<AddEventDialog> {
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(labelText: 'Title'),
-                validator: (value) => value!.isEmpty ? 'Please enter a title' : null,
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a title' : null,
               ),
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
-                validator: (value) => value!.isEmpty ? 'Please enter a description' : null,
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a description' : null,
               ),
               const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
-                    child: Text('Date: ${DateFormat.yMMMMd().format(_selectedDate)}'),
+                    child: Text(
+                        'Date: ${DateFormat.yMMMMd().format(_selectedDate)}'),
                   ),
                   IconButton(
                     icon: const Icon(Icons.calendar_today),
@@ -239,7 +253,9 @@ class AddEventDialogState extends State<AddEventDialog> {
                   });
                 },
                 items: TimelineStatus.values.map((status) {
-                  return DropdownMenuItem(value: status, child: Text(status.toString().split('.').last));
+                  return DropdownMenuItem(
+                      value: status,
+                      child: Text(status.toString().split('.').last));
                 }).toList(),
               ),
             ],
@@ -247,7 +263,9 @@ class AddEventDialogState extends State<AddEventDialog> {
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel')),
         ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
@@ -258,7 +276,8 @@ class AddEventDialogState extends State<AddEventDialog> {
                 status: _selectedStatus,
                 icon: Icons.event, // Default icon for new events
               );
-              Provider.of<TimelineProvider>(context, listen: false).addTimelineEvent(newEvent);
+              Provider.of<TimelineProvider>(context, listen: false)
+                  .addTimelineEvent(newEvent);
               Navigator.of(context).pop();
             }
           },

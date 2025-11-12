@@ -54,8 +54,9 @@ class NewsCard extends StatelessWidget {
                   },
                   errorBuilder: (context, error, stackTrace) {
                     return const SizedBox(
-                        height: 200, 
-                        child: Center(child: Icon(Icons.error, color: Colors.red)));
+                        height: 200,
+                        child: Center(
+                            child: Icon(Icons.error, color: Colors.red)));
                   },
                 ),
               ),
@@ -64,7 +65,8 @@ class NewsCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFF00BFA6).withAlpha(25),
                     borderRadius: BorderRadius.circular(8),

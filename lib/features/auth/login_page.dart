@@ -286,8 +286,8 @@ class _LoginPageState extends State<LoginPage> {
             Positioned(
                 top: -100,
                 left: -100,
-                child: _buildAmbientLight(
-                    const Color(0xFF6B3E9A), 250, 100, 50)),
+                child:
+                    _buildAmbientLight(const Color(0xFF6B3E9A), 250, 100, 50)),
             Positioned(
                 bottom: -150,
                 right: -150,
@@ -302,10 +302,13 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: screenHeight * 0.05),
                       const Icon(Iconsax.user, color: Colors.white, size: 50),
                       const SizedBox(height: 16),
-                      Text(
-                          _isSignUp ? 'Create Account' : 'Welcome Back',
-                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                              color: Colors.white, fontWeight: FontWeight.bold)),
+                      Text(_isSignUp ? 'Create Account' : 'Welcome Back',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge
+                              ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       Text(
                           _isSignUp
@@ -520,8 +523,7 @@ class _LoginPageState extends State<LoginPage> {
             borderSide: BorderSide(color: Colors.white.withAlpha(51))),
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide:
-                BorderSide(color: Colors.blueAccent.withAlpha(204))),
+            borderSide: BorderSide(color: Colors.blueAccent.withAlpha(204))),
       ),
     );
   }
@@ -542,8 +544,7 @@ class _LoginPageState extends State<LoginPage> {
             borderSide: BorderSide(color: Colors.white.withAlpha(51))),
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide:
-                BorderSide(color: Colors.blueAccent.withAlpha(204))),
+            borderSide: BorderSide(color: Colors.blueAccent.withAlpha(204))),
       ),
       initialCountryCode: 'IN',
       onChanged: (phone) {

@@ -1,3 +1,4 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -118,7 +119,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   Future<void> _initGenerativeModel() async {
     final geminiPrompt = await rootBundle.loadString('GEMINI.md');
     _model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-pro',
       apiKey: _apiKey,
       systemInstruction: Content.text(geminiPrompt),
     );
@@ -162,7 +163,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
 
     Please format the output as a legal document.
     Remember to wrap the document in [START_DOCUMENT:$_selectedDocumentType] and [END_DOCUMENT] tags.
-    """;
+    """ ;
     try {
       final response = await _model.generateContent([Content.text(prompt)]);
       final responseText = response.text;
@@ -246,7 +247,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
                   Center(
                     child: Text(
                       'Enter Document Details',
-                      style: GoogleFonts.merriweather(
+                      style: GoogleFonts.poppins(
                         fontSize: 26,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF333333),
@@ -255,11 +256,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
                   ),
                   const SizedBox(height: 30.0),
                   _buildSectionTitle('Document Type'),
-                  _buildDropdown(
-                      _documentTypes,
-                      _selectedDocumentType,
-                      'Select document type',
-                      (val) => setState(() => _selectedDocumentType = val)),
+                  _buildDocumentTypeDropdown(),
                   const SizedBox(height: 20),
                   _buildSectionTitle('Language'),
                   _buildDropdown(
@@ -377,6 +374,62 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         ),
       ),
       dropdownColor: Colors.white,
+    );
+  }
+
+  Widget _buildDocumentTypeDropdown() {
+    return DropdownSearch<String>(
+      items: _documentTypes,
+      selectedItem: _selectedDocumentType,
+      onChanged: (String? newValue) {
+        setState(() {
+          _selectedDocumentType = newValue;
+        });
+      },
+      dropdownDecoratorProps: DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          hintText: 'Select document type',
+          hintStyle: GoogleFonts.lexend(color: Colors.grey[400]),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+        ),
+      ),
+      popupProps: PopupProps.menu(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            hintText: "Search...",
+          ),
+        ),
+        itemBuilder: (context, item, isSelected) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Text(
+              item,
+              style: GoogleFonts.lexend(
+                fontSize: 14,
+                color: isSelected ? Colors.blue.shade600 : Colors.black87,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 

@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -49,7 +48,8 @@ class TimelineModel {
         (e) => e.toString() == map['status'],
         orElse: () => TimelineStatus.upcoming,
       ),
-      icon: IconData(map['icon'] ?? Icons.error.codePoint, fontFamily: 'MaterialIcons'),
+      icon: IconData(map['icon'] ?? Icons.error.codePoint,
+          fontFamily: 'MaterialIcons'),
     );
   }
 

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
@@ -322,12 +321,14 @@ class _UpcomingEvents extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AllEventsPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const AllEventsPage()),
                 );
               },
               child: Text(
                 'View All',
-                style: GoogleFonts.poppins(fontSize: 16, color: const Color(0xFF02F1C3)),
+                style: GoogleFonts.poppins(
+                    fontSize: 16, color: const Color(0xFF02F1C3)),
               ),
             ),
           ],
@@ -341,7 +342,8 @@ class _UpcomingEvents extends StatelessWidget {
             return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: provider.timeline.length > 2 ? 2 : provider.timeline.length,
+              itemCount:
+                  provider.timeline.length > 2 ? 2 : provider.timeline.length,
               itemBuilder: (context, index) {
                 final event = provider.timeline[index];
                 return EventCard(event: event);
@@ -393,7 +395,8 @@ class _AiUsage extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 48, vertical: 12),
               ),
               child: const Text(
                 'Upgrade Plan',
@@ -473,7 +476,8 @@ class _LegalNewsFeed extends StatelessWidget {
               },
               child: Text(
                 'View All',
-                style: GoogleFonts.poppins(fontSize: 16, color: const Color(0xFF02F1C3)),
+                style: GoogleFonts.poppins(
+                    fontSize: 16, color: const Color(0xFF02F1C3)),
               ),
             ),
           ],

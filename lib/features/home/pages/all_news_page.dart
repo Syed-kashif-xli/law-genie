@@ -22,7 +22,8 @@ class AllNewsPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = provider.news[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: NewsCard(news: item),
               );
             },

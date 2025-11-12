@@ -18,8 +18,8 @@ class AppDrawer extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               color: const Color(0xFF1A0B2E).withAlpha(230),
-              border: Border(
-                  right: BorderSide(color: Colors.white.withAlpha(51))),
+              border:
+                  Border(right: BorderSide(color: Colors.white.withAlpha(51))),
             ),
             child: Column(
               children: [

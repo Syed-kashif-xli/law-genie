@@ -57,9 +57,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
         title: Text(
           'Document Generator',
           style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 22),
+              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 22),
         ),
       ),
       body: SingleChildScrollView(
@@ -92,8 +90,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
                   _buildTextField(_partyBNameController, 'Enter name'),
                   const SizedBox(height: 20),
                   _buildSectionTitle('Additional Details'),
-                  _buildTextField(
-                      _additionalDetailsController,
+                  _buildTextField(_additionalDetailsController,
                       'Provide specific terms, conditions, or requirements...',
                       maxLines: 4),
                   const SizedBox(height: 20),
@@ -101,9 +98,8 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
                   _buildDateField(),
                   const SizedBox(height: 20),
                   _buildSectionTitle('Jurisdiction'),
-                  _buildDropdown(
-                      _jurisdictions, _selectedJurisdiction, 'Select jurisdiction',
-                      (val) {
+                  _buildDropdown(_jurisdictions, _selectedJurisdiction,
+                      'Select jurisdiction', (val) {
                     setState(() => _selectedJurisdiction = val);
                   }),
                   const SizedBox(height: 32),
@@ -247,7 +243,8 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
                 ),
                 textButtonTheme: TextButtonThemeData(
                   style: TextButton.styleFrom(
-                    foregroundColor: const Color(0xFF8A2BE2), // button text color
+                    foregroundColor:
+                        const Color(0xFF8A2BE2), // button text color
                   ),
                 ),
               ),

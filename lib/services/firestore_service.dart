@@ -6,7 +6,10 @@ class FirestoreService {
 
   // Get a stream of timeline events
   Stream<List<TimelineModel>> getTimelineEvents() {
-    return _db.collection('timeline').snapshots().map((snapshot) => snapshot.docs.map((doc) => TimelineModel.fromMap(doc.data(), doc.id)).toList());
+    return _db.collection('timeline').snapshots().map((snapshot) => snapshot
+        .docs
+        .map((doc) => TimelineModel.fromMap(doc.data(), doc.id))
+        .toList());
   }
 
   // Add a new timeline event

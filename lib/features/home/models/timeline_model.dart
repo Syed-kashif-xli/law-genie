@@ -7,5 +7,8 @@ class TimelineModel {
   final IconData icon;
 
   TimelineModel(
-      {required this.title, required this.time, required this.type, required this.icon});
+      {required this.title,
+      required this.time,
+      required this.type,
+      required this.icon});
 }

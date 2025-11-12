@@ -1,4 +1,3 @@
-
 import 'package:hive/hive.dart';
 
 part 'chat_model.g.dart';

@@ -197,8 +197,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                         color: Colors.blueAccent,
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
-                                        decoration:
-                                            TextDecoration.underline,
+                                        decoration: TextDecoration.underline,
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
@@ -231,9 +230,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           Navigator.pushReplacement(
                             context,
                             PageRouteBuilder(
-                              pageBuilder: (context, animation,
-                                      secondaryAnimation) =>
-                                  LoginPage(agreedToTerms: _agreedToTerms),
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      LoginPage(agreedToTerms: _agreedToTerms),
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
                                 return FadeTransition(
@@ -259,12 +258,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           vertical: 18, horizontal: 64),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        color: _agreedToTerms || _currentPage != _onboardingScreens.length - 1
+                        color: _agreedToTerms ||
+                                _currentPage != _onboardingScreens.length - 1
                             ? Colors.blueAccent.withAlpha(180)
                             : Colors.grey.withAlpha(180),
                         boxShadow: [
                           BoxShadow(
-                            color: _agreedToTerms || _currentPage != _onboardingScreens.length - 1
+                            color: _agreedToTerms ||
+                                    _currentPage !=
+                                        _onboardingScreens.length - 1
                                 ? Colors.blueAccent.withAlpha(120)
                                 : Colors.grey.withAlpha(120),
                             blurRadius: 15, // Reduced for performance
@@ -427,7 +429,8 @@ class _AnimatedOnboardingScreenState extends State<AnimatedOnboardingScreen>
                               ),
                             ],
                           ),
-                          child: Icon(widget.icon, color: Colors.white, size: 60),
+                          child:
+                              Icon(widget.icon, color: Colors.white, size: 60),
                         ),
                       ),
                       const SizedBox(height: 24),
