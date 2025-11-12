@@ -101,7 +101,7 @@ class _AIChatPageState extends State<AIChatPage> {
   Future<void> _initGenerativeModel() async {
     final geminiPrompt = await rootBundle.loadString('GEMINI.md');
     _model = GenerativeModel(
-      model: 'gemini-2.5-pro',
+      model: 'gemini-2.5-flash',
       apiKey: _apiKey,
       systemInstruction: Content.text(geminiPrompt),
     );
