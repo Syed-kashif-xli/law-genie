@@ -1,110 +1,146 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/features/home/main_layout.dart';
+import 'package:myapp/models/chat_model.dart';
+import 'package:myapp/features/case_timeline/timeline_provider.dart';
+import 'package:myapp/providers/chat_provider.dart';
+import 'package:myapp/screens/chat_history_screen.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/documents/document_generator_page.dart';
-import 'package:myapp/features/risk_check/risk_check_page.dart';
+import 'package:myapp/features/home/providers/news_provider.dart';
 import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/features/home/home_page.dart';
 import 'package:myapp/features/onboarding/onboarding_page.dart';
+import 'package:myapp/features/onboarding/splash_screen.dart';
+import 'package:myapp/services/notification_service.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await NotificationService().init();
+  await Hive.initFlutter();
+  Hive.registerAdapter(ChatSessionAdapter());
+  Hive.registerAdapter(ChatMessageAdapter());
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => TimelineProvider()),
+        ChangeNotifierProvider(create: (context) => NewsProvider()),
+        ChangeNotifierProvider(create: (context) => ChatProvider()),
+      ],
+      child: MyApp(currentUser: FirebaseAuth.instance.currentUser),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final User? currentUser;
+  const MyApp({super.key, this.currentUser});
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF6B3E9A);
-    const Color accentColor = Colors.blueAccent;
-    const Color backgroundColor = Color(0xFF1A0B2E);
+    const Color primaryColor = Color(0xFF2C55A9);
+    const Color accentColor = Color(0xFF83D0F5);
+    const Color backgroundColor = Color(0xFFF0F4F8);
+    const Color textColor = Color(0xFF1E293B);
 
     final TextTheme appTextTheme = GoogleFonts.lexendTextTheme(
-      ThemeData.dark().textTheme,
+      Theme.of(context).textTheme,
     ).copyWith(
-      displayLarge: const TextStyle(fontWeight: FontWeight.bold, fontSize: 57, color: Colors.white),
-      titleLarge: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.white),
-      bodyLarge: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.9)),
-      bodyMedium: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.8)),
+      displayLarge: const TextStyle(
+          fontWeight: FontWeight.bold, fontSize: 57, color: textColor),
+      titleLarge: const TextStyle(
+          fontWeight: FontWeight.bold, fontSize: 22, color: textColor),
+      bodyLarge: TextStyle(fontSize: 16, color: textColor.withAlpha(230)),
+      bodyMedium: TextStyle(fontSize: 14, color: textColor.withAlpha(204)),
     );
 
-    final ThemeData futuristicTheme = ThemeData(
+    final ThemeData newTheme = ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: backgroundColor,
       primaryColor: primaryColor,
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         primary: primaryColor,
         secondary: accentColor,
         background: backgroundColor,
       ),
       textTheme: appTextTheme,
-
-      // Component Themes
       appBarTheme: AppBarTheme(
-        backgroundColor: backgroundColor.withOpacity(0.8),
+        backgroundColor: Colors.white,
         elevation: 0,
         titleTextStyle: appTextTheme.titleLarge?.copyWith(fontSize: 24),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: textColor),
       ),
-
-      // Glassmorphism Card Theme
       cardTheme: CardThemeData(
-        elevation: 0,
-        color: Colors.white.withOpacity(0.1),
+        elevation: 1,
+        color: Colors.white,
+        shadowColor: Colors.black.withOpacity(0.05),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: Colors.white.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(16),
         ),
       ),
-      
-      // Glowing Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
-          backgroundColor: accentColor.withOpacity(0.8),
+          backgroundColor: primaryColor,
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          elevation: 0, // Shadow is handled separately for the glow
+          elevation: 2,
         ),
       ),
-      
-      // Glassmorphism TextField Theme
       inputDecorationTheme: InputDecorationTheme(
-        labelStyle: const TextStyle(color: Colors.white70),
-        prefixIconColor: Colors.white70,
+        labelStyle: const TextStyle(color: textColor),
+        prefixIconColor: textColor,
         filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
+        fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: accentColor.withOpacity(0.8)),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
         ),
       ),
     );
 
     return MaterialApp(
       title: 'Law Genie',
-      theme: futuristicTheme,
-      home: const OnboardingPage(),
+      theme: newTheme,
+      home: currentUser == null ? const SplashScreen() : const MainLayout(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/home': (context) => const HomePage(),
         '/aiChat': (context) => const AIChatPage(),
-        '/generateDoc': (context) => DocumentGeneratorPage(),
-        '/riskCheck': (context) => const RiskCheckPage(),
+        '/generateDoc': (context) => const DocumentGeneratorPage(),
         '/caseTimeline': (context) => const CaseTimelinePage(),
+        '/chatHistory': (context) => const ChatHistoryScreen(),
+        '/onboarding': (context) => const OnboardingPage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/aiChat') {
+          final args = settings.arguments as ChatSession?;
+          return MaterialPageRoute(
+            builder: (context) {
+              return AIChatPage(chatSession: args);
+            },
+          );
+        }
+        return null;
       },
     );
   }

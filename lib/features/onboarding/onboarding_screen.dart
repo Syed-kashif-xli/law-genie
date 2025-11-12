@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -46,13 +45,19 @@ class OnboardingScreen extends StatelessWidget {
           const SizedBox(height: 48),
           Text(
             title,
-            style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge
+                ?.copyWith(color: Colors.white),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Text(
             description,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white70),
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(color: Colors.white70),
             textAlign: TextAlign.center,
           ),
         ],
