@@ -21,81 +21,82 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
 
   String? _selectedDocumentType;
   String? _selectedJurisdiction;
+  String? _selectedLanguage;
   String? _generatedDocument;
   bool _isGenerating = false;
 
   late final GenerativeModel _model;
 
   final List<String> _documentTypes = [
-    'Affidavit',
-    'Agreement for Sale',
-    'Bail Application',
-    'Cheque Bounce Notice',
-    'Consumer Complaint',
-    'Divorce Petition',
-    'Durable Power of Attorney',
-    'Franchise Agreement',
-    'Gift Deed',
-    'Indemnity Bond',
-    'Joint Venture Agreement',
-    'Lease Agreement',
-    'Legal Notice',
-    'Living Will',
-    'Mortgage Deed',
-    'Non-Disclosure Agreement (NDA)',
-    'Partnership Deed',
-    'Paternity Acknowledgment',
-    'Pleading Paper',
-    'Power of Attorney',
-    'Prenuptial Agreement',
-    'Promissory Note',
-    'Property Sale Agreement',
-    'Relinquishment Deed',
-    'Rental Agreement',
-    'Sale Deed',
-    'Service Level Agreement (SLA)',
-    'Settlement Agreement',
-    'Special Power of Attorney',
-    'Trust Deed',
-    'Will',
-    'Adoption Deed',
-    'Arbitration Agreement',
-    'Assignment Deed',
-    'Co-founder\'s Agreement',
-    'Consultancy Agreement',
-    'Contract for Services',
-    'Copyright License Agreement',
-    'Debt Settlement Agreement',
-    'Employee Offer Letter',
-    'End-User License Agreement (EULA)',
-    'Escrow Agreement',
-    'Founders\'s Agreement',
-    'Freelancer Agreement',
-    'Hypothecation Deed',
-    'Intellectual Property (IP) Assignment Agreement',
-    'Internship Agreement',
-    'Loan Agreement',
-    'Memorandum of Understanding (MoU)',
-    'Music License Agreement',
-    'No Objection Certificate (NOC)',
-    'Partition Deed',
-    'Postnuptial Agreement',
-    'Release Agreement',
-    'Rent Receipt',
-    'Resignation Letter',
-    'Share Purchase Agreement',
-    'Shareholders\'s Agreement',
-    'Software Development Agreement',
-    'Software License Agreement',
-    'Sponsorship Agreement',
-    'Surrender of Tenancy',
-    'Term Sheet',
-    'Terms of Service',
-    'Trademark License Agreement',
-    'Vehicle Lease Agreement',
-    'Vendor Agreement',
-    'Website Privacy Policy',
-    'Website Terms and Conditions',
+    '⚖️ Affidavit',
+    '📄 Agreement for Sale',
+    '🧑‍⚖️ Bail Application',
+    '💸 Cheque Bounce Notice',
+    '🛒 Consumer Complaint',
+    '💔 Divorce Petition',
+    '📜 Durable Power of Attorney',
+    '🏢 Franchise Agreement',
+    '🎁 Gift Deed',
+    '🛡️ Indemnity Bond',
+    '🤝 Joint Venture Agreement',
+    '📄 Lease Agreement',
+    '📢 Legal Notice',
+    '📝 Living Will',
+    '🏠 Mortgage Deed',
+    '🤫 Non-Disclosure Agreement (NDA)',
+    '👥 Partnership Deed',
+    '👪 Paternity Acknowledgment',
+    '✍️ Pleading Paper',
+    '📜 Power of Attorney',
+    '💍 Prenuptial Agreement',
+    '💰 Promissory Note',
+    '🏡 Property Sale Agreement',
+    '👋 Relinquishment Deed',
+    '🏠 Rental Agreement',
+    '💰 Sale Deed',
+    '⚙️ Service Level Agreement (SLA)',
+    '🤝 Settlement Agreement',
+    '📜 Special Power of Attorney',
+    '🏛️ Trust Deed',
+    '🕊️ Will',
+    '👨‍👩‍👧‍👦 Adoption Deed',
+    '📝 Arbitration Agreement',
+    '➡️ Assignment Deed',
+    '🧑‍🤝‍🧑 Co-founder\'s Agreement',
+    '👨‍💼 Consultancy Agreement',
+    '📝 Contract for Services',
+    '©️ Copyright License Agreement',
+    '💰 Debt Settlement Agreement',
+    '👨‍💼 Employee Offer Letter',
+    '📜 End-User License Agreement (EULA)',
+    '🤝 Escrow Agreement',
+    '🧑‍🤝‍🧑 Founders\'s Agreement',
+    '👨‍💻 Freelancer Agreement',
+    '🔗 Hypothecation Deed',
+    '💡 Intellectual Property (IP) Assignment Agreement',
+    '👨‍🎓 Internship Agreement',
+    '💰 Loan Agreement',
+    '📝 Memorandum of Understanding (MoU)',
+    '🎵 Music License Agreement',
+    '👍 No Objection Certificate (NOC)',
+    '➗ Partition Deed',
+    '💍 Postnuptial Agreement',
+    '🤝 Release Agreement',
+    '🧾 Rent Receipt',
+    '👋 Resignation Letter',
+    '💰 Share Purchase Agreement',
+    '🤝 Shareholders\'s Agreement',
+    '💻 Software Development Agreement',
+    '📜 Software License Agreement',
+    '🤝 Sponsorship Agreement',
+    '↩️ Surrender of Tenancy',
+    '📝 Term Sheet',
+    '📜 Terms of Service',
+    '™️ Trademark License Agreement',
+    '🚗 Vehicle Lease Agreement',
+    '🚚 Vendor Agreement',
+    '🔒 Website Privacy Policy',
+    '📜 Website Terms and Conditions',
   ];
 
   final List<String> _jurisdictions = [
@@ -105,6 +106,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
     'Tamil Nadu',
     'Uttar Pradesh',
   ];
+
+  final List<String> _languages = ['English', 'Hindi'];
 
   @override
   void initState() {
@@ -137,6 +140,12 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       );
       return;
     }
+    if (_selectedLanguage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a language.')),
+      );
+      return;
+    }
 
     setState(() {
       _isGenerating = true;
@@ -144,7 +153,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
     });
 
     final prompt = """
-    Generate a '$_selectedDocumentType' with the following details:
+    Generate a '$_selectedDocumentType' in $_selectedLanguage with the following details:
     - Party A: ${_partyANameController.text}
     - Party B: ${_partyBNameController.text}
     - Effective Date: ${_effectiveDateController.text}
@@ -153,8 +162,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
 
     Please format the output as a legal document.
     Remember to wrap the document in [START_DOCUMENT:$_selectedDocumentType] and [END_DOCUMENT] tags.
-    """
-;
+    """;
     try {
       final response = await _model.generateContent([Content.text(prompt)]);
       final responseText = response.text;
@@ -162,22 +170,23 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       String documentContent = "Could not generate document.";
 
       if (responseText != null) {
-          final docStartIndex = responseText.indexOf('[START_DOCUMENT:');
-          final docEndIndex = responseText.indexOf('[END_DOCUMENT]');
+        final docStartIndex = responseText.indexOf('[START_DOCUMENT:');
+        final docEndIndex = responseText.indexOf('[END_DOCUMENT]');
 
-          if (docStartIndex != -1 && docEndIndex != -1) {
-              final titleStartIndex = docStartIndex + '[START_DOCUMENT:'.length;
-              final titleEndIndex = responseText.indexOf(']', titleStartIndex);
-              if (titleEndIndex != -1 && titleEndIndex < docEndIndex) {
-                  documentContent = responseText.substring(titleEndIndex + 1, docEndIndex).trim();
-              } else {
-                  documentContent = responseText;
-              }
+        if (docStartIndex != -1 && docEndIndex != -1) {
+          final titleStartIndex = docStartIndex + '[START_DOCUMENT:'.length;
+          final titleEndIndex = responseText.indexOf(']', titleStartIndex);
+          if (titleEndIndex != -1 && titleEndIndex < docEndIndex) {
+            documentContent =
+                responseText.substring(titleEndIndex + 1, docEndIndex).trim();
           } else {
             documentContent = responseText;
           }
+        } else {
+          documentContent = responseText;
+        }
       } else {
-          documentContent = "Could not generate document.";
+        documentContent = "Could not generate document.";
       }
 
       setState(() {
@@ -207,14 +216,14 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         ),
         title: Text(
           'Document Generator',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.merriweather(
               color: const Color(0xFF333333),
-              fontWeight: FontWeight.w600,
-              fontSize: 20),
+              fontWeight: FontWeight.w700,
+              fontSize: 22),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
         child: Column(
           children: [
             Container(
@@ -224,22 +233,40 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
                 borderRadius: BorderRadius.circular(16.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withAlpha(25),
+                    color: Colors.grey.withOpacity(0.15),
                     spreadRadius: 2,
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5), // changes position of shadow
                   ),
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Center(
+                    child: Text(
+                      'Enter Document Details',
+                      style: GoogleFonts.merriweather(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF333333),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30.0),
                   _buildSectionTitle('Document Type'),
                   _buildDropdown(
                       _documentTypes,
                       _selectedDocumentType,
                       'Select document type',
                       (val) => setState(() => _selectedDocumentType = val)),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('Language'),
+                  _buildDropdown(
+                      _languages,
+                      _selectedLanguage,
+                      'Select language',
+                      (val) => setState(() => _selectedLanguage = val)),
                   const SizedBox(height: 20),
                   _buildSectionTitle('Party A Name'),
                   _buildTextField(_partyANameController, 'Enter name'),
@@ -268,6 +295,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
             ),
             const SizedBox(height: 24),
             _buildGeneratedDocumentDisplay(),
+            const SizedBox(height: 20.0),
           ],
         ),
       ),
@@ -280,7 +308,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       child: Text(
         title,
         style: GoogleFonts.poppins(
-          fontSize: 14,
+          fontSize: 15,
           fontWeight: FontWeight.w500,
           color: Colors.grey[800],
         ),
@@ -293,10 +321,10 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
     return TextField(
       controller: controller,
       maxLines: maxLines,
-      style: GoogleFonts.poppins(color: Colors.black87),
+      style: GoogleFonts.lexend(color: Colors.black87),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+        hintStyle: GoogleFonts.lexend(color: Colors.grey[400]),
         filled: true,
         fillColor: Colors.white,
         contentPadding:
@@ -321,13 +349,15 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
       isExpanded: true,
-      initialValue: value,
-      hint: Text(hint, style: GoogleFonts.poppins(color: Colors.grey[400]), overflow: TextOverflow.ellipsis),
+      value: value,
+      hint: Text(hint,
+          style: GoogleFonts.lexend(color: Colors.grey[400]),
+          overflow: TextOverflow.ellipsis),
       items: items.map((String item) {
         return DropdownMenuItem<String>(
           value: item,
           child: Text(item,
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.lexend(fontSize: 14),
               overflow: TextOverflow.ellipsis),
         );
       }).toList(),
@@ -353,10 +383,10 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   Widget _buildDateField() {
     return TextField(
       controller: _effectiveDateController,
-      style: GoogleFonts.poppins(color: Colors.black87),
+      style: GoogleFonts.lexend(color: Colors.black87),
       decoration: InputDecoration(
         hintText: 'dd-mm-yyyy',
-        hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+        hintStyle: GoogleFonts.lexend(color: Colors.grey[400]),
         filled: true,
         fillColor: Colors.white,
         suffixIcon: Icon(Iconsax.calendar_1, color: Colors.grey[600]),
@@ -419,15 +449,17 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
             ? const SizedBox(
                 height: 20,
                 width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
               )
             : const Icon(Iconsax.document_text_1, color: Colors.white),
         label: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               _isGenerating ? 'Generating...' : 'Generate Document',
-              style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600, fontSize: 16),
+              style:
+                  GoogleFonts.lexend(fontWeight: FontWeight.w600, fontSize: 16),
             )),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -474,9 +506,9 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         children: [
           Text(
             'Generated Document',
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+            style: GoogleFonts.merriweather(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
               color: Colors.grey[800],
             ),
           ),
@@ -485,7 +517,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
           const SizedBox(height: 8),
           SelectableText(
             _generatedDocument!,
-            style: GoogleFonts.poppins(color: Colors.black87, height: 1.5),
+            style: GoogleFonts.lexend(color: Colors.black87, height: 1.5),
           ),
         ],
       ),
