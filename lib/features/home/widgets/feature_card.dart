@@ -6,20 +6,20 @@ class FeatureCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
-  final String route;
+  final VoidCallback onTap;
 
   const FeatureCard({
     super.key,
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.route,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, route),
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

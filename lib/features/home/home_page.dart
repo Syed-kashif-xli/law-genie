@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
+import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/home/app_drawer.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:myapp/features/home/widgets/event_card.dart';
@@ -58,23 +59,23 @@ class _HomePageState extends State<HomePage> {
       drawer: const AppDrawer(),
       body: RefreshIndicator(
         onRefresh: _refreshData,
-        child: const SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 24),
-                _StatsSection(),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
+                const _StatsSection(),
+                const SizedBox(height: 24),
                 _QuickActions(),
-                SizedBox(height: 24),
-                _UpcomingEvents(),
-                SizedBox(height: 24),
-                _AiUsage(),
-                SizedBox(height: 24),
-                _LegalNewsFeed(),
+                const SizedBox(height: 24),
+                const _UpcomingEvents(),
+                const SizedBox(height: 24),
+                const _AiUsage(),
+                const SizedBox(height: 24),
+                const _LegalNewsFeed(),
               ],
             ),
           ),
@@ -255,30 +256,41 @@ class _QuickActions extends StatelessWidget {
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
           physics: const NeverScrollableScrollPhysics(),
-          children: const [
+          children: [
             FeatureCard(
               title: 'AI Chat',
               subtitle: 'Talk to Law Genie',
               icon: Iconsax.messages_2,
-              route: '/aiChat',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AIChatPage()),
+                );
+              },
             ),
             FeatureCard(
               title: 'Generate Doc',
               subtitle: 'Create documents',
               icon: Iconsax.document_upload,
-              route: '/generateDoc',
+              onTap: () {
+                Navigator.pushNamed(context, '/generateDoc');
+              },
             ),
             FeatureCard(
               title: 'Chat History',
               subtitle: 'View past chats',
               icon: Iconsax.archive_book,
-              route: '/chatHistory',
+              onTap: () {
+                Navigator.pushNamed(context, '/chatHistory');
+              },
             ),
             FeatureCard(
               title: 'Case Timeline',
               subtitle: 'Track cases',
               icon: Iconsax.calendar_edit,
-              route: '/caseTimeline',
+              onTap: () {
+                Navigator.pushNamed(context, '/caseTimeline');
+              },
             ),
           ],
         ),
