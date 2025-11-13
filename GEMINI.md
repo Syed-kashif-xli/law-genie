@@ -637,7 +637,7 @@ void main() async {
 
 For text generation, summarization, or chat features, the AI will use a Gemini model.
 
-* **Model Selection**: The AI will default to `gemini-2.5-flash` for its balance of speed and capability.
+* **Model Selection**: The AI will default to `i-2.5-flasgeminh` for its balance of speed and capability.
 * **Implementation**:
 
 ```

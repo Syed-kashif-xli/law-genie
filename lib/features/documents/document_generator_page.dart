@@ -49,7 +49,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   Future<void> _initGenerativeModel() async {
     final geminiPrompt = await rootBundle.loadString('GEMINI.md');
     _model = GenerativeModel(
-      model: 'gemini-pro',
+      model: 'gemini-2.5-flash',
       apiKey: _apiKey,
       systemInstruction: Content.text(geminiPrompt),
     );
@@ -287,11 +287,17 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       itemBuilder: (context, index) {
         final field = fields[index];
         final controller = _dynamicFieldControllers[field];
+        final isMultiLine = field == 'Additional Details (Optional)';
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(field),
-            _buildTextField(controller!, 'Enter $field'),
+            _buildTextField(
+              controller!,
+              'Enter $field',
+              maxLines: isMultiLine ? 5 : 1,
+            ),
           ],
         );
       },

@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'dart:ui';
 
+import '../documents/document_fields.dart';
+
 class DocumentGeneratorScreen extends StatefulWidget {
   const DocumentGeneratorScreen({super.key});
 
@@ -112,10 +114,6 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
   String? _selectedLanguage;
 
   // --- DATA LISTS ---
-  final List<String> _documentTypes = [
-    '⚖️ Affidavit', '📄 Agreement for Sale', '🧑‍⚖️ Bail Application', '💸 Cheque Bounce Notice', '🛒 Consumer Complaint', '💔 Divorce Petition', '📜 Durable Power of Attorney', '🏢 Franchise Agreement', '🎁 Gift Deed', '🛡️ Indemnity Bond', '🤝 Joint Venture Agreement', '📄 Lease Agreement', '📢 Legal Notice', '📝 Living Will', '🏠 Mortgage Deed', '🤫 Non-Disclosure Agreement (NDA)', '👥 Partnership Deed', '👪 Paternity Acknowledgment', '✍️ Pleading Paper', '📜 Power of Attorney', '💍 Prenuptial Agreement', '💰 Promissory Note', '🏡 Property Sale Agreement', '👋 Relinquishment Deed', '🏠 Rental Agreement', '💰 Sale Deed', '⚙️ Service Level Agreement (SLA)', '🤝 Settlement Agreement', '📜 Special Power of Attorney', '🏛️ Trust Deed', '🕊️ Will', '👨‍👩‍👧‍👦 Adoption Deed', '📝 Arbitration Agreement', '➡️ Assignment Deed', "🧑‍🤝‍🧑 Co-founder's Agreement", '👨‍💼 Consultancy Agreement', '📝 Contract for Services', '©️ Copyright License Agreement', '💰 Debt Settlement Agreement', "👨‍💼 Employee's Offer Letter", '📜 End-User License Agreement (EULA)', '🤝 Escrow Agreement', "🧑‍🤝‍🧑 Founders's Agreement", '👨‍💻 Freelancer Agreement', '🔗 Hypothecation Deed', '💡 Intellectual Property (IP) Assignment Agreement', '👨‍🎓 Internship Agreement', '💰 Loan Agreement', '📝 Memorandum of Understanding (MoU)', '🎵 Music License Agreement', '👍 No Objection Certificate (NOC)', '➗ Partition Deed', '💍 Postnuptial Agreement', '🤝 Release Agreement', '🧾 Rent Receipt', '👋 Resignation Letter', '💰 Share Purchase Agreement', "🤝 Shareholders's Agreement", '💻 Software Development Agreement', '📜 Software License Agreement', '🤝 Sponsorship Agreement', '↩️ Surrender of Tenancy', '📝 Term Sheet', '📜 Terms of Service', '™️ Trademark License Agreement', '🚗 Vehicle Lease Agreement', '🚚 Vendor Agreement', '🔒 Website Privacy Policy', '📜 Website Terms and Conditions'
-  ];
-
   final List<String> _jurisdictions = [
     'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chhattisgarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 'Jharkhand', 'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
   ];
@@ -138,6 +136,10 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
     //... dispose all other controllers
     super.dispose();
   }
+
+  String _stripEmoji(String text) {
+  return text.replaceAll(RegExp(r'(\u[0-9a-fA-F]{4})|(\U[0-9a-fA-F]{8})|([\uD800-\uDBFF][\uDC00-\uDFFF])|([\u2600-\u26FF\u2700-\u27BF])|([\uD83C-\uDBFF\uDC00-\uDFFF].)|[\uFE0E\uFE0F]'), '').trim();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +175,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
                 ),
                 const SizedBox(height: 24),
                 _buildSectionTitle('Document Type'),
-                _buildDropdown(_documentTypes, _selectedDocumentType,
+                _buildDropdown(documentFields.keys.toList(), _selectedDocumentType,
                     'Select document type', (val) {
                   setState(() => _selectedDocumentType = val);
                 }),
@@ -217,8 +219,14 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
       const SizedBox(height: 20),
     ];
 
-    switch (_selectedDocumentType) {
-      case '⚖️ Affidavit':
+    if (_selectedDocumentType == null) {
+      return fields;
+    }
+
+    String documentType = _stripEmoji(_selectedDocumentType!);
+
+    switch (documentType) {
+      case 'Affidavit':
         fields = [
           _buildSectionTitle('Deponent Name'),
           _buildTextField(_deponentNameController, 'e.g., John Doe'),
@@ -231,9 +239,9 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           const SizedBox(height: 20),
         ];
         break;
-      case '📄 Agreement for Sale':
-      case '🏡 Property Sale Agreement':
-      case '💰 Sale Deed':
+      case 'Agreement for Sale':
+      case 'Property Sale Agreement':
+      case 'Sale Deed':
         fields = [
           _buildSectionTitle('Seller Name'),
           _buildTextField(_sellerNameController, 'e.g., Jane Smith'),
@@ -249,7 +257,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           const SizedBox(height: 20),
         ];
         break;
-       case '🧑‍⚖️ Bail Application':
+       case 'Bail Application':
         fields = [
           _buildSectionTitle('Accused Name'),
           _buildTextField(_accusedNameController, 'e.g., John Doe'),
@@ -265,7 +273,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           const SizedBox(height: 20),
         ];
         break;
-      case '💸 Cheque Bounce Notice':
+      case 'Cheque Bounce Notice':
          fields = [
           _buildSectionTitle('Sender Name (Payee)'),
           _buildTextField(_noticeSenderNameController, 'e.g., ABC Corp'),
@@ -284,7 +292,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           const SizedBox(height: 20),
         ];
         break;
-      case '🎁 Gift Deed':
+      case 'Gift Deed':
         fields = [
             _buildSectionTitle('Donor Name'),
             _buildTextField(_donorNameController, 'e.g., John Doe'),
@@ -297,7 +305,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
             const SizedBox(height: 20),
         ];
         break;
-      case '💰 Loan Agreement':
+      case 'Loan Agreement':
         fields = [
             _buildSectionTitle('Lender Name'),
             _buildTextField(_promisorNameController, 'e.g., ABC Finance'),
@@ -313,8 +321,8 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
             const SizedBox(height: 20),
         ];
         break;
-       case '🏠 Rental Agreement':
-       case '📄 Lease Agreement':
+       case 'Rental Agreement':
+       case 'Lease Agreement':
          fields = [
             _buildSectionTitle('Landlord/Lessor Name'),
             _buildTextField(_landlordNameController, 'e.g., Jane Smith'),
@@ -330,14 +338,14 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
             const SizedBox(height: 20),
         ];
         break;
-      case '🔒 Website Privacy Policy':
-      case '📜 Website Terms and Conditions':
+      case 'Website Privacy Policy':
+      case 'Website Terms and Conditions':
         fields = [
             _buildSectionTitle('Website/App URL'),
-            _buildTextField(_websiteUrlController, 'https://example.com'),
+            _buildTextField(TextEditingController(), 'https://example.com'),
             const SizedBox(height: 20),
             _buildSectionTitle('Company/Owner Name'),
-            _buildTextField(_companyNameController, 'e.g., Awesome App Inc.'),
+            _buildTextField(TextEditingController(), 'e.g., Awesome App Inc.'),
             const SizedBox(height: 20),
         ];
         break;
@@ -482,6 +490,9 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
         child: ElevatedButton.icon(
           onPressed: () {
             // TODO: Implement document generation logic
+            if (_selectedDocumentType != null) {
+              print('Selected Document Type without emoji: ${_stripEmoji(_selectedDocumentType!)}');
+            }
           },
           icon: const Icon(Iconsax.document_text_1, color: Colors.white),
           label: Padding(
