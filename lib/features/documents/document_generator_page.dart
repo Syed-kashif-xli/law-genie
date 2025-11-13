@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:iconsax/iconsax.dart';
+import 'document_fields.dart'; // Import the new file
 
 const String _apiKey = 'AIzaSyC6NWmWsSowYUpYMOKCJ2EO1fD8-9UXB6s';
 
@@ -15,11 +16,6 @@ class DocumentGeneratorPage extends StatefulWidget {
 }
 
 class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
-  final _partyANameController = TextEditingController();
-  final _partyBNameController = TextEditingController();
-  final _additionalDetailsController = TextEditingController();
-  final _effectiveDateController = TextEditingController();
-
   String? _selectedDocumentType;
   String? _selectedJurisdiction;
   String? _selectedLanguage;
@@ -28,77 +24,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
 
   late final GenerativeModel _model;
 
-  final List<String> _documentTypes = [
-    '⚖️ Affidavit',
-    '📄 Agreement for Sale',
-    '🧑‍⚖️ Bail Application',
-    '💸 Cheque Bounce Notice',
-    '🛒 Consumer Complaint',
-    '💔 Divorce Petition',
-    '📜 Durable Power of Attorney',
-    '🏢 Franchise Agreement',
-    '🎁 Gift Deed',
-    '🛡️ Indemnity Bond',
-    '🤝 Joint Venture Agreement',
-    '📄 Lease Agreement',
-    '📢 Legal Notice',
-    '📝 Living Will',
-    '🏠 Mortgage Deed',
-    '🤫 Non-Disclosure Agreement (NDA)',
-    '👥 Partnership Deed',
-    '👪 Paternity Acknowledgment',
-    '✍️ Pleading Paper',
-    '📜 Power of Attorney',
-    '💍 Prenuptial Agreement',
-    '💰 Promissory Note',
-    '🏡 Property Sale Agreement',
-    '👋 Relinquishment Deed',
-    '🏠 Rental Agreement',
-    '💰 Sale Deed',
-    '⚙️ Service Level Agreement (SLA)',
-    '🤝 Settlement Agreement',
-    '📜 Special Power of Attorney',
-    '🏛️ Trust Deed',
-    '🕊️ Will',
-    '👨‍👩‍👧‍👦 Adoption Deed',
-    '📝 Arbitration Agreement',
-    '➡️ Assignment Deed',
-    '🧑‍🤝‍🧑 Co-founder\'s Agreement',
-    '👨‍💼 Consultancy Agreement',
-    '📝 Contract for Services',
-    '©️ Copyright License Agreement',
-    '💰 Debt Settlement Agreement',
-    '👨‍💼 Employee Offer Letter',
-    '📜 End-User License Agreement (EULA)',
-    '🤝 Escrow Agreement',
-    '🧑‍🤝‍🧑 Founders\'s Agreement',
-    '👨‍💻 Freelancer Agreement',
-    '🔗 Hypothecation Deed',
-    '💡 Intellectual Property (IP) Assignment Agreement',
-    '👨‍🎓 Internship Agreement',
-    '💰 Loan Agreement',
-    '📝 Memorandum of Understanding (MoU)',
-    '🎵 Music License Agreement',
-    '👍 No Objection Certificate (NOC)',
-    '➗ Partition Deed',
-    '💍 Postnuptial Agreement',
-    '🤝 Release Agreement',
-    '🧾 Rent Receipt',
-    '👋 Resignation Letter',
-    '💰 Share Purchase Agreement',
-    '🤝 Shareholders\'s Agreement',
-    '💻 Software Development Agreement',
-    '📜 Software License Agreement',
-    '🤝 Sponsorship Agreement',
-    '↩️ Surrender of Tenancy',
-    '📝 Term Sheet',
-    '📜 Terms of Service',
-    '™️ Trademark License Agreement',
-    '🚗 Vehicle Lease Agreement',
-    '🚚 Vendor Agreement',
-    '🔒 Website Privacy Policy',
-    '📜 Website Terms and Conditions',
-  ];
+  // Controllers for dynamic fields
+  final Map<String, TextEditingController> _dynamicFieldControllers = {};
 
   final List<String> _jurisdictions = [
     'Delhi',
@@ -114,6 +41,9 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   void initState() {
     super.initState();
     _initGenerativeModel();
+    // Initialize with the keys from documentFields
+    _selectedDocumentType = documentFields.keys.first;
+    _updateDynamicControllers(_selectedDocumentType);
   }
 
   Future<void> _initGenerativeModel() async {
@@ -127,15 +57,27 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
 
   @override
   void dispose() {
-    _partyANameController.dispose();
-    _partyBNameController.dispose();
-    _additionalDetailsController.dispose();
-    _effectiveDateController.dispose();
+    // Dispose all dynamic controllers
+    _dynamicFieldControllers.forEach((_, controller) => controller.dispose());
     super.dispose();
   }
 
+  void _updateDynamicControllers(String? documentType) {
+    if (documentType == null) return;
+
+    // Clear old controllers
+    _dynamicFieldControllers.forEach((_, controller) => controller.dispose());
+    _dynamicFieldControllers.clear();
+
+    // Create new controllers for the selected document type
+    final fields = documentFields[documentType] ?? [];
+    for (final field in fields) {
+      _dynamicFieldControllers[field] = TextEditingController();
+    }
+  }
+
   Future<void> _generateDocument() async {
-    if (_selectedDocumentType == null) {
+    if (_selectedDocumentType == null || _selectedDocumentType == 'Select Document Type') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a document type.')),
       );
@@ -153,17 +95,19 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       _generatedDocument = null;
     });
 
+    // Constructing the details from dynamic fields
+    final details = _dynamicFieldControllers.entries
+        .map((entry) => "- ${entry.key}: ${entry.value.text}")
+        .join("\n");
+
     final prompt = """
     Generate a '$_selectedDocumentType' in $_selectedLanguage with the following details:
-    - Party A: ${_partyANameController.text}
-    - Party B: ${_partyBNameController.text}
-    - Effective Date: ${_effectiveDateController.text}
+    $details
     - Jurisdiction: $_selectedJurisdiction
-    - Additional Details: ${_additionalDetailsController.text}
 
     Please format the output as a legal document.
     Remember to wrap the document in [START_DOCUMENT:$_selectedDocumentType] and [END_DOCUMENT] tags.
-    """ ;
+    """;
     try {
       final response = await _model.generateContent([Content.text(prompt)]);
       final responseText = response.text;
@@ -265,19 +209,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
                       'Select language',
                       (val) => setState(() => _selectedLanguage = val)),
                   const SizedBox(height: 20),
-                  _buildSectionTitle('Party A Name'),
-                  _buildTextField(_partyANameController, 'Enter name'),
-                  const SizedBox(height: 20),
-                  _buildSectionTitle('Party B Name'),
-                  _buildTextField(_partyBNameController, 'Enter name'),
-                  const SizedBox(height: 20),
-                  _buildSectionTitle('Additional Details'),
-                  _buildTextField(_additionalDetailsController,
-                      'Provide specific terms, conditions, or requirements...',
-                      maxLines: 4),
-                  const SizedBox(height: 20),
-                  _buildSectionTitle('Effective Date'),
-                  _buildDateField(),
+                  _buildDynamicFields(), // Widget for dynamic fields
                   const SizedBox(height: 20),
                   _buildSectionTitle('Jurisdiction'),
                   _buildDropdown(
@@ -341,6 +273,32 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       ),
     );
   }
+  
+  Widget _buildDynamicFields() {
+    final fields = documentFields[_selectedDocumentType] ?? [];
+    if (fields.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: fields.length,
+      itemBuilder: (context, index) {
+        final field = fields[index];
+        final controller = _dynamicFieldControllers[field];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(field),
+            _buildTextField(controller!, 'Enter $field'),
+          ],
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(height: 20),
+    );
+  }
+
 
   Widget _buildDropdown(List<String> items, String? value, String hint,
       Function(String?) onChanged) {
@@ -379,11 +337,12 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
 
   Widget _buildDocumentTypeDropdown() {
     return DropdownSearch<String>(
-      items: _documentTypes,
+      items: documentFields.keys.toList(),
       selectedItem: _selectedDocumentType,
       onChanged: (String? newValue) {
         setState(() {
           _selectedDocumentType = newValue;
+          _updateDynamicControllers(newValue);
         });
       },
       dropdownDecoratorProps: DropDownDecoratorProps(
@@ -430,51 +389,6 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
           );
         },
       ),
-    );
-  }
-
-  Widget _buildDateField() {
-    return TextField(
-      controller: _effectiveDateController,
-      style: GoogleFonts.lexend(color: Colors.black87),
-      decoration: InputDecoration(
-        hintText: 'dd-mm-yyyy',
-        hintStyle: GoogleFonts.lexend(color: Colors.grey[400]),
-        filled: true,
-        fillColor: Colors.white,
-        suffixIcon: Icon(Iconsax.calendar_1, color: Colors.grey[600]),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.blue.shade600, width: 1.5),
-        ),
-      ),
-      onTap: () async {
-        FocusScope.of(context)
-            .requestFocus(FocusNode()); // to prevent keyboard from appearing
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2101),
-        );
-        if (pickedDate != null) {
-          String formattedDate =
-              "${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}";
-          setState(() {
-            _effectiveDateController.text = formattedDate;
-          });
-        }
-      },
     );
   }
 

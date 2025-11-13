@@ -25,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -52,8 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '89322291997',
     projectId: 'law-genie-56982041-cd466',
     authDomain: 'law-genie-56982041-cd466.firebaseapp.com',
-    databaseURL:
-        'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL: 'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'law-genie-56982041-cd466.firebasestorage.app',
   );
 
@@ -62,8 +55,7 @@ class DefaultFirebaseOptions {
     appId: '1:89322291997:android:62dba2028e984884b997f4',
     messagingSenderId: '89322291997',
     projectId: 'law-genie-56982041-cd466',
-    databaseURL:
-        'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL: 'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'law-genie-56982041-cd466.firebasestorage.app',
   );
 
@@ -72,13 +64,33 @@ class DefaultFirebaseOptions {
     appId: '1:89322291997:ios:3e6887d449e0e49eb997f4',
     messagingSenderId: '89322291997',
     projectId: 'law-genie-56982041-cd466',
-    databaseURL:
-        'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL: 'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'law-genie-56982041-cd466.firebasestorage.app',
-    androidClientId:
-        '89322291997-3jpqinq9oqo52fjuf1qqn57tf5j25765.apps.googleusercontent.com',
-    iosClientId:
-        '89322291997-gits7uhcft2s2n4jl956p1krnmp7p27f.apps.googleusercontent.com',
+    androidClientId: '89322291997-3jpqinq9oqo52fjuf1qqn57tf5j25765.apps.googleusercontent.com',
+    iosClientId: '89322291997-gits7uhcft2s2n4jl956p1krnmp7p27f.apps.googleusercontent.com',
     iosBundleId: 'com.example.myapp',
   );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyCEKq4A0ETR0EjufjQ_A1eAwooMsTew84o',
+    appId: '1:89322291997:ios:3e6887d449e0e49eb997f4',
+    messagingSenderId: '89322291997',
+    projectId: 'law-genie-56982041-cd466',
+    databaseURL: 'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'law-genie-56982041-cd466.firebasestorage.app',
+    androidClientId: '89322291997-3jpqinq9oqo52fjuf1qqn57tf5j25765.apps.googleusercontent.com',
+    iosClientId: '89322291997-gits7uhcft2s2n4jl956p1krnmp7p27f.apps.googleusercontent.com',
+    iosBundleId: 'com.example.myapp',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyCusS3jhWeaPbXfyJV2Oin1cid4oyBDdrI',
+    appId: '1:89322291997:web:26232a1637dafb89b997f4',
+    messagingSenderId: '89322291997',
+    projectId: 'law-genie-56982041-cd466',
+    authDomain: 'law-genie-56982041-cd466.firebaseapp.com',
+    databaseURL: 'https://law-genie-56982041-cd466-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'law-genie-56982041-cd466.firebasestorage.app',
+  );
+
 }
