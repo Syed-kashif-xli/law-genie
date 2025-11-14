@@ -753,7 +753,7 @@ class _DocumentMessageBubble extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            DocumentViewerPage(document: message.content),
+                            DocumentViewerPage(documentContent: message.content),
                       ),
                     );
                   },

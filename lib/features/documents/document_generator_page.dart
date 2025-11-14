@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'document_fields.dart'; // Import the new file
+import 'document_viewer_page.dart';
 
 const String _apiKey = 'AIzaSyC6NWmWsSowYUpYMOKCJ2EO1fD8-9UXB6s';
 
@@ -19,7 +20,6 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   String? _selectedDocumentType;
   String? _selectedJurisdiction;
   String? _selectedLanguage;
-  String? _generatedDocument;
   bool _isGenerating = false;
 
   late final GenerativeModel _model;
@@ -76,6 +76,10 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
     }
   }
 
+  String _stripEmoji(String text) {
+    return text.replaceAll(RegExp(r'(\u[0-9a-fA-F]{4})|(\U[0-9a-fA-F]{8})|([\uD800-\uDBFF][\uDC00-\uDFFF])|([\u2600-\u26FF\u2700-\u27BF])|([\uD83C-\uDBFF\uDC00-\uDFFF].)|[\uFE0E\uFE0F]'), '').trim();
+  }
+
   Future<void> _generateDocument() async {
     if (_selectedDocumentType == null || _selectedDocumentType == 'Select Document Type') {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -92,55 +96,79 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
 
     setState(() {
       _isGenerating = true;
-      _generatedDocument = null;
     });
+
+    final docType = _stripEmoji(_selectedDocumentType!);
 
     // Constructing the details from dynamic fields
     final details = _dynamicFieldControllers.entries
-        .map((entry) => "- ${entry.key}: ${entry.value.text}")
+        .map((entry) => "- ${_stripEmoji(entry.key)}: ${entry.value.text}")
         .join("\n");
 
     final prompt = """
-    Generate a '$_selectedDocumentType' in $_selectedLanguage with the following details:
+    **Act as an expert Indian legal drafter.**
+
+    Generate a '$docType' in $_selectedLanguage. This document must strictly adhere to the highest standards of Indian legal drafting.
+
+    **Input Details:**
     $details
     - Jurisdiction: $_selectedJurisdiction
 
-    Please format the output as a legal document.
-    Remember to wrap the document in [START_DOCUMENT:$_selectedDocumentType] and [END_DOCUMENT] tags.
+    **Mandatory Formatting and Structure:**
+
+    1.  **Court/Forum Name (if applicable):** Start with the name of the court or forum at the top, centered and in bold. E.g., **IN THE COURT OF THE DISTRICT JUDGE, DELHI**.
+    2.  **Case Number (if applicable):** Below the court name, add the case number. E.g., **CIVIL SUIT NO. 123 OF 2024**.
+    3.  **Parties:** Clearly define the parties. Use a two-column format with the petitioner/plaintiff on the left and the respondent/defendant on the right. Include full names, parentage, addresses, and their roles.
+        *Example:*
+        [Petitioner Name]
+        S/o [Father's Name]
+        R/o [Address]                                             ...Petitioner
+
+        VERSUS
+
+        [Respondent Name]
+        S/o [Father's Name]
+        R/o [Address]                                             ...Respondent
+
+    4.  **Title of the Document:** Centered, bold, and underlined. E.g., **<u>RENTAL AGREEMENT</u>** or **<u>WRITTEN STATEMENT</u>**.
+    5.  **Recitals/Preamble (WHEREAS clauses for agreements):** For agreements, use 'WHEREAS' clauses to state the background. For petitions/plaints, provide an introduction.
+    6.  **Operative Clauses/Body:**
+        - For agreements, use the phrase: **'NOW, THEREFORE, THIS AGREEMENT WITNESSETH AS FOLLOWS:'**
+        - For petitions/plaints, structure the content into numbered paragraphs, each addressing a specific point.
+        - Use formal legal language throughout (e.g., 'hereto', 'hereinafter', 'aforesaid', 'notwithstanding').
+    7.  **Prayer Clause (for petitions/plaints):** End with a clear 'PRAYER' section, stating the relief sought from the court.
+    8.  **Verification Clause:** Include a verification clause at the end. 
+        *Example for Plaint:*
+        **VERIFICATION**
+        Verified at [Place] on this [Date] day of [Month], [Year] that the contents of paragraphs 1 to [last paragraph] of the above plaint are true to my knowledge and the contents of paragraphs [x] to [y] are based on legal advice received and believed to be true. 
+
+        [Deponent/Petitioner Signature]
+
+    9.  **Signature Blocks:** Include signature blocks for the parties and their advocates (if applicable) on the right-hand side.
+
+    **Final Output:** The document must be a complete, professional, and executable legal draft, free of any conversational text or explanations. Do not include any text like "Here is the document you requested".
     """;
     try {
       final response = await _model.generateContent([Content.text(prompt)]);
       final responseText = response.text;
 
-      String documentContent = "Could not generate document.";
-
       if (responseText != null) {
-        final docStartIndex = responseText.indexOf('[START_DOCUMENT:');
-        final docEndIndex = responseText.indexOf('[END_DOCUMENT]');
-
-        if (docStartIndex != -1 && docEndIndex != -1) {
-          final titleStartIndex = docStartIndex + '[START_DOCUMENT:'.length;
-          final titleEndIndex = responseText.indexOf(']', titleStartIndex);
-          if (titleEndIndex != -1 && titleEndIndex < docEndIndex) {
-            documentContent =
-                responseText.substring(titleEndIndex + 1, docEndIndex).trim();
-          } else {
-            documentContent = responseText;
-          }
-        } else {
-          documentContent = responseText;
-        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                DocumentViewerPage(documentContent: responseText),
+          ),
+        );
       } else {
-        documentContent = "Could not generate document.";
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not generate document.')),
+        );
       }
-
-      setState(() {
-        _generatedDocument = documentContent;
-      });
     } catch (e) {
-      setState(() {
-        _generatedDocument = "Error generating document: $e";
-      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error generating document: $e')),
+      );
     } finally {
       setState(() {
         _isGenerating = false;
@@ -223,8 +251,6 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
               ),
             ),
             const SizedBox(height: 24),
-            _buildGeneratedDocumentDisplay(),
-            const SizedBox(height: 20.0),
           ],
         ),
       ),
@@ -235,7 +261,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
-        title,
+        _stripEmoji(title),
         style: GoogleFonts.poppins(
           fontSize: 15,
           fontWeight: FontWeight.w500,
@@ -295,7 +321,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
             _buildSectionTitle(field),
             _buildTextField(
               controller!,
-              'Enter $field',
+              'Enter ${_stripEmoji(field)}',
               maxLines: isMultiLine ? 5 : 1,
             ),
           ],
@@ -442,57 +468,6 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
-      ),
-    );
-  }
-
-  Widget _buildGeneratedDocumentDisplay() {
-    if (_isGenerating) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(32.0),
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    if (_generatedDocument == null || _generatedDocument!.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(color: Colors.grey.shade300),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withAlpha(25),
-            spreadRadius: 1,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Generated Document',
-            style: GoogleFonts.merriweather(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey[800],
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Divider(),
-          const SizedBox(height: 8),
-          SelectableText(
-            _generatedDocument!,
-            style: GoogleFonts.lexend(color: Colors.black87, height: 1.5),
-          ),
-        ],
       ),
     );
   }

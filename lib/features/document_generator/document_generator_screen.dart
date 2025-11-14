@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'dart:ui';
 
 import '../documents/document_fields.dart';
 
@@ -403,7 +402,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
   Widget _buildDropdown(List<String> items, String? value, String hint,
       void Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       isExpanded: true,
       hint: Text(hint, style: GoogleFonts.poppins(color: Colors.grey.shade500)),
       icon: const Icon(Iconsax.arrow_down_1, color: Colors.black54),
