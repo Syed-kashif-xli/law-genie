@@ -1,32 +1,37 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:myapp/features/case_timeline/timeline_model.dart';
+import 'package:myapp/models/timeline_event.dart';
 
 class TimelineProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _collectionPath = 'timeline';
+  final String _collectionPath = 'cases'; // Now targeting the 'cases' collection
 
-  List<TimelineModel> _timeline = [];
+  List<TimelineEvent> _events = [];
   bool _isLoading = true;
+  StreamSubscription<QuerySnapshot>? _timelineSubscription;
 
-  List<TimelineModel> get timeline => _timeline;
+  List<TimelineEvent> get events => _events;
   bool get isLoading => _isLoading;
 
-  TimelineProvider() {
-    _fetchTimelineEvents();
-  }
+  // Fetch timeline events for a specific case from Firestore
+  Future<void> fetchTimelineEvents(String caseId) async {
+    _isLoading = true;
+    notifyListeners();
 
-  // Fetch timeline events from Firestore
-  Future<void> _fetchTimelineEvents() async {
+    // Cancel any existing listener to avoid multiple streams
+    await _timelineSubscription?.cancel();
+
     try {
-      _firestore
+      _timelineSubscription = _firestore
           .collection(_collectionPath)
+          .doc(caseId)
+          .collection('timeline') // Access the subcollection
           .orderBy('date', descending: false)
           .snapshots()
           .listen((snapshot) {
-        _timeline = snapshot.docs
-            .map((doc) => TimelineModel.fromMap(doc.data(), doc.id))
+        _events = snapshot.docs
+            .map((doc) => TimelineEvent.fromMap(doc.data(), doc.id))
             .toList();
         _isLoading = false;
         notifyListeners();
@@ -37,21 +42,27 @@ class TimelineProvider with ChangeNotifier {
     }
   }
 
-  // Add a new timeline event to Firestore
-  Future<void> addTimelineEvent(TimelineModel event) async {
+  // Add a new timeline event to a specific case
+  Future<void> addTimelineEvent(String caseId, TimelineEvent event) async {
     try {
-      await _firestore.collection(_collectionPath).add(event.toMap());
+      await _firestore
+          .collection(_collectionPath)
+          .doc(caseId)
+          .collection('timeline')
+          .add(event.toMap());
     } catch (e) {
       // Handle error
     }
   }
 
-  // Update an existing timeline event
-  Future<void> updateTimelineEvent(TimelineModel event) async {
+  // Update an existing timeline event in a specific case
+  Future<void> updateTimelineEvent(String caseId, TimelineEvent event) async {
     if (event.id == null) return;
     try {
       await _firestore
           .collection(_collectionPath)
+          .doc(caseId)
+          .collection('timeline')
           .doc(event.id)
           .update(event.toMap());
     } catch (e) {
@@ -59,12 +70,23 @@ class TimelineProvider with ChangeNotifier {
     }
   }
 
-  // Delete a timeline event
-  Future<void> deleteTimelineEvent(String id) async {
+  // Delete a timeline event from a specific case
+  Future<void> deleteTimelineEvent(String caseId, String eventId) async {
     try {
-      await _firestore.collection(_collectionPath).doc(id).delete();
+      await _firestore
+          .collection(_collectionPath)
+          .doc(caseId)
+          .collection('timeline')
+          .doc(eventId)
+          .delete();
     } catch (e) {
       // Handle error
     }
+  }
+
+  @override
+  void dispose() {
+    _timelineSubscription?.cancel();
+    super.dispose();
   }
 }

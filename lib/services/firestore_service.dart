@@ -1,24 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:myapp/features/case_timeline/timeline_model.dart';
+import 'package:myapp/models/timeline_event.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   // Get a stream of timeline events
-  Stream<List<TimelineModel>> getTimelineEvents() {
+  Stream<List<TimelineEvent>> getTimelineEvents() {
     return _db.collection('timeline').snapshots().map((snapshot) => snapshot
         .docs
-        .map((doc) => TimelineModel.fromMap(doc.data(), doc.id))
+        .map((doc) => TimelineEvent.fromMap(doc.data(), doc.id))
         .toList());
   }
 
   // Add a new timeline event
-  Future<void> addTimelineEvent(TimelineModel event) {
+  Future<void> addTimelineEvent(TimelineEvent event) {
     return _db.collection('timeline').add(event.toMap());
   }
 
   // Update a timeline event
-  Future<void> updateTimelineEvent(TimelineModel event) {
+  Future<void> updateTimelineEvent(TimelineEvent event) {
     return _db.collection('timeline').doc(event.id).update(event.toMap());
   }
 

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:myapp/features/case_timeline/timeline_provider.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/home/app_drawer.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:myapp/features/home/widgets/event_card.dart';
 import 'package:myapp/features/home/widgets/feature_card.dart';
 import 'package:myapp/features/home/widgets/news_card.dart';
 import 'package:myapp/features/home/providers/news_provider.dart';
+import 'package:myapp/screens/case_list_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/home/pages/all_news_page.dart';
-import 'package:myapp/features/home/pages/all_events_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -69,8 +67,6 @@ class _HomePageState extends State<HomePage> {
                 const _StatsSection(),
                 const SizedBox(height: 24),
                 _QuickActions(),
-                const SizedBox(height: 24),
-                const _UpcomingEvents(),
                 const SizedBox(height: 24),
                 const _AiUsage(),
                 const SizedBox(height: 24),
@@ -233,8 +229,6 @@ class _StatCard extends StatelessWidget {
 }
 
 class _QuickActions extends StatelessWidget {
-  const _QuickActions();
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -288,73 +282,20 @@ class _QuickActions extends StatelessWidget {
               subtitle: 'Track cases',
               icon: Iconsax.calendar_edit,
               onTap: () {
-                Navigator.pushNamed(context, '/caseTimeline');
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _UpcomingEvents extends StatelessWidget {
-  const _UpcomingEvents();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Upcoming Events',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
+                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const AllEventsPage()),
+                  MaterialPageRoute(builder: (context) => const CaseListScreen()),
                 );
               },
-              child: Text(
-                'View All',
-                style: GoogleFonts.poppins(
-                    fontSize: 16, color: const Color(0xFF02F1C3)),
-              ),
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        Consumer<TimelineProvider>(
-          builder: (context, provider, child) {
-            if (provider.isLoading && provider.timeline.isEmpty) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount:
-                  provider.timeline.length > 2 ? 2 : provider.timeline.length,
-              itemBuilder: (context, index) {
-                final event = provider.timeline[index];
-                return EventCard(event: event);
-              },
-            );
-          },
         ),
       ],
     );
   }
 }
+
+
 
 class _AiUsage extends StatelessWidget {
   const _AiUsage();

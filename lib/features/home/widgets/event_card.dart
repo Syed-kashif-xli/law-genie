@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:myapp/features/case_timeline/timeline_model.dart';
 
 class EventCard extends StatelessWidget {
-  final TimelineModel event;
+  final TimelineEvent event;
 
   const EventCard({required this.event, super.key});
 

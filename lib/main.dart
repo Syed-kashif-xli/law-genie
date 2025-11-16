@@ -6,22 +6,26 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/features/home/main_layout.dart';
 import 'package:myapp/models/chat_model.dart';
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
+import 'package:myapp/providers/case_provider.dart';
 import 'package:myapp/providers/chat_provider.dart';
+import 'package:myapp/screens/case_list_screen.dart';
 import 'package:myapp/screens/chat_history_screen.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/documents/document_generator_page.dart';
 import 'package:myapp/features/home/providers/news_provider.dart';
-import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/features/home/home_page.dart';
 import 'package:myapp/features/onboarding/onboarding_page.dart';
 import 'package:myapp/features/onboarding/splash_screen.dart';
 import 'package:myapp/services/notification_service.dart';
+import 'package:myapp/screens/notifications_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await NotificationService().init();
+  tz.initializeTimeZones();
   await Hive.initFlutter();
   Hive.registerAdapter(ChatSessionAdapter());
   Hive.registerAdapter(ChatMessageAdapter());
@@ -32,6 +36,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => TimelineProvider()),
         ChangeNotifierProvider(create: (context) => NewsProvider()),
         ChangeNotifierProvider(create: (context) => ChatProvider()),
+        ChangeNotifierProvider(create: (context) => CaseProvider()),
       ],
       child: MyApp(currentUser: FirebaseAuth.instance.currentUser),
     ),
@@ -127,9 +132,10 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/aiChat': (context) => const AIChatPage(),
         '/generateDoc': (context) => const DocumentGeneratorPage(),
-        '/caseTimeline': (context) => const CaseTimelinePage(),
+        '/caseList': (context) => const CaseListScreen(),
         '/chatHistory': (context) => const ChatHistoryScreen(),
         '/onboarding': (context) => const OnboardingPage(),
+        '/notifications': (context) => const NotificationsScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/aiChat') {

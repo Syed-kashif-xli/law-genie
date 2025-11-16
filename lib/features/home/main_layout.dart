@@ -5,6 +5,8 @@ import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/auth/login_page.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/home/home_page.dart';
+import 'package:myapp/screens/case_list_screen.dart';
+import 'package:myapp/screens/notifications_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -18,9 +20,9 @@ class _MainLayoutState extends State<MainLayout> {
 
   final List<Widget> _pages = [
     const HomePage(),
-    const AIChatPage(), // Use AIChatPage
-    const Center(child: Text('Library Page')),
-    const Center(child: Text('Timeline Page')),
+    const AIChatPage(),
+    const NotificationsScreen(),
+    const CaseListScreen(),
     const ProfilePage(),
   ];
 
@@ -54,8 +56,8 @@ class _MainLayoutState extends State<MainLayout> {
             label: 'Chat',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.folder_open),
-            label: 'Library',
+            icon: Icon(Iconsax.notification),
+            label: 'Notifications',
           ),
           BottomNavigationBarItem(
             icon: Icon(Iconsax.calendar),

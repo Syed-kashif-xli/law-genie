@@ -32,6 +32,14 @@ Law Genie is a Flutter application designed to be a comprehensive legal assistan
     *   `timeline_tile` for creating the case timeline.
     *   `http` for making network requests to the news API.
 
+**Current Request: Case Timeline Enhancements & UI Modernization**
+
+*   **Plan:**
+    1.  **Auto-Reminders:** Implement a feature in the case timeline to add reminders for upcoming events. This will include a UI to set a reminder date and time.
+    2.  **Notifications Screen:** Create a new screen to display upcoming reminders and other notifications. This screen will be accessible from the main navigation.
+    3.  **UI Modernization:** Refresh the UI of the case timeline and other screens to give it a more modern and polished look. This will include updating colors, typography, and component styles.
+    4.  **Google Calendar Sync (Future):** After the above features are implemented, investigate and implement syncing of case timeline events with the user's Google Calendar.
+
 **Fixes and Improvements in this session:**
 
 *   Fixed a `deprecated_member_use` warning related to the `Share` class.
