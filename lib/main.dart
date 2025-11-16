@@ -18,6 +18,7 @@ import 'package:myapp/features/onboarding/onboarding_page.dart';
 import 'package:myapp/features/onboarding/splash_screen.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/screens/notifications_screen.dart';
+import 'package:myapp/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -136,6 +137,7 @@ class MyApp extends StatelessWidget {
         '/chatHistory': (context) => const ChatHistoryScreen(),
         '/onboarding': (context) => const OnboardingPage(),
         '/notifications': (context) => const NotificationsScreen(),
+        '/profile': (context) => const ProfileScreen(), // Add profile route
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/aiChat') {
