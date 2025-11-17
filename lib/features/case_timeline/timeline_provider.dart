@@ -14,10 +14,15 @@ class TimelineProvider with ChangeNotifier {
   List<TimelineEvent> get events => _events;
   bool get isLoading => _isLoading;
 
+  // Set loading state
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
   // Fetch timeline events for a specific case from Firestore
   Future<void> fetchTimelineEvents(String caseId) async {
-    _isLoading = true;
-    notifyListeners();
+    _setLoading(true);
 
     // Cancel any existing listener to avoid multiple streams
     await _timelineSubscription?.cancel();
@@ -33,25 +38,25 @@ class TimelineProvider with ChangeNotifier {
         _events = snapshot.docs
             .map((doc) => TimelineEvent.fromMap(doc.data(), doc.id))
             .toList();
-        _isLoading = false;
-        notifyListeners();
+        _setLoading(false);
+      }, onError: (error) {
+        _setLoading(false);
       });
     } catch (e) {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
   // Add a new timeline event to a specific case
-  Future<void> addTimelineEvent(String caseId, TimelineEvent event) async {
+  Future<DocumentReference> addTimelineEvent(String caseId, TimelineEvent event) async {
     try {
-      await _firestore
+      return await _firestore
           .collection(_collectionPath)
           .doc(caseId)
           .collection('timeline')
           .add(event.toMap());
     } catch (e) {
-      // Handle error
+      rethrow;
     }
   }
 

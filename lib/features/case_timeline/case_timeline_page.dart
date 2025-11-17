@@ -15,13 +15,12 @@ class CaseTimelinePage extends StatefulWidget {
 }
 
 class CaseTimelinePageState extends State<CaseTimelinePage> {
-  final NotificationService _notificationService = NotificationService();
-
   @override
   void initState() {
     super.initState();
-    // Fetch the timeline events for the specific case when the page loads
-    Provider.of<TimelineProvider>(context, listen: false).fetchTimelineEvents(widget.caseId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<TimelineProvider>(context, listen: false).fetchTimelineEvents(widget.caseId);
+    });
   }
 
   Color _getStatusColor(TimelineStatus status) {
@@ -123,59 +122,77 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: Column(
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              item.title,
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Icon(Icons.calendar_today, size: 16, color: theme.colorScheme.onSurface.withOpacity(0.6)),
-                                const SizedBox(width: 8),
-                                Text(
-                                  DateFormat.yMMMMd().format(item.date),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface.withOpacity(0.8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.title,
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.onSurface,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              item.description,
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                color: theme.colorScheme.onSurface.withOpacity(0.9),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                if (item.reminderDate != null)
+                                  const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const Icon(Icons.notifications_active, size: 16, color: Colors.blueAccent),
-                                      const SizedBox(width: 4),
+                                      Icon(Icons.calendar_today, size: 16, color: theme.colorScheme.onSurface.withOpacity(0.6)),
+                                      const SizedBox(width: 8),
                                       Text(
-                                        'Reminder Set',
-                                        style: theme.textTheme.bodySmall?.copyWith(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                                        DateFormat.yMMMMd().format(item.date),
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          color: theme.colorScheme.onSurface.withOpacity(0.8),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                if (item.status == TimelineStatus.upcoming)
-                                  IconButton(
-                                    icon: const Icon(Icons.notification_add, color: Colors.teal),
-                                    tooltip: 'Set Reminder',
-                                    onPressed: () {
-                                      _showReminderDialog(context, item);
-                                    },
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    item.description,
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      color: theme.colorScheme.onSurface.withOpacity(0.9),
+                                    ),
                                   ),
+                                  const SizedBox(height: 16),
+                                  if (item.reminderDate != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Row(
+                                        children: [
+                                          const Icon(Icons.notifications_active, size: 16, color: Colors.blueAccent),
+                                          const SizedBox(width: 4),
+                                          Expanded(
+                                            child: Text(
+                                              'Reminder: ${DateFormat.yMMMMd().add_jm().format(item.reminderDate!)}',
+                                              style: theme.textTheme.bodySmall?.copyWith(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              onSelected: (value) {
+                                if (value == 'rename') {
+                                  _showAddEventDialog(context, widget.caseId, event: item);
+                                } else if (value == 'delete') {
+                                  _showDeleteConfirmationDialog(context, widget.caseId, item);
+                                }
+                              },
+                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                const PopupMenuItem<String>(
+                                  value: 'rename',
+                                  child: Text('Rename'),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'delete',
+                                  child: Text('Delete'),
+                                ),
                               ],
                             ),
                           ],
@@ -198,66 +215,47 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
     );
   }
 
-  Future<void> _showAddEventDialog(BuildContext context, String caseId) async {
+  Future<void> _showAddEventDialog(BuildContext context, String caseId, {TimelineEvent? event}) async {
     await showDialog(
       context: context,
-      builder: (context) => AddEventDialog(caseId: caseId),
+      builder: (context) => AddEventDialog(caseId: caseId, event: event),
     );
   }
 
-  Future<void> _showReminderDialog(BuildContext context, TimelineEvent item) async {
-    final timelineProvider = Provider.of<TimelineProvider>(context, listen: false);
-
-    DateTime? selectedDate = await showDatePicker(
+  Future<void> _showDeleteConfirmationDialog(BuildContext context, String caseId, TimelineEvent event) async {
+    await showDialog(
       context: context,
-      initialDate: item.reminderDate ?? item.date,
-      firstDate: DateTime.now(),
-      lastDate: item.date.add(const Duration(days: 365)),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this event?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final timelineProvider = Provider.of<TimelineProvider>(context, listen: false);
+                if (event.reminderDate != null) {
+                  NotificationService().cancelNotification(event.id.hashCode);
+                }
+                timelineProvider.deleteTimelineEvent(caseId, event.id!);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
     );
-
-    if (selectedDate != null) {
-      if (!mounted) return;
-      TimeOfDay? selectedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(item.reminderDate ?? item.date),
-      );
-
-      if (selectedTime != null) {
-        final scheduledDate = DateTime(
-          selectedDate.year,
-          selectedDate.month,
-          selectedDate.day,
-          selectedTime.hour,
-          selectedTime.minute,
-        );
-
-        // Schedule the notification
-        await _notificationService.scheduleNotification(
-          id: item.hashCode,
-          title: 'Case Reminder: ${item.title}',
-          body: item.description,
-          scheduledDate: scheduledDate,
-        );
-
-        // Update the event with the new reminder date
-        final updatedEvent = item.copyWith(reminderDate: scheduledDate);
-        await timelineProvider.updateTimelineEvent(widget.caseId, updatedEvent);
-
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Reminder set for ${DateFormat.yMMMMd().add_jm().format(scheduledDate)}'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    }
   }
 }
 
 class AddEventDialog extends StatefulWidget {
   final String caseId;
-  const AddEventDialog({super.key, required this.caseId});
+  final TimelineEvent? event;
+  const AddEventDialog({super.key, required this.caseId, this.event});
 
   @override
   AddEventDialogState createState() => AddEventDialogState();
@@ -265,10 +263,26 @@ class AddEventDialog extends StatefulWidget {
 
 class AddEventDialogState extends State<AddEventDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  DateTime _selectedDate = DateTime.now();
-  TimelineStatus _selectedStatus = TimelineStatus.upcoming;
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  late DateTime _selectedDate;
+  late TimelineStatus _selectedStatus;
+  bool _isReminderSet = false;
+  DateTime? _reminderDate;
+  final NotificationService _notificationService = NotificationService();
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.event?.title ?? '');
+    _descriptionController = TextEditingController(text: widget.event?.description ?? '');
+    _selectedDate = widget.event?.date ?? DateTime.now();
+    _selectedStatus = widget.event?.status ?? TimelineStatus.upcoming;
+    if (widget.event?.reminderDate != null) {
+      _isReminderSet = true;
+      _reminderDate = widget.event!.reminderDate;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +290,7 @@ class AddEventDialogState extends State<AddEventDialog> {
 
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Text('Add Timeline Event', style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(widget.event == null ? 'Add Timeline Event' : 'Edit Timeline Event', style: const TextStyle(fontWeight: FontWeight.bold)),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -301,7 +315,7 @@ class AddEventDialogState extends State<AddEventDialog> {
                     child: Text('Date: ${DateFormat.yMMMMd().format(_selectedDate)}'),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.calendar_today), 
+                    icon: const Icon(Icons.calendar_today),
                     onPressed: () async {
                       final pickedDate = await showDatePicker(
                         context: context,
@@ -333,6 +347,37 @@ class AddEventDialogState extends State<AddEventDialog> {
                   );
                 }).toList(),
               ),
+              const SizedBox(height: 20),
+              SwitchListTile(
+                title: const Text('Set Reminder'),
+                value: _isReminderSet,
+                onChanged: (bool value) {
+                  setState(() {
+                    _isReminderSet = value;
+                    if (_isReminderSet) {
+                      _selectReminderDateTime();
+                    } else {
+                      _reminderDate = null;
+                    }
+                  });
+                },
+              ),
+              if (_isReminderSet && _reminderDate != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text('Reminder: ${DateFormat.yMMMMd().add_jm().format(_reminderDate!)}'),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit, size: 20),
+                        onPressed: _selectReminderDateTime,
+                      )
+                    ],
+                  ),
+                )
             ],
           ),
         ),
@@ -347,22 +392,105 @@ class AddEventDialogState extends State<AddEventDialog> {
             backgroundColor: theme.primaryColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              final newEvent = TimelineEvent(
+          onPressed: _saveEvent,
+          child: Text(widget.event == null ? 'Add' : 'Save'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _selectReminderDateTime() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _reminderDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate == null) return; // User cancelled
+
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_reminderDate ?? DateTime.now()),
+    );
+    if (pickedTime == null) return; // User cancelled
+
+    setState(() {
+      _reminderDate = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+      _isReminderSet = true; // Ensure this is set if they picked a date
+    });
+  }
+
+  Future<void> _saveEvent() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final timelineProvider = Provider.of<TimelineProvider>(context, listen: false);
+
+    if (widget.event != null && widget.event?.id != null) {
+        await _notificationService.cancelNotification(widget.event!.id.hashCode);
+    }
+
+    DateTime? finalReminderDate;
+    if (_isReminderSet && _reminderDate != null) {
+        if (_reminderDate!.isBefore(DateTime.now())) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Reminder date must be in the future')),
+            );
+            return;
+        }
+      finalReminderDate = _reminderDate;
+    }
+    
+    try {
+        if (widget.event == null) {
+            final newEvent = TimelineEvent(
                 title: _titleController.text,
                 description: _descriptionController.text,
                 date: _selectedDate,
                 status: _selectedStatus,
-                icon: Icons.event, // Default icon
-              );
-              Provider.of<TimelineProvider>(context, listen: false).addTimelineEvent(widget.caseId, newEvent);
-              Navigator.of(context).pop();
+                icon: Icons.event,
+                reminderDate: finalReminderDate,
+            );
+            final docRef = await timelineProvider.addTimelineEvent(widget.caseId, newEvent);
+
+            if (finalReminderDate != null) {
+                await _notificationService.scheduleNotification(
+                    id: docRef.id.hashCode,
+                    title: 'Case Reminder: ${newEvent.title}',
+                    body: newEvent.description,
+                    scheduledDate: finalReminderDate,
+                );
             }
-          },
-          child: const Text('Add'),
-        ),
-      ],
-    );
+        } else {
+            final updatedEvent = widget.event!.copyWith(
+                title: _titleController.text,
+                description: _descriptionController.text,
+                date: _selectedDate,
+                status: _selectedStatus,
+                reminderDate: finalReminderDate,
+            );
+            await timelineProvider.updateTimelineEvent(widget.caseId, updatedEvent);
+
+            if (finalReminderDate != null && updatedEvent.id != null) {
+                await _notificationService.scheduleNotification(
+                    id: updatedEvent.id!.hashCode,
+                    title: 'Case Reminder: ${updatedEvent.title}',
+                    body: updatedEvent.description,
+                    scheduledDate: finalReminderDate,
+                );
+            }
+        }
+    } catch (e) {
+        // Silently fail if notification permission is not granted
+    }
+
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 }
