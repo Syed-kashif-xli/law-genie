@@ -7,7 +7,7 @@ class CaseProvider with ChangeNotifier {
   final String _collectionPath = 'cases';
 
   List<Case> _cases = [];
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   List<Case> get cases => _cases;
   bool get isLoading => _isLoading;
@@ -16,42 +16,47 @@ class CaseProvider with ChangeNotifier {
     fetchCases();
   }
 
-  Future<void> fetchCases() async {
-    _isLoading = true;
+  void _setLoading(bool loading) {
+    _isLoading = loading;
     notifyListeners();
+  }
 
+  Future<void> fetchCases() async {
     try {
+      _setLoading(true);
       final snapshot = await _firestore.collection(_collectionPath).orderBy('creationDate', descending: true).get();
       _cases = snapshot.docs.map((doc) => Case.fromMap(doc.data(), doc.id)).toList();
     } catch (e) {
-      print("Error fetching cases: $e");
-    }
-
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  Future<void> addCase(Case newCase) async {
-    try {
-      final docRef = await _firestore.collection(_collectionPath).add(newCase.toMap());
-      final createdCase = Case.fromMap(newCase.toMap(), docRef.id);
-      _cases.insert(0, createdCase);
-      notifyListeners();
-    } catch (e) {
-      print("Error adding case: $e");
+      // Handle error
+    } finally {
+      _setLoading(false);
     }
   }
 
-  Future<void> updateCase(Case updatedCase) async {
+  Future<void> addCase(Case caseItem) async {
     try {
-      await _firestore.collection(_collectionPath).doc(updatedCase.id).update(updatedCase.toMap());
-      final index = _cases.indexWhere((c) => c.id == updatedCase.id);
-      if (index != -1) {
-        _cases[index] = updatedCase;
-        notifyListeners();
-      }
+      await _firestore.collection(_collectionPath).add(caseItem.toMap());
+      fetchCases(); 
     } catch (e) {
-      print("Error updating case: $e");
+      // Handle error
+    }
+  }
+
+    Future<void> updateCase(Case caseItem) async {
+    try {
+      await _firestore.collection(_collectionPath).doc(caseItem.id).update(caseItem.toMap());
+      fetchCases();
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  Future<void> deleteCase(String caseId) async {
+    try {
+      await _firestore.collection(_collectionPath).doc(caseId).delete();
+      fetchCases();
+    } catch (e) {
+     // Handle error
     }
   }
 }

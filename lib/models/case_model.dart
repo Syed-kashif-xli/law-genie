@@ -43,4 +43,24 @@ class Case {
       'creationDate': Timestamp.fromDate(creationDate),
     };
   }
+
+  Case copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? caseNumber,
+    String? courtName,
+    List<String>? parties,
+    DateTime? creationDate,
+  }) {
+    return Case(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      caseNumber: caseNumber ?? this.caseNumber,
+      courtName: courtName ?? this.courtName,
+      parties: parties ?? this.parties,
+      creationDate: creationDate ?? this.creationDate,
+    );
+  }
 }
