@@ -17,9 +17,9 @@ class CourtOrderReaderPage extends StatefulWidget {
 
 class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
   String? _summary;
-  Uint8List? _fileBytes;
+  List<Uint8List> _fileBytesList = [];
   bool _isLoading = false;
-  String? _fileName;
+  List<String> _fileNames = [];
 
   late final GenerativeModel _model;
 
@@ -32,25 +32,26 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
     );
   }
 
-  Future<void> _pickFile() async {
+  Future<void> _pickFiles() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
+      allowMultiple: true,
     );
 
     if (result != null) {
       setState(() {
-        _fileBytes = result.files.first.bytes;
-        _fileName = result.files.first.name;
-        _summary = null; // Reset summary when a new file is picked
+        _fileBytesList = result.files.map((file) => file.bytes!).toList();
+        _fileNames = result.files.map((file) => file.name).toList();
+        _summary = null; // Reset summary when new files are picked
       });
     }
   }
 
   Future<void> _summarize() async {
-    if (_fileBytes == null) {
+    if (_fileBytesList.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please pick a PDF file first.')),
+        const SnackBar(content: Text('Please pick one or more PDF files first.')),
       );
       return;
     }
@@ -61,8 +62,8 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
 
     try {
       final content = [Content.multi([
-        TextPart('Summarize the following court order document. Provide a concise summary of the key points, rulings, and directives.'),
-        DataPart('application/pdf', _fileBytes!),
+        TextPart('Summarize the following court order documents. Provide a concise summary of the key points, rulings, and directives for each document.'),
+        ..._fileBytesList.map((bytes) => DataPart('application/pdf', bytes)),
       ])];
       final response = await _model.generateContent(content);
 
@@ -71,7 +72,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error summarizing document: $e')),
+        SnackBar(content: Text('Error summarizing documents: $e')),
       );
     } finally {
       setState(() {
@@ -136,7 +137,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       child: Column(
         children: [
           GestureDetector(
-            onTap: _pickFile,
+            onTap: _pickFiles,
             child: DottedBorder(
               color: Colors.blue.shade300,
               strokeWidth: 2,
@@ -159,11 +160,13 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      _fileName ?? 'Tap to upload a PDF',
+                      _fileNames.isEmpty
+                          ? 'Tap to upload PDFs'
+                          : '${_fileNames.length} file(s) selected',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: _fileName != null ? Colors.black87 : Colors.grey.shade600,
+                        color: _fileNames.isNotEmpty ? Colors.black87 : Colors.grey.shade600,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -182,7 +185,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        gradient: _fileBytes == null
+        gradient: _fileBytesList.isEmpty
             ? const LinearGradient(
                 colors: [Color(0xFFB0B0B0), Color(0xFF9E9E9E)],
                 begin: Alignment.centerLeft,
@@ -193,7 +196,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
-        boxShadow: _fileBytes == null
+        boxShadow: _fileBytesList.isEmpty
             ? null
             : [
                 BoxShadow(
@@ -204,7 +207,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
               ],
       ),
       child: ElevatedButton.icon(
-        onPressed: _fileBytes == null || _isLoading ? null : _summarize,
+        onPressed: _fileBytesList.isEmpty || _isLoading ? null : _summarize,
         icon: _isLoading
             ? const SizedBox.shrink()
             : const Icon(Iconsax.document_text_1, color: Colors.white),
@@ -279,7 +282,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
                       )
                     : Center(
                         child: Text(
-                          'The summary will appear here once you upload and process a court order document.',
+                          'The summary will appear here once you upload and process one or more court order documents.',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.poppins(
                             fontSize: 16,
