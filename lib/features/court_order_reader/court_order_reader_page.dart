@@ -27,7 +27,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
   void initState() {
     super.initState();
     _model = GenerativeModel(
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       apiKey: _apiKey,
     );
   }
@@ -37,13 +37,20 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       type: FileType.custom,
       allowedExtensions: ['pdf'],
       allowMultiple: true,
+      withData: true,
     );
 
-    if (result != null) {
+    if (result != null && result.files.isNotEmpty) {
       setState(() {
-        _fileBytesList = result.files.map((file) => file.bytes!).toList();
-        _fileNames = result.files.map((file) => file.name).toList();
-        _summary = null; // Reset summary when new files are picked
+        _fileBytesList = result.files
+            .where((file) => file.bytes != null)
+            .map((file) => file.bytes!)
+            .toList();
+        _fileNames = result.files
+            .where((file) => file.bytes != null)
+            .map((file) => file.name)
+            .toList();
+        _summary = null;
       });
     }
   }
@@ -51,7 +58,8 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
   Future<void> _summarize() async {
     if (_fileBytesList.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please pick one or more PDF files first.')),
+        const SnackBar(
+            content: Text('Please pick one or more PDF files first.')),
       );
       return;
     }
@@ -61,10 +69,13 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
     });
 
     try {
-      final content = [Content.multi([
-        TextPart('Summarize the following court order documents. Provide a concise summary of the key points, rulings, and directives for each document.'),
-        ..._fileBytesList.map((bytes) => DataPart('application/pdf', bytes)),
-      ])];
+      final content = [
+        Content.multi([
+          TextPart(
+              'Summarize the following court order documents. Provide a concise summary of the key points, rulings, and directives for each document.'),
+          ..._fileBytesList.map((bytes) => DataPart('application/pdf', bytes)),
+        ])
+      ];
       final response = await _model.generateContent(content);
 
       setState(() {
@@ -81,7 +92,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
     }
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4F8),
@@ -108,8 +119,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
           children: [
             _buildFileUploadCard(),
             const SizedBox(height: 24),
-            if (_fileNames.isNotEmpty)
-              _buildSelectedFilesList(),
+            if (_fileNames.isNotEmpty) _buildSelectedFilesList(),
             const SizedBox(height: 24),
             _buildGenerateButton(),
             const SizedBox(height: 24),
@@ -180,64 +190,69 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       ),
     );
   }
-  
-  Widget _buildSelectedFilesList() {
-  return Container(
-    padding: const EdgeInsets.all(16.0),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16.0),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.15),
-          spreadRadius: 2,
-          blurRadius: 12,
-          offset: const Offset(0, 5),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Selected Files',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey.shade800,
-          ),
-        ),
-        const SizedBox(height: 12),
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: _fileNames.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Row(
-                children: [
-                  Icon(Icons.check_circle, color: Colors.green.shade600, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _fileNames[index],
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.black87,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
-    ),
-  );
-}
 
+  Widget _buildSelectedFilesList() {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.15),
+            spreadRadius: 2,
+            blurRadius: 12,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Selected Files',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade800,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            constraints: const BoxConstraints(
+              maxHeight: 150, // This will fix the overflow
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _fileNames.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.check_circle,
+                          color: Colors.green.shade600, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _fileNames[index],
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildGenerateButton() {
     return Container(
@@ -278,7 +293,8 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
                 )
               : Text(
                   'Generate Summary',
-                  style: GoogleFonts.lexend(fontWeight: FontWeight.w600, fontSize: 16),
+                  style: GoogleFonts.lexend(
+                      fontWeight: FontWeight.w600, fontSize: 16),
                 ),
         ),
         style: ElevatedButton.styleFrom(
@@ -286,7 +302,8 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
@@ -331,12 +348,14 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _summary != null
-                    ? SelectableText(
-                        _summary!,
-                        style: GoogleFonts.lora(
-                          fontSize: 16,
-                          height: 1.5,
-                          color: Colors.black87,
+                    ? SingleChildScrollView(
+                        child: SelectableText(
+                          _summary!,
+                          style: GoogleFonts.lora(
+                            fontSize: 16,
+                            height: 1.5,
+                            color: Colors.black87,
+                          ),
                         ),
                       )
                     : Center(
@@ -407,7 +426,8 @@ class _DottedPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final Path path = Path();
-    path.addRRect(RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, size.width, size.height), radius));
+    path.addRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width, size.height), radius));
 
     final Path dashPath = Path();
     double distance = 0.0;
