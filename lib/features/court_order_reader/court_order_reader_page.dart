@@ -107,13 +107,11 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
           children: [
             _buildFileUploadCard(),
             const SizedBox(height: 24),
-            if (_fileBytes != null)
-              _buildGenerateButton(),
+            _buildGenerateButton(),
             const SizedBox(height: 24),
-            if (_summary != null || _isLoading)
-              Expanded(
-                child: _buildSummaryCard(),
-              ),
+            Expanded(
+              child: _buildSummaryCard(),
+            ),
           ],
         ),
       ),
@@ -184,21 +182,29 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF5C9DFF), Color(0xFF4A8CFF)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF5C9DFF).withAlpha(102),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          )
-        ],
+        gradient: _fileBytes == null
+            ? const LinearGradient(
+                colors: [Color(0xFFB0B0B0), Color(0xFF9E9E9E)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              )
+            : const LinearGradient(
+                colors: [Color(0xFF5C9DFF), Color(0xFF4A8CFF)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+        boxShadow: _fileBytes == null
+            ? null
+            : [
+                BoxShadow(
+                  color: const Color(0xFF5C9DFF).withAlpha(102),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                )
+              ],
       ),
       child: ElevatedButton.icon(
-        onPressed: _isLoading ? null : _summarize,
+        onPressed: _fileBytes == null || _isLoading ? null : _summarize,
         icon: _isLoading
             ? const SizedBox.shrink()
             : const Icon(Iconsax.document_text_1, color: Colors.white),
@@ -262,14 +268,25 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : SelectableText(
-                    _summary ?? '',
-                    style: GoogleFonts.lora(
-                      fontSize: 16,
-                      height: 1.5,
-                      color: Colors.black87,
-                    ),
-                  ),
+                : _summary != null
+                    ? SelectableText(
+                        _summary!,
+                        style: GoogleFonts.lora(
+                          fontSize: 16,
+                          height: 1.5,
+                          color: Colors.black87,
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          'The summary will appear here once you upload and process a court order document.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ),
           ),
         ],
       ),
