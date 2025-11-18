@@ -81,7 +81,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
     }
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4F8),
@@ -107,6 +107,9 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildFileUploadCard(),
+            const SizedBox(height: 24),
+            if (_fileNames.isNotEmpty)
+              _buildSelectedFilesList(),
             const SizedBox(height: 24),
             _buildGenerateButton(),
             const SizedBox(height: 24),
@@ -160,13 +163,11 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      _fileNames.isEmpty
-                          ? 'Tap to upload PDFs'
-                          : '${_fileNames.length} file(s) selected',
+                      'Tap to upload PDFs',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: _fileNames.isNotEmpty ? Colors.black87 : Colors.grey.shade600,
+                        color: Colors.grey.shade600,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -179,6 +180,64 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       ),
     );
   }
+  
+  Widget _buildSelectedFilesList() {
+  return Container(
+    padding: const EdgeInsets.all(16.0),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16.0),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.15),
+          spreadRadius: 2,
+          blurRadius: 12,
+          offset: const Offset(0, 5),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Selected Files',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade800,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: _fileNames.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green.shade600, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _fileNames[index],
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildGenerateButton() {
     return Container(
@@ -297,7 +356,6 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
   }
 }
 
-// A simple dotted border widget since the package is not available
 class DottedBorder extends StatelessWidget {
   final Widget child;
   final Color color;
