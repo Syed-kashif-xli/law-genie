@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/features/auth/auth_wrapper.dart';
 import 'package:myapp/screens/edit_profile_screen.dart';
 import 'package:myapp/screens/language_screen.dart';
+import 'package:myapp/generated/app_localizations.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,18 +29,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const AuthWrapper()),
+      (Route<dynamic> route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // Fallback values if user is null
-    final displayName = _user?.displayName ?? 'Anonymous';
-    final email = _user?.email ?? 'No email';
+    final displayName = _user?.displayName ?? l10n.anonymous;
+    final email = _user?.email ?? l10n.noEmail;
     final photoUrl = _user?.photoURL;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-        title: const Text('Profile', style: TextStyle(color: Colors.black)),
+        title: Text(l10n.profile, style: const TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -96,7 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             // -- MENU OPTIONS
             ProfileMenuOption(
-              title: 'Edit Profile',
+              title: l10n.editProfile,
               icon: Icons.person_outline,
               onTap: () {
                 Navigator.push(
@@ -110,12 +122,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             ProfileMenuOption(
-              title: 'Payment Method',
+              title: l10n.paymentMethod,
               icon: Icons.credit_card,
               onTap: () {},
             ),
             ProfileMenuOption(
-              title: 'Language',
+              title: l10n.language,
               icon: Icons.language_outlined,
               onTap: () {
                 Navigator.push(
@@ -125,17 +137,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             ProfileMenuOption(
-              title: 'Order History',
+              title: l10n.orderHistory,
               icon: Icons.history_outlined,
               onTap: () {},
             ),
             ProfileMenuOption(
-              title: 'Invite Friends',
+              title: l10n.inviteFriends,
               icon: Icons.group_add_outlined,
-              onTap: () {},
+              onTap: () {
+                Share.share('Check out Law Genie, your AI Legal Partner!');
+              },
+            ),
+             ProfileMenuOption(
+              title: l10n.logout,
+              icon: Icons.logout,
+              onTap: _signOut,
+              showArrow: false,
             ),
             ProfileMenuOption(
-              title: 'Help Center',
+              title: l10n.helpCenter,
               icon: Icons.help_outline,
               onTap: () {},
               showArrow: false,

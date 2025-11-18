@@ -21,6 +21,8 @@ import 'package:myapp/screens/notifications_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:myapp/generated/app_localizations.dart';
+import 'package:myapp/providers/locale_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +36,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => LocaleProvider()),
         ChangeNotifierProvider(create: (context) => TimelineProvider()),
         ChangeNotifierProvider(create: (context) => NewsProvider()),
         ChangeNotifierProvider(create: (context) => ChatProvider()),
@@ -124,31 +127,38 @@ class MyApp extends StatelessWidget {
       ),
     );
 
-    return MaterialApp(
-      title: 'Law Genie',
-      theme: newTheme,
-      home: currentUser == null ? const SplashScreen() : const MainLayout(),
-      debugShowCheckedModeBanner: false,
-      routes: {
-        '/home': (context) => const HomePage(),
-        '/aiChat': (context) => const AIChatPage(),
-        '/generateDoc': (context) => const DocumentGeneratorPage(),
-        '/caseList': (context) => const CaseListScreen(),
-        '/chatHistory': (context) => const ChatHistoryScreen(),
-        '/onboarding': (context) => const OnboardingPage(),
-        '/notifications': (context) => const NotificationsScreen(),
-        '/profile': (context) => const ProfileScreen(), // Add profile route
-      },
-      onGenerateRoute: (settings) {
-        if (settings.name == '/aiChat') {
-          final args = settings.arguments as ChatSession?;
-          return MaterialPageRoute(
-            builder: (context) {
-              return AIChatPage(chatSession: args);
-            },
-          );
-        }
-        return null;
+    return Consumer<LocaleProvider>(
+      builder: (context, provider, child) {
+        return MaterialApp(
+          title: 'Law Genie',
+          theme: newTheme,
+          locale: provider.locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: currentUser == null ? const SplashScreen() : const MainLayout(),
+          debugShowCheckedModeBanner: false,
+          routes: {
+            '/home': (context) => const HomePage(),
+            '/aiChat': (context) => const AIChatPage(),
+            '/generateDoc': (context) => const DocumentGeneratorPage(),
+            '/caseList': (context) => const CaseListScreen(),
+            '/chatHistory': (context) => const ChatHistoryScreen(),
+            '/onboarding': (context) => const OnboardingPage(),
+            '/notifications': (context) => const NotificationsScreen(),
+            '/profile': (context) => const ProfileScreen(), // Add profile route
+          },
+          onGenerateRoute: (settings) {
+            if (settings.name == '/aiChat') {
+              final args = settings.arguments as ChatSession?;
+              return MaterialPageRoute(
+                builder: (context) {
+                  return AIChatPage(chatSession: args);
+                },
+              );
+            }
+            return null;
+          },
+        );
       },
     );
   }

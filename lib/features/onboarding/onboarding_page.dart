@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/auth/login_page.dart';
 import 'package:myapp/features/onboarding/terms_and_conditions_page.dart';
+import 'package:myapp/generated/app_localizations.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -25,53 +26,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
     GlobalKey(),
   ];
 
-  late final List<Widget> _onboardingScreens;
+  late List<Widget> _onboardingScreens;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _onboardingScreens = _getOnboardingScreens(context);
+  }
 
   @override
   void initState() {
     super.initState();
-    _onboardingScreens = [
-      AnimatedOnboardingScreen(
-        key: _keys[0],
-        icon: Iconsax.message_question5,
-        title: "Law Genie",
-        subtitle: "Your AI Legal Partner",
-        description:
-            "Chat with Law Genie – Get instant AI-powered legal advice 24/7",
-      ),
-      AnimatedOnboardingScreen(
-        key: _keys[1],
-        icon: Iconsax.document_text,
-        title: "Automated Document Analysis",
-        subtitle: "AI-Powered Insights",
-        description:
-            "Upload and analyze legal documents instantly for key insights.",
-      ),
-      AnimatedOnboardingScreen(
-        key: _keys[2],
-        icon: Iconsax.folder_open,
-        title: "Intelligent Case Management",
-        subtitle: "Smart Organization",
-        description:
-            "Organize, track, and manage your legal cases with smart assistance.",
-      ),
-      AnimatedOnboardingScreen(
-        key: _keys[3],
-        icon: Iconsax.shield_tick,
-        title: "Secure Client Collaboration",
-        subtitle: "Encrypted Communication",
-        description:
-            "Communicate and share documents with clients in a secure, encrypted environment.",
-      ),
-      AnimatedOnboardingScreen(
-        key: _keys[4],
-        icon: Iconsax.document,
-        title: "Terms and Conditions",
-        subtitle: "Usage Agreement",
-        description:
-            "By using this app, you agree to our terms and conditions.",
-      ),
-    ];
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _keys[0].currentState?.startAnimation();
@@ -79,8 +44,50 @@ class _OnboardingPageState extends State<OnboardingPage> {
     });
   }
 
+  List<Widget> _getOnboardingScreens(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      AnimatedOnboardingScreen(
+        key: _keys[0],
+        icon: Iconsax.message_question5,
+        title: l10n.lawGenie,
+        subtitle: l10n.aiLegalPartner,
+        description: l10n.onboarding1Description,
+      ),
+      AnimatedOnboardingScreen(
+        key: _keys[1],
+        icon: Iconsax.document_text,
+        title: l10n.automatedDocumentAnalysis,
+        subtitle: l10n.aiPoweredInsights,
+        description: l10n.onboarding2Description,
+      ),
+      AnimatedOnboardingScreen(
+        key: _keys[2],
+        icon: Iconsax.folder_open,
+        title: l10n.intelligentCaseManagement,
+        subtitle: l10n.smartOrganization,
+        description: l10n.onboarding3Description,
+      ),
+      AnimatedOnboardingScreen(
+        key: _keys[3],
+        icon: Iconsax.shield_tick,
+        title: l10n.secureClientCollaboration,
+        subtitle: l10n.encryptedCommunication,
+        description: l10n.onboarding4Description,
+      ),
+      AnimatedOnboardingScreen(
+        key: _keys[4],
+        icon: Iconsax.document,
+        title: l10n.termsAndConditions,
+        subtitle: l10n.usageAgreement,
+        description: l10n.onboarding5Description,
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -187,12 +194,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           Flexible(
                             child: RichText(
                               text: TextSpan(
-                                text: 'I agree to the ',
+                                text: l10n.iAgreeToThe,
                                 style: GoogleFonts.lato(
                                     color: Colors.white, fontSize: 14),
                                 children: <TextSpan>[
                                   TextSpan(
-                                      text: 'Terms and Conditions',
+                                      text: l10n.termsAndConditions,
                                       style: GoogleFonts.lato(
                                         color: Colors.blueAccent,
                                         fontSize: 14,
@@ -244,9 +251,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Please agree to the Terms and Conditions to continue.'),
+                            SnackBar(
+                              content: Text(l10n.agreeToTermsToContinue),
                               backgroundColor: Colors.redAccent,
                             ),
                           );
@@ -277,8 +283,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                       child: Text(
                         _currentPage == _onboardingScreens.length - 1
-                            ? 'Get Started'
-                            : 'Next',
+                            ? l10n.getStarted
+                            : l10n.next,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 20,

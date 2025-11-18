@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/providers/locale_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/generated/app_localizations.dart';
 
 class LanguageScreen extends StatefulWidget {
   const LanguageScreen({super.key});
@@ -8,33 +11,14 @@ class LanguageScreen extends StatefulWidget {
 }
 
 class _LanguageScreenState extends State<LanguageScreen> {
-  String _selectedLanguage = 'English'; // Default language
-
-  final List<String> _languages = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Mandarin',
-    'Hindi',
-  ];
-
-  void _onLanguageSelected(String language) {
-    setState(() {
-      _selectedLanguage = language;
-    });
-    // Here you would typically save the language preference to the device
-    // For example, using shared_preferences
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$language selected'),
-        backgroundColor: Colors.green,
-      ),
-    );
+  void _onLanguageSelected(String languageCode) {
+    final provider = Provider.of<LocaleProvider>(context, listen: false);
+    provider.setLocale(Locale(languageCode));
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -42,48 +26,54 @@ class _LanguageScreenState extends State<LanguageScreen> {
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Language', style: TextStyle(color: Colors.black)),
+        title: Text(l10n.language, style: const TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
       ),
-      body: ListView.builder(
+      body: ListView(
         padding: const EdgeInsets.all(20.0),
-        itemCount: _languages.length,
-        itemBuilder: (context, index) {
-          final language = _languages[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: InkWell(
-              onTap: () => _onLanguageSelected(language),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        language,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    if (_selectedLanguage == language)
-                      const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      ),
-                  ],
+        children: [
+          _buildLanguageOption(context, 'en', l10n.english),
+          _buildLanguageOption(context, 'hi', l10n.hindi),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(BuildContext context, String languageCode, String languageName) {
+    final provider = Provider.of<LocaleProvider>(context);
+    final isSelected = provider.locale?.languageCode == languageCode;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: InkWell(
+        onTap: () => _onLanguageSelected(languageCode),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  languageName,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+              if (isSelected)
+                const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

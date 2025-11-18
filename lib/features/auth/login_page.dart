@@ -8,6 +8,7 @@ import 'package:myapp/features/home/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:myapp/services/firestore_service.dart';
+import 'package:myapp/generated/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   final bool agreedToTerms;
@@ -50,6 +51,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _signUpWithEmailAndPassword() async {
     setState(() => _isLoading = true);
+    final l10n = AppLocalizations.of(context)!;
 
     try {
       UserCredential userCredential =
@@ -71,10 +73,10 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       String message = e.code == 'weak-password'
-          ? 'The password provided is too weak.'
+          ? l10n.weakPassword
           : e.code == 'email-already-in-use'
-              ? 'An account already exists for that email.'
-              : 'An error occurred. Please try again.';
+              ? l10n.emailAlreadyInUse
+              : l10n.errorOccurred;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(message)));
     } finally {
@@ -86,6 +88,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _signInWithEmailAndPassword() async {
     setState(() => _isLoading = true);
+    final l10n = AppLocalizations.of(context)!;
 
     try {
       UserCredential userCredential =
@@ -100,10 +103,10 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       String message = e.code == 'user-not-found'
-          ? 'No user found for that email.'
+          ? l10n.userNotFound
           : e.code == 'wrong-password'
-              ? 'Wrong password provided for that user.'
-              : 'An error occurred. Please try again.';
+              ? l10n.wrongPassword
+              : l10n.errorOccurred;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(message)));
     } finally {
@@ -114,10 +117,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _verifyPhoneNumber() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_fullPhoneNumber.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a valid phone number.")),
+        SnackBar(content: Text(l10n.enterValidPhone)),
       );
       return;
     }
@@ -146,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Verification failed: ${e.message}")),
+            SnackBar(content: Text(l10n.verificationFailed(e.message!))),
           );
         }
       },
@@ -170,10 +174,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _signInWithOTP() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_verificationId == null || _otpController.text.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter the OTP.")),
+        SnackBar(content: Text(l10n.enterOtp)),
       );
       return;
     }
@@ -202,7 +207,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to sign in: $e")),
+        SnackBar(content: Text(l10n.failedToSignIn(e.toString()))),
       );
     } finally {
       if (mounted) {
@@ -212,6 +217,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _signInWithGoogle() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
@@ -245,8 +251,8 @@ class _LoginPageState extends State<LoginPage> {
       // ignore: avoid_print
       print("Google Sign-In Error: $e");
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Google Sign-In Failed. Please try again.")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l10n.googleSignInFailed)));
     }
   }
 
@@ -271,6 +277,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Container(
@@ -302,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: screenHeight * 0.05),
                       const Icon(Iconsax.user, color: Colors.white, size: 50),
                       const SizedBox(height: 16),
-                      Text(_isSignUp ? 'Create Account' : 'Welcome Back',
+                      Text(_isSignUp ? l10n.createAccount : l10n.welcomeBack,
                           style: Theme.of(context)
                               .textTheme
                               .headlineLarge
@@ -312,8 +319,8 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 8),
                       Text(
                           _isSignUp
-                              ? 'Create a new Law Genie account'
-                              : 'Sign in to your Law Genie account',
+                              ? l10n.createNewAccount
+                              : l10n.signInToAccount,
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge
@@ -325,14 +332,14 @@ class _LoginPageState extends State<LoginPage> {
                             _buildLoginTypeToggle(),
                             const SizedBox(height: 24),
                             if (_isEmailLogin) ...[
-                              _buildTextField('Email', Iconsax.sms,
+                              _buildTextField(l10n.email, Iconsax.sms,
                                   controller: _emailController, isEmail: true),
                               const SizedBox(height: 16),
-                              _buildTextField('Password', Iconsax.lock_1,
+                              _buildTextField(l10n.password, Iconsax.lock_1,
                                   controller: _passwordController,
                                   isPassword: true),
                             ] else if (_codeSent) ...[
-                              _buildTextField('OTP', Iconsax.password_check,
+                              _buildTextField(l10n.otp, Iconsax.password_check,
                                   controller: _otpController),
                               const SizedBox(height: 8),
                               Align(
@@ -343,8 +350,8 @@ class _LoginPageState extends State<LoginPage> {
                                     _otpController.clear();
                                     _verificationId = null;
                                   }),
-                                  child: const Text('Change Number',
-                                      style: TextStyle(color: Colors.white70)),
+                                  child: Text(l10n.changeNumber,
+                                      style: const TextStyle(color: Colors.white70)),
                                 ),
                               )
                             ] else ...[
@@ -352,10 +359,10 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                             const SizedBox(height: 16),
                             if (_isEmailLogin)
-                              const Align(
+                              Align(
                                 alignment: Alignment.centerRight,
-                                child: Text('Forgot password?',
-                                    style: TextStyle(color: Colors.white70)),
+                                child: Text(l10n.forgotPassword,
+                                    style: const TextStyle(color: Colors.white70)),
                               ),
                           ],
                         ),
@@ -363,8 +370,8 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 24),
                       _buildGlowingButton(),
                       const SizedBox(height: 32),
-                      const Text('Or continue with',
-                          style: TextStyle(color: Colors.white70)),
+                      Text(l10n.orContinueWith,
+                          style: const TextStyle(color: Colors.white70)),
                       const SizedBox(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -381,12 +388,12 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Text(
                               _isSignUp
-                                  ? "Already have an account? "
-                                  : "Don't have an account? ",
+                                  ? l10n.alreadyHaveAccount
+                                  : l10n.dontHaveAccount,
                               style: const TextStyle(color: Colors.white70)),
                           GestureDetector(
                             onTap: () => setState(() => _isSignUp = !_isSignUp),
-                            child: Text(_isSignUp ? 'Sign In' : 'Sign Up',
+                            child: Text(_isSignUp ? l10n.signIn : l10n.signUp,
                                 style: TextStyle(
                                     color: Colors.blue.shade300,
                                     fontWeight: FontWeight.bold)),
@@ -442,6 +449,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildLoginTypeToggle() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: Colors.black.withAlpha(51),
@@ -449,7 +457,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: Row(
         children: [
-          _buildToggleItem('Email', _isEmailLogin, () {
+          _buildToggleItem(l10n.email, _isEmailLogin, () {
             if (!_isEmailLogin) {
               setState(() {
                 _isEmailLogin = true;
@@ -459,7 +467,7 @@ class _LoginPageState extends State<LoginPage> {
               });
             }
           }),
-          _buildToggleItem('Phone', !_isEmailLogin, () {
+          _buildToggleItem(l10n.phone, !_isEmailLogin, () {
             if (_isEmailLogin) {
               setState(() => _isEmailLogin = false);
             }
@@ -529,10 +537,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildPhoneField() {
+    final l10n = AppLocalizations.of(context)!;
     return IntlPhoneField(
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
-        labelText: 'Phone Number',
+        labelText: l10n.phoneNumber,
         labelStyle: const TextStyle(color: Colors.white70),
         filled: true,
         fillColor: Colors.white.withAlpha(26),
@@ -554,6 +563,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildGlowingButton() {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: _isLoading ? null : _handleAuthAction,
       child: Container(
@@ -576,8 +586,8 @@ class _LoginPageState extends State<LoginPage> {
               ? const CircularProgressIndicator(color: Colors.white)
               : Text(
                   _isEmailLogin
-                      ? (_isSignUp ? 'Sign Up' : 'Continue')
-                      : (_codeSent ? 'Verify OTP' : 'Send OTP'),
+                      ? (_isSignUp ? l10n.signUp : l10n.continue_)
+                      : (_codeSent ? l10n.verifyOtp : l10n.sendOtp),
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,

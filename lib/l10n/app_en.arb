@@ -1,0 +1,92 @@
+
+{
+    "@@locale": "en",
+    "editProfile": "Edit Profile",
+    "paymentMethod": "Payment Method",
+    "language": "Language",
+    "orderHistory": "Order History",
+    "inviteFriends": "Invite Friends",
+    "logout": "Logout",
+    "helpCenter": "Help Center",
+    "anonymous": "Anonymous",
+    "noEmail": "No Email",
+    "profile": "Profile",
+    "profileUpdatedSuccessfully": "Profile updated successfully",
+    "errorUpdatingProfile": "Error updating profile: {error}",
+    "@errorUpdatingProfile": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "username": "Username",
+    "pleaseEnterUsername": "Please enter a username",
+    "saveChanges": "Save Changes",
+    "english": "English",
+    "hindi": "Hindi",
+    "weakPassword": "The password provided is too weak.",
+    "emailAlreadyInUse": "The account already exists for that email.",
+    "errorOccurred": "An error occurred. Please try again.",
+    "userNotFound": "No user found for that email.",
+    "wrongPassword": "Wrong password provided for that user.",
+    "enterValidPhone": "Please enter a valid phone number",
+    "verificationFailed": "Verification failed: {error}",
+    "@verificationFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "enterOtp": "Please enter the OTP",
+    "failedToSignIn": "Failed to sign in: {error}",
+    "@failedToSignIn": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "googleSignInFailed": "Google Sign-In failed. Please try again.",
+    "createAccount": "Create Account",
+    "welcomeBack": "Welcome Back",
+    "createNewAccount": "Create a new account",
+    "signInToAccount": "Sign in to your account",
+    "email": "Email",
+    "password": "Password",
+    "otp": "OTP",
+    "changeNumber": "Change Number",
+    "forgotPassword": "Forgot Password?",
+    "orContinueWith": "Or continue with",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "phone": "Phone",
+    "phoneNumber": "Phone Number",
+    "continue_": "Continue",
+    "verifyOtp": "Verify OTP",
+    "sendOtp": "Send OTP",
+    "lawGenie": "Law Genie",
+    "aiLegalPartner": "Your AI Legal Partner",
+    "onboarding1Description": "Welcome to Law Genie, your revolutionary legal assistant powered by AI. Let's get you started on a seamless legal journey.",
+    "automatedDocumentAnalysis": "Automated Document Analysis",
+    "aiPoweredInsights": "AI-Powered Insights",
+    "onboarding2Description": "Save time and effort by allowing Law Genie to analyze your legal documents. Get instant summaries, identify key clauses, and check for potential risks.",
+    "intelligentCaseManagement": "Intelligent Case Management",
+    "smartOrganization": "Smart Organization",
+    "onboarding3Description": "Keep all your case-related information, documents, and deadlines organized in one place. Receive smart reminders and never miss an important date.",
+    "secureClientCollaboration": "Secure Client Collaboration",
+    "encryptedCommunication": "Encrypted Communication",
+    "onboarding4Description": "Collaborate with your clients securely through our encrypted platform. Share documents, send messages, and get electronic signatures with confidence.",
+    "termsAndConditions": "Terms and Conditions",
+    "usageAgreement": "Usage Agreement",
+    "onboarding5Description": "Please review and accept our terms and conditions to start using Law Genie. Your data privacy and security are our top priorities.",
+    "iAgreeToThe": "I agree to the ",
+    "getStarted": "Get Started",
+    "next": "Next",
+    "agreeToTermsToContinue": "Please agree to the terms and conditions to continue.",
+    "acceptAndContinue": "Accept & Continue",
+    "termsAndConditionsContent": "Please read these terms and conditions carefully before using the Law Genie application. Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service."
+}
