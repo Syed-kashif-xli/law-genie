@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/features/court_order_reader/court_order_reader_page.dart';
 import 'package:myapp/features/home/main_layout.dart';
 import 'package:myapp/models/chat_model.dart';
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
@@ -145,7 +146,8 @@ class MyApp extends StatelessWidget {
             '/chatHistory': (context) => const ChatHistoryScreen(),
             '/onboarding': (context) => const OnboardingPage(),
             '/notifications': (context) => const NotificationsScreen(),
-            '/profile': (context) => const ProfileScreen(), // Add profile route
+            '/profile': (context) => const ProfileScreen(),
+            '/courtOrderReader': (context) => const CourtOrderReaderPage(),
           },
           onGenerateRoute: (settings) {
             if (settings.name == '/aiChat') {

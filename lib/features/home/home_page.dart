@@ -288,6 +288,14 @@ class _QuickActions extends StatelessWidget {
                 );
               },
             ),
+            FeatureCard(
+              title: 'Court Order Reader',
+              subtitle: 'Summarize orders',
+              icon: Iconsax.document_text,
+              onTap: () {
+                Navigator.pushNamed(context, '/courtOrderReader');
+              },
+            ),
           ],
         ),
       ],
