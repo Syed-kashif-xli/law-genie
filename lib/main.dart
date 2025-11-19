@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/features/ai_voice/ai_voice_page.dart';
 import 'package:myapp/features/court_order_reader/court_order_reader_page.dart';
 import 'package:myapp/features/home/main_layout.dart';
 import 'package:myapp/models/chat_model.dart';
@@ -20,6 +21,8 @@ import 'package:myapp/features/onboarding/splash_screen.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/screens/notifications_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
+import 'package:myapp/services/speech_to_text_service.dart';
+import 'package:myapp/services/tts_service.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:myapp/generated/app_localizations.dart';
@@ -42,6 +45,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => NewsProvider()),
         ChangeNotifierProvider(create: (context) => ChatProvider()),
         ChangeNotifierProvider(create: (context) => CaseProvider()),
+        ChangeNotifierProvider(create: (context) => TtsService()),
+        ChangeNotifierProvider(create: (context) => SpeechToTextService()..initialize()),
       ],
       child: MyApp(currentUser: FirebaseAuth.instance.currentUser),
     ),
@@ -148,6 +153,7 @@ class MyApp extends StatelessWidget {
             '/notifications': (context) => const NotificationsScreen(),
             '/profile': (context) => const ProfileScreen(),
             '/courtOrderReader': (context) => const CourtOrderReaderPage(),
+            '/aiVoice': (context) => const AiVoicePage(),
           },
           onGenerateRoute: (settings) {
             if (settings.name == '/aiChat') {

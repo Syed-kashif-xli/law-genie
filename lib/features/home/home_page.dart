@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:myapp/features/ai_voice/ai_voice_page.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/home/app_drawer.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -294,6 +295,14 @@ class _QuickActions extends StatelessWidget {
               icon: Iconsax.document_text,
               onTap: () {
                 Navigator.pushNamed(context, '/courtOrderReader');
+              },
+            ),
+            FeatureCard(
+              title: 'AI Voice',
+              subtitle: 'Read text aloud',
+              icon: Iconsax.microphone_2,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const AiVoicePage()));
               },
             ),
           ],
