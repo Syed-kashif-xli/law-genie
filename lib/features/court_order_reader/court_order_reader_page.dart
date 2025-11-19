@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:myapp/features/court_order_reader/summary_display_page.dart';
 
-const String _apiKey = 'AIzaSyC6NWmWsSowYUpYMOKCJ2EO1fD8-9UXB6s';
+const String _apiKey = 'AIzaSyAoohy844v01lBClkEYfTJvpsJOpzLqVu4';
 
 class CourtOrderReaderPage extends StatefulWidget {
   const CourtOrderReaderPage({super.key});
@@ -16,7 +17,6 @@ class CourtOrderReaderPage extends StatefulWidget {
 }
 
 class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
-  String? _summary;
   List<Uint8List> _fileBytesList = [];
   bool _isLoading = false;
   List<String> _fileNames = [];
@@ -27,7 +27,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
   void initState() {
     super.initState();
     _model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.5-pro',
       apiKey: _apiKey,
     );
   }
@@ -50,7 +50,6 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
             .where((file) => file.bytes != null)
             .map((file) => file.name)
             .toList();
-        _summary = null;
       });
     }
   }
@@ -77,10 +76,16 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
         ])
       ];
       final response = await _model.generateContent(content);
+      final summary = response.text;
 
-      setState(() {
-        _summary = response.text;
-      });
+      if (summary != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SummaryDisplayPage(summary: summary),
+          ),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error summarizing documents: $e')),
@@ -112,21 +117,19 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildFileUploadCard(),
-            const SizedBox(height: 24),
-            if (_fileNames.isNotEmpty) _buildSelectedFilesList(),
-            const SizedBox(height: 24),
-            _buildGenerateButton(),
-            const SizedBox(height: 24),
-            Expanded(
-              child: _buildSummaryCard(),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildFileUploadCard(),
+              const SizedBox(height: 24),
+              if (_fileNames.isNotEmpty) _buildSelectedFilesList(),
+              const SizedBox(height: 24),
+              _buildGenerateButton(),
+            ],
+          ),
         ),
       ),
     );
@@ -305,71 +308,6 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSummaryCard() {
-    return Container(
-      padding: const EdgeInsets.all(24.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            spreadRadius: 2,
-            blurRadius: 12,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Iconsax.document_text, color: Colors.grey.shade700),
-              const SizedBox(width: 8),
-              Text(
-                'Generated Summary',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade800,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 16),
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _summary != null
-                    ? SingleChildScrollView(
-                        child: SelectableText(
-                          _summary!,
-                          style: GoogleFonts.lora(
-                            fontSize: 16,
-                            height: 1.5,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      )
-                    : Center(
-                        child: Text(
-                          'The summary will appear here once you upload and process one or more court order documents.',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ),
-          ),
-        ],
       ),
     );
   }
