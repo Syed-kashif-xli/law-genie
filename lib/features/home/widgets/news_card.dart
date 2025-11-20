@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:myapp/features/home/models/news_article.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,27 +25,27 @@ class NewsCard extends StatelessWidget {
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white.withAlpha(25),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withAlpha(51)),
+          color: const Color.fromARGB(255, 33, 17, 72),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
             if (news.imageUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: Image.network(
                   news.imageUrl!,
-                  height: 200,
-                  width: double.infinity,
+                  height: 80,
+                  width: 80,
                   fit: BoxFit.cover,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return const SizedBox(
-                      height: 200,
+                      height: 80,
+                      width: 80,
                       child: Center(
                         child: CircularProgressIndicator(),
                       ),
@@ -54,68 +53,55 @@ class NewsCard extends StatelessWidget {
                   },
                   errorBuilder: (context, error, stackTrace) {
                     return const SizedBox(
-                        height: 200,
-                        child: Center(
-                            child: Icon(Icons.error, color: Colors.red)));
+                      height: 80,
+                      width: 80,
+                      child: Center(
+                        child: Icon(Icons.error, color: Colors.red),
+                      ),
+                    );
                   },
                 ),
               ),
-            if (news.imageUrl != null) const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF00BFA6).withAlpha(25),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
                     news.source,
-                    style: const TextStyle(
-                      color: Color(0xFF00BFA6),
-                      fontWeight: FontWeight.bold,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.white70,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ),
-                Text(
-                  _formatDate(news.publishedAt),
-                  style: const TextStyle(color: Colors.white70),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              news.title,
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+                  const SizedBox(height: 4),
+                  Text(
+                    news.title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    news.description,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.6),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              news.description,
-              style: const TextStyle(color: Colors.white70),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
       ),
     );
-  }
-
-  String _formatDate(String date) {
-    if (date.isEmpty) {
-      return '';
-    }
-    try {
-      final dateTime = DateTime.parse(date);
-      return DateFormat.yMMMd().format(dateTime);
-    } catch (e) {
-      return '';
-    }
   }
 }

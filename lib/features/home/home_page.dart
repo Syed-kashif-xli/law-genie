@@ -419,7 +419,7 @@ class _LegalNewsFeed extends StatelessWidget {
           children: [
             Text(
               'Legal News Feed',
-              style: GoogleFonts.lato(
+              style: GoogleFonts.poppins(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -435,7 +435,9 @@ class _LegalNewsFeed extends StatelessWidget {
               child: Text(
                 'View All',
                 style: GoogleFonts.poppins(
-                    fontSize: 16, color: const Color(0xFF02F1C3)),
+                  fontSize: 16,
+                  color: const Color.fromARGB(255, 4, 238, 203),
+                ),
               ),
             ),
           ],
