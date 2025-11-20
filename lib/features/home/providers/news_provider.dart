@@ -6,18 +6,21 @@ class NewsProvider extends ChangeNotifier {
   final NewsService _newsService = NewsService();
   List<NewsArticle> _news = [];
   bool _isLoading = false;
+  String? _errorMessage;
 
   List<NewsArticle> get news => _news;
   bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
   Future<void> fetchNews() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
       _news = await _newsService.fetchLegalNews();
     } catch (e) {
-      // Handle error
+      _errorMessage = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();

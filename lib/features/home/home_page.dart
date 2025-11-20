@@ -447,11 +447,34 @@ class _LegalNewsFeed extends StatelessWidget {
           builder: (context, provider, child) {
             if (provider.isLoading && provider.news.isEmpty) {
               return const Center(child: CircularProgressIndicator());
+            } else if (provider.errorMessage != null) {
+              return Center(
+                child: Column(
+                  children: [
+                    Text(
+                      'Error: ${provider.errorMessage}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: () => provider.fetchNews(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            } else if (provider.news.isEmpty) {
+              return const Center(
+                child: Text(
+                  'No news articles found.',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              );
             }
             return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: provider.news.length > 3 ? 3 : provider.news.length,
+              itemCount: provider.news.length > 5 ? 5 : provider.news.length,
               itemBuilder: (context, index) {
                 final item = provider.news[index];
                 return NewsCard(news: item);
