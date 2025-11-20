@@ -21,8 +21,8 @@ class AiVoicePage extends StatefulWidget {
 }
 
 class _AiVoicePageState extends State<AiVoicePage> {
-  final TextEditingController _textController = TextEditingController();
   final GeminiService _geminiService = GeminiService();
+  final TtsService _ttsService = TtsService();
   AiState _aiState = AiState.idle;
 
   @override
@@ -30,21 +30,18 @@ class _AiVoicePageState extends State<AiVoicePage> {
     super.initState();
     final speechService = Provider.of<SpeechToTextService>(context, listen: false);
     speechService.addListener(_onSpeechResult);
-    _textController.text = speechService.lastWords;
   }
 
   @override
   void dispose() {
-    _textController.dispose();
     Provider.of<SpeechToTextService>(context, listen: false).removeListener(_onSpeechResult);
-    Provider.of<TtsService>(context, listen: false).stop();
+    _ttsService.stop();
     super.dispose();
   }
 
   void _onSpeechResult() {
     final speechService = Provider.of<SpeechToTextService>(context, listen: false);
     if (!speechService.isListening && speechService.lastWords.isNotEmpty) {
-      _textController.text = speechService.lastWords;
       _requestAiResponse(speechService.lastWords);
     }
     if (mounted) {
@@ -55,19 +52,15 @@ class _AiVoicePageState extends State<AiVoicePage> {
   }
 
   Future<void> _requestAiResponse(String prompt) async {
-    if (prompt.isEmpty) return;
-
     setState(() => _aiState = AiState.thinking);
-
     try {
       final response = await _geminiService.generateText(prompt);
-      if (response.isNotEmpty) {
-        Provider.of<TtsService>(context, listen: false).speak(response);
-        setState(() => _aiState = AiState.speaking);
-      }
+      setState(() => _aiState = AiState.speaking);
+      await _ttsService.speak(response);
+      setState(() => _aiState = AiState.idle);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error generating response: $e')),
+        SnackBar(content: Text('Error: $e')),
       );
       setState(() => _aiState = AiState.idle);
     }
@@ -78,147 +71,126 @@ class _AiVoicePageState extends State<AiVoicePage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4F8),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.1),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF333333)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'AI Voice',
-          style: GoogleFonts.lexend(
-            color: const Color(0xFF333333),
-            fontWeight: FontWeight.w600,
-          ),
+          'AI Voice Assistant',
+          style: GoogleFonts.lexend(color: const Color(0xFF333333), fontWeight: FontWeight.bold),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+      body: Center(
         child: Column(
-          children: [
-            _buildTextField(),
-            const SizedBox(height: 32),
-            _buildControls(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: _textController,
-        maxLines: 10,
-        minLines: 5,
-        style: GoogleFonts.lora(fontSize: 16, color: Colors.black87),
-        decoration: InputDecoration(
-          hintText: 'Your spoken words will appear here...',
-          hintStyle: GoogleFonts.poppins(color: Colors.grey.shade500),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.all(20),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildControls() {
-    return Consumer2<TtsService, SpeechToTextService>(
-      builder: (context, ttsService, speechService, child) {
-        return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildMicButton(speechService),
-            const SizedBox(width: 32),
-            _buildSpeakerButton(ttsService),
+            _buildVisualizer(),
+            const SizedBox(height: 60),
+            _buildMicButton(),
+            const SizedBox(height: 20),
+            _buildStateLabel(),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 
-  Widget _buildMicButton(SpeechToTextService speechService) {
-    final isListening = _aiState == AiState.listening;
+  Widget _buildVisualizer() {
     return Container(
-      height: 80,
-      width: 80,
+      height: 200,
+      width: 200,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isListening ? Colors.red.shade400 : Theme.of(context).primaryColor,
-        boxShadow: [
-          BoxShadow(
-            color: (isListening ? Colors.red.shade400 : Theme.of(context).primaryColor).withOpacity(0.4),
-            blurRadius: 15,
-            spreadRadius: 3,
-          ),
-        ],
+        color: _getVisualizerColor().withOpacity(0.1),
+        border: Border.all(color: _getVisualizerColor(), width: 3),
       ),
-      child: IconButton(
+      child: Icon(
+        _getVisualizerIcon(),
+        color: _getVisualizerColor(),
+        size: 80,
+      ),
+    );
+  }
+
+  Widget _buildMicButton() {
+    final speechService = Provider.of<SpeechToTextService>(context, listen: false);
+    return SizedBox(
+      height: 80,
+      width: 80,
+      child: FloatingActionButton(
         onPressed: () {
-          if (isListening) {
-            speechService.stopListening();
-          } else {
+          if (_aiState == AiState.idle) {
             speechService.startListening();
+          } else if (_aiState == AiState.listening) {
+            speechService.stopListening();
           }
         },
-        icon: Icon(
-          isListening ? Iconsax.stop_circle : Iconsax.microphone,
-          color: Colors.white,
+        backgroundColor: _getMicButtonColor(),
+        elevation: 8,
+        child: Icon(
+          _aiState == AiState.listening ? Iconsax.stop : Iconsax.microphone,
           size: 40,
         ),
-        tooltip: isListening ? 'Stop Listening' : 'Start Listening',
       ),
     );
   }
 
-  Widget _buildSpeakerButton(TtsService ttsService) {
-    final isSpeaking = _aiState == AiState.speaking;
-    return Container(
-      height: 80,
-      width: 80,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isSpeaking ? Colors.red.shade400 : Theme.of(context).primaryColor,
-        boxShadow: [
-          BoxShadow(
-            color: (isSpeaking ? Colors.red.shade400 : Theme.of(context).primaryColor).withOpacity(0.4),
-            blurRadius: 15,
-            spreadRadius: 3,
-          ),
-        ],
-      ),
-      child: IconButton(
-        onPressed: () {
-          if (isSpeaking) {
-            ttsService.stop();
-            setState(() => _aiState = AiState.idle);
-          }
-        },
-        icon: Icon(
-          isSpeaking ? Iconsax.stop : Iconsax.volume_high,
-          color: Colors.white,
-          size: 40,
-        ),
-        tooltip: isSpeaking ? 'Stop Speaking' : 'Read Aloud',
-      ),
+  Widget _buildStateLabel() {
+    String text;
+    switch (_aiState) {
+      case AiState.listening:
+        text = 'Listening...';
+        break;
+      case AiState.thinking:
+        text = 'Thinking...';
+        break;
+      case AiState.speaking:
+        text = 'Speaking...';
+        break;
+      default:
+        text = 'Tap to speak';
+    }
+    return Text(
+      text,
+      style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey[700]),
     );
+  }
+
+  Color _getVisualizerColor() {
+    switch (_aiState) {
+      case AiState.listening:
+        return Colors.blue;
+      case AiState.thinking:
+        return Colors.orange;
+      case AiState.speaking:
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getVisualizerIcon() {
+    switch (_aiState) {
+      case AiState.listening:
+        return Iconsax.microphone_2;
+      case AiState.thinking:
+        return Iconsax.cpu_setting;
+      case AiState.speaking:
+        return Iconsax.volume_high;
+      default:
+        return Iconsax.microphone;
+    }
+  }
+
+  Color _getMicButtonColor() {
+    if (_aiState == AiState.listening) {
+      return Colors.red.shade400;
+    } else if (_aiState == AiState.thinking || _aiState == AiState.speaking) {
+      return Colors.grey.shade400;
+    } else {
+      return Theme.of(context).primaryColor;
+    }
   }
 }

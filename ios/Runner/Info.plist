@@ -26,10 +26,6 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>This app uses speech recognition to convert your voice into text for chat messages.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app needs access to your microphone to enable voice input for chat messages.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -55,5 +51,9 @@
     <true/>
     <key>FLTEnableImpeller</key>
     <true/>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app uses speech recognition to convert your voice into text for chat messages.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to your microphone to enable voice input for chat messages.</string>
 </dict>
 </plist>

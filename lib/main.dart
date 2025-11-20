@@ -45,7 +45,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => NewsProvider()),
         ChangeNotifierProvider(create: (context) => ChatProvider()),
         ChangeNotifierProvider(create: (context) => CaseProvider()),
-        ChangeNotifierProvider(create: (context) => TtsService()),
+        Provider(create: (context) => TtsService()),
         ChangeNotifierProvider(create: (context) => SpeechToTextService()..initialize()),
       ],
       child: MyApp(currentUser: FirebaseAuth.instance.currentUser),
