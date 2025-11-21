@@ -6,24 +6,39 @@ import 'package:myapp/features/home/models/news_article.dart';
 class NewsService {
   final String rssUrl = 'https://www.barandbench.com/feed';
 
-  // A more robust helper function to extract image from HTML content
   String? _getImageUrlFromContent(String? content) {
     if (content == null) return null;
-    
-    // Look for <img> tags
     final RegExp imgRegExp = RegExp(r'<img[^>]+src="([^">]+)"\s*[^>]*>');
     final Match? imgMatch = imgRegExp.firstMatch(content);
     if (imgMatch != null && imgMatch.groupCount >= 1) {
       return imgMatch.group(1);
     }
+    return null;
+  }
 
-    // As a fallback, look for a background image style
-    final RegExp styleRegExp = RegExp(r'background-image:\s*url\(([^)]+)\)');
-    final Match? styleMatch = styleRegExp.firstMatch(content);
-    if (styleMatch != null && styleMatch.groupCount >= 1) {
-      return styleMatch.group(1)?.replaceAll("'", "").replaceAll("\"", ""); // Clean up quotes
+  Future<String?> _fetchOgImage(String url) async {
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final document = response.body;
+        final RegExp ogImageRegExp =
+            RegExp(r'<meta\s+property="og:image"\s+content="([^"]+)"');
+        final Match? match = ogImageRegExp.firstMatch(document);
+        if (match != null && match.groupCount >= 1) {
+          return match.group(1);
+        }
+      }
+    } catch (e) {
+      developer.log('Error fetching OG image for $url: $e',
+          name: 'NewsService');
     }
-    
     return null;
   }
 
@@ -33,57 +48,44 @@ class NewsService {
 
       if (response.statusCode == 200) {
         try {
-          // First, try parsing as an Atom feed
           final atomFeed = AtomFeed.parse(response.body);
-          if (atomFeed.items == null) {
-            developer.log('Atom feed items are null.', name: 'NewsService');
-            return [];
-          }
-          final articles = atomFeed.items!.map((item) {
+          if (atomFeed.items == null) return [];
+
+          final articles = await Future.wait(atomFeed.items!.map((item) async {
+            String? imageUrl = _getImageUrlFromContent(item.content);
+            if (imageUrl == null &&
+                item.links != null &&
+                item.links!.isNotEmpty) {
+              // If no image in content, try to fetch OG image from the article URL
+              // Limit to first link which is usually the article link
+              final link = item.links!.first.href;
+              if (link != null) {
+                imageUrl = await _fetchOgImage(link);
+              }
+            }
+
             return NewsArticle(
               title: item.title ?? 'No Title',
               description: item.summary ?? item.content ?? 'No Description',
               url: item.links?.first.href ?? '',
               source: 'Bar & Bench',
               publishedAt: item.updated?.toIso8601String() ?? '',
-              imageUrl: _getImageUrlFromContent(item.content),
-            );
-          }).toList();
-          developer.log('Successfully parsed ${articles.length} articles from Atom feed.', name: 'NewsService');
-          return articles;
-        } catch (e) {
-          developer.log('Failed to parse as Atom, trying RSS. Error: $e', name: 'NewsService');
-          // If Atom parsing fails, fall back to RSS parsing
-          final rssFeed = RssFeed.parse(response.body);
-          if (rssFeed.items == null) {
-            developer.log('RSS feed items are null.', name: 'NewsService');
-            return [];
-          }
-          final articles = rssFeed.items!.map((item) {
-            String? imageUrl;
-            if (item.media?.contents != null && item.media!.contents!.isNotEmpty) {
-              imageUrl = item.media!.contents!.first.url;
-            } else if (item.enclosure != null) {
-              imageUrl = item.enclosure!.url;
-            }
-            return NewsArticle(
-              title: item.title ?? 'No Title',
-              description: item.description ?? 'No Description',
-              url: item.link ?? '',
-              source: 'Bar & Bench',
-              publishedAt: item.pubDate?.toIso8601String() ?? '',
               imageUrl: imageUrl,
             );
-          }).toList();
-          developer.log('Successfully parsed ${articles.length} articles from RSS feed.', name: 'NewsService');
+          }));
+
           return articles;
+        } catch (e) {
+          developer.log('Error parsing Atom feed: $e', name: 'NewsService');
+          return [];
         }
       } else {
-        developer.log('Failed to load feed. Status code: ${response.statusCode}', name: 'NewsService');
+        developer.log('Failed to load feed: ${response.statusCode}',
+            name: 'NewsService');
         throw Exception('Failed to load feed');
       }
-    } catch (e, s) {
-      developer.log('An error occurred while fetching news', name: 'NewsService', error: e, stackTrace: s);
+    } catch (e) {
+      developer.log('Error fetching news: $e', name: 'NewsService');
       throw Exception('Error fetching news: $e');
     }
   }
