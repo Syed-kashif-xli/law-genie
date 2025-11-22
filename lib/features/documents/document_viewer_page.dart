@@ -140,7 +140,7 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
     return pdf.save();
   }
 
-  Future<void> _downloadAsPdf() async {
+  Future<void> _sharePdf() async {
     setState(() => _isDownloading = true);
     try {
       final pdfData = await _generatePdf();
@@ -150,6 +150,32 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error sharing PDF: $e')),
+      );
+    } finally {
+      setState(() => _isDownloading = false);
+    }
+  }
+
+  Future<void> _downloadPdf() async {
+    setState(() => _isDownloading = true);
+    try {
+      final pdfData = await _generatePdf();
+      final fileName =
+          'LawGenie_Doc_${DateTime.now().millisecondsSinceEpoch}.pdf';
+
+      // On Android, try to save to Downloads. On iOS, Share is the way.
+      // For simplicity and reliability, we'll use Printing.layoutPdf for "Download"
+      // which opens the print preview where "Save as PDF" is a primary option.
+      // OR we can just use sharePdf again but user asked for separate options.
+      // Let's try to be smart: Share = Share Sheet. Download = LayoutPdf (Print/Save).
+
+      await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => pdfData,
+        name: fileName,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error downloading PDF: $e')),
       );
     } finally {
       setState(() => _isDownloading = false);
@@ -187,13 +213,19 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
                     strokeWidth: 2.5, color: Color(0xFF4A8CFF)),
               ),
             )
-          else
+          else ...[
             IconButton(
               icon: const Icon(Iconsax.document_download,
                   color: Color(0xFF333333)),
-              onPressed: _downloadAsPdf,
-              tooltip: 'Save as PDF',
+              onPressed: _downloadPdf,
+              tooltip: 'Download PDF',
             ),
+            IconButton(
+              icon: const Icon(Iconsax.share, color: Color(0xFF333333)),
+              onPressed: _sharePdf,
+              tooltip: 'Share PDF',
+            ),
+          ]
         ],
       ),
       body: SingleChildScrollView(
@@ -205,13 +237,61 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
             borderRadius: BorderRadius.circular(12.0),
             border: Border.all(color: Colors.grey.shade300, width: 1),
           ),
-          child: SelectableText(
-            widget.documentContent,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: const Color(0xFF333333),
-              height: 1.6,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // UI Preview Branding
+              Center(
+                child: Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(
+                          16.0), // Rounded corners for logo
+                      child: Image.asset('assets/images/logo.png',
+                          width: 80, height: 80),
+                    ),
+                    const SizedBox(height: 10),
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [
+                          Color(0xFF1565C0), // Dark Blue
+                          Color(0xFF42A5F5), // Light Blue
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ).createShader(bounds),
+                      child: Text(
+                        'Law Genie',
+                        style: GoogleFonts.poppins(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white, // Required for ShaderMask
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Document Generator',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+              // Document Content
+              SelectableText(
+                widget.documentContent,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: const Color(0xFF333333),
+                  height: 1.6,
+                ),
+              ),
+            ],
           ),
         ),
       ),

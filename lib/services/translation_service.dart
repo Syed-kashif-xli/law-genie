@@ -8,6 +8,12 @@ class TranslationService {
   TranslationService()
       : _model = FirebaseAI.googleAI().generativeModel(
           model: 'gemini-2.5-flash',
+          systemInstruction: Content.system(
+              'You are an expert legal translator specializing in Indian languages (Hindi, Marathi, Tamil, Telugu, etc.). '
+              'Translate the provided legal text accurately, preserving the legal meaning and nuance. '
+              'Use appropriate legal terminology in the target language. '
+              'If a legal term has no direct equivalent, keep the English term in brackets or explain it briefly. '
+              'Ensure the tone remains formal and professional.'),
         );
 
   Future<String> translateText(String text, String from, String to) async {

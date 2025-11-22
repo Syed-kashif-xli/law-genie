@@ -45,10 +45,15 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   }
 
   Future<void> _initGenerativeModel() async {
-    final geminiPrompt = await rootBundle.loadString('GEMINI.md');
     _model = FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash',
-      systemInstruction: Content.text(geminiPrompt),
+      systemInstruction: Content.system(
+          'You are an expert legal drafter specializing in Indian legal documents. '
+          'Generate professional, legally sound documents compliant with Indian laws. '
+          'Use standard Indian legal formats, terminology, and citations. '
+          'Ensure the document is complete with placeholders for specific details (e.g., [Name], [Date], [Place]). '
+          'The output should be the document content ONLY, ready for printing or saving as PDF. '
+          'Do not include any conversational text before or after the document.'),
     );
   }
 

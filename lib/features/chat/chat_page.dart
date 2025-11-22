@@ -97,10 +97,17 @@ class _AIChatPageState extends State<AIChatPage> {
   }
 
   Future<void> _initGenerativeModel() async {
-    final geminiPrompt = await rootBundle.loadString('GEMINI.md');
     _model = FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash',
-      systemInstruction: Content.text(geminiPrompt),
+      systemInstruction: Content.system(
+          'You are Law Genie, an expert AI Legal Assistant for Indian Law. '
+          'Your goal is to help users understand Indian laws (IPC, CrPC, CPC, Constitution, etc.), '
+          'draft legal documents, and navigate the Indian judicial system. '
+          'Always provide accurate, helpful, and polite responses. '
+          'When citing laws, be specific (e.g., "Section 302 of the Indian Penal Code"). '
+          'If you are unsure, advise the user to consult a qualified lawyer. '
+          'Keep your answers concise and easy to understand for a layperson, but professional enough for legal practitioners. '
+          'Format your responses with bullet points and bold text for readability.'),
     );
 
     // Load chat history
@@ -820,15 +827,14 @@ class _AttachmentMessageBubble extends StatelessWidget {
                       ),
                     ],
                   ),
-                if (message.text != null && message.text!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      message.text!,
-                      style: GoogleFonts.poppins(
-                          color: const Color(0xFF0A032A), fontSize: 15),
-                    ),
+                if (message.text != null && message.text!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    message.text!,
+                    style: GoogleFonts.poppins(
+                        color: const Color(0xFF0A032A), fontSize: 15),
                   ),
+                ],
               ],
             ),
           ),

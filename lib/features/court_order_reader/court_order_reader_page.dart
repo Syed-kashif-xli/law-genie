@@ -26,6 +26,12 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
     super.initState();
     _model = FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash',
+      systemInstruction: Content.system(
+          'You are an expert at analyzing Indian Court Orders and Judgments. '
+          'Summarize the provided court order clearly and concisely. '
+          'Identify the key elements: Case Name, Court, Judge(s), Key Issues, Arguments, Final Verdict/Order, and Important Statutes cited. '
+          'Explain complex legal jargon in simple English. '
+          'Format the summary with clear headings and bullet points.'),
     );
   }
 
