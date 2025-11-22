@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:myapp/features/ai_voice/ai_voice_page.dart';
-import 'package:myapp/features/chat/chat_page.dart';
-import 'package:myapp/features/home/app_drawer.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:myapp/features/home/widgets/feature_card.dart';
-import 'package:myapp/features/home/widgets/news_card.dart';
-import 'package:myapp/features/home/providers/news_provider.dart';
-import 'package:myapp/screens/case_list_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:myapp/features/home/pages/all_news_page.dart';
+
+import '../../features/ai_voice/ai_voice_page.dart';
+import '../../features/chat/chat_page.dart';
+import '../../features/home/app_drawer.dart';
+import '../../features/home/widgets/feature_card.dart';
+import '../../features/home/widgets/news_card.dart';
+import '../../features/home/providers/news_provider.dart';
+import '../../screens/case_list_screen.dart';
+import '../../features/home/pages/all_news_page.dart';
+import '../../features/translator/translator_page.dart';
+import '../../features/case_finder/case_finder_page.dart';
+import '../../features/bare_acts/bare_acts_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -283,9 +287,10 @@ class _QuickActions extends StatelessWidget {
               subtitle: 'Track cases',
               icon: Iconsax.calendar_edit,
               onTap: () {
-                 Navigator.push(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CaseListScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const CaseListScreen()),
                 );
               },
             ),
@@ -302,7 +307,44 @@ class _QuickActions extends StatelessWidget {
               subtitle: 'Read text aloud',
               icon: Iconsax.microphone_2,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AiVoicePage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AiVoicePage()));
+              },
+            ),
+            FeatureCard(
+              title: 'Translator',
+              subtitle: 'Text & Docs',
+              icon: Iconsax.translate,
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TranslatorPage()));
+              },
+            ),
+            FeatureCard(
+              title: 'Case Finder',
+              subtitle: 'Legal Judgments',
+              icon: Iconsax.search_favorite,
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CaseFinderPage()));
+              },
+            ),
+            FeatureCard(
+              title: 'Bare Acts',
+              subtitle: 'PDFs of Acts',
+              icon: Iconsax.book_1,
+              color: const Color(0xFFFF5722),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const BareActsPage()));
               },
             ),
           ],
@@ -311,8 +353,6 @@ class _QuickActions extends StatelessWidget {
     );
   }
 }
-
-
 
 class _AiUsage extends StatelessWidget {
   const _AiUsage();

@@ -6,6 +6,7 @@ class FeatureCard extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final VoidCallback onTap;
+  final Color? color;
 
   const FeatureCard({
     super.key,
@@ -13,6 +14,7 @@ class FeatureCard extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     required this.onTap,
+    this.color,
   });
 
   @override
@@ -29,7 +31,7 @@ class FeatureCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 32, color: const Color(0xFF02F1C3)),
+            Icon(icon, size: 32, color: color ?? const Color(0xFF02F1C3)),
             const SizedBox(height: 12),
             Text(
               title,
