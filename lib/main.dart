@@ -23,6 +23,9 @@ import 'package:myapp/screens/notifications_screen.dart';
 import 'package:myapp/screens/profile_screen.dart';
 import 'package:myapp/services/speech_to_text_service.dart';
 import 'package:myapp/services/tts_service.dart';
+import 'package:myapp/features/case_finder/case_finder_page.dart';
+import 'package:myapp/features/bare_acts/bare_acts_page.dart';
+import 'package:myapp/features/translator/translator_page.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:myapp/generated/app_localizations.dart';
@@ -46,7 +49,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => ChatProvider()),
         ChangeNotifierProvider(create: (context) => CaseProvider()),
         Provider(create: (context) => TtsService()),
-        ChangeNotifierProvider(create: (context) => SpeechToTextService()..initialize()),
+        ChangeNotifierProvider(
+            create: (context) => SpeechToTextService()..initialize()),
       ],
       child: MyApp(currentUser: FirebaseAuth.instance.currentUser),
     ),
@@ -154,6 +158,9 @@ class MyApp extends StatelessWidget {
             '/profile': (context) => const ProfileScreen(),
             '/courtOrderReader': (context) => const CourtOrderReaderPage(),
             '/aiVoice': (context) => const AiVoicePage(),
+            '/caseFinder': (context) => const CaseFinderPage(),
+            '/bareActs': (context) => const BareActsPage(),
+            '/translator': (context) => const TranslatorPage(),
           },
           onGenerateRoute: (settings) {
             if (settings.name == '/aiChat') {

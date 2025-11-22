@@ -162,10 +162,20 @@ class AppDrawer extends StatelessWidget {
           _buildMenuItem(
               context, Iconsax.document, 'Document Generator', '/generateDoc'),
           _buildMenuItem(
-              context, Iconsax.shield_tick, 'Risk Assessment', '/riskCheck'),
+              context, Iconsax.search_favorite, 'Case Finder', '/caseFinder',
+              isNew: true),
+          _buildMenuItem(context, Iconsax.book_1, 'Bare Acts', '/bareActs',
+              isNew: true),
           _buildMenuItem(
-              context, Iconsax.calendar_1, 'Case Timeline', '/caseTimeline',
-              isSelected: true),
+              context, Iconsax.translate, 'Translator', '/translator'),
+          _buildMenuItem(context, Iconsax.microphone_2, 'AI Voice', '/aiVoice'),
+          _buildMenuItem(context, Iconsax.document_text, 'Order Reader',
+              '/courtOrderReader'),
+          _buildMenuItem(
+              context, Iconsax.archive_book, 'Chat History', '/chatHistory'),
+          _buildMenuItem(
+              context, Iconsax.calendar_1, 'Case Timeline', '/caseList'),
+          _buildMenuItem(context, Iconsax.user, 'Profile', '/profile'),
         ],
       ),
     );
