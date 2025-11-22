@@ -3,11 +3,9 @@ import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/court_order_reader/summary_display_page.dart';
-
-const String _apiKey = 'AIzaSyAoohy844v01lBClkEYfTJvpsJOpzLqVu4';
 
 class CourtOrderReaderPage extends StatefulWidget {
   const CourtOrderReaderPage({super.key});
@@ -26,9 +24,8 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
   @override
   void initState() {
     super.initState();
-    _model = GenerativeModel(
-      model: 'gemini-2.5-pro',
-      apiKey: _apiKey,
+    _model = FirebaseAI.googleAI().generativeModel(
+      model: 'gemini-2.5-flash',
     );
   }
 
@@ -72,7 +69,8 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
         Content.multi([
           TextPart(
               'Summarize the following court order documents. Provide a concise summary of the key points, rulings, and directives for each document.'),
-          ..._fileBytesList.map((bytes) => DataPart('application/pdf', bytes)),
+          ..._fileBytesList
+              .map((bytes) => InlineDataPart('application/pdf', bytes)),
         ])
       ];
       final response = await _model.generateContent(content);

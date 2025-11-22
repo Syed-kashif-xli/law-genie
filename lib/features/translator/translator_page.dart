@@ -5,8 +5,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:myapp/services/translation_service.dart';
 
-const String _apiKey = 'AIzaSyC6NWmWsSowYUpYMOKCJ2EO1fD8-9UXB6s';
-
 class TranslatorPage extends StatefulWidget {
   const TranslatorPage({super.key});
 
@@ -36,7 +34,7 @@ class _TranslatorPageState extends State<TranslatorPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _translationService = TranslationService(_apiKey);
+    _translationService = TranslationService();
   }
 
   @override

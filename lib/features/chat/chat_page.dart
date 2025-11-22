@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:file_picker/file_picker.dart';
@@ -23,8 +23,6 @@ import 'package:mime/mime.dart';
 import 'package:myapp/models/chat_model.dart' as my_models;
 import 'package:myapp/providers/chat_provider.dart';
 import '../documents/document_viewer_page.dart';
-
-const String _apiKey = 'AIzaSyC6NWmWsSowYUpYMOKCJ2EO1fD8-9UXB6s';
 
 class AIChatPage extends StatefulWidget {
   final my_models.ChatSession? chatSession;
@@ -100,9 +98,8 @@ class _AIChatPageState extends State<AIChatPage> {
 
   Future<void> _initGenerativeModel() async {
     final geminiPrompt = await rootBundle.loadString('GEMINI.md');
-    _model = GenerativeModel(
+    _model = FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash',
-      apiKey: _apiKey,
       systemInstruction: Content.text(geminiPrompt),
     );
 
@@ -232,7 +229,7 @@ class _AIChatPageState extends State<AIChatPage> {
         Content.multi([
           TextPart(prompt),
           if (attachedFile != null)
-            DataPart(
+            InlineDataPart(
                 lookupMimeType(attachedFile.path) ?? 'application/octet-stream',
                 await attachedFile.readAsBytes()),
         ])
@@ -752,8 +749,8 @@ class _DocumentMessageBubble extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            DocumentViewerPage(documentContent: message.content),
+                        builder: (context) => DocumentViewerPage(
+                            documentContent: message.content),
                       ),
                     );
                   },

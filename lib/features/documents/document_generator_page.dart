@@ -2,12 +2,10 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'document_fields.dart'; // Import the new file
 import 'document_viewer_page.dart';
-
-const String _apiKey = 'AIzaSyC6NWmWsSowYUpYMOKCJ2EO1fD8-9UXB6s';
 
 class DocumentGeneratorPage extends StatefulWidget {
   const DocumentGeneratorPage({super.key});
@@ -48,9 +46,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
 
   Future<void> _initGenerativeModel() async {
     final geminiPrompt = await rootBundle.loadString('GEMINI.md');
-    _model = GenerativeModel(
+    _model = FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash',
-      apiKey: _apiKey,
       systemInstruction: Content.text(geminiPrompt),
     );
   }
@@ -77,11 +74,17 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   }
 
   String _stripEmoji(String text) {
-    return text.replaceAll(RegExp(r'(\u[0-9a-fA-F]{4})|(\U[0-9a-fA-F]{8})|([\uD800-\uDBFF][\uDC00-\uDFFF])|([\u2600-\u26FF\u2700-\u27BF])|([\uD83C-\uDBFF\uDC00-\uDFFF].)|[\uFE0E\uFE0F]'), '').trim();
+    return text
+        .replaceAll(
+            RegExp(
+                r'(\u[0-9a-fA-F]{4})|(\U[0-9a-fA-F]{8})|([\uD800-\uDBFF][\uDC00-\uDFFF])|([\u2600-\u26FF\u2700-\u27BF])|([\uD83C-\uDBFF\uDC00-\uDFFF].)|[\uFE0E\uFE0F]'),
+            '')
+        .trim();
   }
 
   Future<void> _generateDocument() async {
-    if (_selectedDocumentType == null || _selectedDocumentType == 'Select Document Type') {
+    if (_selectedDocumentType == null ||
+        _selectedDocumentType == 'Select Document Type') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a document type.')),
       );
@@ -299,7 +302,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       ),
     );
   }
-  
+
   Widget _buildDynamicFields() {
     final fields = documentFields[_selectedDocumentType] ?? [];
     if (fields.isEmpty) {
@@ -330,7 +333,6 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       separatorBuilder: (context, index) => const SizedBox(height: 20),
     );
   }
-
 
   Widget _buildDropdown(List<String> items, String? value, String hint,
       Function(String?) onChanged) {

@@ -31,9 +31,18 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:myapp/generated/app_localizations.dart';
 import 'package:myapp/providers/locale_provider.dart';
 
+import 'package:firebase_app_check/firebase_app_check.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // Initialize App Check with Debug Provider
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.debug,
+    appleProvider: AppleProvider.debug,
+  );
+
   await NotificationService().init();
   tz.initializeTimeZones();
   await Hive.initFlutter();

@@ -1,14 +1,13 @@
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:io';
 
 class TranslationService {
   final GenerativeModel _model;
 
-  TranslationService(String apiKey)
-      : _model = GenerativeModel(
-          model: 'gemini-1.5-flash',
-          apiKey: apiKey,
+  TranslationService()
+      : _model = FirebaseAI.googleAI().generativeModel(
+          model: 'gemini-2.5-flash',
         );
 
   Future<String> translateText(String text, String from, String to) async {
