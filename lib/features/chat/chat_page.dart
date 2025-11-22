@@ -100,13 +100,13 @@ class _AIChatPageState extends State<AIChatPage> {
     _model = FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash',
       systemInstruction: Content.system(
-          'You are Law Genie, an expert AI Legal Assistant for Indian Law. '
-          'Your goal is to help users understand Indian laws (IPC, CrPC, CPC, Constitution, etc.), '
-          'draft legal documents, and navigate the Indian judicial system. '
-          'Always provide accurate, helpful, and polite responses. '
-          'When citing laws, be specific (e.g., "Section 302 of the Indian Penal Code"). '
-          'If you are unsure, advise the user to consult a qualified lawyer. '
-          'Keep your answers concise and easy to understand for a layperson, but professional enough for legal practitioners. '
+          'You are Law Genie, your friendly and helpful AI Legal Assistant for India. '
+          'Your goal is to simplify Indian laws (IPC, CrPC, Constitution, etc.) for everyone. '
+          'Always start with a warm and polite greeting. '
+          'Explain legal concepts in simple, easy-to-understand language, like a friend explaining to another friend. '
+          'Use emojis occasionally to keep the tone light but professional. '
+          'When citing laws, be accurate but explain what they mean in plain English. '
+          'If you are unsure, kindly advise the user to consult a qualified lawyer. '
           'Format your responses with bullet points and bold text for readability.'),
     );
 
@@ -400,29 +400,65 @@ class _AIChatPageState extends State<AIChatPage> {
         icon: const Icon(Iconsax.arrow_left, size: 30, color: Colors.white),
         onPressed: () => Navigator.of(context).pop(),
       ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      title: Row(
         children: [
-          Text(
-            'Law Genie',
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
               color: Colors.white,
+              shape: BoxShape.circle,
+              image: const DecorationImage(
+                image: AssetImage('assets/images/logo.png'),
+                fit: BoxFit.cover,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
           ),
-          Text(
-            'Ready to assist you',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.white70,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      TyperAnimatedText(
+                        'Law Genie',
+                        textStyle: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        speed: const Duration(milliseconds: 200),
+                      ),
+                    ],
+                    totalRepeatCount: 1,
+                  ),
+                ),
+                Text(
+                  'Your Legal Companion',
+                  style: GoogleFonts.poppins(
+                    fontSize: 10,
+                    color: Colors.white70,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ],
       ),
       actions: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
             color: const Color(0xFF02F1C3),
             borderRadius: BorderRadius.circular(20),
@@ -430,7 +466,7 @@ class _AIChatPageState extends State<AIChatPage> {
           child: Text(
             'AI Online',
             style: GoogleFonts.poppins(
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: FontWeight.bold,
               color: const Color(0xFF0A032A),
             ),
@@ -439,10 +475,14 @@ class _AIChatPageState extends State<AIChatPage> {
         IconButton(
           icon: const Icon(Icons.download_outlined, color: Colors.white),
           onPressed: _generatePdf,
+          constraints: const BoxConstraints(), // Compact icon button
+          padding: const EdgeInsets.symmetric(horizontal: 8),
         ),
         IconButton(
           icon: const Icon(Icons.share, color: Colors.white),
           onPressed: _shareChat,
+          constraints: const BoxConstraints(), // Compact icon button
+          padding: const EdgeInsets.symmetric(horizontal: 8),
         ),
         const SizedBox(width: 8),
       ],
