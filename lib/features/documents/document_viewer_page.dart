@@ -34,7 +34,11 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
             child: pw.Column(
               mainAxisAlignment: pw.MainAxisAlignment.center,
               children: [
-                pw.Image(logoImage, width: 120, height: 120),
+                pw.ClipRRect(
+                  horizontalRadius: 12,
+                  verticalRadius: 12,
+                  child: pw.Image(logoImage, width: 120, height: 120),
+                ),
                 pw.SizedBox(height: 30),
                 pw.Text(
                   'Law Genie',
@@ -101,7 +105,11 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
                         font: boldFont,
                         fontSize: 14,
                         color: PdfColors.blue800)),
-                pw.Image(logoImage, width: 30, height: 30),
+                pw.ClipRRect(
+                  horizontalRadius: 8,
+                  verticalRadius: 8,
+                  child: pw.Image(logoImage, width: 30, height: 30),
+                ),
               ],
             ),
           );

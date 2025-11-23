@@ -116,7 +116,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
     final prompt = """
     **Act as an expert Indian legal drafter.**
 
-    Generate a '$docType' in $_selectedLanguage. This document must strictly adhere to the highest standards of Indian legal drafting.
+    Generate a '$docType' in $_selectedLanguage. This document must strictly adhere to the highest standards of Indian legal drafting and legal style. Ensure the language used is formal, precise, and consistent with the style used in Indian courts.
 
     **Input Details:**
     $details
@@ -192,8 +192,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         backgroundColor: const Color(0xFFF0F4F8),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-          onPressed: () => Scaffold.of(context).openDrawer(),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF333333)),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Document Generator',
