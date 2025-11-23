@@ -39,9 +39,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (user != null && user.displayName != newName) {
         await user.updateDisplayName(newName);
         // Refresh user data in the parent screen by popping
-        Navigator.of(context).pop(true); 
+        Navigator.of(context).pop(true);
       }
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.profileUpdatedSuccessfully),
@@ -66,14 +66,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(l10n.editProfile, style: const TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title:
+            Text(l10n.editProfile, style: const TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF2C55A9), // Match app primary color
         elevation: 0,
         centerTitle: true,
       ),
@@ -86,9 +87,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 20),
               // Styled TextFormField to match profile menu
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: const Color(0xFF19173A), // Dark theme
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: TextFormField(
@@ -96,8 +98,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.username,
                     border: InputBorder.none,
-                    labelStyle: const TextStyle(color: Colors.black54),
+                    labelStyle: const TextStyle(color: Colors.white70),
                   ),
+                  style: const TextStyle(color: Colors.white),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return l10n.pleaseEnterUsername;
@@ -124,7 +127,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     child: Text(
                       l10n.saveChanges,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

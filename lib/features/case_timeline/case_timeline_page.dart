@@ -19,7 +19,8 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<TimelineProvider>(context, listen: false).fetchTimelineEvents(widget.caseId);
+      Provider.of<TimelineProvider>(context, listen: false)
+          .fetchTimelineEvents(widget.caseId);
     });
   }
 
@@ -39,10 +40,19 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
-        title: const Text('Case Timeline'),
+        title:
+            const Text('Case Timeline', style: TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: theme.primaryColor,
+        backgroundColor: Colors.transparent, // Transparent AppBar
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF0A032A), // Match body background
+          ),
+        ),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Consumer<TimelineProvider>(
         builder: (context, timelineProvider, child) {
@@ -56,7 +66,7 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
             return const Center(
               child: Text(
                 'No timeline events yet. Tap the + button to add one!',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: TextStyle(fontSize: 18, color: Colors.white70),
                 textAlign: TextAlign.center,
               ),
             );
@@ -104,7 +114,8 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                   padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
                   child: Card(
                     elevation: 8,
-                    shadowColor: Colors.black.withOpacity(0.2),
+                    color: const Color(0xFF19173A), // Dark card background
+                    shadowColor: Colors.black.withOpacity(0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -113,8 +124,8 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                         borderRadius: BorderRadius.circular(15),
                         gradient: LinearGradient(
                           colors: [
-                            _getStatusColor(item.status).withOpacity(0.1),
-                            theme.scaffoldBackgroundColor,
+                            _getStatusColor(item.status).withOpacity(0.2),
+                            const Color(0xFF19173A), // Dark gradient end
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -139,12 +150,17 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      Icon(Icons.calendar_today, size: 16, color: theme.colorScheme.onSurface.withOpacity(0.6)),
+                                      Icon(Icons.calendar_today,
+                                          size: 16,
+                                          color: theme.colorScheme.onSurface
+                                              .withOpacity(0.6)),
                                       const SizedBox(width: 8),
                                       Text(
                                         DateFormat.yMMMMd().format(item.date),
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: theme.colorScheme.onSurface.withOpacity(0.8),
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: theme.colorScheme.onSurface
+                                              .withOpacity(0.8),
                                         ),
                                       ),
                                     ],
@@ -153,7 +169,8 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                                   Text(
                                     item.description,
                                     style: theme.textTheme.bodyLarge?.copyWith(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.9),
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.9),
                                     ),
                                   ),
                                   const SizedBox(height: 16),
@@ -162,12 +179,18 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                                       padding: const EdgeInsets.only(top: 8.0),
                                       child: Row(
                                         children: [
-                                          const Icon(Icons.notifications_active, size: 16, color: Colors.blueAccent),
+                                          const Icon(Icons.notifications_active,
+                                              size: 16,
+                                              color: Colors.blueAccent),
                                           const SizedBox(width: 4),
                                           Expanded(
                                             child: Text(
                                               'Reminder: ${DateFormat.yMMMMd().add_jm().format(item.reminderDate!)}',
-                                              style: theme.textTheme.bodySmall?.copyWith(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                      color: Colors.blueAccent,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                             ),
                                           ),
                                         ],
@@ -179,12 +202,15 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                             PopupMenuButton<String>(
                               onSelected: (value) {
                                 if (value == 'rename') {
-                                  _showAddEventDialog(context, widget.caseId, event: item);
+                                  _showAddEventDialog(context, widget.caseId,
+                                      event: item);
                                 } else if (value == 'delete') {
-                                  _showDeleteConfirmationDialog(context, widget.caseId, item);
+                                  _showDeleteConfirmationDialog(
+                                      context, widget.caseId, item);
                                 }
                               },
-                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<String>>[
                                 const PopupMenuItem<String>(
                                   value: 'rename',
                                   child: Text('Rename'),
@@ -215,14 +241,16 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
     );
   }
 
-  Future<void> _showAddEventDialog(BuildContext context, String caseId, {TimelineEvent? event}) async {
+  Future<void> _showAddEventDialog(BuildContext context, String caseId,
+      {TimelineEvent? event}) async {
     await showDialog(
       context: context,
       builder: (context) => AddEventDialog(caseId: caseId, event: event),
     );
   }
 
-  Future<void> _showDeleteConfirmationDialog(BuildContext context, String caseId, TimelineEvent event) async {
+  Future<void> _showDeleteConfirmationDialog(
+      BuildContext context, String caseId, TimelineEvent event) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -236,7 +264,8 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
             ),
             TextButton(
               onPressed: () {
-                final timelineProvider = Provider.of<TimelineProvider>(context, listen: false);
+                final timelineProvider =
+                    Provider.of<TimelineProvider>(context, listen: false);
                 if (event.reminderDate != null) {
                   NotificationService().cancelNotification(event.id.hashCode);
                 }
@@ -275,7 +304,8 @@ class AddEventDialogState extends State<AddEventDialog> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.event?.title ?? '');
-    _descriptionController = TextEditingController(text: widget.event?.description ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.event?.description ?? '');
     _selectedDate = widget.event?.date ?? DateTime.now();
     _selectedStatus = widget.event?.status ?? TimelineStatus.upcoming;
     if (widget.event?.reminderDate != null) {
@@ -290,7 +320,9 @@ class AddEventDialogState extends State<AddEventDialog> {
 
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: Text(widget.event == null ? 'Add Timeline Event' : 'Edit Timeline Event', style: const TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(
+          widget.event == null ? 'Add Timeline Event' : 'Edit Timeline Event',
+          style: const TextStyle(fontWeight: FontWeight.bold)),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -299,20 +331,25 @@ class AddEventDialogState extends State<AddEventDialog> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder()),
-                validator: (value) => value!.isEmpty ? 'Please enter a title' : null,
+                decoration: const InputDecoration(
+                    labelText: 'Title', border: OutlineInputBorder()),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a title' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
-                validator: (value) => value!.isEmpty ? 'Please enter a description' : null,
+                decoration: const InputDecoration(
+                    labelText: 'Description', border: OutlineInputBorder()),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a description' : null,
               ),
               const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
-                    child: Text('Date: ${DateFormat.yMMMMd().format(_selectedDate)}'),
+                    child: Text(
+                        'Date: ${DateFormat.yMMMMd().format(_selectedDate)}'),
                   ),
                   IconButton(
                     icon: const Icon(Icons.calendar_today),
@@ -343,7 +380,8 @@ class AddEventDialogState extends State<AddEventDialog> {
                 items: TimelineStatus.values.map((status) {
                   return DropdownMenuItem(
                     value: status,
-                    child: Text(status.toString().split('.').last.toUpperCase()),
+                    child:
+                        Text(status.toString().split('.').last.toUpperCase()),
                   );
                 }).toList(),
               ),
@@ -369,7 +407,8 @@ class AddEventDialogState extends State<AddEventDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: Text('Reminder: ${DateFormat.yMMMMd().add_jm().format(_reminderDate!)}'),
+                        child: Text(
+                            'Reminder: ${DateFormat.yMMMMd().add_jm().format(_reminderDate!)}'),
                       ),
                       IconButton(
                         icon: const Icon(Icons.edit, size: 20),
@@ -390,7 +429,8 @@ class AddEventDialogState extends State<AddEventDialog> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.primaryColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           onPressed: _saveEvent,
           child: Text(widget.event == null ? 'Add' : 'Save'),
@@ -429,64 +469,66 @@ class AddEventDialogState extends State<AddEventDialog> {
   Future<void> _saveEvent() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final timelineProvider = Provider.of<TimelineProvider>(context, listen: false);
+    final timelineProvider =
+        Provider.of<TimelineProvider>(context, listen: false);
 
     if (widget.event != null && widget.event?.id != null) {
-        await _notificationService.cancelNotification(widget.event!.id.hashCode);
+      await _notificationService.cancelNotification(widget.event!.id.hashCode);
     }
 
     DateTime? finalReminderDate;
     if (_isReminderSet && _reminderDate != null) {
-        if (_reminderDate!.isBefore(DateTime.now())) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Reminder date must be in the future')),
-            );
-            return;
-        }
+      if (_reminderDate!.isBefore(DateTime.now())) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reminder date must be in the future')),
+        );
+        return;
+      }
       finalReminderDate = _reminderDate;
     }
-    
+
     try {
-        if (widget.event == null) {
-            final newEvent = TimelineEvent(
-                title: _titleController.text,
-                description: _descriptionController.text,
-                date: _selectedDate,
-                status: _selectedStatus,
-                icon: Icons.event,
-                reminderDate: finalReminderDate,
-            );
-            final docRef = await timelineProvider.addTimelineEvent(widget.caseId, newEvent);
+      if (widget.event == null) {
+        final newEvent = TimelineEvent(
+          title: _titleController.text,
+          description: _descriptionController.text,
+          date: _selectedDate,
+          status: _selectedStatus,
+          icon: Icons.event,
+          reminderDate: finalReminderDate,
+        );
+        final docRef =
+            await timelineProvider.addTimelineEvent(widget.caseId, newEvent);
 
-            if (finalReminderDate != null) {
-                await _notificationService.scheduleNotification(
-                    id: docRef.id.hashCode,
-                    title: 'Case Reminder: ${newEvent.title}',
-                    body: newEvent.description,
-                    scheduledDate: finalReminderDate,
-                );
-            }
-        } else {
-            final updatedEvent = widget.event!.copyWith(
-                title: _titleController.text,
-                description: _descriptionController.text,
-                date: _selectedDate,
-                status: _selectedStatus,
-                reminderDate: finalReminderDate,
-            );
-            await timelineProvider.updateTimelineEvent(widget.caseId, updatedEvent);
-
-            if (finalReminderDate != null && updatedEvent.id != null) {
-                await _notificationService.scheduleNotification(
-                    id: updatedEvent.id!.hashCode,
-                    title: 'Case Reminder: ${updatedEvent.title}',
-                    body: updatedEvent.description,
-                    scheduledDate: finalReminderDate,
-                );
-            }
+        if (finalReminderDate != null) {
+          await _notificationService.scheduleNotification(
+            id: docRef.id.hashCode,
+            title: 'Case Reminder: ${newEvent.title}',
+            body: newEvent.description,
+            scheduledDate: finalReminderDate,
+          );
         }
+      } else {
+        final updatedEvent = widget.event!.copyWith(
+          title: _titleController.text,
+          description: _descriptionController.text,
+          date: _selectedDate,
+          status: _selectedStatus,
+          reminderDate: finalReminderDate,
+        );
+        await timelineProvider.updateTimelineEvent(widget.caseId, updatedEvent);
+
+        if (finalReminderDate != null && updatedEvent.id != null) {
+          await _notificationService.scheduleNotification(
+            id: updatedEvent.id!.hashCode,
+            title: 'Case Reminder: ${updatedEvent.title}',
+            body: updatedEvent.description,
+            scheduledDate: finalReminderDate,
+          );
+        }
+      }
     } catch (e) {
-        // Silently fail if notification permission is not granted
+      // Silently fail if notification permission is not granted
     }
 
     if (mounted) {

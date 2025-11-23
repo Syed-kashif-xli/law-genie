@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -48,25 +47,25 @@ class SummaryDisplayPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF0F4F8),
+        backgroundColor: const Color(0xFF2C55A9), // Match app primary color
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF333333)),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Generated Summary',
           style: GoogleFonts.merriweather(
-            color: const Color(0xFF333333),
+            color: Colors.white,
             fontWeight: FontWeight.w700,
             fontSize: 22,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Iconsax.document_download, color: Color(0xFF333333)),
+            icon: const Icon(Iconsax.document_download, color: Colors.white),
             onPressed: () => _downloadSummary(context),
             tooltip: 'Download Summary',
           ),
@@ -77,11 +76,11 @@ class SummaryDisplayPage extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(24.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFF19173A), // Dark card
             borderRadius: BorderRadius.circular(16.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.15),
+                color: Colors.black.withOpacity(0.3),
                 spreadRadius: 2,
                 blurRadius: 12,
                 offset: const Offset(0, 5),
@@ -93,7 +92,7 @@ class SummaryDisplayPage extends StatelessWidget {
             style: GoogleFonts.lora(
               fontSize: 16,
               height: 1.5,
-              color: Colors.black87,
+              color: Colors.white, // White text
             ),
           ),
         ),

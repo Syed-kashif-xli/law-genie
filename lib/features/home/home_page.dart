@@ -10,6 +10,8 @@ import '../../features/home/app_drawer.dart';
 import '../../features/home/widgets/feature_card.dart';
 import '../../features/home/widgets/news_card.dart';
 import '../../features/home/providers/news_provider.dart';
+import '../../providers/chat_provider.dart';
+import '../../providers/case_provider.dart';
 import '../../screens/case_list_screen.dart';
 import '../../features/home/pages/all_news_page.dart';
 import '../../features/translator/translator_page.dart';
@@ -125,32 +127,44 @@ class _StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        _StatCard(
-          title: 'AI Queries',
-          value: '247',
-          change: '+23%',
-          icon: Iconsax.cpu_charge,
-          iconColor: Color(0xFF02F1C3),
-        ),
-        SizedBox(height: 16),
-        _StatCard(
-          title: 'Documents',
-          value: '45',
-          change: '+12%',
-          icon: Iconsax.document_favorite,
-          iconColor: Color(0xFF02F1C3),
-        ),
-        SizedBox(height: 16),
-        _StatCard(
-          title: 'Cases Tracked',
-          value: '12',
-          change: '+3',
-          icon: Iconsax.briefcase,
-          iconColor: Color(0xFF02F1C3),
-        ),
-      ],
+    return Consumer2<ChatProvider, CaseProvider>(
+      builder: (context, chatProvider, caseProvider, child) {
+        // Calculate total messages across all chat sessions
+        int totalMessages = 0;
+        for (var session in chatProvider.chatSessions) {
+          totalMessages += session.messages.length;
+        }
+
+        final casesCount = caseProvider.cases.length;
+
+        return Column(
+          children: [
+            _StatCard(
+              title: 'AI Queries',
+              value: totalMessages.toString(),
+              change: '+${chatProvider.chatSessions.length}',
+              icon: Iconsax.cpu_charge,
+              iconColor: const Color(0xFF02F1C3),
+            ),
+            const SizedBox(height: 16),
+            _StatCard(
+              title: 'Documents',
+              value: '0', // Placeholder - will implement later
+              change: '+0',
+              icon: Iconsax.document_favorite,
+              iconColor: const Color(0xFF02F1C3),
+            ),
+            const SizedBox(height: 16),
+            _StatCard(
+              title: 'Cases Tracked',
+              value: casesCount.toString(),
+              change: '+$casesCount',
+              icon: Iconsax.briefcase,
+              iconColor: const Color(0xFF02F1C3),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -359,54 +373,64 @@ class _AiUsage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF19173A), Color(0xFF0A032A)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'AI Usage This Month',
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+    return Consumer2<ChatProvider, CaseProvider>(
+      builder: (context, chatProvider, caseProvider, child) {
+        // Calculate total messages across all chat sessions
+        int totalMessages = 0;
+        for (var session in chatProvider.chatSessions) {
+          totalMessages += session.messages.length;
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF19173A), Color(0xFF0A032A)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(16),
           ),
-          const SizedBox(height: 16),
-          const _UsageBar(title: 'Queries', value: 247, total: 500),
-          const SizedBox(height: 16),
-          const _UsageBar(title: 'Documents', value: 45, total: 100),
-          const SizedBox(height: 24),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF02F1C3),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 48, vertical: 12),
-              ),
-              child: const Text(
-                'Upgrade Plan',
-                style: TextStyle(
-                  color: Color(0xFF0A032A),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'AI Usage This Month',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-            ),
+              const SizedBox(height: 16),
+              _UsageBar(title: 'Queries', value: totalMessages, total: 500),
+              const SizedBox(height: 16),
+              const _UsageBar(title: 'Documents', value: 0, total: 100),
+              const SizedBox(height: 24),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF02F1C3),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 48, vertical: 12),
+                  ),
+                  child: const Text(
+                    'Upgrade Plan',
+                    style: TextStyle(
+                      color: Color(0xFF0A032A),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

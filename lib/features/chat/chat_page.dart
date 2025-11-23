@@ -100,14 +100,26 @@ class _AIChatPageState extends State<AIChatPage> {
     _model = FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash',
       systemInstruction: Content.system(
-          'You are Law Genie, your friendly and helpful AI Legal Assistant for India. '
-          'Your goal is to simplify Indian laws (IPC, CrPC, Constitution, etc.) for everyone. '
-          'Always start with a warm and polite greeting. '
-          'Explain legal concepts in simple, easy-to-understand language, like a friend explaining to another friend. '
-          'Use emojis occasionally to keep the tone light but professional. '
-          'When citing laws, be accurate but explain what they mean in plain English. '
-          'If you are unsure, kindly advise the user to consult a qualified lawyer. '
-          'Format your responses with bullet points and bold text for readability.'),
+          'You are Law Genie, an advanced and empathetic Indian Legal AI Assistant. '
+          'Your goal is to help users clearly understand their legal issues under Indian law with compassion and accuracy.\n\n'
+          '**Core Persona:**\n'
+          '*   **Empathetic & Supportive:** Legal problems are stressful. Always acknowledge the user\'s feelings first. Use phrases like "I understand this is a difficult situation" or "I\'m sorry you\'re going through this". Make them feel heard.\n'
+          '*   **Smart & Analytical:** Don\'t just answer; analyze. If facts are missing, ask clarifying questions to give a better answer.\n'
+          '*   **Neutral & Professional:** Explain the law simply but do not take sides.\n\n'
+          '**Instructions:**\n'
+          '1.  **Understand & Empathize:** Start with a warm, empathetic acknowledgement of their issue.\n'
+          '2.  **Clarify (If needed):** If the query is vague, ask 1-2 specific follow-up questions to understand the context (e.g., "Is there a written contract?", "When did this incident happen?").\n'
+          '3.  **Explain the Law:** Provide accurate legal information based on Indian Acts, Sections, and case laws. Explain them in simple language. Use a mix of English and Hindi if it makes it clearer.\n'
+          '4.  **Actionable Guidance:** Provide easy step-by-step guidance: what to do, which authority/court to approach, and possible remedies.\n'
+          '5.  **Conciseness:** Keep responses concise (120–250 words, max 450 for complex topics). Avoid long essays.\n\n'
+          '**Constraints:**\n'
+          '*   **Indian Law Only.**\n'
+          '*   **Do NOT** act as a lawyer or promise court success.\n'
+          '*   **Do NOT** make up laws or judgments.\n'
+          '*   **Do NOT** provide real-time data unless certain.\n\n'
+          '**Mandatory Footer:**\n'
+          'You **MUST** end every response with this exact line:\n'
+          '"⚠️ Disclaimer: This is general legal information for awareness and not a substitute for professional legal advice."'),
     );
 
     // Load chat history
@@ -229,18 +241,20 @@ class _AIChatPageState extends State<AIChatPage> {
     });
 
     try {
-      final prompt =
-          "Analyze the following attachment and question. The file might be compressed, so clarity may not be perfect. Do your best to accurately analyze the visual content. If there's any text, extract it. If the image is too blurry, politely ask the user to send a clearer version. Always combine the analysis of the image and the user's question to provide a smart, professional, and helpful answer, like a real legal assistant would. Question: $userMessage";
+      final content = <Content>[];
 
-      final content = [
-        Content.multi([
+      if (attachedFile != null) {
+        final prompt =
+            "Analyze the following attachment and question. The file might be compressed, so clarity may not be perfect. Do your best to accurately analyze the visual content. If there's any text, extract it. If the image is too blurry, politely ask the user to send a clearer version. Always combine the analysis of the image and the user's question to provide a smart, professional, and helpful answer, like a real legal assistant would. Question: $userMessage";
+        content.add(Content.multi([
           TextPart(prompt),
-          if (attachedFile != null)
-            InlineDataPart(
-                lookupMimeType(attachedFile.path) ?? 'application/octet-stream',
-                await attachedFile.readAsBytes()),
-        ])
-      ];
+          InlineDataPart(
+              lookupMimeType(attachedFile.path) ?? 'application/octet-stream',
+              await attachedFile.readAsBytes()),
+        ]));
+      } else {
+        content.add(Content.text(userMessage));
+      }
 
       var response = await _chat.sendMessage(content.first);
       var responseText = response.text;
@@ -641,10 +655,17 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
           margin: const EdgeInsets.only(right: 12, top: 4),
           padding: const EdgeInsets.all(8),
           decoration: const BoxDecoration(
-            color: Color(0xFF19173A),
+            color: Color(0xFF19173A), // Match the bubble background
             shape: BoxShape.circle,
           ),
-          child: const Icon(Iconsax.flash_1, color: Colors.white, size: 24),
+          child: ClipOval(
+            child: Image.asset(
+              'assets/images/logo.png',
+              height: 24,
+              width: 24,
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         Expanded(
           child: Container(
@@ -656,13 +677,21 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.message.text,
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    color: Colors.white,
-                    height: 1.5,
-                  ),
+                AnimatedTextKit(
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      widget.message.text,
+                      textStyle: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: Colors.white,
+                        height: 1.5,
+                      ),
+                      speed: const Duration(milliseconds: 30),
+                    ),
+                  ],
+                  totalRepeatCount: 1,
+                  displayFullTextOnTap: true,
+                  isRepeatingAnimation: false,
                 ),
                 const SizedBox(height: 12),
                 GestureDetector(

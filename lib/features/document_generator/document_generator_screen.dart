@@ -114,10 +114,54 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
 
   // --- DATA LISTS ---
   final List<String> _jurisdictions = [
-    'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chhattisgarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 'Jharkhand', 'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+    'Andaman and Nicobar Islands',
+    'Andhra Pradesh',
+    'Arunachal Pradesh',
+    'Assam',
+    'Bihar',
+    'Chandigarh',
+    'Chhattisgarh',
+    'Dadra and Nagar Haveli and Daman and Diu',
+    'Delhi',
+    'Goa',
+    'Gujarat',
+    'Haryana',
+    'Himachal Pradesh',
+    'Jammu and Kashmir',
+    'Jharkhand',
+    'Karnataka',
+    'Kerala',
+    'Ladakh',
+    'Lakshadweep',
+    'Madhya Pradesh',
+    'Maharashtra',
+    'Manipur',
+    'Meghalaya',
+    'Mizoram',
+    'Nagaland',
+    'Odisha',
+    'Puducherry',
+    'Punjab',
+    'Rajasthan',
+    'Sikkim',
+    'Tamil Nadu',
+    'Telangana',
+    'Tripura',
+    'Uttar Pradesh',
+    'Uttarakhand',
+    'West Bengal'
   ];
-  final List<String> _languages = ['English', 'Hindi', 'Marathi', 'Bengali', 'Tamil', 'Telugu', 'Gujarati', 'Kannada', 'Malayalam'];
-
+  final List<String> _languages = [
+    'English',
+    'Hindi',
+    'Marathi',
+    'Bengali',
+    'Tamil',
+    'Telugu',
+    'Gujarati',
+    'Kannada',
+    'Malayalam'
+  ];
 
   @override
   void dispose() {
@@ -137,29 +181,41 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
   }
 
   String _stripEmoji(String text) {
-  return text.replaceAll(RegExp(r'(\u[0-9a-fA-F]{4})|(\U[0-9a-fA-F]{8})|([\uD800-\uDBFF][\uDC00-\uDFFF])|([\u2600-\u26FF\u2700-\u27BF])|([\uD83C-\uDBFF\uDC00-\uDFFF].)|[\uFE0E\uFE0F]'), '').trim();
-}
+    return text
+        .replaceAll(
+            RegExp(
+                r'(\u[0-9a-fA-F]{4})|(\U[0-9a-fA-F]{8})|([\uD800-\uDBFF][\uDC00-\uDFFF])|([\u2600-\u26FF\u2700-\u27BF])|([\uD83C-\uDBFF\uDC00-\uDFFF].)|[\uFE0E\uFE0F]'),
+            '')
+        .trim();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F2F5), // Lighter background
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 1,
+        backgroundColor: Colors.transparent, // Transparent AppBar
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF0A032A), // Match body background
+          ),
+        ),
+        elevation: 0,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           'Document Generator',
           style: GoogleFonts.poppins(
-              color: Colors.black87, fontWeight: FontWeight.w600, fontSize: 20),
+              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),
         ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          color: const Color(0xFF19173A), // Dark card background
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
@@ -170,18 +226,18 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
                   style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87),
+                      color: Colors.white), // White text
                 ),
                 const SizedBox(height: 24),
                 _buildSectionTitle('Document Type'),
-                _buildDropdown(documentFields.keys.toList(), _selectedDocumentType,
-                    'Select document type', (val) {
+                _buildDropdown(documentFields.keys.toList(),
+                    _selectedDocumentType, 'Select document type', (val) {
                   setState(() => _selectedDocumentType = val);
                 }),
                 const SizedBox(height: 20),
                 _buildSectionTitle('Language'),
-                 _buildDropdown(_languages, _selectedLanguage,
-                    'Select language', (val) {
+                _buildDropdown(_languages, _selectedLanguage, 'Select language',
+                    (val) {
                   setState(() => _selectedLanguage = val);
                 }),
                 const SizedBox(height: 20),
@@ -191,7 +247,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
                     'Provide specific terms, conditions, or requirements...',
                     maxLines: 4),
                 const SizedBox(height: 20),
-                 _buildSectionTitle('Jurisdiction'),
+                _buildSectionTitle('Jurisdiction'),
                 _buildDropdown(_jurisdictions, _selectedJurisdiction,
                     'Select jurisdiction', (val) {
                   setState(() => _selectedJurisdiction = val);
@@ -231,10 +287,13 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           _buildTextField(_deponentNameController, 'e.g., John Doe'),
           const SizedBox(height: 20),
           _buildSectionTitle('Deponent Address'),
-          _buildTextField(_deponentAddressController, 'e.g., 123 Main St, Anytown'),
+          _buildTextField(
+              _deponentAddressController, 'e.g., 123 Main St, Anytown'),
           const SizedBox(height: 20),
           _buildSectionTitle('Statement of Facts'),
-          _buildTextField(_statementOfFactsController, 'Enter the facts to be affirmed...', maxLines: 5),
+          _buildTextField(
+              _statementOfFactsController, 'Enter the facts to be affirmed...',
+              maxLines: 5),
           const SizedBox(height: 20),
         ];
         break;
@@ -249,14 +308,15 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           _buildTextField(_buyerNameController, 'e.g., John Doe'),
           const SizedBox(height: 20),
           _buildSectionTitle('Property Description'),
-          _buildTextField(_propertyDescriptionController, 'e.g., Flat No. 101, Building A...'),
+          _buildTextField(_propertyDescriptionController,
+              'e.g., Flat No. 101, Building A...'),
           const SizedBox(height: 20),
           _buildSectionTitle('Sale Amount (in INR)'),
           _buildTextField(_saleAmountController, 'e.g., 5000000'),
           const SizedBox(height: 20),
         ];
         break;
-       case 'Bail Application':
+      case 'Bail Application':
         fields = [
           _buildSectionTitle('Accused Name'),
           _buildTextField(_accusedNameController, 'e.g., John Doe'),
@@ -264,8 +324,9 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           _buildSectionTitle('FIR No.'),
           _buildTextField(_firNoController, 'e.g., 123/2024'),
           const SizedBox(height: 20),
-           _buildSectionTitle('Police Station'),
-          _buildTextField(_policeStationController, 'e.g., Connaught Place Police Station'),
+          _buildSectionTitle('Police Station'),
+          _buildTextField(
+              _policeStationController, 'e.g., Connaught Place Police Station'),
           const SizedBox(height: 20),
           _buildSectionTitle('Sections of Law'),
           _buildTextField(_sectionsOfLawController, 'e.g., Section 302 IPC'),
@@ -273,7 +334,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
         ];
         break;
       case 'Cheque Bounce Notice':
-         fields = [
+        fields = [
           _buildSectionTitle('Sender Name (Payee)'),
           _buildTextField(_noticeSenderNameController, 'e.g., ABC Corp'),
           const SizedBox(height: 20),
@@ -283,7 +344,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           _buildSectionTitle('Cheque No.'),
           _buildTextField(_chequeNoController, 'e.g., 123456'),
           const SizedBox(height: 20),
-           _buildSectionTitle('Cheque Date'),
+          _buildSectionTitle('Cheque Date'),
           _buildDateField(controller: _chequeDateController),
           const SizedBox(height: 20),
           _buildSectionTitle('Cheque Amount (in INR)'),
@@ -293,59 +354,62 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
         break;
       case 'Gift Deed':
         fields = [
-            _buildSectionTitle('Donor Name'),
-            _buildTextField(_donorNameController, 'e.g., John Doe'),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Donee Name'),
-            _buildTextField(_doneeNameController, 'e.g., Jane Doe'),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Details of Gift/Property'),
-            _buildTextField(_giftDetailsController, 'e.g., 100 shares of XYZ Ltd. or Property details', maxLines: 3),
-            const SizedBox(height: 20),
+          _buildSectionTitle('Donor Name'),
+          _buildTextField(_donorNameController, 'e.g., John Doe'),
+          const SizedBox(height: 20),
+          _buildSectionTitle('Donee Name'),
+          _buildTextField(_doneeNameController, 'e.g., Jane Doe'),
+          const SizedBox(height: 20),
+          _buildSectionTitle('Details of Gift/Property'),
+          _buildTextField(_giftDetailsController,
+              'e.g., 100 shares of XYZ Ltd. or Property details',
+              maxLines: 3),
+          const SizedBox(height: 20),
         ];
         break;
       case 'Loan Agreement':
         fields = [
-            _buildSectionTitle('Lender Name'),
-            _buildTextField(_promisorNameController, 'e.g., ABC Finance'),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Borrower Name'),
-            _buildTextField(_promiseeNameController, 'e.g., John Doe'),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Principal Loan Amount (in INR)'),
-            _buildTextField(_principalAmountController, 'e.g., 100000'),
-            const SizedBox(height: 20),
-             _buildSectionTitle('Effective Date of Loan'),
-            _buildDateField(controller: _effectiveDateController),
-            const SizedBox(height: 20),
+          _buildSectionTitle('Lender Name'),
+          _buildTextField(_promisorNameController, 'e.g., ABC Finance'),
+          const SizedBox(height: 20),
+          _buildSectionTitle('Borrower Name'),
+          _buildTextField(_promiseeNameController, 'e.g., John Doe'),
+          const SizedBox(height: 20),
+          _buildSectionTitle('Principal Loan Amount (in INR)'),
+          _buildTextField(_principalAmountController, 'e.g., 100000'),
+          const SizedBox(height: 20),
+          _buildSectionTitle('Effective Date of Loan'),
+          _buildDateField(controller: _effectiveDateController),
+          const SizedBox(height: 20),
         ];
         break;
-       case 'Rental Agreement':
-       case 'Lease Agreement':
-         fields = [
-            _buildSectionTitle('Landlord/Lessor Name'),
-            _buildTextField(_landlordNameController, 'e.g., Jane Smith'),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Tenant/Lessee Name'),
-            _buildTextField(_tenantNameController, 'e.g., John Doe'),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Property Address'),
-            _buildTextField(_propertyDescriptionController, 'e.g., 2BHK Flat at...'),
-            const SizedBox(height: 20),
-             _buildSectionTitle('Monthly Rent (in INR)'),
-            _buildTextField(_rentAmountController, 'e.g., 25000'),
-            const SizedBox(height: 20),
+      case 'Rental Agreement':
+      case 'Lease Agreement':
+        fields = [
+          _buildSectionTitle('Landlord/Lessor Name'),
+          _buildTextField(_landlordNameController, 'e.g., Jane Smith'),
+          const SizedBox(height: 20),
+          _buildSectionTitle('Tenant/Lessee Name'),
+          _buildTextField(_tenantNameController, 'e.g., John Doe'),
+          const SizedBox(height: 20),
+          _buildSectionTitle('Property Address'),
+          _buildTextField(
+              _propertyDescriptionController, 'e.g., 2BHK Flat at...'),
+          const SizedBox(height: 20),
+          _buildSectionTitle('Monthly Rent (in INR)'),
+          _buildTextField(_rentAmountController, 'e.g., 25000'),
+          const SizedBox(height: 20),
         ];
         break;
       case 'Website Privacy Policy':
       case 'Website Terms and Conditions':
         fields = [
-            _buildSectionTitle('Website/App URL'),
-            _buildTextField(TextEditingController(), 'https://example.com'),
-            const SizedBox(height: 20),
-            _buildSectionTitle('Company/Owner Name'),
-            _buildTextField(TextEditingController(), 'e.g., Awesome App Inc.'),
-            const SizedBox(height: 20),
+          _buildSectionTitle('Website/App URL'),
+          _buildTextField(TextEditingController(), 'https://example.com'),
+          const SizedBox(height: 20),
+          _buildSectionTitle('Company/Owner Name'),
+          _buildTextField(TextEditingController(), 'e.g., Awesome App Inc.'),
+          const SizedBox(height: 20),
         ];
         break;
       // Add cases for ALL other document types here...
@@ -409,9 +473,10 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
       items: items.map((String item) {
         return DropdownMenuItem<String>(
           value: item,
-          child: Text(item,
-              style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
-              overflow: TextOverflow.ellipsis,
+          child: Text(
+            item,
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
+            overflow: TextOverflow.ellipsis,
           ),
         );
       }).toList(),
@@ -423,9 +488,9 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-           borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
-         enabledBorder: OutlineInputBorder(
+        enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
@@ -438,7 +503,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
   }
 
   Widget _buildDateField({TextEditingController? controller}) {
-     final dateController = controller ?? _effectiveDateController;
+    final dateController = controller ?? _effectiveDateController;
     return TextFormField(
       controller: dateController,
       style: GoogleFonts.poppins(color: Colors.black87),
@@ -455,7 +520,7 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
-         enabledBorder: OutlineInputBorder(
+        enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
@@ -490,7 +555,8 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
           onPressed: () {
             // TODO: Implement document generation logic
             if (_selectedDocumentType != null) {
-              print('Selected Document Type without emoji: ${_stripEmoji(_selectedDocumentType!)}');
+              print(
+                  'Selected Document Type without emoji: ${_stripEmoji(_selectedDocumentType!)}');
             }
           },
           icon: const Icon(Iconsax.document_text_1, color: Colors.white),

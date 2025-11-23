@@ -104,18 +104,23 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF0F4F8),
+        backgroundColor: Colors.transparent, // Transparent AppBar
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF0A032A), // Match body background
+          ),
+        ),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF333333)),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Court Order Summarizer',
           style: GoogleFonts.merriweather(
-            color: const Color(0xFF333333),
+            color: Colors.white,
             fontWeight: FontWeight.w700,
             fontSize: 22,
           ),
@@ -140,60 +145,41 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
   }
 
   Widget _buildFileUploadCard() {
-    return Container(
-      padding: const EdgeInsets.all(24.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            spreadRadius: 2,
-            blurRadius: 12,
-            offset: const Offset(0, 5),
+    return GestureDetector(
+      onTap: _pickFiles,
+      child: DottedBorder(
+        color: const Color(0xFF02F1C3),
+        strokeWidth: 2,
+        dashPattern: const [8, 4],
+        radius: const Radius.circular(12),
+        child: Container(
+          height: 150,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: const Color(0xFF19173A), // Dark card background
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: _pickFiles,
-            child: DottedBorder(
-              color: Colors.blue.shade300,
-              strokeWidth: 2,
-              dashPattern: const [8, 4],
-              radius: const Radius.circular(12),
-              child: Container(
-                height: 150,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Iconsax.document_upload,
-                      size: 48,
-                      color: Colors.blue.shade600,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Tap to upload PDFs',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Iconsax.document_upload,
+                size: 48,
+                color: const Color(0xFF02F1C3),
               ),
-            ),
+              const SizedBox(height: 16),
+              Text(
+                'Tap to upload PDFs',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -202,11 +188,11 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF19173A), // Dark card
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
+            color: Colors.black.withOpacity(0.3),
             spreadRadius: 2,
             blurRadius: 12,
             offset: const Offset(0, 5),
@@ -221,7 +207,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
             style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Colors.grey.shade800,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 12),
@@ -245,7 +231,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
                           _fileNames[index],
                           style: GoogleFonts.poppins(
                             fontSize: 14,
-                            color: Colors.black87,
+                            color: Colors.white,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),

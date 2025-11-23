@@ -187,20 +187,23 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF0F4F8),
+        backgroundColor: Colors.transparent, // Transparent AppBar
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF0A032A), // Match body background
+          ),
+        ),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF333333)),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Document Generator',
           style: GoogleFonts.merriweather(
-              color: const Color(0xFF333333),
-              fontWeight: FontWeight.w700,
-              fontSize: 22),
+              color: Colors.white, fontWeight: FontWeight.w700, fontSize: 22),
         ),
       ),
       body: SingleChildScrollView(
@@ -210,14 +213,14 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
             Container(
               padding: const EdgeInsets.all(24.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFF19173A), // Dark card
                 borderRadius: BorderRadius.circular(16.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.15),
+                    color: Colors.black.withOpacity(0.3),
                     spreadRadius: 2,
                     blurRadius: 12,
-                    offset: const Offset(0, 5), // changes position of shadow
+                    offset: const Offset(0, 5),
                   ),
                 ],
               ),
@@ -230,7 +233,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 26,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF333333),
+                        color: Colors.white, // White text
                       ),
                     ),
                   ),
@@ -273,7 +276,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         style: GoogleFonts.poppins(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: Colors.grey[800],
+          color: Colors.white, // White text
         ),
       ),
     );
@@ -284,25 +287,25 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
     return TextField(
       controller: controller,
       maxLines: maxLines,
-      style: GoogleFonts.lexend(color: Colors.black87),
+      style: GoogleFonts.lexend(color: Colors.white),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: GoogleFonts.lexend(color: Colors.grey[400]),
+        hintStyle: GoogleFonts.lexend(color: Colors.white38),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: const Color(0xFF0A032A), // Dark input
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: const BorderSide(color: Color(0xFF2C55A9)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: const BorderSide(color: Color(0xFF2C55A9)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.blue.shade600, width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFF02F1C3), width: 1.5),
         ),
       ),
     );
@@ -345,32 +348,32 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       isExpanded: true,
       initialValue: value,
       hint: Text(hint,
-          style: GoogleFonts.lexend(color: Colors.grey[400]),
+          style: GoogleFonts.lexend(color: Colors.white38),
           overflow: TextOverflow.ellipsis),
       items: items.map((String item) {
         return DropdownMenuItem<String>(
           value: item,
           child: Text(item,
-              style: GoogleFonts.lexend(fontSize: 14),
+              style: GoogleFonts.lexend(fontSize: 14, color: Colors.white),
               overflow: TextOverflow.ellipsis),
         );
       }).toList(),
       onChanged: onChanged,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: const Color(0xFF0A032A), // Dark dropdown
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: const BorderSide(color: Color(0xFF2C55A9)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: const BorderSide(color: Color(0xFF2C55A9)),
         ),
       ),
-      dropdownColor: Colors.white,
+      dropdownColor: const Color(0xFF19173A), // Dark dropdown menu
     );
   }
 
@@ -387,18 +390,18 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
           hintText: 'Select document type',
-          hintStyle: GoogleFonts.lexend(color: Colors.grey[400]),
+          hintStyle: GoogleFonts.lexend(color: Colors.white38),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: const Color(0xFF0A032A), // Dark background
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey.shade300),
+            borderSide: const BorderSide(color: Color(0xFF2C55A9)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey.shade300),
+            borderSide: const BorderSide(color: Color(0xFF2C55A9)),
           ),
         ),
       ),
@@ -418,11 +421,13 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         itemBuilder: (context, item, isSelected) {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            color:
+                isSelected ? const Color(0xFF2C55A9) : const Color(0xFF19173A),
             child: Text(
               item,
               style: GoogleFonts.lexend(
                 fontSize: 14,
-                color: isSelected ? Colors.blue.shade600 : Colors.black87,
+                color: Colors.white,
               ),
             ),
           );

@@ -5,6 +5,8 @@ import 'package:myapp/screens/edit_profile_screen.dart';
 import 'package:myapp/screens/language_screen.dart';
 import 'package:myapp/generated/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/providers/ui_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -46,11 +48,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final photoUrl = _user?.photoURL;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
-        leading: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-        title: Text(l10n.profile, style: const TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false, // Remove back button
+        title: Text(l10n.profile, style: const TextStyle(color: Colors.white)),
+        backgroundColor: Colors.transparent, // Transparent to match body
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF0A032A), // Match body background
+          ),
+        ),
         elevation: 0,
         centerTitle: true,
       ),
@@ -64,7 +71,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 CircleAvatar(
                   radius: 60,
-                  backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+                  backgroundImage:
+                      photoUrl != null ? NetworkImage(photoUrl) : null,
                   child: photoUrl == null
                       ? const Icon(Icons.person, size: 60, color: Colors.white)
                       : null,
@@ -94,14 +102,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
+                color: Colors.white, // White text for visibility
               ),
             ),
             const SizedBox(height: 8),
             Text(
               email,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: Colors.white70, // Light text for visibility
               ),
             ),
             const SizedBox(height: 30),
@@ -113,7 +122,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const EditProfileScreen()),
                 ).then((value) {
                   if (value == true) {
                     _updateUser();
@@ -132,7 +142,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LanguageScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const LanguageScreen()),
                 );
               },
             ),
@@ -148,7 +159,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Share.share('Check out Law Genie, your AI Legal Partner!');
               },
             ),
-             ProfileMenuOption(
+            // Navigation Bar Toggle
+            Consumer<UIProvider>(
+              builder: (context, uiProvider, child) {
+                return ProfileMenuOptionWithSwitch(
+                  title: 'Show Navigation Bar',
+                  icon: Icons.navigation_outlined,
+                  value: uiProvider.isNavBarVisible,
+                  onChanged: (value) {
+                    uiProvider.toggleNavBar(value);
+                  },
+                );
+              },
+            ),
+            ProfileMenuOption(
               title: l10n.logout,
               icon: Icons.logout,
               onTap: _signOut,
@@ -190,11 +214,11 @@ class ProfileMenuOption extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: const Color(0xFF19173A), // Dark theme
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.black.withOpacity(0.3),
                 spreadRadius: 1,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
@@ -206,7 +230,7 @@ class ProfileMenuOption extends StatelessWidget {
               Icon(
                 icon,
                 size: 24,
-                color: Colors.black87,
+                color: Colors.white, // White icon
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -215,6 +239,7 @@ class ProfileMenuOption extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: Colors.white, // White text for visibility
                   ),
                 ),
               ),
@@ -226,6 +251,68 @@ class ProfileMenuOption extends StatelessWidget {
                 ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class ProfileMenuOptionWithSwitch extends StatelessWidget {
+  const ProfileMenuOptionWithSwitch({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String title;
+  final IconData icon;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF19173A), // Dark theme
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 24,
+              color: Colors.white, // White icon
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white, // White text
+                ),
+              ),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: const Color(0xFF2C55A9),
+            ),
+          ],
         ),
       ),
     );

@@ -5,6 +5,8 @@ import 'package:myapp/features/home/home_page.dart';
 import 'package:myapp/screens/case_list_screen.dart';
 import 'package:myapp/screens/notifications_screen.dart';
 import 'package:myapp/screens/profile_screen.dart'; // Import the new profile screen
+import 'package:provider/provider.dart';
+import 'package:myapp/providers/ui_provider.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -26,47 +28,53 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color(0xFF1A0B2E),
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white.withAlpha(128),
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.home),
-            label: 'Home',
+    return Consumer<UIProvider>(
+      builder: (context, uiProvider, child) {
+        return Scaffold(
+          body: IndexedStack(
+            index: _currentIndex,
+            children: _pages,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.message),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.notification),
-            label: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.calendar),
-            label: 'Timeline',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.user),
-            label: 'Profile',
-          ),
-        ],
-      ),
+          bottomNavigationBar: uiProvider.isNavBarVisible
+              ? BottomNavigationBar(
+                  currentIndex: _currentIndex,
+                  onTap: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                  },
+                  type: BottomNavigationBarType.fixed,
+                  backgroundColor: const Color(0xFF1A0B2E),
+                  selectedItemColor: Colors.white,
+                  unselectedItemColor: Colors.white.withAlpha(128),
+                  showSelectedLabels: true,
+                  showUnselectedLabels: true,
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.home),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.message),
+                      label: 'Chat',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.notification),
+                      label: 'Notifications',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.calendar),
+                      label: 'Timeline',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Iconsax.user),
+                      label: 'Profile',
+                    ),
+                  ],
+                )
+              : null,
+        );
+      },
     );
   }
 }

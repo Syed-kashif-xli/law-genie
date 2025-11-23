@@ -14,10 +14,18 @@ class CaseListScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
-        title: const Text('My Cases'),
+        title: const Text('My Cases', style: TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: theme.primaryColor,
+        backgroundColor: Colors.transparent, // Transparent AppBar
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF0A032A), // Match body background
+          ),
+        ),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: caseProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -25,7 +33,7 @@ class CaseListScreen extends StatelessWidget {
               ? const Center(
                   child: Text(
                     'No cases yet. Tap the + button to add one!',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: TextStyle(fontSize: 18, color: Colors.white70),
                     textAlign: TextAlign.center,
                   ),
                 )
@@ -36,22 +44,24 @@ class CaseListScreen extends StatelessWidget {
                     final caseItem = caseProvider.cases[index];
                     return Card(
                       elevation: 4,
+                      color: const Color(0xFF19173A), // Dark card
                       margin: const EdgeInsets.symmetric(vertical: 8.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: theme.primaryColor,
+                          backgroundColor: const Color(0xFF2C55A9),
                           child: const Icon(Icons.folder, color: Colors.white),
                         ),
                         title: Text(
                           caseItem.title,
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                         subtitle: Text(
                           'Case #: ${caseItem.caseNumber}\nCreated on: ${DateFormat.yMMMMd().format(caseItem.creationDate)}',
-                          style: theme.textTheme.bodySmall,
+                          style: const TextStyle(color: Colors.white70),
                         ),
                         trailing: PopupMenuButton<String>(
                           onSelected: (value) {
@@ -61,7 +71,8 @@ class CaseListScreen extends StatelessWidget {
                               _showDeleteConfirmationDialog(context, caseItem);
                             }
                           },
-                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry<String>>[
                             const PopupMenuItem<String>(
                               value: 'rename',
                               child: Text('Rename'),
@@ -73,10 +84,11 @@ class CaseListScreen extends StatelessWidget {
                           ],
                         ),
                         onTap: () {
-                           Navigator.push(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CaseTimelinePage(caseId: caseItem.id!),
+                              builder: (context) =>
+                                  CaseTimelinePage(caseId: caseItem.id!),
                             ),
                           );
                         },
@@ -89,34 +101,41 @@ class CaseListScreen extends StatelessWidget {
           _showAddCaseDialog(context);
         },
         tooltip: 'Add Case',
-        backgroundColor: theme.primaryColor,
+        backgroundColor: const Color(0xFF2C55A9),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
 
-  Future<void> _showAddCaseDialog(BuildContext context, {Case? caseItem}) async {
+  Future<void> _showAddCaseDialog(BuildContext context,
+      {Case? caseItem}) async {
     await showDialog(
       context: context,
       builder: (context) => AddCaseDialog(caseItem: caseItem),
     );
   }
-  
-    Future<void> _showDeleteConfirmationDialog(BuildContext context, Case caseItem) async {
+
+  Future<void> _showDeleteConfirmationDialog(
+      BuildContext context, Case caseItem) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this case?'),
+          backgroundColor: const Color(0xFF19173A), // Dark dialog
+          title: const Text('Confirm Delete',
+              style: TextStyle(color: Colors.white)),
+          content: const Text('Are you sure you want to delete this case?',
+              style: TextStyle(color: Colors.white70)),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.white)),
             ),
             TextButton(
               onPressed: () {
-                Provider.of<CaseProvider>(context, listen: false).deleteCase(caseItem.id!);
+                Provider.of<CaseProvider>(context, listen: false)
+                    .deleteCase(caseItem.id!);
                 Navigator.of(context).pop();
               },
               child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -147,11 +166,16 @@ class AddCaseDialogState extends State<AddCaseDialog> {
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.caseItem?.title ?? '');
-    _descriptionController = TextEditingController(text: widget.caseItem?.description ?? '');
-    _caseNumberController = TextEditingController(text: widget.caseItem?.caseNumber ?? '');
-    _courtNameController = TextEditingController(text: widget.caseItem?.courtName ?? '');
-    _partiesController = TextEditingController(text: widget.caseItem?.parties.join(', ') ?? '');
+    _titleController =
+        TextEditingController(text: widget.caseItem?.title ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.caseItem?.description ?? '');
+    _caseNumberController =
+        TextEditingController(text: widget.caseItem?.caseNumber ?? '');
+    _courtNameController =
+        TextEditingController(text: widget.caseItem?.courtName ?? '');
+    _partiesController =
+        TextEditingController(text: widget.caseItem?.parties.join(', ') ?? '');
   }
 
   @override
@@ -159,8 +183,13 @@ class AddCaseDialogState extends State<AddCaseDialog> {
     final theme = Theme.of(context);
 
     return AlertDialog(
+      backgroundColor: const Color(0xFF19173A), // Dark dialog
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: Text(widget.caseItem == null ? 'Add a New Case' : 'Edit Case', style: const TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(
+        widget.caseItem == null ? 'Add a New Case' : 'Edit Case',
+        style:
+            const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      ),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -169,32 +198,43 @@ class AddCaseDialogState extends State<AddCaseDialog> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Case Title', border: OutlineInputBorder()),
-                validator: (value) => value!.isEmpty ? 'Please enter a title' : null,
+                decoration: const InputDecoration(
+                    labelText: 'Case Title', border: OutlineInputBorder()),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a title' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
-                validator: (value) => value!.isEmpty ? 'Please enter a description' : null,
+                decoration: const InputDecoration(
+                    labelText: 'Description', border: OutlineInputBorder()),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a description' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _caseNumberController,
-                decoration: const InputDecoration(labelText: 'Case Number', border: OutlineInputBorder()),
-                validator: (value) => value!.isEmpty ? 'Please enter a case number' : null,
+                decoration: const InputDecoration(
+                    labelText: 'Case Number', border: OutlineInputBorder()),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a case number' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _courtNameController,
-                decoration: const InputDecoration(labelText: 'Court Name', border: OutlineInputBorder()),
-                validator: (value) => value!.isEmpty ? 'Please enter a court name' : null,
+                decoration: const InputDecoration(
+                    labelText: 'Court Name', border: OutlineInputBorder()),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a court name' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _partiesController,
-                decoration: const InputDecoration(labelText: 'Parties (comma-separated)', border: OutlineInputBorder()),
-                validator: (value) => value!.isEmpty ? 'Please enter the parties' : null,
+                decoration: const InputDecoration(
+                    labelText: 'Parties (comma-separated)',
+                    border: OutlineInputBorder()),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter the parties' : null,
               ),
             ],
           ),
@@ -207,30 +247,40 @@ class AddCaseDialogState extends State<AddCaseDialog> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: theme.primaryColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            backgroundColor: const Color(0xFF2C55A9),
+            foregroundColor: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               if (widget.caseItem == null) {
-                  final newCase = Case(
+                final newCase = Case(
                   title: _titleController.text,
                   description: _descriptionController.text,
                   caseNumber: _caseNumberController.text,
                   courtName: _courtNameController.text,
-                  parties: _partiesController.text.split(',').map((p) => p.trim()).toList(),
+                  parties: _partiesController.text
+                      .split(',')
+                      .map((p) => p.trim())
+                      .toList(),
                   creationDate: DateTime.now(),
                 );
-                Provider.of<CaseProvider>(context, listen: false).addCase(newCase);
+                Provider.of<CaseProvider>(context, listen: false)
+                    .addCase(newCase);
               } else {
                 final updatedCase = widget.caseItem!.copyWith(
                   title: _titleController.text,
                   description: _descriptionController.text,
                   caseNumber: _caseNumberController.text,
                   courtName: _courtNameController.text,
-                  parties: _partiesController.text.split(',').map((p) => p.trim()).toList(),
+                  parties: _partiesController.text
+                      .split(',')
+                      .map((p) => p.trim())
+                      .toList(),
                 );
-                Provider.of<CaseProvider>(context, listen: false).updateCase(updatedCase);
+                Provider.of<CaseProvider>(context, listen: false)
+                    .updateCase(updatedCase);
               }
               Navigator.of(context).pop();
             }

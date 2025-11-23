@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -30,12 +31,15 @@ import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:myapp/generated/app_localizations.dart';
 import 'package:myapp/providers/locale_provider.dart';
+import 'package:myapp/providers/ui_provider.dart';
 
 import 'package:firebase_app_check/firebase_app_check.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Initialize App Check with Debug Provider
   await FirebaseAppCheck.instance.activate(
@@ -60,6 +64,7 @@ Future<void> main() async {
         Provider(create: (context) => TtsService()),
         ChangeNotifierProvider(
             create: (context) => SpeechToTextService()..initialize()),
+        ChangeNotifierProvider(create: (context) => UIProvider()),
       ],
       child: MyApp(currentUser: FirebaseAuth.instance.currentUser),
     ),

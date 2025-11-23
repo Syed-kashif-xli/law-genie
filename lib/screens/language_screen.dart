@@ -20,14 +20,14 @@ class _LanguageScreenState extends State<LanguageScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(l10n.language, style: const TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: Text(l10n.language, style: const TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF2C55A9), // Match app primary color
         elevation: 0,
         centerTitle: true,
       ),
@@ -41,7 +41,8 @@ class _LanguageScreenState extends State<LanguageScreen> {
     );
   }
 
-  Widget _buildLanguageOption(BuildContext context, String languageCode, String languageName) {
+  Widget _buildLanguageOption(
+      BuildContext context, String languageCode, String languageName) {
     final provider = Provider.of<LocaleProvider>(context);
     final isSelected = provider.locale?.languageCode == languageCode;
 
@@ -52,7 +53,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: const Color(0xFF19173A), // Dark theme
             borderRadius: BorderRadius.circular(15),
           ),
           child: Row(
@@ -63,6 +64,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: Colors.white, // White text
                   ),
                 ),
               ),

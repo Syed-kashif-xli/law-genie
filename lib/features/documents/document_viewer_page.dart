@@ -193,19 +193,19 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: const Color(0xFF0A032A), // Dark background
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF2C55A9), // Match app primary color
         elevation: 1,
-        shadowColor: Colors.grey.withOpacity(0.2),
+        shadowColor: Colors.black.withOpacity(0.3),
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left, color: Color(0xFF333333)),
+          icon: const Icon(Iconsax.arrow_left, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Generated Document',
           style: GoogleFonts.merriweather(
-            color: const Color(0xFF333333),
+            color: Colors.white,
             fontWeight: FontWeight.w700,
             fontSize: 20,
           ),
@@ -223,13 +223,12 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
             )
           else ...[
             IconButton(
-              icon: const Icon(Iconsax.document_download,
-                  color: Color(0xFF333333)),
+              icon: const Icon(Iconsax.document_download, color: Colors.white),
               onPressed: _downloadPdf,
               tooltip: 'Download PDF',
             ),
             IconButton(
-              icon: const Icon(Iconsax.share, color: Color(0xFF333333)),
+              icon: const Icon(Iconsax.share, color: Colors.white),
               onPressed: _sharePdf,
               tooltip: 'Share PDF',
             ),
@@ -241,9 +240,9 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
         child: Container(
           padding: const EdgeInsets.all(24.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFF19173A), // Dark card background
             borderRadius: BorderRadius.circular(12.0),
-            border: Border.all(color: Colors.grey.shade300, width: 1),
+            border: Border.all(color: const Color(0xFF2C55A9), width: 1),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +280,7 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
                       'Document Generator',
                       style: GoogleFonts.poppins(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: Colors.white70, // Light text for dark background
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -295,7 +294,7 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
                 widget.documentContent,
                 style: GoogleFonts.poppins(
                   fontSize: 14,
-                  color: const Color(0xFF333333),
+                  color: Colors.white, // White text for dark background
                   height: 1.6,
                 ),
               ),
