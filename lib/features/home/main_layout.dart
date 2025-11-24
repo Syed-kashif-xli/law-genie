@@ -3,7 +3,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/home/home_page.dart';
 import 'package:myapp/screens/case_list_screen.dart';
-import 'package:myapp/screens/notifications_screen.dart';
+
 import 'package:myapp/screens/profile_screen.dart'; // Import the new profile screen
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/ui_provider.dart';
@@ -21,7 +21,6 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _pages = [
     const HomePage(),
     const AIChatPage(),
-    const NotificationsScreen(),
     const CaseListScreen(),
     const ProfileScreen(), // Use the new ProfileScreen
   ];
@@ -57,10 +56,6 @@ class _MainLayoutState extends State<MainLayout> {
                     BottomNavigationBarItem(
                       icon: Icon(Iconsax.message),
                       label: 'Chat',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Iconsax.notification),
-                      label: 'Notifications',
                     ),
                     BottomNavigationBarItem(
                       icon: Icon(Iconsax.calendar),

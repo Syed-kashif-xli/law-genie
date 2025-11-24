@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 
 part 'chat_model.g.dart';
@@ -18,6 +19,24 @@ class ChatSession extends HiveObject {
     required this.timestamp,
     required this.messages,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'sessionId': sessionId,
+      'timestamp': Timestamp.fromDate(timestamp),
+      'messages': messages.map((m) => m.toMap()).toList(),
+    };
+  }
+
+  factory ChatSession.fromMap(Map<String, dynamic> map) {
+    return ChatSession(
+      sessionId: map['sessionId'] ?? '',
+      timestamp: (map['timestamp'] as Timestamp).toDate(),
+      messages: (map['messages'] as List<dynamic>)
+          .map((m) => ChatMessage.fromMap(m))
+          .toList(),
+    );
+  }
 }
 
 @HiveType(typeId: 1)
@@ -32,4 +51,18 @@ class ChatMessage extends HiveObject {
     required this.userMessage,
     required this.botResponse,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'userMessage': userMessage,
+      'botResponse': botResponse,
+    };
+  }
+
+  factory ChatMessage.fromMap(Map<String, dynamic> map) {
+    return ChatMessage(
+      userMessage: map['userMessage'] ?? '',
+      botResponse: map['botResponse'] ?? '',
+    );
+  }
 }

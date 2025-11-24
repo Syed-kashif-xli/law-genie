@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -161,9 +162,11 @@ class MyApp extends StatelessWidget {
           supportedLocales: AppLocalizations.supportedLocales,
           home: currentUser == null ? const SplashScreen() : const MainLayout(),
           debugShowCheckedModeBanner: false,
+          navigatorObservers: [
+            FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+          ],
           routes: {
             '/home': (context) => const HomePage(),
-            '/aiChat': (context) => const AIChatPage(),
             '/generateDoc': (context) => const DocumentGeneratorPage(),
             '/caseList': (context) => const CaseListScreen(),
             '/chatHistory': (context) => const ChatHistoryScreen(),

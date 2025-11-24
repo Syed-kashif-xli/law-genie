@@ -6,11 +6,33 @@ class GeminiService {
   ChatSession? _chatSession;
 
   GeminiService()
-      : _model =
-            FirebaseAI.googleAI().generativeModel(model: 'gemini-2.5-flash');
+      : _model = FirebaseAI.googleAI().generativeModel(
+          model: 'gemini-2.5-flash',
+          systemInstruction: Content.system(
+            'You are a helpful, friendly, and intelligent AI assistant. '
+            'You are talking to the user via voice. '
+            'Keep your responses concise, natural, and conversational. '
+            'Avoid long paragraphs, bullet points, or robotic phrasing like "I am an AI". '
+            'Act like a real human having a chat. '
+            'If the user asks for legal advice, give a brief summary and suggest checking the detailed documents, but keep the tone light and helpful.',
+          ),
+        );
 
   void startChat() {
     _chatSession = _model.startChat();
+  }
+
+  Future<Stream<GenerateContentResponse>> sendMessageStream(
+      String message) async {
+    try {
+      if (_chatSession == null) {
+        startChat();
+      }
+      return _chatSession!.sendMessageStream(Content.text(message));
+    } catch (e) {
+      print('Error generating stream: $e');
+      rethrow;
+    }
   }
 
   Future<String> sendMessage(String message) async {

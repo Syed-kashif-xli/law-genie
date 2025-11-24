@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:myapp/models/timeline_event.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -9,13 +9,17 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
+      backgroundColor: const Color(0xFF0A032A),
       appBar: AppBar(
-        title: const Text('Upcoming Reminders'),
+        title: Text(
+          'Upcoming Reminders',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
         centerTitle: true,
-        backgroundColor: theme.primaryColor,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Consumer<TimelineProvider>(
         builder: (context, timelineProvider, child) {
@@ -24,20 +28,23 @@ class NotificationsScreen extends StatelessWidget {
           }
 
           final upcomingEvents = timelineProvider.events
-              .where((event) => event.reminderDate != null && event.reminderDate!.isAfter(DateTime.now()))
+              .where((event) =>
+                  event.reminderDate != null &&
+                  event.reminderDate!.isAfter(DateTime.now()))
               .toList();
 
           if (upcomingEvents.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 'No upcoming reminders.',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: GoogleFonts.poppins(fontSize: 18, color: Colors.white70),
               ),
             );
           }
 
           // Sort events by reminder date
-          upcomingEvents.sort((a, b) => a.reminderDate!.compareTo(b.reminderDate!));
+          upcomingEvents
+              .sort((a, b) => a.reminderDate!.compareTo(b.reminderDate!));
 
           return ListView.builder(
             padding: const EdgeInsets.all(16.0),
@@ -47,23 +54,29 @@ class NotificationsScreen extends StatelessWidget {
               return Card(
                 elevation: 4,
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
+                color: const Color(0xFF19173A),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: theme.primaryColor,
-                    child: const Icon(Icons.notifications, color: Colors.white),
+                    backgroundColor: const Color(0xFF02F1C3).withOpacity(0.2),
+                    child: const Icon(Icons.notifications,
+                        color: Color(0xFF02F1C3)),
                   ),
                   title: Text(
                     event.title,
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   subtitle: Text(
                     'Reminder on ${DateFormat.yMMMMd().add_jm().format(event.reminderDate!)}',
-                    style: theme.textTheme.bodySmall,
+                    style: GoogleFonts.poppins(color: Colors.white70),
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing:
+                      const Icon(Icons.chevron_right, color: Colors.white54),
                   onTap: () {
                     // Navigate to the case timeline or show event details
                     Navigator.pushNamed(context, '/caseTimeline');

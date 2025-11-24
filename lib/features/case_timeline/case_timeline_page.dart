@@ -500,7 +500,7 @@ class AddEventDialogState extends State<AddEventDialog> {
         final docRef =
             await timelineProvider.addTimelineEvent(widget.caseId, newEvent);
 
-        if (finalReminderDate != null) {
+        if (finalReminderDate != null && docRef != null) {
           await _notificationService.scheduleNotification(
             id: docRef.id.hashCode,
             title: 'Case Reminder: ${newEvent.title}',

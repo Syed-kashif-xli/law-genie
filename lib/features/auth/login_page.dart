@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
@@ -8,6 +8,7 @@ import 'package:myapp/features/home/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:myapp/services/firestore_service.dart';
+import 'package:myapp/models/user_model.dart';
 import 'package:myapp/generated/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
@@ -61,13 +62,13 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (userCredential.user != null && mounted) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .set({
-          'email': userCredential.user!.email,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
+        final user = UserModel(
+          uid: userCredential.user!.uid,
+          email: userCredential.user!.email,
+          createdAt: DateTime.now(),
+          lastLoginAt: DateTime.now(),
+        );
+        await _firestoreService.createOrUpdateUser(user);
         _navigateToHome(userCredential.user!);
       }
     } on FirebaseAuthException catch (e) {
@@ -98,6 +99,12 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (userCredential.user != null && mounted) {
+        final user = UserModel(
+          uid: userCredential.user!.uid,
+          email: userCredential.user!.email,
+          lastLoginAt: DateTime.now(),
+        );
+        await _firestoreService.createOrUpdateUser(user);
         _navigateToHome(userCredential.user!);
       }
     } on FirebaseAuthException catch (e) {
@@ -133,15 +140,15 @@ class _LoginPageState extends State<LoginPage> {
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
         if (mounted) {
-          if (userCredential.additionalUserInfo?.isNewUser ?? false) {
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(userCredential.user!.uid)
-                .set({
-              'phoneNumber': userCredential.user!.phoneNumber,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
-          }
+          final user = UserModel(
+            uid: userCredential.user!.uid,
+            phoneNumber: userCredential.user!.phoneNumber,
+            createdAt: userCredential.additionalUserInfo?.isNewUser ?? false
+                ? DateTime.now()
+                : null,
+            lastLoginAt: DateTime.now(),
+          );
+          await _firestoreService.createOrUpdateUser(user);
           setState(() => _isLoading = false);
           _navigateToHome(userCredential.user!);
         }
@@ -193,15 +200,15 @@ class _LoginPageState extends State<LoginPage> {
           await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (userCredential.user != null && mounted) {
-        if (userCredential.additionalUserInfo?.isNewUser ?? false) {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(userCredential.user!.uid)
-              .set({
-            'phoneNumber': userCredential.user!.phoneNumber,
-            'createdAt': FieldValue.serverTimestamp(),
-          });
-        }
+        final user = UserModel(
+          uid: userCredential.user!.uid,
+          phoneNumber: userCredential.user!.phoneNumber,
+          createdAt: userCredential.additionalUserInfo?.isNewUser ?? false
+              ? DateTime.now()
+              : null,
+          lastLoginAt: DateTime.now(),
+        );
+        await _firestoreService.createOrUpdateUser(user);
         _navigateToHome(userCredential.user!);
       }
     } catch (e) {
@@ -233,17 +240,17 @@ class _LoginPageState extends State<LoginPage> {
             await FirebaseAuth.instance.signInWithCredential(credential);
 
         if (userCredential.user != null && mounted) {
-          if (userCredential.additionalUserInfo?.isNewUser ?? false) {
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(userCredential.user!.uid)
-                .set({
-              'email': userCredential.user!.email,
-              'displayName': userCredential.user!.displayName,
-              'photoURL': userCredential.user!.photoURL,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
-          }
+          final user = UserModel(
+            uid: userCredential.user!.uid,
+            email: userCredential.user!.email,
+            displayName: userCredential.user!.displayName,
+            photoUrl: userCredential.user!.photoURL,
+            createdAt: userCredential.additionalUserInfo?.isNewUser ?? false
+                ? DateTime.now()
+                : null,
+            lastLoginAt: DateTime.now(),
+          );
+          await _firestoreService.createOrUpdateUser(user);
           _navigateToHome(userCredential.user!);
         }
       }
@@ -251,8 +258,8 @@ class _LoginPageState extends State<LoginPage> {
       // ignore: avoid_print
       print("Google Sign-In Error: $e");
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(l10n.googleSignInFailed)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.googleSignInFailed)));
     }
   }
 
@@ -351,7 +358,8 @@ class _LoginPageState extends State<LoginPage> {
                                     _verificationId = null;
                                   }),
                                   child: Text(l10n.changeNumber,
-                                      style: const TextStyle(color: Colors.white70)),
+                                      style: const TextStyle(
+                                          color: Colors.white70)),
                                 ),
                               )
                             ] else ...[
@@ -362,7 +370,8 @@ class _LoginPageState extends State<LoginPage> {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(l10n.forgotPassword,
-                                    style: const TextStyle(color: Colors.white70)),
+                                    style:
+                                        const TextStyle(color: Colors.white70)),
                               ),
                           ],
                         ),

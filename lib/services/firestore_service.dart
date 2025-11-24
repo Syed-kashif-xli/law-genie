@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myapp/models/timeline_event.dart';
+import 'package:myapp/models/user_model.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -27,11 +28,40 @@ class FirestoreService {
     return _db.collection('timeline').doc(id).delete();
   }
 
+  // Create or Update User
+  Future<void> createOrUpdateUser(UserModel user) async {
+    final userRef = _db.collection('users').doc(user.uid);
+    final doc = await userRef.get();
+
+    if (doc.exists) {
+      // Update last login
+      await userRef.update({
+        'lastLoginAt': FieldValue.serverTimestamp(),
+        // Update other fields if they are not null in the new object
+        if (user.displayName != null) 'displayName': user.displayName,
+        if (user.photoUrl != null) 'photoUrl': user.photoUrl,
+        if (user.phoneNumber != null) 'phoneNumber': user.phoneNumber,
+        if (user.email != null) 'email': user.email,
+      });
+    } else {
+      // Create new user
+      await userRef.set(user.toMap());
+    }
+  }
+
   // Save terms and conditions acceptance
   Future<void> saveTermsAcceptance(String userId) {
-    return _db.collection('user_acceptance').add({
-      'acceptedAt': FieldValue.serverTimestamp(),
-      'userId': userId,
+    return _db.collection('users').doc(userId).update({
+      'termsAcceptedAt': FieldValue.serverTimestamp(),
     });
+  }
+
+  // Get User Data
+  Future<UserModel?> getUser(String uid) async {
+    final doc = await _db.collection('users').doc(uid).get();
+    if (doc.exists) {
+      return UserModel.fromMap(doc.data()!, doc.id);
+    }
+    return null;
   }
 }

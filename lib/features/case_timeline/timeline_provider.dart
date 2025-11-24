@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myapp/models/timeline_event.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 class TimelineProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _collectionPath = 'cases'; // Now targeting the 'cases' collection
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String? get _userId => _auth.currentUser?.uid;
 
   List<TimelineEvent> _events = [];
   bool _isLoading = true;
@@ -22,6 +26,7 @@ class TimelineProvider with ChangeNotifier {
 
   // Fetch timeline events for a specific case from Firestore
   Future<void> fetchTimelineEvents(String caseId) async {
+    if (_userId == null) return;
     _setLoading(true);
 
     // Cancel any existing listener to avoid multiple streams
@@ -29,7 +34,9 @@ class TimelineProvider with ChangeNotifier {
 
     try {
       _timelineSubscription = _firestore
-          .collection(_collectionPath)
+          .collection('users')
+          .doc(_userId)
+          .collection('cases')
           .doc(caseId)
           .collection('timeline') // Access the subcollection
           .orderBy('date', descending: false)
@@ -48,10 +55,14 @@ class TimelineProvider with ChangeNotifier {
   }
 
   // Add a new timeline event to a specific case
-  Future<DocumentReference> addTimelineEvent(String caseId, TimelineEvent event) async {
+  Future<DocumentReference?> addTimelineEvent(
+      String caseId, TimelineEvent event) async {
+    if (_userId == null) return null;
     try {
       return await _firestore
-          .collection(_collectionPath)
+          .collection('users')
+          .doc(_userId)
+          .collection('cases')
           .doc(caseId)
           .collection('timeline')
           .add(event.toMap());
@@ -62,10 +73,12 @@ class TimelineProvider with ChangeNotifier {
 
   // Update an existing timeline event in a specific case
   Future<void> updateTimelineEvent(String caseId, TimelineEvent event) async {
-    if (event.id == null) return;
+    if (_userId == null || event.id == null) return;
     try {
       await _firestore
-          .collection(_collectionPath)
+          .collection('users')
+          .doc(_userId)
+          .collection('cases')
           .doc(caseId)
           .collection('timeline')
           .doc(event.id)
@@ -77,9 +90,12 @@ class TimelineProvider with ChangeNotifier {
 
   // Delete a timeline event from a specific case
   Future<void> deleteTimelineEvent(String caseId, String eventId) async {
+    if (_userId == null) return;
     try {
       await _firestore
-          .collection(_collectionPath)
+          .collection('users')
+          .doc(_userId)
+          .collection('cases')
           .doc(caseId)
           .collection('timeline')
           .doc(eventId)

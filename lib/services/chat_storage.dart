@@ -1,29 +1,54 @@
-import 'package:hive/hive.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/models/chat_model.dart';
 
 class ChatStorageService {
-  static const String _boxName = 'chat_sessions';
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<Box<ChatSession>> get _box async =>
-      await Hive.openBox<ChatSession>(_boxName);
+  String? get _userId => _auth.currentUser?.uid;
 
   Future<void> addChatSession(ChatSession session) async {
-    final box = await _box;
-    await box.put(session.sessionId, session);
+    if (_userId == null) return;
+    await _db
+        .collection('users')
+        .doc(_userId)
+        .collection('chats')
+        .doc(session.sessionId)
+        .set(session.toMap()); // Assuming ChatSession has toMap()
   }
 
   Future<List<ChatSession>> getChatSessions() async {
-    final box = await _box;
-    return box.values.toList();
+    if (_userId == null) return [];
+    final snapshot = await _db
+        .collection('users')
+        .doc(_userId)
+        .collection('chats')
+        .orderBy('timestamp', descending: true) // Assuming timestamp exists
+        .get();
+
+    return snapshot.docs
+        .map((doc) => ChatSession.fromMap(doc.data())) // Assuming fromMap()
+        .toList();
   }
 
   Future<void> deleteChatSession(String sessionId) async {
-    final box = await _box;
-    await box.delete(sessionId);
+    if (_userId == null) return;
+    await _db
+        .collection('users')
+        .doc(_userId)
+        .collection('chats')
+        .doc(sessionId)
+        .delete();
   }
 
   Future<void> clearAllChatSessions() async {
-    final box = await _box;
-    await box.clear();
+    if (_userId == null) return;
+    final snapshot =
+        await _db.collection('users').doc(_userId).collection('chats').get();
+
+    for (var doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
   }
 }

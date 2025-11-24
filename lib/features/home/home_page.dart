@@ -14,9 +14,11 @@ import '../../providers/chat_provider.dart';
 import '../../providers/case_provider.dart';
 import '../../screens/case_list_screen.dart';
 import '../../features/home/pages/all_news_page.dart';
+import '../../screens/notifications_screen.dart';
 import '../../features/translator/translator_page.dart';
 import '../../features/case_finder/case_finder_page.dart';
 import '../../features/bare_acts/bare_acts_page.dart';
+import '../../features/risk_analysis/risk_analysis_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -55,9 +57,19 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         flexibleSpace: const _WelcomeMessage(),
-        actions: const [
-          Icon(Iconsax.notification, size: 32, color: Colors.white),
-          SizedBox(width: 16),
+        actions: [
+          IconButton(
+            icon:
+                const Icon(Iconsax.notification, size: 32, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NotificationsScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 16),
         ],
       ),
       drawer: const AppDrawer(),
@@ -359,6 +371,18 @@ class _QuickActions extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const BareActsPage()));
+              },
+            ),
+            FeatureCard(
+              title: 'Risk Analysis',
+              subtitle: 'Win Chance & Cost',
+              icon: Iconsax.chart_square,
+              color: const Color(0xFFFFD700),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RiskAnalysisPage()));
               },
             ),
           ],

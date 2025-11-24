@@ -29,20 +29,35 @@ class TtsService {
     try {
       final voices = await _flutterTts.getVoices;
       if (voices != null) {
-        // Look for voices that might be higher quality
-        // This is heuristic; different devices have different voice names
+        // Prioritize voices that sound more human
+        // "Network" usually implies online/high-quality on Android
+        // "Enhanced" or "Siri" usually implies high-quality on iOS
         final preferredVoice = voices.firstWhere(
-            (v) =>
-                v['name'].toString().contains('Network') ||
-                v['name'].toString().contains('Enhanced') ||
-                v['name'].toString().contains('Siri'),
-            orElse: () => null);
+          (v) {
+            final name = v['name'].toString().toLowerCase();
+            return name.contains('network') ||
+                name.contains('enhanced') ||
+                name.contains('premium') ||
+                name.contains('siri');
+          },
+          orElse: () => null,
+        );
 
         if (preferredVoice != null) {
           await _flutterTts.setVoice({
             "name": preferredVoice["name"],
             "locale": preferredVoice["locale"]
           });
+        } else {
+          // Fallback: try to find any en-US voice if the default isn't great
+          final usVoice = voices.firstWhere(
+            (v) => v['locale'].toString().contains('en-US'),
+            orElse: () => null,
+          );
+          if (usVoice != null) {
+            await _flutterTts.setVoice(
+                {"name": usVoice["name"], "locale": usVoice["locale"]});
+          }
         }
       }
     } catch (e) {
