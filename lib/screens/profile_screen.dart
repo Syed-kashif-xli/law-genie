@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:myapp/features/auth/auth_wrapper.dart';
 import 'package:myapp/screens/edit_profile_screen.dart';
 import 'package:myapp/screens/language_screen.dart';
@@ -36,6 +37,103 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const AuthWrapper()),
       (Route<dynamic> route) => false,
+    );
+  }
+
+  void _showHelpCenter() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF19173A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.support_agent, color: Color(0xFF02F1C3), size: 28),
+            SizedBox(width: 12),
+            Text(
+              'Help Center',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Need help? Contact us at:',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0A032A),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFF02F1C3).withOpacity(0.3),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.email, color: Color(0xFF02F1C3), size: 20),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SelectableText(
+                        'lawgenieoffical@gmail.com',
+                        style: TextStyle(
+                          color: Color(0xFF02F1C3),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.copy,
+                        color: Color(0xFF02F1C3), size: 18),
+                    onPressed: () {
+                      Clipboard.setData(const ClipboardData(
+                          text: 'lawgenieoffical@gmail.com'));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Email copied to clipboard!'),
+                          backgroundColor: Color(0xFF02F1C3),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'We\'ll get back to you as soon as possible!',
+              style: TextStyle(
+                color: Colors.white60,
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: Color(0xFF02F1C3)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -181,7 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileMenuOption(
               title: l10n.helpCenter,
               icon: Icons.help_outline,
-              onTap: () {},
+              onTap: _showHelpCenter,
               showArrow: false,
             ),
           ],
