@@ -115,7 +115,12 @@ class _ScannerPageState extends State<ScannerPage> {
 
         pdf.addPage(
           pw.Page(
-            pageFormat: PdfPageFormat.a4,
+            pageFormat: PdfPageFormat.a4.copyWith(
+              marginBottom: 0,
+              marginLeft: 0,
+              marginRight: 0,
+              marginTop: 0,
+            ),
             build: (pw.Context context) {
               return pw.Center(
                 child: pw.Image(pdfImage, fit: pw.BoxFit.contain),

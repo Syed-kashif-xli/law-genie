@@ -4,18 +4,15 @@ import 'package:iconsax/iconsax.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:provider/provider.dart';
 
-import '../../features/ai_voice/ai_voice_page.dart';
-import '../../features/chat/chat_page.dart';
 import '../../features/home/app_drawer.dart';
-import '../../features/home/widgets/feature_card.dart';
 import '../../features/home/widgets/news_card.dart';
-import '../../features/home/widgets/feature_usage_section.dart';
+import '../../features/home/widgets/feature_card.dart';
 import '../../features/home/providers/news_provider.dart';
-import '../../providers/chat_provider.dart';
-import '../../providers/case_provider.dart';
-import '../../screens/case_list_screen.dart';
 import '../../features/home/pages/all_news_page.dart';
 import '../../screens/notifications_screen.dart';
+import '../../features/ai_voice/ai_voice_page.dart';
+import '../../features/chat/chat_page.dart';
+import '../../screens/case_list_screen.dart';
 import '../../features/translator/translator_page.dart';
 import '../../features/case_finder/case_finder_page.dart';
 import '../../features/bare_acts/bare_acts_page.dart';
@@ -84,11 +81,9 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
-                const _StatsSection(),
+                const SizedBox(height: 24),
                 const SizedBox(height: 24),
                 _QuickActions(),
-                const SizedBox(height: 24),
-                const FeatureUsageSection(),
                 const SizedBox(height: 24),
                 const _LegalNewsFeed(),
               ],
@@ -135,131 +130,6 @@ class _WelcomeMessage extends StatelessWidget {
   }
 }
 
-class _StatsSection extends StatelessWidget {
-  const _StatsSection();
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer2<ChatProvider, CaseProvider>(
-      builder: (context, chatProvider, caseProvider, child) {
-        // Calculate total messages across all chat sessions
-        int totalMessages = 0;
-        for (var session in chatProvider.chatSessions) {
-          totalMessages += session.messages.length;
-        }
-
-        final casesCount = caseProvider.cases.length;
-
-        return Column(
-          children: [
-            _StatCard(
-              title: 'AI Queries',
-              value: totalMessages.toString(),
-              change: '+${chatProvider.chatSessions.length}',
-              icon: Iconsax.cpu_charge,
-              iconColor: const Color(0xFF02F1C3),
-            ),
-            const SizedBox(height: 16),
-            _StatCard(
-              title: 'Documents',
-              value: '0', // Placeholder - will implement later
-              change: '+0',
-              icon: Iconsax.document_favorite,
-              iconColor: const Color(0xFF02F1C3),
-            ),
-            const SizedBox(height: 16),
-            _StatCard(
-              title: 'Cases Tracked',
-              value: casesCount.toString(),
-              change: '+$casesCount',
-              icon: Iconsax.briefcase,
-              iconColor: const Color(0xFF02F1C3),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final String change;
-  final IconData icon;
-  final Color iconColor;
-
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.change,
-    required this.icon,
-    required this.iconColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF19173A),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.white70,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(
-                      Iconsax.arrow_up_1,
-                      color: Colors.green,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      change,
-                      style: const TextStyle(color: Colors.green),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: iconColor.withAlpha(25),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: iconColor, size: 32),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -267,7 +137,7 @@ class _QuickActions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quick Actions',
+          'AI Feature',
           style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.bold,
