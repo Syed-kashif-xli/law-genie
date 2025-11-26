@@ -91,7 +91,8 @@ class CaseFinderService {
         final href = titleElement.attributes['href'] ?? '';
         final url = href.startsWith('http') ? href : '$_indianKanoonUrl$href';
 
-        final snippetElement = resultDiv.querySelector('.snippet');
+        // Updated selector from .snippet to .headline
+        final snippetElement = resultDiv.querySelector('.headline');
         final summary = snippetElement?.text.trim() ?? '';
 
         // Extract Date and Court from the text usually found at bottom of result
@@ -104,24 +105,21 @@ class CaseFinderService {
 
         if (docSource.isNotEmpty) {
           // Parse "Court Name on Date"
-          final parts = docSource.split(' on ');
-          if (parts.length >= 2) {
-            court = parts[0].trim();
-            try {
-              // Try parsing date: "24 April, 1973"
-              final dateStr = parts[1].trim();
-              date = DateFormat('d MMMM, yyyy').parse(dateStr);
-            } catch (e) {
-              // Fallback date parsing
-            }
+          // Note: Sometimes docsource only has court name, date might be in title
+          court = docSource;
+        }
+
+        // Try to find date in title first (e.g. "... on 2 March, 2007")
+        try {
+          if (title.contains(' on ')) {
+            final datePart = title.split(' on ').last.trim();
+            date = DateFormat('d MMMM, yyyy').parse(datePart);
           } else {
-            court = docSource;
+            // Fallback to docsource if date not in title
+            // This part is tricky as docsource format varies
           }
-        } else {
-          // Fallback court detection from title
-          if (title.toLowerCase().contains('vs')) {
-            // Likely a case
-          }
+        } catch (e) {
+          // Date parsing failed, keep default
         }
 
         results.add(LegalCase(

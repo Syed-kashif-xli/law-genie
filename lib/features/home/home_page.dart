@@ -9,6 +9,7 @@ import '../../features/chat/chat_page.dart';
 import '../../features/home/app_drawer.dart';
 import '../../features/home/widgets/feature_card.dart';
 import '../../features/home/widgets/news_card.dart';
+import '../../features/home/widgets/feature_usage_section.dart';
 import '../../features/home/providers/news_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../providers/case_provider.dart';
@@ -87,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 24),
                 _QuickActions(),
                 const SizedBox(height: 24),
-                const _AiUsage(),
+                const FeatureUsageSection(),
                 const SizedBox(height: 24),
                 const _LegalNewsFeed(),
               ],
@@ -386,108 +387,6 @@ class _QuickActions extends StatelessWidget {
               },
             ),
           ],
-        ),
-      ],
-    );
-  }
-}
-
-class _AiUsage extends StatelessWidget {
-  const _AiUsage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer2<ChatProvider, CaseProvider>(
-      builder: (context, chatProvider, caseProvider, child) {
-        // Calculate total messages across all chat sessions
-        int totalMessages = 0;
-        for (var session in chatProvider.chatSessions) {
-          totalMessages += session.messages.length;
-        }
-
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF19173A), Color(0xFF0A032A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'AI Usage This Month',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _UsageBar(title: 'Queries', value: totalMessages, total: 500),
-              const SizedBox(height: 16),
-              const _UsageBar(title: 'Documents', value: 0, total: 100),
-              const SizedBox(height: 24),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF02F1C3),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 48, vertical: 12),
-                  ),
-                  child: const Text(
-                    'Upgrade Plan',
-                    style: TextStyle(
-                      color: Color(0xFF0A032A),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _UsageBar extends StatelessWidget {
-  final String title;
-  final int value;
-  final int total;
-
-  const _UsageBar({
-    required this.title,
-    required this.value,
-    required this.total,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(title, style: const TextStyle(color: Colors.white70)),
-            Text('$value/$total', style: const TextStyle(color: Colors.white)),
-          ],
-        ),
-        const SizedBox(height: 8),
-        LinearProgressIndicator(
-          value: value / total,
-          backgroundColor: Colors.white.withAlpha(77),
-          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF02F1C3)),
-          borderRadius: BorderRadius.circular(10),
         ),
       ],
     );
