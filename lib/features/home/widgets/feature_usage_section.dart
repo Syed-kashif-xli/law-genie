@@ -13,6 +13,8 @@ import '../providers/usage_provider.dart';
 import 'package:myapp/features/translator/translator_page.dart';
 import 'package:myapp/features/bare_acts/bare_acts_page.dart';
 
+import 'package:myapp/features/certified_copy/certified_copy_state_selection_page.dart';
+
 class FeatureUsageSection extends StatelessWidget {
   const FeatureUsageSection({super.key});
 
@@ -210,6 +212,21 @@ class FeatureUsageSection extends StatelessWidget {
                   color: const Color(0xFF607D8B),
                   onTap: () {
                     Navigator.pushNamed(context, '/chatHistory');
+                  },
+                ),
+                FeatureUsageCard(
+                  title: 'Certified Copy',
+                  count: usageProvider.certifiedCopyUsage,
+                  limit: usageProvider.certifiedCopyLimit,
+                  icon: Iconsax.document_copy,
+                  color: const Color(0xFFE91E63),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const CertifiedCopyStateSelectionPage()),
+                    );
                   },
                 ),
               ],

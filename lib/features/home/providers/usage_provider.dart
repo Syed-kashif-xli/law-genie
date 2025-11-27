@@ -157,4 +157,18 @@ class UsageProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // Certified Copy
+  int _certifiedCopyUsage = 0;
+  int _certifiedCopyLimit = 10;
+
+  int get certifiedCopyUsage => _certifiedCopyUsage;
+  int get certifiedCopyLimit => _certifiedCopyLimit;
+
+  void incrementCertifiedCopy() {
+    if (_certifiedCopyUsage < _certifiedCopyLimit) {
+      _certifiedCopyUsage++;
+      notifyListeners();
+    }
+  }
 }
