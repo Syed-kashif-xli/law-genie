@@ -6,17 +6,10 @@ import 'package:provider/provider.dart';
 
 import '../../features/home/app_drawer.dart';
 import '../../features/home/widgets/news_card.dart';
-import '../../features/home/widgets/feature_card.dart';
+import '../../features/home/widgets/feature_usage_section.dart';
 import '../../features/home/providers/news_provider.dart';
 import '../../features/home/pages/all_news_page.dart';
 import '../../screens/notifications_screen.dart';
-import '../../features/ai_voice/ai_voice_page.dart';
-import '../../features/chat/chat_page.dart';
-import '../../screens/case_list_screen.dart';
-import '../../features/translator/translator_page.dart';
-import '../../features/case_finder/case_finder_page.dart';
-import '../../features/bare_acts/bare_acts_page.dart';
-import '../../features/risk_analysis/risk_analysis_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -81,9 +74,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
-                const SizedBox(height: 24),
-                const SizedBox(height: 24),
-                _QuickActions(),
+                const FeatureUsageSection(),
                 const SizedBox(height: 24),
                 const _LegalNewsFeed(),
               ],
@@ -124,139 +115,6 @@ class _WelcomeMessage extends StatelessWidget {
               totalRepeatCount: 1,
             ),
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class _QuickActions extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'AI Feature',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 16),
-        GridView.count(
-          shrinkWrap: true,
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            FeatureCard(
-              title: 'AI Chat',
-              subtitle: 'Talk to Law Genie',
-              icon: Iconsax.messages_2,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AIChatPage()),
-                );
-              },
-            ),
-            FeatureCard(
-              title: 'Generate Doc',
-              subtitle: 'Create documents',
-              icon: Iconsax.document_upload,
-              onTap: () {
-                Navigator.pushNamed(context, '/generateDoc');
-              },
-            ),
-            FeatureCard(
-              title: 'Chat History',
-              subtitle: 'View past chats',
-              icon: Iconsax.archive_book,
-              onTap: () {
-                Navigator.pushNamed(context, '/chatHistory');
-              },
-            ),
-            FeatureCard(
-              title: 'Case Timeline',
-              subtitle: 'Track cases',
-              icon: Iconsax.calendar_edit,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const CaseListScreen()),
-                );
-              },
-            ),
-            FeatureCard(
-              title: 'Court Order Reader',
-              subtitle: 'Summarize orders',
-              icon: Iconsax.document_text,
-              onTap: () {
-                Navigator.pushNamed(context, '/courtOrderReader');
-              },
-            ),
-            FeatureCard(
-              title: 'AI Voice',
-              subtitle: 'Read text aloud',
-              icon: Iconsax.microphone_2,
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AiVoicePage()));
-              },
-            ),
-            FeatureCard(
-              title: 'Translator',
-              subtitle: 'Text & Docs',
-              icon: Iconsax.translate,
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const TranslatorPage()));
-              },
-            ),
-            FeatureCard(
-              title: 'Case Finder',
-              subtitle: 'Legal Judgments',
-              icon: Iconsax.search_favorite,
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CaseFinderPage()));
-              },
-            ),
-            FeatureCard(
-              title: 'Bare Acts',
-              subtitle: 'PDFs of Acts',
-              icon: Iconsax.book_1,
-              color: const Color(0xFFFF5722),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BareActsPage()));
-              },
-            ),
-            FeatureCard(
-              title: 'Risk Analysis',
-              subtitle: 'Win Chance & Cost',
-              icon: Iconsax.chart_square,
-              color: const Color(0xFFFFD700),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RiskAnalysisPage()));
-              },
-            ),
-          ],
         ),
       ],
     );

@@ -33,6 +33,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:myapp/generated/app_localizations.dart';
 import 'package:myapp/providers/locale_provider.dart';
 import 'package:myapp/providers/ui_provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 
 import 'package:firebase_app_check/firebase_app_check.dart';
 
@@ -66,6 +67,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
             create: (context) => SpeechToTextService()..initialize()),
         ChangeNotifierProvider(create: (context) => UIProvider()),
+        ChangeNotifierProvider(create: (context) => UsageProvider()),
       ],
       child: MyApp(currentUser: FirebaseAuth.instance.currentUser),
     ),

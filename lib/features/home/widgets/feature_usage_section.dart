@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
-import 'package:myapp/providers/chat_provider.dart';
-import 'package:myapp/providers/case_provider.dart';
 import 'package:myapp/features/ai_voice/ai_voice_page.dart';
 
 import 'package:myapp/features/risk_analysis/risk_analysis_page.dart';
 import 'package:myapp/features/case_finder/case_finder_page.dart';
 import 'package:myapp/screens/case_list_screen.dart';
 import 'package:myapp/features/chat/chat_page.dart';
+import 'package:myapp/features/scanner/scanner_page.dart';
+import '../providers/usage_provider.dart';
 import 'package:myapp/features/translator/translator_page.dart';
 import 'package:myapp/features/bare_acts/bare_acts_page.dart';
-import 'package:myapp/features/scanner/scanner_page.dart';
 
 class FeatureUsageSection extends StatelessWidget {
   const FeatureUsageSection({super.key});
@@ -61,16 +60,8 @@ class FeatureUsageSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 20),
-        Consumer2<ChatProvider, CaseProvider>(
-          builder: (context, chatProvider, caseProvider, child) {
-            // Calculate total messages
-            int totalMessages = 0;
-            for (var session in chatProvider.chatSessions) {
-              totalMessages += session.messages.length;
-            }
-
-            final casesCount = caseProvider.cases.length;
-
+        Consumer<UsageProvider>(
+          builder: (context, usageProvider, child) {
             return GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -81,8 +72,8 @@ class FeatureUsageSection extends StatelessWidget {
               children: [
                 FeatureUsageCard(
                   title: 'AI Queries',
-                  count: totalMessages,
-                  limit: 500,
+                  count: usageProvider.aiQueriesUsage,
+                  limit: usageProvider.aiQueriesLimit,
                   icon: Iconsax.messages_2,
                   color: const Color(0xFF02F1C3),
                   onTap: () {
@@ -95,8 +86,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'Cases',
-                  count: casesCount,
-                  limit: 50,
+                  count: usageProvider.casesUsage,
+                  limit: usageProvider.casesLimit,
                   icon: Iconsax.briefcase,
                   color: const Color(0xFF2C55A9),
                   onTap: () {
@@ -109,8 +100,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'Scan to PDF',
-                  count: 0, // Placeholder
-                  limit: 50,
+                  count: usageProvider.scanToPdfUsage,
+                  limit: usageProvider.scanToPdfLimit,
                   icon: Iconsax.scan,
                   color: const Color(0xFFE040FB),
                   onTap: () {
@@ -123,8 +114,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'Documents',
-                  count: 0, // Placeholder
-                  limit: 20,
+                  count: usageProvider.documentsUsage,
+                  limit: usageProvider.documentsLimit,
                   icon: Iconsax.document_text,
                   color: const Color(0xFFFF5722),
                   onTap: () {
@@ -133,8 +124,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'Risk Analysis',
-                  count: 0, // Placeholder
-                  limit: 10,
+                  count: usageProvider.riskAnalysisUsage,
+                  limit: usageProvider.riskAnalysisLimit,
                   icon: Iconsax.chart_square,
                   color: const Color(0xFFFFD700),
                   onTap: () {
@@ -147,8 +138,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'AI Voice',
-                  count: 0, // Placeholder
-                  limit: 100,
+                  count: usageProvider.aiVoiceUsage,
+                  limit: usageProvider.aiVoiceLimit,
                   icon: Iconsax.microphone_2,
                   color: const Color(0xFFE91E63),
                   onTap: () {
@@ -161,8 +152,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'Case Finder',
-                  count: 0, // Placeholder
-                  limit: 50,
+                  count: usageProvider.caseFinderUsage,
+                  limit: usageProvider.caseFinderLimit,
                   icon: Iconsax.search_favorite,
                   color: const Color(0xFF9C27B0),
                   onTap: () {
@@ -175,8 +166,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'Court Orders',
-                  count: 0, // Placeholder
-                  limit: 30,
+                  count: usageProvider.courtOrdersUsage,
+                  limit: usageProvider.courtOrdersLimit,
                   icon: Iconsax.document_text_1,
                   color: const Color(0xFF00BCD4),
                   onTap: () {
@@ -185,8 +176,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'Translator',
-                  count: 0, // Placeholder
-                  limit: 100,
+                  count: usageProvider.translatorUsage,
+                  limit: usageProvider.translatorLimit,
                   icon: Iconsax.translate,
                   color: const Color(0xFF4CAF50),
                   onTap: () {
@@ -199,8 +190,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'Bare Acts',
-                  count: 0, // Placeholder
-                  limit: 1000,
+                  count: usageProvider.bareActsUsage,
+                  limit: usageProvider.bareActsLimit,
                   icon: Iconsax.book_1,
                   color: const Color(0xFFFF9800),
                   onTap: () {
@@ -213,8 +204,8 @@ class FeatureUsageSection extends StatelessWidget {
                 ),
                 FeatureUsageCard(
                   title: 'Chat History',
-                  count: chatProvider.chatSessions.length,
-                  limit: 100,
+                  count: usageProvider.chatHistoryUsage,
+                  limit: usageProvider.chatHistoryLimit,
                   icon: Iconsax.archive_book,
                   color: const Color(0xFF607D8B),
                   onTap: () {
