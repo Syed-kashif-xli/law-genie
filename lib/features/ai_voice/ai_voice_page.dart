@@ -8,6 +8,7 @@ import 'package:myapp/services/gemini_service.dart';
 import 'package:myapp/services/speech_to_text_service.dart';
 import 'package:myapp/services/tts_service.dart';
 import 'package:provider/provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 
 enum AiState {
   idle,
@@ -202,6 +203,17 @@ class _AiVoicePageState extends State<AiVoicePage>
   }
 
   Future<void> _handleUserInput(String input) async {
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.aiVoiceUsage >= usageProvider.aiVoiceLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _lastUserMessage = input;
       _aiState = AiState.thinking;
@@ -229,6 +241,7 @@ class _AiVoicePageState extends State<AiVoicePage>
         }
       }, onDone: () async {
         _logToFirebase("ai", fullResponse);
+        usageProvider.incrementAiVoice();
         await _ttsService.speak(fullResponse);
         if (mounted) {
           _startListening();

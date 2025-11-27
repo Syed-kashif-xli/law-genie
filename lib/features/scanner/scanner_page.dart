@@ -17,6 +17,8 @@ import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
@@ -64,12 +66,24 @@ class _ScannerPageState extends State<ScannerPage> {
   }
 
   Future<void> _startScan() async {
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.scanToPdfUsage >= usageProvider.scanToPdfLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     try {
       final List<String>? pictures = await CunningDocumentScanner.getPictures();
       if (pictures != null && pictures.isNotEmpty) {
         setState(() {
           _scannedImages.addAll(pictures);
         });
+        usageProvider.incrementScanToPdf();
       }
     } catch (e) {
       if (mounted) {
@@ -81,12 +95,24 @@ class _ScannerPageState extends State<ScannerPage> {
   }
 
   Future<void> _pickFromGallery() async {
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.scanToPdfUsage >= usageProvider.scanToPdfLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final ImagePicker picker = ImagePicker();
     final List<XFile> images = await picker.pickMultiImage();
     if (images.isNotEmpty) {
       setState(() {
         _scannedImages.addAll(images.map((e) => e.path));
       });
+      usageProvider.incrementScanToPdf();
     }
   }
 
@@ -271,44 +297,6 @@ class _ScannerPageState extends State<ScannerPage> {
       if (mounted) {
         setState(() {
           _isGenerating = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _performOcr(String pdfPath) async {
-    setState(() {
-      _isProcessingOcr = true;
-    });
-
-    try {
-      final textRecognizer =
-          TextRecognizer(script: TextRecognitionScript.latin);
-      StringBuffer extractedText = StringBuffer();
-
-      for (var imagePath in _scannedImages) {
-        final inputImage = InputImage.fromFilePath(imagePath);
-        final RecognizedText recognizedText =
-            await textRecognizer.processImage(inputImage);
-        extractedText.writeln(recognizedText.text);
-        extractedText.writeln('\n---\n');
-      }
-
-      await textRecognizer.close();
-
-      if (mounted) {
-        _showOcrResult(extractedText.toString());
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error performing OCR: $e')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isProcessingOcr = false;
         });
       }
     }

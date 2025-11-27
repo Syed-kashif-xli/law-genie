@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
+import 'providers/usage_provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -24,7 +26,7 @@ class AppDrawer extends StatelessWidget {
             child: Column(
               children: [
                 _buildHeader(context),
-                _buildProPlanCard(),
+                _buildProPlanCard(context),
                 _buildMenuList(context),
               ],
             ),
@@ -87,7 +89,8 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildProPlanCard() {
+  Widget _buildProPlanCard(BuildContext context) {
+    final usageProvider = Provider.of<UsageProvider>(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       padding: const EdgeInsets.all(15),
@@ -114,7 +117,7 @@ class AppDrawer extends StatelessWidget {
               const Icon(Iconsax.crown_1, color: Colors.white, size: 20),
               const SizedBox(width: 10),
               Text(
-                'Pro Plan',
+                'Free Plan',
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -142,7 +145,8 @@ class AppDrawer extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              value: 247 / 500,
+              value:
+                  usageProvider.aiQueriesUsage / usageProvider.aiQueriesLimit,
               backgroundColor: Colors.white.withAlpha(77),
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
               minHeight: 6,
@@ -150,7 +154,7 @@ class AppDrawer extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '247/500 queries used',
+            '${usageProvider.aiQueriesUsage}/${usageProvider.aiQueriesLimit} queries used',
             style: GoogleFonts.poppins(
                 color: Colors.white.withAlpha(204), fontSize: 12),
           ),
@@ -169,10 +173,8 @@ class AppDrawer extends StatelessWidget {
           _buildMenuItem(
               context, Iconsax.document, 'Document Generator', '/generateDoc'),
           _buildMenuItem(
-              context, Iconsax.search_favorite, 'Case Finder', '/caseFinder',
-              isNew: true),
-          _buildMenuItem(context, Iconsax.book_1, 'Bare Acts', '/bareActs',
-              isNew: true),
+              context, Iconsax.search_favorite, 'Case Finder', '/caseFinder'),
+          _buildMenuItem(context, Iconsax.book_1, 'Bare Acts', '/bareActs'),
           _buildMenuItem(
               context, Iconsax.translate, 'Translator', '/translator'),
           _buildMenuItem(context, Iconsax.microphone_2, 'AI Voice', '/aiVoice'),

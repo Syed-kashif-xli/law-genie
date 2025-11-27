@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../documents/document_fields.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 
 class DocumentGeneratorScreen extends StatefulWidget {
   const DocumentGeneratorScreen({super.key});
@@ -553,10 +555,24 @@ class _DocumentGeneratorScreenState extends State<DocumentGeneratorScreen> {
         width: double.infinity,
         child: ElevatedButton.icon(
           onPressed: () {
+            final usageProvider =
+                Provider.of<UsageProvider>(context, listen: false);
+            if (usageProvider.documentsUsage >= usageProvider.documentsLimit) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content:
+                      Text('Free plan limit reached. Upgrade to continue.'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              return;
+            }
+
             // TODO: Implement document generation logic
             if (_selectedDocumentType != null) {
               print(
                   'Selected Document Type without emoji: ${_stripEmoji(_selectedDocumentType!)}');
+              usageProvider.incrementDocuments();
             }
           },
           icon: const Icon(Iconsax.document_text_1, color: Colors.white),

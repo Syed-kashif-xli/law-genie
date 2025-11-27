@@ -4,6 +4,8 @@ import 'package:iconsax/iconsax.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/case_finder_service.dart';
 import 'models/legal_case.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 import 'widgets/case_card.dart';
 
 class CaseFinderPage extends StatefulWidget {
@@ -53,6 +55,18 @@ class _CaseFinderPageState extends State<CaseFinderPage>
   Future<void> _searchCases() async {
     if (_searchController.text.trim().isEmpty && _selectedYear == null) {
       _loadRecentJudgments();
+      _loadRecentJudgments();
+      return;
+    }
+
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.casesUsage >= usageProvider.casesLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -64,8 +78,10 @@ class _CaseFinderPageState extends State<CaseFinderPage>
     );
     setState(() {
       _cases = cases;
+      _cases = cases;
       _isLoading = false;
     });
+    usageProvider.incrementCases();
   }
 
   Future<void> _filterByCategory(String category) async {

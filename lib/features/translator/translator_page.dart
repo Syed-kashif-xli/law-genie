@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:myapp/services/translation_service.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 
 class TranslatorPage extends StatefulWidget {
   const TranslatorPage({super.key});
@@ -55,6 +57,17 @@ class _TranslatorPageState extends State<TranslatorPage>
   Future<void> _translateText() async {
     if (_textController.text.isEmpty) return;
 
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.translatorUsage >= usageProvider.translatorLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isTranslating = true;
       _translatedText = '';
@@ -70,6 +83,7 @@ class _TranslatorPageState extends State<TranslatorPage>
       _translatedText = result;
       _isTranslating = false;
     });
+    usageProvider.incrementTranslator();
   }
 
   Future<void> _pickDocument() async {
@@ -89,6 +103,17 @@ class _TranslatorPageState extends State<TranslatorPage>
 
   Future<void> _translateDocument() async {
     if (_selectedFilePath == null) return;
+
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.translatorUsage >= usageProvider.translatorLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     setState(() {
       _isProcessingDocument = true;
@@ -121,6 +146,7 @@ class _TranslatorPageState extends State<TranslatorPage>
       _translatedDocumentText = translated;
       _isProcessingDocument = false;
     });
+    usageProvider.incrementTranslator();
   }
 
   void _copyToClipboard(String text) {

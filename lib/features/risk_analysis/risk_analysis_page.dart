@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/services/gemini_service.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 
 class RiskAnalysisPage extends StatefulWidget {
   const RiskAnalysisPage({super.key});
@@ -125,6 +127,17 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
       return;
     }
 
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.riskAnalysisUsage >= usageProvider.riskAnalysisLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _analysisResult = null;
@@ -187,6 +200,7 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
         _analysisResult = json.decode(jsonString);
         _isLoading = false;
       });
+      usageProvider.incrementRiskAnalysis();
     } catch (e) {
       setState(() {
         _isLoading = false;

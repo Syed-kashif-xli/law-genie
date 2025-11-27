@@ -22,6 +22,7 @@ import 'package:mime/mime.dart';
 
 import 'package:myapp/models/chat_model.dart' as my_models;
 import 'package:myapp/providers/chat_provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 import '../documents/document_viewer_page.dart';
 
 class AIChatPage extends StatefulWidget {
@@ -225,6 +226,17 @@ class _AIChatPageState extends State<AIChatPage> {
   void _sendMessage(String text) async {
     if (text.isEmpty && _selectedFile == null) return;
 
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.aiQueriesUsage >= usageProvider.aiQueriesLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     String userMessage = text;
     File? attachedFile = _selectedFile;
 
@@ -263,6 +275,7 @@ class _AIChatPageState extends State<AIChatPage> {
         _messages.removeWhere((element) => element is _TypingIndicator);
         _handleAIResponse(responseText ?? "");
         _scrollToBottom();
+        usageProvider.incrementAiQueries();
       });
     } catch (e) {
       setState(() {

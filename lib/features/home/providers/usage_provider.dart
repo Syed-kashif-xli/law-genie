@@ -88,4 +88,73 @@ class UsageProvider extends ChangeNotifier {
   }
 
   // Add other increment methods as needed
+  void incrementAiVoice() {
+    if (_aiVoiceUsage < _aiVoiceLimit) {
+      _aiVoiceUsage++;
+      notifyListeners();
+    }
+  }
+
+  void incrementCases() {
+    if (_casesUsage < _casesLimit) {
+      _casesUsage++;
+      notifyListeners();
+    }
+  }
+
+  void incrementScanToPdf() {
+    if (_scanToPdfUsage < _scanToPdfLimit) {
+      _scanToPdfUsage++;
+      notifyListeners();
+    }
+  }
+
+  void incrementDocuments() {
+    if (_documentsUsage < _documentsLimit) {
+      _documentsUsage++;
+      notifyListeners();
+    }
+  }
+
+  void incrementRiskAnalysis() {
+    if (_riskAnalysisUsage < _riskAnalysisLimit) {
+      _riskAnalysisUsage++;
+      notifyListeners();
+    }
+  }
+
+  void incrementCourtOrders() {
+    if (_courtOrdersUsage < _courtOrdersLimit) {
+      _courtOrdersUsage++;
+      notifyListeners();
+    }
+  }
+
+  void incrementTranslator() {
+    if (_translatorUsage < _translatorLimit) {
+      _translatorUsage++;
+      notifyListeners();
+    }
+  }
+
+  void incrementBareActs() {
+    if (_bareActsUsage < _bareActsLimit) {
+      _bareActsUsage++;
+      notifyListeners();
+    }
+  }
+
+  void incrementChatHistory() {
+    if (_chatHistoryUsage < _chatHistoryLimit) {
+      _chatHistoryUsage++;
+      notifyListeners();
+    }
+  }
+
+  void incrementCaseFinder() {
+    if (_caseFinderUsage < _caseFinderLimit) {
+      _caseFinderUsage++;
+      notifyListeners();
+    }
+  }
 }

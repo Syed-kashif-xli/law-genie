@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/court_order_reader/summary_display_page.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 
 class CourtOrderReaderPage extends StatefulWidget {
   const CourtOrderReaderPage({super.key});
@@ -66,6 +68,17 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       return;
     }
 
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.courtOrdersUsage >= usageProvider.courtOrdersLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -83,6 +96,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       final summary = response.text;
 
       if (summary != null) {
+        usageProvider.incrementCourtOrders();
         Navigator.push(
           context,
           MaterialPageRoute(

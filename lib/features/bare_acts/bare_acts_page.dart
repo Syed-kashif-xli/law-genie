@@ -5,6 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/bare_act_service.dart';
 import 'models/bare_act.dart';
 import 'bare_act_viewer_page.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 
 class BareActsPage extends StatefulWidget {
   const BareActsPage({super.key});
@@ -50,6 +52,27 @@ class _BareActsPageState extends State<BareActsPage> {
       _acts = results;
       _isLoading = false;
     });
+  }
+
+  void _checkUsageAndNavigate(BareAct act) {
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    if (usageProvider.bareActsUsage >= usageProvider.bareActsLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Free plan limit reached. Upgrade to continue.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    usageProvider.incrementBareActs();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BareActViewerPage(bareAct: act),
+      ),
+    );
   }
 
   @override
@@ -238,23 +261,11 @@ class _BareActsPageState extends State<BareActsPage> {
                                   icon: const Icon(Icons.visibility_rounded,
                                       color: Color(0xFF02F1C3)),
                                   onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            BareActViewerPage(bareAct: act),
-                                      ),
-                                    );
+                                    _checkUsageAndNavigate(act);
                                   },
                                 ),
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          BareActViewerPage(bareAct: act),
-                                    ),
-                                  );
+                                  _checkUsageAndNavigate(act);
                                 },
                               ),
                             );
