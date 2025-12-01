@@ -34,11 +34,15 @@ import 'package:myapp/generated/app_localizations.dart';
 import 'package:myapp/providers/locale_provider.dart';
 import 'package:myapp/providers/ui_provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
+import 'package:myapp/providers/diary_provider.dart';
 
 import 'package:firebase_app_check/firebase_app_check.dart';
 
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -55,6 +59,19 @@ Future<void> main() async {
   Hive.registerAdapter(ChatSessionAdapter());
   Hive.registerAdapter(ChatMessageAdapter());
 
+  // Global Error Handling
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    // TODO: Log to Crashlytics or similar service
+    print('Flutter Error: ${details.exception}');
+  };
+
+  // Async Error Handling
+  // PlatformDispatcher.instance.onError = (error, stack) {
+  //   print('Async Error: $error');
+  //   return true;
+  // };
+
   runApp(
     MultiProvider(
       providers: [
@@ -68,6 +85,7 @@ Future<void> main() async {
             create: (context) => SpeechToTextService()..initialize()),
         ChangeNotifierProvider(create: (context) => UIProvider()),
         ChangeNotifierProvider(create: (context) => UsageProvider()),
+        ChangeNotifierProvider(create: (context) => DiaryProvider()),
       ],
       child: MyApp(currentUser: FirebaseAuth.instance.currentUser),
     ),

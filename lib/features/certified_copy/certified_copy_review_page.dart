@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/payment_service.dart';
+import '../../services/firestore_service.dart';
+import '../../models/order_model.dart';
 import 'certified_copy_token_page.dart';
+import 'dart:math';
 
-class CertifiedCopyReviewPage extends StatelessWidget {
+class CertifiedCopyReviewPage extends StatefulWidget {
   final String district;
   final String dateOption;
   final String fromDate;
@@ -42,6 +48,100 @@ class CertifiedCopyReviewPage extends StatelessWidget {
   });
 
   @override
+  State<CertifiedCopyReviewPage> createState() =>
+      _CertifiedCopyReviewPageState();
+}
+
+class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
+  late PaymentService _paymentService;
+  final FirestoreService _firestoreService = FirestoreService();
+
+  String _generateToken() {
+    var rng = Random();
+    int randomNum = rng.nextInt(9000) + 1000;
+    return 'MP-REG-2024-$randomNum';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _paymentService = PaymentService(
+      onSuccess: _handlePaymentSuccess,
+      onFailure: _handlePaymentError,
+      onExternalWallet: _handleExternalWallet,
+    );
+  }
+
+  @override
+  void dispose() {
+    _paymentService.dispose();
+    super.dispose();
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    final token = _generateToken();
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final order = OrderModel(
+        id: token, // Using token as ID for simplicity
+        token: token,
+        userId: user.uid,
+        status: 'received',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        details: {
+          'district': widget.district,
+          'dateOption': widget.dateOption,
+          'fromDate': widget.fromDate,
+          'toDate': widget.toDate,
+          'deedType': widget.deedType,
+          'partyName': widget.partyNameEng,
+          'propertyAddress': widget.propertyAddressEng,
+          'paymentId': response.paymentId,
+          'amount': 2.0,
+        },
+      );
+
+      await _firestoreService.createRegistryOrder(order);
+    }
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Payment Successful: ${response.paymentId}"),
+        backgroundColor: Colors.green,
+      ),
+    );
+    // Navigate to Token Page on success
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CertifiedCopyTokenPage(token: token),
+      ),
+    );
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Payment Failed: ${response.message}"),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("External Wallet: ${response.walletName}"),
+        backgroundColor: Colors.blue,
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -60,7 +160,7 @@ class CertifiedCopyReviewPage extends StatelessWidget {
           ),
         ),
         title: Text(
-          isDigitalCopy ? 'Review Digital Copy' : 'Review Registry Copy',
+          widget.isDigitalCopy ? 'Review Digital Copy' : 'Review Registry Copy',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -130,11 +230,13 @@ class CertifiedCopyReviewPage extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           _buildDetailRow('State', 'Madhya Pradesh'),
-          _buildDetailRow('District', district),
-          _buildDetailRow('Date Range', '$fromDate to $toDate'),
-          if (deedType != null) _buildDetailRow('Deed Type', deedType!),
+          _buildDetailRow('District', widget.district),
+          _buildDetailRow(
+              'Date Range', '${widget.fromDate} to ${widget.toDate}'),
+          if (widget.deedType != null)
+            _buildDetailRow('Deed Type', widget.deedType!),
           const Divider(color: Colors.white10, height: 32),
-          if (searchByParty) ...[
+          if (widget.searchByParty) ...[
             Text(
               'Party Details',
               style: GoogleFonts.poppins(
@@ -144,15 +246,15 @@ class CertifiedCopyReviewPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildDetailRow('Party Type', partyType ?? '-'),
-            _buildDetailRow('Name (Eng)', partyNameEng ?? '-'),
-            _buildDetailRow('Name (Hindi)', partyNameHindi ?? '-'),
-            if (mobileNumber != null && mobileNumber!.isNotEmpty)
-              _buildDetailRow('Mobile', mobileNumber!),
+            _buildDetailRow('Party Type', widget.partyType ?? '-'),
+            _buildDetailRow('Name (Eng)', widget.partyNameEng ?? '-'),
+            _buildDetailRow('Name (Hindi)', widget.partyNameHindi ?? '-'),
+            if (widget.mobileNumber != null && widget.mobileNumber!.isNotEmpty)
+              _buildDetailRow('Mobile', widget.mobileNumber!),
           ],
-          if (searchByParty && searchByProperty)
+          if (widget.searchByParty && widget.searchByProperty)
             const Divider(color: Colors.white10, height: 32),
-          if (searchByProperty) ...[
+          if (widget.searchByProperty) ...[
             Text(
               'Property Details',
               style: GoogleFonts.poppins(
@@ -162,11 +264,12 @@ class CertifiedCopyReviewPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildDetailRow('Property Type', propertyType ?? '-'),
-            _buildDetailRow('Address (Eng)', propertyAddressEng ?? '-'),
-            _buildDetailRow('Address (Hindi)', propertyAddressHindi ?? '-'),
-            if (propertyId != null && propertyId!.isNotEmpty)
-              _buildDetailRow('Property ID', propertyId!),
+            _buildDetailRow('Property Type', widget.propertyType ?? '-'),
+            _buildDetailRow('Address (Eng)', widget.propertyAddressEng ?? '-'),
+            _buildDetailRow(
+                'Address (Hindi)', widget.propertyAddressHindi ?? '-'),
+            if (widget.propertyId != null && widget.propertyId!.isNotEmpty)
+              _buildDetailRow('Property ID', widget.propertyId!),
           ],
         ],
       ),
@@ -374,11 +477,15 @@ class CertifiedCopyReviewPage extends StatelessWidget {
       ),
       child: ElevatedButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const CertifiedCopyTokenPage(),
-            ),
+          final user = FirebaseAuth.instance.currentUser;
+          final email = user?.email ?? 'user@example.com';
+          final phone = user?.phoneNumber ?? '9876543210';
+
+          _paymentService.openCheckout(
+            amount: 2.0, // ₹2 Token Amount
+            description: 'Registry Search Token',
+            contact: phone,
+            email: email,
           );
         },
         style: ElevatedButton.styleFrom(
@@ -393,7 +500,7 @@ class CertifiedCopyReviewPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Agree & Continue',
+              'Agree & Pay ₹2',
               style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

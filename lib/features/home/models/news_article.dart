@@ -5,6 +5,7 @@ class NewsArticle {
   final String source;
   final String publishedAt;
   final String? imageUrl;
+  final String? content;
 
   NewsArticle({
     required this.title,
@@ -13,6 +14,7 @@ class NewsArticle {
     required this.source,
     required this.publishedAt,
     this.imageUrl,
+    this.content,
   });
 
   factory NewsArticle.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class NewsArticle {
       source: json['source']?['name'] ?? 'Unknown Source',
       publishedAt: json['publishedAt'] ?? '',
       imageUrl: json['urlToImage'],
+      content: json['content'],
     );
   }
 }

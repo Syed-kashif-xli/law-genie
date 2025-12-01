@@ -9,7 +9,11 @@ import '../../features/home/widgets/news_card.dart';
 import '../../features/home/widgets/feature_usage_section.dart';
 import '../../features/home/providers/news_provider.dart';
 import '../../features/home/pages/all_news_page.dart';
+import '../../features/subscription/subscription_page.dart';
 import '../../screens/notifications_screen.dart';
+
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../services/ad_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,6 +23,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +33,21 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<NewsProvider>(context, listen: false).fetchNews();
     });
+
+    // Load Banner Ad
+    _bannerAd = AdService.createBannerAd(
+      onAdLoaded: (ad) {
+        setState(() {
+          _isAdLoaded = true;
+        });
+      },
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
   }
 
   Future<void> _refreshData() async {
@@ -49,6 +71,17 @@ class _HomePageState extends State<HomePage> {
         ),
         flexibleSpace: const _WelcomeMessage(),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.workspace_premium,
+                size: 32, color: Color(0xFFFFD700)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const SubscriptionPage()),
+              );
+            },
+          ),
           IconButton(
             icon:
                 const Icon(Iconsax.notification, size: 32, color: Colors.white),
@@ -77,6 +110,17 @@ class _HomePageState extends State<HomePage> {
                 const FeatureUsageSection(),
                 const SizedBox(height: 24),
                 const _LegalNewsFeed(),
+                if (_isAdLoaded && _bannerAd != null) ...[
+                  const SizedBox(height: 24),
+                  Center(
+                    child: SizedBox(
+                      width: _bannerAd!.size.width.toDouble(),
+                      height: _bannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: _bannerAd!),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 80), // Extra space for FAB or bottom nav
               ],
             ),
           ),
@@ -189,7 +233,7 @@ class _LegalNewsFeed extends StatelessWidget {
             return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: provider.news.length > 5 ? 5 : provider.news.length,
+              itemCount: provider.news.length,
               itemBuilder: (context, index) {
                 final item = provider.news[index];
                 return NewsCard(news: item);

@@ -1,6 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class UsageProvider extends ChangeNotifier {
+  late Box _box;
+  bool _isInitialized = false;
+
+  UsageProvider() {
+    _init();
+  }
+
+  Future<void> _init() async {
+    _box = await Hive.openBox('usage_stats');
+    _loadUsage();
+    _isInitialized = true;
+    notifyListeners();
+  }
+
+  void _loadUsage() {
+    _aiQueriesUsage = _box.get('aiQueriesUsage', defaultValue: 0);
+    _casesUsage = _box.get('casesUsage',
+        defaultValue: 1); // Default 1 as per original code
+    _scanToPdfUsage = _box.get('scanToPdfUsage', defaultValue: 0);
+    _documentsUsage = _box.get('documentsUsage', defaultValue: 0);
+    _riskAnalysisUsage = _box.get('riskAnalysisUsage', defaultValue: 0);
+    _aiVoiceUsage = _box.get('aiVoiceUsage', defaultValue: 0);
+    _caseFinderUsage = _box.get('caseFinderUsage', defaultValue: 0);
+    _courtOrdersUsage = _box.get('courtOrdersUsage', defaultValue: 0);
+    _translatorUsage = _box.get('translatorUsage', defaultValue: 0);
+    _bareActsUsage = _box.get('bareActsUsage', defaultValue: 0);
+    _chatHistoryUsage = _box.get('chatHistoryUsage', defaultValue: 0);
+    _certifiedCopyUsage = _box.get('certifiedCopyUsage', defaultValue: 0);
+  }
+
   // AI Queries
   int _aiQueriesUsage = 0;
   int _aiQueriesLimit = 500;
@@ -79,18 +110,19 @@ class UsageProvider extends ChangeNotifier {
   int get chatHistoryUsage => _chatHistoryUsage;
   int get chatHistoryLimit => _chatHistoryLimit;
 
-  // Methods to increment usage (for future use)
+  // Methods to increment usage
   void incrementAiQueries() {
     if (_aiQueriesUsage < _aiQueriesLimit) {
       _aiQueriesUsage++;
+      _box.put('aiQueriesUsage', _aiQueriesUsage);
       notifyListeners();
     }
   }
 
-  // Add other increment methods as needed
   void incrementAiVoice() {
     if (_aiVoiceUsage < _aiVoiceLimit) {
       _aiVoiceUsage++;
+      _box.put('aiVoiceUsage', _aiVoiceUsage);
       notifyListeners();
     }
   }
@@ -98,6 +130,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementCases() {
     if (_casesUsage < _casesLimit) {
       _casesUsage++;
+      _box.put('casesUsage', _casesUsage);
       notifyListeners();
     }
   }
@@ -105,6 +138,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementScanToPdf() {
     if (_scanToPdfUsage < _scanToPdfLimit) {
       _scanToPdfUsage++;
+      _box.put('scanToPdfUsage', _scanToPdfUsage);
       notifyListeners();
     }
   }
@@ -112,6 +146,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementDocuments() {
     if (_documentsUsage < _documentsLimit) {
       _documentsUsage++;
+      _box.put('documentsUsage', _documentsUsage);
       notifyListeners();
     }
   }
@@ -119,6 +154,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementRiskAnalysis() {
     if (_riskAnalysisUsage < _riskAnalysisLimit) {
       _riskAnalysisUsage++;
+      _box.put('riskAnalysisUsage', _riskAnalysisUsage);
       notifyListeners();
     }
   }
@@ -126,6 +162,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementCourtOrders() {
     if (_courtOrdersUsage < _courtOrdersLimit) {
       _courtOrdersUsage++;
+      _box.put('courtOrdersUsage', _courtOrdersUsage);
       notifyListeners();
     }
   }
@@ -133,6 +170,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementTranslator() {
     if (_translatorUsage < _translatorLimit) {
       _translatorUsage++;
+      _box.put('translatorUsage', _translatorUsage);
       notifyListeners();
     }
   }
@@ -140,6 +178,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementBareActs() {
     if (_bareActsUsage < _bareActsLimit) {
       _bareActsUsage++;
+      _box.put('bareActsUsage', _bareActsUsage);
       notifyListeners();
     }
   }
@@ -147,6 +186,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementChatHistory() {
     if (_chatHistoryUsage < _chatHistoryLimit) {
       _chatHistoryUsage++;
+      _box.put('chatHistoryUsage', _chatHistoryUsage);
       notifyListeners();
     }
   }
@@ -154,6 +194,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementCaseFinder() {
     if (_caseFinderUsage < _caseFinderLimit) {
       _caseFinderUsage++;
+      _box.put('caseFinderUsage', _caseFinderUsage);
       notifyListeners();
     }
   }
@@ -168,6 +209,7 @@ class UsageProvider extends ChangeNotifier {
   void incrementCertifiedCopy() {
     if (_certifiedCopyUsage < _certifiedCopyLimit) {
       _certifiedCopyUsage++;
+      _box.put('certifiedCopyUsage', _certifiedCopyUsage);
       notifyListeners();
     }
   }

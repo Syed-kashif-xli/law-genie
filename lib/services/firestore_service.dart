@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myapp/models/timeline_event.dart';
 import 'package:myapp/models/user_model.dart';
+import 'package:myapp/models/order_model.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -63,5 +64,48 @@ class FirestoreService {
       return UserModel.fromMap(doc.data()!, doc.id);
     }
     return null;
+  }
+
+  // --- Order Methods ---
+
+  // Create Registry Order
+  Future<void> createRegistryOrder(OrderModel order) async {
+    // Use token as document ID for easy lookup
+    await _db.collection('orders').doc(order.token).set(order.toMap());
+  }
+
+  // Stream Order by Token
+  Stream<OrderModel?> streamOrder(String token) {
+    return _db.collection('orders').doc(token).snapshots().map((snapshot) {
+      if (snapshot.exists) {
+        return OrderModel.fromMap(snapshot.data()!, snapshot.id);
+      }
+      return null;
+    });
+  }
+
+  Future<OrderModel?> getUserLatestOrder(String userId) async {
+    try {
+      final querySnapshot = await _db
+          .collection('orders')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final docs = querySnapshot.docs;
+        // Sort by createdAt descending
+        docs.sort((a, b) {
+          final t1 = a.data()['createdAt'] as Timestamp;
+          final t2 = b.data()['createdAt'] as Timestamp;
+          return t2.compareTo(t1);
+        });
+
+        return OrderModel.fromMap(docs.first.data(), docs.first.id);
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching user latest order: $e');
+      return null;
+    }
   }
 }

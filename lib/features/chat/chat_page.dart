@@ -4,15 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -23,6 +20,7 @@ import 'package:mime/mime.dart';
 import 'package:myapp/models/chat_model.dart' as my_models;
 import 'package:myapp/providers/chat_provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
+import 'package:myapp/services/pdf_service.dart';
 import '../documents/document_viewer_page.dart';
 
 class AIChatPage extends StatefulWidget {
@@ -48,9 +46,13 @@ class _DocumentMessage {
 }
 
 class _AttachmentMessage {
-  final File file;
+  final File? file;
   final String? text;
-  _AttachmentMessage({required this.file, this.text});
+  final String? imageUrl;
+  final String? type; // 'image' or 'document'
+  final String? name;
+  _AttachmentMessage(
+      {this.file, this.text, this.imageUrl, this.type, this.name});
 }
 
 class _AIChatPageState extends State<AIChatPage> {
@@ -142,7 +144,17 @@ class _AIChatPageState extends State<AIChatPage> {
     if (widget.chatSession != null) {
       _sessionId = widget.chatSession!.sessionId;
       for (var message in widget.chatSession!.messages) {
-        _messages.add(_Message(text: message.userMessage, isUser: true));
+        if (message.attachmentUrl != null) {
+          _messages.add(_AttachmentMessage(
+            file: null,
+            text: message.userMessage,
+            imageUrl: message.attachmentUrl,
+            type: message.attachmentType,
+            name: message.attachmentName,
+          ));
+        } else {
+          _messages.add(_Message(text: message.userMessage, isUser: true));
+        }
         _messages.add(_Message(text: message.botResponse, isUser: false));
       }
     } else {
@@ -155,31 +167,144 @@ class _AIChatPageState extends State<AIChatPage> {
     _scrollToBottom();
   }
 
-  void _saveChatSession() {
-    if (_messages.length > 1) {
-      final chatMessages = <my_models.ChatMessage>[];
-      for (int i = 0; i < _messages.length; i++) {
-        if (_messages[i] is _Message && (_messages[i] as _Message).isUser) {
-          final userMessage = _messages[i] as _Message;
-          if (i + 1 < _messages.length &&
-              _messages[i + 1] is _Message &&
-              !(_messages[i + 1] as _Message).isUser) {
-            final botMessage = _messages[i + 1] as _Message;
+  Future<void> _generatePdf() async {
+    if (_messages.length <= 1) return;
+
+    final chatMessages = <my_models.ChatMessage>[];
+    for (int i = 0; i < _messages.length; i++) {
+      if (_messages[i] is _Message && (_messages[i] as _Message).isUser) {
+        final userMessage = _messages[i] as _Message;
+        if (i + 1 < _messages.length &&
+            _messages[i + 1] is _Message &&
+            !(_messages[i + 1] as _Message).isUser) {
+          final botMessage = _messages[i + 1] as _Message;
+          chatMessages.add(my_models.ChatMessage(
+            userMessage: userMessage.text,
+            botResponse: botMessage.text,
+          ));
+        }
+      }
+    }
+
+    if (chatMessages.isEmpty) return;
+
+    final session = my_models.ChatSession(
+      sessionId: _sessionId,
+      timestamp: DateTime.now(),
+      messages: chatMessages,
+      title: widget.chatSession?.title ?? 'Chat Export',
+    );
+
+    await PdfService().generateChatPdf(session);
+  }
+
+  Future<void> _saveChatSession() async {
+    print(
+        'DEBUG: _saveChatSession called. Messages count: ${_messages.length}');
+
+    if (_messages.length <= 1) {
+      print('DEBUG: Not enough messages to save.');
+      return;
+    }
+
+    final chatMessages = <my_models.ChatMessage>[];
+    String? firstUserMessage;
+
+    // Helper to extract data from dynamic message types
+    (String, bool, String?, String?, String?)? extractData(dynamic msg) {
+      if (msg is _Message) {
+        return (msg.text, msg.isUser, null, null, null);
+      } else if (msg is _AttachmentMessage) {
+        return (
+          "${msg.text ?? ''} [Attachment]",
+          true,
+          msg.imageUrl,
+          msg.type,
+          msg.name
+        );
+      } else if (msg is _DocumentMessage) {
+        return (
+          "Document: ${msg.title}\n${msg.content}",
+          false,
+          null,
+          null,
+          null
+        );
+      }
+      return null;
+    }
+
+    for (int i = 0; i < _messages.length; i++) {
+      final currentData = extractData(_messages[i]);
+      if (currentData == null) continue;
+
+      if (currentData.$2) {
+        // isUser
+        final userText = currentData.$1;
+        final imageUrl = currentData.$3;
+        final type = currentData.$4;
+        final name = currentData.$5;
+
+        if (firstUserMessage == null) firstUserMessage = userText;
+
+        // Look ahead for bot response
+        if (i + 1 < _messages.length) {
+          final nextData = extractData(_messages[i + 1]);
+          if (nextData != null && !nextData.$2) {
+            // !isUser (Bot)
             chatMessages.add(my_models.ChatMessage(
-              userMessage: userMessage.text,
-              botResponse: botMessage.text,
+              userMessage: userText,
+              botResponse: nextData.$1,
+              attachmentUrl: imageUrl,
+              attachmentType: type,
+              attachmentName: name,
             ));
           }
         }
       }
+    }
 
-      if (chatMessages.isNotEmpty) {
-        final session = my_models.ChatSession(
-          sessionId: _sessionId,
-          timestamp: DateTime.now(),
-          messages: chatMessages,
-        );
-        _chatProvider.addChatSession(session);
+    print('DEBUG: Chat messages to save: ${chatMessages.length}');
+
+    if (chatMessages.isNotEmpty) {
+      String title = widget.chatSession?.title ?? 'New Chat';
+      if (widget.chatSession == null && firstUserMessage != null) {
+        title = firstUserMessage.length > 30
+            ? '${firstUserMessage.substring(0, 30)}...'
+            : firstUserMessage;
+      }
+
+      final session = my_models.ChatSession(
+        sessionId: _sessionId,
+        timestamp: DateTime.now(),
+        messages: chatMessages,
+        title: title,
+      );
+      print('DEBUG: Saving session: ${session.sessionId}, Title: $title');
+
+      if (widget.chatSession == null) {
+        Provider.of<UsageProvider>(context, listen: false)
+            .incrementChatHistory();
+      }
+
+      try {
+        await _chatProvider.addChatSession(session);
+      } catch (e) {
+        print('ERROR: Failed to save chat session: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to save chat: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } else {
+      print('DEBUG: No valid chat pairs to save. Check message types.');
+      // Debug print types
+      for (var m in _messages) {
+        print('DEBUG: Msg Type: ${m.runtimeType}');
       }
     }
   }
@@ -215,11 +340,36 @@ class _AIChatPageState extends State<AIChatPage> {
   }
 
   void _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'txt'],
+    );
     if (result != null) {
       setState(() {
         _selectedFile = File(result.files.single.path!);
       });
+    }
+  }
+
+  Future<String?> _uploadFile(File file) async {
+    try {
+      final userId = Provider.of<ChatProvider>(context, listen: false).userId;
+      if (userId == null) return null;
+
+      final fileName = file.path.split('/').last;
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('chat_attachments')
+          .child(userId)
+          .child('${timestamp}_$fileName');
+
+      await storageRef.putFile(file);
+      final downloadUrl = await storageRef.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading file: $e');
+      return null;
     }
   }
 
@@ -239,10 +389,29 @@ class _AIChatPageState extends State<AIChatPage> {
 
     String userMessage = text;
     File? attachedFile = _selectedFile;
+    String? uploadedUrl;
+    String? attachmentType;
+    String? attachmentName;
 
+    if (attachedFile != null) {
+      attachmentName = attachedFile.path.split('/').last;
+      final extension = attachmentName.split('.').last.toLowerCase();
+      if (['jpg', 'jpeg', 'png', 'gif'].contains(extension)) {
+        attachmentType = 'image';
+      } else {
+        attachmentType = 'document';
+      }
+    }
+
+    // Optimistic UI update
     setState(() {
       if (attachedFile != null) {
-        _messages.add(_AttachmentMessage(file: attachedFile, text: text));
+        _messages.add(_AttachmentMessage(
+          file: attachedFile,
+          text: text,
+          type: attachmentType,
+          name: attachmentName,
+        ));
       } else {
         _messages.add(_Message(text: userMessage, isUser: true));
       }
@@ -256,14 +425,39 @@ class _AIChatPageState extends State<AIChatPage> {
       final content = <Content>[];
 
       if (attachedFile != null) {
-        final prompt =
-            "Analyze the following attachment and question. The file might be compressed, so clarity may not be perfect. Do your best to accurately analyze the visual content. If there's any text, extract it. If the image is too blurry, politely ask the user to send a clearer version. Always combine the analysis of the image and the user's question to provide a smart, professional, and helpful answer, like a real legal assistant would. Question: $userMessage";
-        content.add(Content.multi([
-          TextPart(prompt),
-          InlineDataPart(
-              lookupMimeType(attachedFile.path) ?? 'application/octet-stream',
-              await attachedFile.readAsBytes()),
-        ]));
+        // Upload file in background
+        uploadedUrl = await _uploadFile(attachedFile);
+
+        // Update the last message
+        final index = _messages.indexWhere(
+            (m) => m is _AttachmentMessage && m.file == attachedFile);
+        if (index != -1) {
+          _messages[index] = _AttachmentMessage(
+            file: attachedFile,
+            text: text,
+            imageUrl: uploadedUrl,
+            type: attachmentType,
+            name: attachmentName,
+          );
+        }
+
+        final mimeType =
+            lookupMimeType(attachedFile.path) ?? 'application/octet-stream';
+
+        if (attachmentType == 'image' || mimeType == 'application/pdf') {
+          final prompt =
+              "Analyze the following attachment and question. The file might be compressed, so clarity may not be perfect. Do your best to accurately analyze the visual content. If there's any text, extract it. If the image is too blurry, politely ask the user to send a clearer version. Always combine the analysis of the image and the user's question to provide a smart, professional, and helpful answer, like a real legal assistant would. Question: $userMessage";
+          content.add(Content.multi([
+            TextPart(prompt),
+            InlineDataPart(mimeType, await attachedFile.readAsBytes()),
+          ]));
+        } else {
+          // For other documents, just send text prompt for now as Gemini API direct file support is limited without File API
+          // Or we could try to extract text if it's a text file.
+          // For now, we'll just inform the model about the file name.
+          content.add(Content.text(
+              "User attached a file named '$attachmentName'. Question: $userMessage"));
+        }
       } else {
         content.add(Content.text(userMessage));
       }
@@ -276,6 +470,7 @@ class _AIChatPageState extends State<AIChatPage> {
         _handleAIResponse(responseText ?? "");
         _scrollToBottom();
         usageProvider.incrementAiQueries();
+        _saveChatSession();
       });
     } catch (e) {
       setState(() {
@@ -303,50 +498,6 @@ class _AIChatPageState extends State<AIChatPage> {
     _scrollToBottom();
   }
 
-  Future<void> _generatePdf() async {
-    final pdf = pw.Document();
-
-    final List<String?> messagesToExport = _messages
-        .map((m) {
-          if (m is _Message) {
-            return "${m.isUser ? 'You' : 'Law Genie'}: ${m.text}";
-          } else if (m is _DocumentMessage) {
-            return "Law Genie: [Generated Document: ${m.title}]";
-          } else if (m is _AttachmentMessage) {
-            return "You: [Attachment: ${m.file.path.split('/').last}] ${m.text ?? ''}";
-          }
-          return null;
-        })
-        .where((item) => item != null)
-        .toList();
-
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        build: (pw.Context context) {
-          return messagesToExport.map((message) {
-            return pw.Container(
-              padding: const pw.EdgeInsets.all(10),
-              margin: const pw.EdgeInsets.symmetric(vertical: 4),
-              child: pw.Text(message!),
-            );
-          }).toList();
-        },
-      ),
-    );
-
-    try {
-      final output = await getTemporaryDirectory();
-      final file = File("${output.path}/chat_history.pdf");
-      await file.writeAsBytes(await pdf.save());
-      OpenFile.open(file.path);
-    } catch (e) {
-      // Handle error
-      // ignore: avoid_print
-      print("Error generating or opening PDF: $e");
-    }
-  }
-
   void _shareChat() {
     final String chatHistory = _messages
         .map((m) {
@@ -355,7 +506,7 @@ class _AIChatPageState extends State<AIChatPage> {
           } else if (m is _DocumentMessage) {
             return "Law Genie: [Generated Document: ${m.title}]";
           } else if (m is _AttachmentMessage) {
-            return "You: [Attachment: ${m.file.path.split('/').last}] ${m.text ?? ''}";
+            return "You: [Attachment: ${m.name ?? 'File'}] ${m.text ?? ''}";
           }
           return null;
         })
@@ -366,55 +517,64 @@ class _AIChatPageState extends State<AIChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A032A),
-      appBar: _buildAppBar(context),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16.0),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                if (message is _Message) {
-                  return message.isUser
-                      ? _UserMessageBubble(message: message)
-                      : _AIMessageBubble(message: message);
-                } else if (message is _DocumentMessage) {
-                  return _DocumentMessageBubble(message: message);
-                } else if (message is _AttachmentMessage) {
-                  return _AttachmentMessageBubble(message: message);
-                } else if (message is _TypingIndicator) {
-                  return const _TypingIndicatorBubble();
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ),
-          if (_selectedFile != null)
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              color: Colors.grey[200],
-              child: Row(
-                children: [
-                  const Icon(Iconsax.document),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(_selectedFile!.path.split('/').last)),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      setState(() {
-                        _selectedFile = null;
-                      });
-                    },
-                  ),
-                ],
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF0A032A), Color(0xFF151038)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: _buildAppBar(context),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16.0),
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final message = _messages[index];
+                  if (message is _Message) {
+                    return message.isUser
+                        ? _UserMessageBubble(message: message)
+                        : _AIMessageBubble(message: message);
+                  } else if (message is _DocumentMessage) {
+                    return _DocumentMessageBubble(message: message);
+                  } else if (message is _AttachmentMessage) {
+                    return _AttachmentMessageBubble(message: message);
+                  } else if (message is _TypingIndicator) {
+                    return const _TypingIndicatorBubble();
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
             ),
-          _buildChatInputArea(context),
-        ],
+            if (_selectedFile != null)
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                color: Colors.grey[200],
+                child: Row(
+                  children: [
+                    const Icon(Iconsax.document),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(_selectedFile!.path.split('/').last)),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        setState(() {
+                          _selectedFile = null;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            _buildChatInputArea(context),
+          ],
+        ),
       ),
     );
   }
@@ -518,78 +678,98 @@ class _AIChatPageState extends State<AIChatPage> {
 
   Widget _buildChatInputArea(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-      decoration: const BoxDecoration(
-        color: Color(0xFF19173A),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      decoration: BoxDecoration(
+        color: const Color(0xFF151038).withOpacity(0.98),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            offset: Offset(0, -2),
+            color: const Color(0xFF02F1C3).withOpacity(0.05),
+            offset: const Offset(0, -4),
+            blurRadius: 20,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            offset: const Offset(0, -2),
             blurRadius: 10,
-          )
+          ),
         ],
       ),
       child: SafeArea(
+        top: false,
         child: Row(
           children: [
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withAlpha(51)),
+                color: Colors.white.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
               ),
               child: IconButton(
-                icon: const Icon(Icons.attach_file, color: Colors.white),
+                icon: const Icon(Iconsax.attach_square, color: Colors.white70),
                 onPressed: _pickFile,
+                padding: const EdgeInsets.all(12),
+                constraints: const BoxConstraints(),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Expanded(
-              child: TextField(
-                controller: _textController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  fillColor: const Color(0xFF0A032A),
-                  filled: true,
-                  hintText: 'Ask your legal question...',
-                  hintStyle: GoogleFonts.poppins(color: Colors.white70),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    borderSide: const BorderSide(color: Color(0xFF02F1C3)),
-                  ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                        _speechToText.isListening ? Icons.mic : Icons.mic_off,
-                        color: Colors.white),
-                    onPressed: _speechToText.isNotListening
-                        ? _startListening
-                        : _stopListening,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0A032A),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                ),
+                child: TextField(
+                  controller: _textController,
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    hintText: 'Ask Law Genie...',
+                    hintStyle: GoogleFonts.poppins(color: Colors.white38),
+                    border: InputBorder.none,
+                    filled: false, // Override global theme
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 14),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                          _speechToText.isListening
+                              ? Iconsax.microphone_2
+                              : Iconsax.microphone,
+                          color: _speechToText.isListening
+                              ? const Color(0xFF02F1C3)
+                              : Colors.white54,
+                          size: 20),
+                      onPressed: _speechToText.isNotListening
+                          ? _startListening
+                          : _stopListening,
+                    ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Container(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF02F1C3), Color(0xFF0A032A)],
+                  colors: [Color(0xFF02F1C3), Color(0xFF00C7A0)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF02F1C3).withOpacity(0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: IconButton(
-                icon: const Icon(Iconsax.send_2, color: Colors.white),
+                icon: const Icon(Iconsax.send_2, color: Color(0xFF0A032A)),
                 onPressed: () => _sendMessage(_textController.text),
+                padding: const EdgeInsets.all(12),
+                constraints: const BoxConstraints(),
               ),
             ),
           ],
@@ -613,18 +793,36 @@ class _TypingIndicatorBubble extends StatelessWidget {
         children: [
           Container(
             margin: const EdgeInsets.only(right: 12, top: 4),
-            padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              color: Color(0xFF19173A),
+            padding: const EdgeInsets.all(2), // Reduced padding
+            decoration: BoxDecoration(
+              color: const Color(0xFF19173A),
               shape: BoxShape.circle,
+              border: Border.all(
+                  color: const Color(0xFF02F1C3).withOpacity(0.3), width: 1),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF02F1C3).withOpacity(0.1),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-            child: const Icon(Iconsax.flash_1, color: Colors.white, size: 24),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/logo.png',
+                height: 36, // Increased size
+                width: 36, // Increased size
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
               color: const Color(0xFF19173A),
-              borderRadius: BorderRadius.circular(16.0),
+              borderRadius:
+                  BorderRadius.circular(20.0).copyWith(topLeft: Radius.zero),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
             ),
             child: AnimatedTextKit(
               animatedTexts: [
@@ -647,6 +845,14 @@ class _TypingIndicatorBubble extends StatelessWidget {
   }
 }
 
+class _AIMessageBubble extends StatefulWidget {
+  final _Message message;
+  const _AIMessageBubble({required this.message});
+
+  @override
+  State<_AIMessageBubble> createState() => _AIMessageBubbleState();
+}
+
 class _AIMessageBubbleState extends State<_AIMessageBubble> {
   final FlutterTts flutterTts = FlutterTts();
   bool isPlaying = false;
@@ -666,16 +872,25 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
       children: [
         Container(
           margin: const EdgeInsets.only(right: 12, top: 4),
-          padding: const EdgeInsets.all(8),
-          decoration: const BoxDecoration(
-            color: Color(0xFF19173A), // Match the bubble background
+          padding: const EdgeInsets.all(2), // Reduced padding
+          decoration: BoxDecoration(
+            color: const Color(0xFF19173A), // Match the bubble background
             shape: BoxShape.circle,
+            border: Border.all(
+                color: const Color(0xFF02F1C3).withOpacity(0.3), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF02F1C3).withOpacity(0.1),
+                blurRadius: 8,
+                spreadRadius: 1,
+              ),
+            ],
           ),
           child: ClipOval(
             child: Image.asset(
               'assets/images/logo.png',
-              height: 24,
-              width: 24,
+              height: 36, // Increased size
+              width: 36, // Increased size
               fit: BoxFit.cover,
             ),
           ),
@@ -684,8 +899,10 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
           child: Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: const Color(0xFF19173A),
-              borderRadius: BorderRadius.circular(16.0),
+              color: const Color(0xFF19173A).withOpacity(0.8),
+              borderRadius:
+                  BorderRadius.circular(20.0).copyWith(topLeft: Radius.zero),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -760,13 +977,21 @@ class _UserMessageBubble extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(top: 8, bottom: 8, left: 80),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
-              color: Color(0xFF02F1C3),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-                bottomLeft: Radius.circular(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF02F1C3), Color(0xFF00C7A0)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+              borderRadius:
+                  BorderRadius.circular(20).copyWith(bottomRight: Radius.zero),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF02F1C3).withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Text(
               message.text,
@@ -778,14 +1003,6 @@ class _UserMessageBubble extends StatelessWidget {
       ],
     );
   }
-}
-
-class _AIMessageBubble extends StatefulWidget {
-  final _Message message;
-  const _AIMessageBubble({required this.message});
-
-  @override
-  State<_AIMessageBubble> createState() => _AIMessageBubbleState();
 }
 
 class _DocumentMessageBubble extends StatelessWidget {
@@ -868,8 +1085,19 @@ class _AttachmentMessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isImage = ['jpg', 'jpeg', 'png', 'gif']
-        .any((ext) => message.file.path.toLowerCase().endsWith(ext));
+    bool isImage = message.type == 'image';
+    // Fallback detection if type is null (legacy messages)
+    if (message.type == null) {
+      if (message.file != null) {
+        isImage = ['jpg', 'jpeg', 'png', 'gif']
+            .any((ext) => message.file!.path.toLowerCase().endsWith(ext));
+      } else if (message.imageUrl != null) {
+        // Assume image if we have URL but no type, or check extension from URL if possible
+        // For now, let's assume it's an image if we don't know better, as that was previous behavior
+        isImage = true;
+      }
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -887,27 +1115,71 @@ class _AttachmentMessageBubble extends StatelessWidget {
                 if (isImage)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.0),
-                    child: Image.file(
-                      message.file,
-                      width: 150,
-                      height: 150,
-                      fit: BoxFit.cover,
-                    ),
+                    child: message.file != null
+                        ? Image.file(
+                            message.file!,
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            message.imageUrl!,
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return SizedBox(
+                                width: 150,
+                                height: 150,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return const SizedBox(
+                                width: 150,
+                                height: 150,
+                                child: Icon(Icons.error),
+                              );
+                            },
+                          ),
                   )
                 else
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Iconsax.document, color: Color(0xFF0A032A)),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          message.file.path.split('/').last,
-                          style: GoogleFonts.poppins(
-                              color: const Color(0xFF0A032A), fontSize: 15),
+                  // Document display
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Iconsax.document_text,
+                            color: Color(0xFF0A032A)),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            message.name ?? 'Document',
+                            style: GoogleFonts.poppins(
+                                color: const Color(0xFF0A032A),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 if (message.text != null && message.text!.isNotEmpty) ...[
                   const SizedBox(height: 8),

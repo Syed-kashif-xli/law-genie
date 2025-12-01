@@ -254,6 +254,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             SnackBar(
                               content: Text(l10n.agreeToTermsToContinue),
                               backgroundColor: Colors.redAccent,
+                              duration: const Duration(milliseconds: 1500),
                             ),
                           );
                         }

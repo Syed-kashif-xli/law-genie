@@ -19,7 +19,18 @@ class LegalCase {
     this.judgeName,
     this.url,
     this.category,
+    this.cnrNumber,
+    this.status,
+    this.nextHearingDate,
+    this.petitioner,
+    this.respondent,
   });
+
+  final String? cnrNumber;
+  final String? status;
+  final String? nextHearingDate;
+  final String? petitioner;
+  final String? respondent;
 
   factory LegalCase.fromJson(Map<String, dynamic> json) {
     return LegalCase(
@@ -32,6 +43,11 @@ class LegalCase {
       judgeName: json['judgeName'],
       url: json['url'],
       category: json['category'],
+      cnrNumber: json['cnrNumber'],
+      status: json['status'],
+      nextHearingDate: json['nextHearingDate'],
+      petitioner: json['petitioner'],
+      respondent: json['respondent'],
     );
   }
 
@@ -46,6 +62,11 @@ class LegalCase {
       'judgeName': judgeName,
       'url': url,
       'category': category,
+      'cnrNumber': cnrNumber,
+      'status': status,
+      'nextHearingDate': nextHearingDate,
+      'petitioner': petitioner,
+      'respondent': respondent,
     };
   }
 

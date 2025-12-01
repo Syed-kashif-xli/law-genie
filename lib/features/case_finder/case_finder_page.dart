@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../services/case_finder_service.dart';
-import 'models/legal_case.dart';
-import 'package:provider/provider.dart';
-import 'package:myapp/features/home/providers/usage_provider.dart';
-import 'widgets/case_card.dart';
 
 class CaseFinderPage extends StatefulWidget {
   const CaseFinderPage({super.key});
@@ -15,85 +9,179 @@ class CaseFinderPage extends StatefulWidget {
   State<CaseFinderPage> createState() => _CaseFinderPageState();
 }
 
-class _CaseFinderPageState extends State<CaseFinderPage>
-    with SingleTickerProviderStateMixin {
-  final CaseFinderService _caseFinderService = CaseFinderService();
-  final TextEditingController _searchController = TextEditingController();
-
-  List<LegalCase> _cases = [];
-  bool _isLoading = false;
-  String _selectedCourt = 'All Courts';
-  String? _selectedCategory;
-  int? _selectedYear;
-  late TabController _tabController;
+class _CaseFinderPageState extends State<CaseFinderPage> {
+  late final WebViewController _controller;
+  bool _isLoading = true;
+  bool _isReady = false; // New state to track if custom CSS is applied
+  int _loadingProgress = 0;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _loadRecentJudgments();
-  }
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0xFF0A032A))
+      ..addJavaScriptChannel(
+        'AppChannel',
+        onMessageReceived: (JavaScriptMessage message) {
+          if (message.message == 'hide') {
+            setState(() {
+              _isReady = false;
+              _isLoading = true;
+            });
+          }
+        },
+      )
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            setState(() {
+              _loadingProgress = progress;
+            });
+          },
+          onPageStarted: (String url) {
+            setState(() {
+              _isLoading = true;
+              _isReady = false; // Hide view immediately on navigation
+            });
+          },
+          onPageFinished: (String url) {
+            setState(() {
+              _isLoading = false;
+            });
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _tabController.dispose();
-    super.dispose();
-  }
+            // 1. Inject CSS immediately for instant theming (FOUC prevention)
+            _controller.runJavaScript('''
+              (function() {
+                var style = document.createElement('style');
+                style.innerHTML = `
+                  html, body {
+                    background-color: #0A032A !important;
+                    color: white !important;
+                    background-image: none !important;
+                  }
+                  /* Hide branding elements immediately */
+                  header, footer, nav, .navbar, .top-bar, #header, #footer,
+                  .header-top, .accessibility, .lang-dropdown, .logo,
+                  .breadcrumb, .page-header, #top-bar, .top-header {
+                    display: none !important;
+                  }
+                  /* Force dark theme on containers */
+                  .card, .result, .list-group-item, .table, tr, td, .row, .container, 
+                  .form-control, input, select, .modal-content, .card-body {
+                    background-color: #151038 !important;
+                    color: white !important;
+                    border-color: #2C55A9 !important;
+                  }
+                  /* Text colors */
+                  div, p, span, h1, h2, h3, h4, h5, h6, li, td, th, label, strong, b {
+                    color: white !important;
+                  }
+                  /* Links */
+                  a {
+                    color: #02F1C3 !important;
+                    text-decoration: none !important;
+                  }
+                  /* Buttons */
+                  button, input[type="submit"], .btn {
+                    background-color: #02F1C3 !important;
+                    color: #0A032A !important;
+                    border: none !important;
+                    border-radius: 12px !important;
+                  }
+                  /* Inputs */
+                  input, select, textarea {
+                    background-color: #1A1832 !important;
+                    color: white !important;
+                    border: 1px solid #02F1C3 !important;
+                    border-radius: 12px !important;
+                  }
+                  /* Highlighted text */
+                  span[style*="background-color: yellow"], mark {
+                    background-color: #FFD700 !important;
+                    color: black !important;
+                  }
+                  /* Hide images by default (JS will unhide captcha) */
+                  img:not([id*="captcha"]):not([src*="captcha"]) {
+                    display: none !important;
+                  }
+                `;
+                document.head.appendChild(style);
+              })();
+            ''');
 
-  Future<void> _loadRecentJudgments() async {
-    setState(() => _isLoading = true);
-    final cases = await _caseFinderService.getRecentJudgments(
-      court: _selectedCourt == 'All Courts' ? null : _selectedCourt,
-    );
-    setState(() {
-      _cases = cases;
-      _isLoading = false;
-    });
-  }
+            // 2. Run JS for logic-based hiding (text content) and dynamic updates
+            _controller.runJavaScript('''
+              (function() {
+                function hideSpecificElements() {
+                  var tagsToCheck = ['div', 'p', 'span', 'a', 'section', 'h6', 'h5', 'label'];
+                  tagsToCheck.forEach(tag => {
+                    document.querySelectorAll(tag).forEach(el => {
+                      if (el.style.display === 'none') return;
+                      var text = el.innerText.trim();
+                      if (text.includes('Skip to navigation') || 
+                          text.includes('Skip to main content') ||
+                          text.includes('eSCR,Judgements') || 
+                          text.includes('Indian Judiciary') ||
+                          text.includes('Version:') ||
+                          text.includes('Supreme Court of India') ||
+                          text.includes('©')) {
+                        if (el.tagName !== 'BODY' && el.id !== 'main-content') {
+                          el.style.display = 'none';
+                        }
+                      }
+                    });
+                  });
+                }
 
-  Future<void> _searchCases() async {
-    if (_searchController.text.trim().isEmpty && _selectedYear == null) {
-      _loadRecentJudgments();
-      _loadRecentJudgments();
-      return;
-    }
+                // Run immediately
+                hideSpecificElements();
 
-    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    if (usageProvider.casesUsage >= usageProvider.casesLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Free plan limit reached. Upgrade to continue.'),
-          backgroundColor: Colors.red,
+                // Watch for mutations to re-apply text hiding
+                var observer = new MutationObserver(function(mutations) {
+                  hideSpecificElements();
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+
+                // 3. Attach listener to Search/Submit buttons for immediate hiding
+                document.querySelectorAll('button, input[type="submit"], .btn').forEach(btn => {
+                  btn.addEventListener('click', function() {
+                    // Check if it's likely a search/submit action
+                    if (this.type === 'submit' || this.innerText.toLowerCase().includes('search') || this.innerText.toLowerCase().includes('submit')) {
+                       AppChannel.postMessage('hide');
+                    }
+                  });
+                });
+                
+                // Also listen for form submissions directly
+                document.querySelectorAll('form').forEach(form => {
+                  form.addEventListener('submit', function() {
+                    AppChannel.postMessage('hide');
+                  });
+                });
+
+              })();
+            ''');
+
+            // Add a delay to ensure CSS is applied before showing the view
+            Future.delayed(const Duration(milliseconds: 1000), () {
+              if (mounted) {
+                setState(() {
+                  _isReady = true;
+                });
+              }
+            });
+          },
+          onWebResourceError: (WebResourceError error) {
+            debugPrint('WebView error: ${error.description}');
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
+          },
         ),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-    final cases = await _caseFinderService.searchCases(
-      _searchController.text.isEmpty ? 'judgment' : _searchController.text,
-      fromYear: _selectedYear,
-      toYear: _selectedYear,
-    );
-    setState(() {
-      _cases = cases;
-      _cases = cases;
-      _isLoading = false;
-    });
-    usageProvider.incrementCases();
-  }
-
-  Future<void> _filterByCategory(String category) async {
-    setState(() {
-      _isLoading = true;
-      _selectedCategory = category;
-    });
-    final cases = await _caseFinderService.getCasesByCategory(category);
-    setState(() {
-      _cases = cases;
-      _isLoading = false;
-    });
+      )
+      ..loadRequest(
+          Uri.parse('https://judgments.ecourts.gov.in/pdfsearch/index.php'));
   }
 
   @override
@@ -101,9 +189,12 @@ class _CaseFinderPageState extends State<CaseFinderPage>
     return Scaffold(
       backgroundColor: const Color(0xFF0A032A),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF0A032A),
         elevation: 0,
-        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(
           'Case Finder',
           style: GoogleFonts.poppins(
@@ -111,525 +202,68 @@ class _CaseFinderPageState extends State<CaseFinderPage>
             fontWeight: FontWeight.w600,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: const Color(0xFF02F1C3),
-          indicatorWeight: 3,
-          labelColor: const Color(0xFF02F1C3),
-          unselectedLabelColor: Colors.white60,
-          labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-          tabs: const [
-            Tab(text: 'Search'),
-            Tab(text: 'Browse'),
-          ],
-        ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0A032A), Color(0xFF151038)],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: () => _controller.reload(),
           ),
-        ),
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildSearchTab(),
-            _buildBrowseTab(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchTab() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              _buildSearchBar(),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(child: _buildCourtFilter()),
-                  const SizedBox(width: 12),
-                  _buildYearFilter(),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: _isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF02F1C3),
-                  ),
-                )
-              : _cases.isEmpty
-                  ? _buildEmptyState()
-                  : _buildCasesList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBrowseTab() {
-    final categories = _caseFinderService.getCategories();
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Browse by Category',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ...categories.map((category) => _buildCategoryCard(category)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1832),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFF02F1C3).withOpacity(0.3),
-        ),
-      ),
-      child: TextField(
-        controller: _searchController,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 15,
-        ),
-        decoration: InputDecoration(
-          hintText: 'Search cases, keywords...',
-          hintStyle: GoogleFonts.poppins(
-            color: Colors.white30,
-            fontSize: 14,
-          ),
-          prefixIcon: const Icon(
-            Iconsax.search_normal,
-            color: Color(0xFF02F1C3),
-            size: 20,
-          ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.white54),
-                  onPressed: () {
-                    _searchController.clear();
-                    _loadRecentJudgments();
-                  },
-                )
-              : null,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
-        ),
-        onSubmitted: (_) => _searchCases(),
-        onChanged: (value) => setState(() {}),
-      ),
-    );
-  }
-
-  Widget _buildCourtFilter() {
-    final courts = _caseFinderService.getAvailableCourts();
-
-    return SizedBox(
-      height: 40,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: courts.length,
-        itemBuilder: (context, index) {
-          final court = courts[index];
-          final isSelected = court == _selectedCourt;
-
-          return GestureDetector(
-            onTap: () {
-              setState(() => _selectedCourt = court);
-              _loadRecentJudgments();
+          IconButton(
+            icon:
+                const Icon(Icons.arrow_back_ios, size: 20, color: Colors.white),
+            onPressed: () async {
+              if (await _controller.canGoBack()) {
+                await _controller.goBack();
+              }
             },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0xFF02F1C3).withOpacity(0.15)
-                    : Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFF02F1C3)
-                      : Colors.white.withOpacity(0.1),
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  court == 'All Courts' ? 'All' : court.split(' ')[0],
-                  style: GoogleFonts.poppins(
-                    color:
-                        isSelected ? const Color(0xFF02F1C3) : Colors.white70,
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildYearFilter() {
-    return Container(
-      height: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: _selectedYear != null
-            ? const Color(0xFF02F1C3).withOpacity(0.15)
-            : const Color(0xFF1A1832),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: _selectedYear != null
-              ? const Color(0xFF02F1C3)
-              : const Color(0xFF02F1C3).withOpacity(0.3),
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<int>(
-          value: _selectedYear,
-          hint: Row(
-            children: [
-              Icon(Iconsax.calendar_1, color: Colors.white70, size: 16),
-              const SizedBox(width: 8),
-              Text(
-                'Year',
-                style: GoogleFonts.poppins(
-                  color: Colors.white70,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
           ),
-          dropdownColor: const Color(0xFF1A1832),
-          icon: const Icon(Icons.keyboard_arrow_down,
-              color: Colors.white54, size: 16),
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 13),
-          onChanged: (int? newValue) {
-            setState(() {
-              _selectedYear = newValue;
-            });
-            _searchCases();
-          },
-          items: [
-            const DropdownMenuItem<int>(
-              value: null,
-              child: Text('All Years'),
-            ),
-            ...List.generate(75, (index) {
-              final year = DateTime.now().year - index;
-              return DropdownMenuItem<int>(
-                value: year,
-                child: Text(year.toString()),
-              );
-            }),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCasesList() {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: _cases.length,
-      itemBuilder: (context, index) {
-        return CaseCard(
-          legalCase: _cases[index],
-          onTap: () => _showCaseDetails(_cases[index]),
-        );
-      },
-    );
-  }
-
-  Widget _buildCategoryCard(String category) {
-    return GestureDetector(
-      onTap: () {
-        _filterByCategory(category);
-        _tabController.animateTo(0);
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF1A1832),
-              const Color(0xFF151028),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: const Color(0xFF02F1C3).withOpacity(0.2),
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF02F1C3).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Iconsax.book,
-                color: Color(0xFF02F1C3),
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                category,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: Colors.white38,
-              size: 16,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(0xFF02F1C3).withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Iconsax.search_normal,
-              size: 48,
-              color: Color(0xFF02F1C3),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'No cases found',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Try searching with different keywords',
-            style: GoogleFonts.poppins(
-              color: Colors.white54,
-              fontSize: 14,
-            ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward_ios,
+                size: 20, color: Colors.white),
+            onPressed: () async {
+              if (await _controller.canGoForward()) {
+                await _controller.goForward();
+              }
+            },
           ),
         ],
       ),
-    );
-  }
-
-  void _showCaseDetails(LegalCase legalCase) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.75,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF1A1832), Color(0xFF0A032A)],
+      body: Stack(
+        children: [
+          Visibility(
+            visible: _isReady,
+            maintainState: true,
+            child: WebViewWidget(controller: _controller),
           ),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
+          if (!_isReady)
             Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+              color: const Color(0xFF0A032A),
+              child: Center(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF02F1C3).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            legalCase.court,
-                            style: GoogleFonts.poppins(
-                              color: const Color(0xFF02F1C3),
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          legalCase.formattedDate,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white54,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
+                    const CircularProgressIndicator(
+                      color: Color(0xFF02F1C3),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      legalCase.title,
+                      'Loading Case Finder...',
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        height: 1.4,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      legalCase.caseNumber,
-                      style: GoogleFonts.poppins(
-                        color: const Color(0xFF02F1C3),
+                        color: Colors.white70,
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    if (legalCase.judgeName != null) ...[
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.gavel_rounded,
-                            size: 16,
-                            color: Colors.white54,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            legalCase.judgeName!,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white70,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    if (legalCase.summary != null) ...[
-                      const SizedBox(height: 24),
-                      Text(
-                        'Summary',
-                        style: GoogleFonts.poppins(
-                          color: const Color(0xFF02F1C3),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        legalCase.summary!,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          height: 1.6,
-                        ),
-                      ),
-                    ],
-                    if (legalCase.url != null) ...[
-                      const SizedBox(height: 32),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            final Uri url = Uri.parse(legalCase.url!);
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url,
-                                  mode: LaunchMode.externalApplication);
-                            }
-                          },
-                          icon: const Icon(Icons.download_rounded, size: 20),
-                          label: Text(
-                            'Download PDF Judgment',
-                            style: GoogleFonts.poppins(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 4,
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          if (_isLoading &&
+              _isReady) // Show progress bar only if visible and loading subsequent pages
+            LinearProgressIndicator(
+              value: _loadingProgress / 100.0,
+              backgroundColor: Colors.transparent,
+              color: const Color(0xFF02F1C3),
+            ),
+        ],
       ),
     );
   }

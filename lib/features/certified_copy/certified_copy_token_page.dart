@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'dart:math';
+
+import 'package:timeline_tile/timeline_tile.dart';
 
 class CertifiedCopyTokenPage extends StatelessWidget {
-  const CertifiedCopyTokenPage({super.key});
-
-  String _generateToken() {
-    var rng = Random();
-    int randomNum = rng.nextInt(9000) + 1000;
-    return 'MP-REG-2024-$randomNum';
-  }
+  final String token;
+  const CertifiedCopyTokenPage({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
-    final String token = _generateToken();
-
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -31,13 +25,14 @@ class CertifiedCopyTokenPage extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: const Color(0xFF02F1C3).withOpacity(0.1),
                     shape: BoxShape.circle,
@@ -45,33 +40,33 @@ class CertifiedCopyTokenPage extends StatelessWidget {
                   child: const Icon(
                     Iconsax.verify,
                     color: Color(0xFF02F1C3),
-                    size: 64,
+                    size: 50,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
                 Text(
                   'Request Submitted!',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 Text(
-                  'Your certified copy request has been successfully submitted. Please save your token number for future reference.',
+                  'Your certified copy request has been successfully submitted. Track your status below.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     color: Colors.white70,
-                    fontSize: 14,
+                    fontSize: 13,
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
                 Container(
                   width: double.infinity,
                   padding:
-                      const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                      const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(24),
@@ -86,16 +81,16 @@ class CertifiedCopyTokenPage extends StatelessWidget {
                         'Token Number',
                         style: GoogleFonts.poppins(
                           color: Colors.white54,
-                          fontSize: 14,
+                          fontSize: 12,
                           letterSpacing: 1,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       Text(
                         token,
                         style: GoogleFonts.poppins(
                           color: const Color(0xFF02F1C3),
-                          fontSize: 32,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 2,
                         ),
@@ -103,13 +98,14 @@ class CertifiedCopyTokenPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(height: 32),
+                _buildTimeline(),
+                const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Pop until we are back at the home page (or state selection)
                       Navigator.of(context).popUntil((route) => route.isFirst);
                     },
                     style: ElevatedButton.styleFrom(
@@ -133,6 +129,121 @@ class CertifiedCopyTokenPage extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeline() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Column(
+        children: [
+          _buildTimelineTile(
+            isFirst: true,
+            isLast: false,
+            isPast: true,
+            title: 'Request Received',
+            subtitle: 'Token generated & payment verified',
+            icon: Iconsax.receipt_item,
+          ),
+          _buildTimelineTile(
+            isFirst: false,
+            isLast: false,
+            isPast: true, // Mark as "current/active" visually
+            isPulse: true,
+            title: 'Searching Records',
+            subtitle: 'Our team is searching for the registry',
+            icon: Iconsax.search_status,
+          ),
+          _buildTimelineTile(
+            isFirst: false,
+            isLast: true,
+            isPast: false,
+            title: 'Registry Status',
+            subtitle: 'Found / Not Found (Pending)',
+            icon: Iconsax.document_text,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineTile({
+    required bool isFirst,
+    required bool isLast,
+    required bool isPast,
+    bool isPulse = false,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    return TimelineTile(
+      isFirst: isFirst,
+      isLast: isLast,
+      beforeLineStyle: LineStyle(
+        color: isPast ? const Color(0xFF02F1C3) : Colors.white24,
+        thickness: 2,
+      ),
+      indicatorStyle: IndicatorStyle(
+        width: 40,
+        height: 40,
+        indicator: Container(
+          decoration: BoxDecoration(
+            color: isPast
+                ? const Color(0xFF02F1C3).withOpacity(0.2)
+                : Colors.white.withOpacity(0.05),
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: isPast ? const Color(0xFF02F1C3) : Colors.white24,
+              width: 2,
+            ),
+            boxShadow: isPulse
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFF02F1C3).withOpacity(0.5),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    )
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: Icon(
+              icon,
+              color: isPast ? const Color(0xFF02F1C3) : Colors.white54,
+              size: 20,
+            ),
+          ),
+        ),
+      ),
+      endChild: Container(
+        margin: const EdgeInsets.only(left: 16, bottom: 24, top: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                color: isPast ? Colors.white : Colors.white54,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: GoogleFonts.poppins(
+                color: isPast ? Colors.white70 : Colors.white38,
+                fontSize: 12,
+              ),
+            ),
+          ],
         ),
       ),
     );

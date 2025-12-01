@@ -4,7 +4,10 @@ import 'package:webfeed_plus/webfeed_plus.dart';
 import 'package:myapp/features/home/models/news_article.dart';
 
 class NewsService {
-  final String rssUrl = 'https://www.barandbench.com/feed';
+  final List<String> rssUrls = [
+    'https://www.barandbench.com/feed',
+    'https://www.livelaw.in/rss/articles.xml',
+  ];
 
   String? _getImageUrlFromContent(String? content) {
     if (content == null) return null;
@@ -44,46 +47,93 @@ class NewsService {
 
   Future<List<NewsArticle>> fetchLegalNews() async {
     try {
-      final response = await http.get(Uri.parse(rssUrl));
-
-      if (response.statusCode == 200) {
+      final List<Future<List<NewsArticle>>> futures = rssUrls.map((url) async {
         try {
-          final atomFeed = AtomFeed.parse(response.body);
-          if (atomFeed.items == null) return [];
+          final response = await http.get(Uri.parse(url));
 
-          final articles = await Future.wait(atomFeed.items!.map((item) async {
-            String? imageUrl = _getImageUrlFromContent(item.content);
-            if (imageUrl == null &&
-                item.links != null &&
-                item.links!.isNotEmpty) {
-              // If no image in content, try to fetch OG image from the article URL
-              // Limit to first link which is usually the article link
-              final link = item.links!.first.href;
-              if (link != null) {
-                imageUrl = await _fetchOgImage(link);
+          if (response.statusCode == 200) {
+            var items = <dynamic>[];
+            try {
+              final atomFeed = AtomFeed.parse(response.body);
+              items = atomFeed.items ?? [];
+            } catch (_) {
+              try {
+                final rssFeed = RssFeed.parse(response.body);
+                items = rssFeed.items ?? [];
+              } catch (e) {
+                developer.log('Error parsing feed $url: $e',
+                    name: 'NewsService');
+                return <NewsArticle>[];
               }
             }
 
-            return NewsArticle(
-              title: item.title ?? 'No Title',
-              description: item.summary ?? item.content ?? 'No Description',
-              url: item.links?.first.href ?? '',
-              source: 'Bar & Bench',
-              publishedAt: item.updated?.toIso8601String() ?? '',
-              imageUrl: imageUrl,
-            );
-          }));
+            if (items.isEmpty) return <NewsArticle>[];
 
-          return articles;
+            final articles = await Future.wait(items.map((item) async {
+              String? title;
+              String? description;
+              String? link;
+              String? pubDate;
+              String? content;
+
+              if (item is AtomItem) {
+                title = item.title;
+                description = item.summary ?? item.content;
+                link = item.links?.isNotEmpty == true
+                    ? item.links!.first.href
+                    : null;
+                pubDate = item.updated?.toIso8601String();
+                content = item.content;
+              } else if (item is RssItem) {
+                title = item.title;
+                description = item.description;
+                link = item.link;
+                pubDate = item.pubDate?.toIso8601String();
+                content = item.content?.value ?? item.description;
+              }
+
+              String? imageUrl = _getImageUrlFromContent(content);
+
+              // If no image in content, try to fetch OG image
+              if (imageUrl == null && link != null) {
+                imageUrl = await _fetchOgImage(link);
+              }
+
+              return NewsArticle(
+                title: title ?? 'No Title',
+                description: description ?? 'No Description',
+                url: link ?? '',
+                source: 'Law Genie', // Rebranded as requested
+                publishedAt: pubDate ?? '',
+                imageUrl: imageUrl,
+                content: content,
+              );
+            }));
+
+            return articles;
+          } else {
+            developer.log('Failed to load feed $url: ${response.statusCode}',
+                name: 'NewsService');
+            return <NewsArticle>[];
+          }
         } catch (e) {
-          developer.log('Error parsing Atom feed: $e', name: 'NewsService');
-          return [];
+          developer.log('Error fetching news from $url: $e',
+              name: 'NewsService');
+          return <NewsArticle>[];
         }
-      } else {
-        developer.log('Failed to load feed: ${response.statusCode}',
-            name: 'NewsService');
-        throw Exception('Failed to load feed');
-      }
+      }).toList();
+
+      final List<List<NewsArticle>> results = await Future.wait(futures);
+      final List<NewsArticle> allNews = results.expand((x) => x).toList();
+
+      // Sort by date descending
+      allNews.sort((a, b) {
+        if (a.publishedAt.isEmpty) return 1;
+        if (b.publishedAt.isEmpty) return -1;
+        return b.publishedAt.compareTo(a.publishedAt);
+      });
+
+      return allNews;
     } catch (e) {
       developer.log('Error fetching news: $e', name: 'NewsService');
       throw Exception('Error fetching news: $e');

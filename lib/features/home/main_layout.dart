@@ -29,45 +29,54 @@ class _MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     return Consumer<UIProvider>(
       builder: (context, uiProvider, child) {
-        return Scaffold(
-          body: IndexedStack(
-            index: _currentIndex,
-            children: _pages,
+        return PopScope(
+          canPop: _currentIndex == 0,
+          onPopInvoked: (didPop) {
+            if (didPop) return;
+            setState(() {
+              _currentIndex = 0;
+            });
+          },
+          child: Scaffold(
+            body: IndexedStack(
+              index: _currentIndex,
+              children: _pages,
+            ),
+            bottomNavigationBar: uiProvider.isNavBarVisible
+                ? BottomNavigationBar(
+                    currentIndex: _currentIndex,
+                    onTap: (index) {
+                      setState(() {
+                        _currentIndex = index;
+                      });
+                    },
+                    type: BottomNavigationBarType.fixed,
+                    backgroundColor: const Color(0xFF1A0B2E),
+                    selectedItemColor: Colors.white,
+                    unselectedItemColor: Colors.white.withAlpha(128),
+                    showSelectedLabels: true,
+                    showUnselectedLabels: true,
+                    items: const [
+                      BottomNavigationBarItem(
+                        icon: Icon(Iconsax.home),
+                        label: 'Home',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Iconsax.message),
+                        label: 'Chat',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Iconsax.calendar),
+                        label: 'Timeline',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Iconsax.user),
+                        label: 'Profile',
+                      ),
+                    ],
+                  )
+                : null,
           ),
-          bottomNavigationBar: uiProvider.isNavBarVisible
-              ? BottomNavigationBar(
-                  currentIndex: _currentIndex,
-                  onTap: (index) {
-                    setState(() {
-                      _currentIndex = index;
-                    });
-                  },
-                  type: BottomNavigationBarType.fixed,
-                  backgroundColor: const Color(0xFF1A0B2E),
-                  selectedItemColor: Colors.white,
-                  unselectedItemColor: Colors.white.withAlpha(128),
-                  showSelectedLabels: true,
-                  showUnselectedLabels: true,
-                  items: const [
-                    BottomNavigationBarItem(
-                      icon: Icon(Iconsax.home),
-                      label: 'Home',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Iconsax.message),
-                      label: 'Chat',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Iconsax.calendar),
-                      label: 'Timeline',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Iconsax.user),
-                      label: 'Profile',
-                    ),
-                  ],
-                )
-              : null,
         );
       },
     );

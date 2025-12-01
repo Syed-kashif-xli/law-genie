@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/home/models/news_article.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:myapp/features/home/pages/news_detail_page.dart';
 
 class NewsCard extends StatelessWidget {
   final NewsArticle news;
@@ -11,17 +12,13 @@ class NewsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () async {
-        final Uri url = Uri.parse(news.url);
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url);
-        } else {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Could not launch URL')),
-            );
-          }
-        }
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewsDetailPage(news: news),
+          ),
+        );
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -36,30 +33,25 @@ class NewsCard extends StatelessWidget {
             if (news.imageUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
-                child: Image.network(
-                  news.imageUrl!,
+                child: CachedNetworkImage(
+                  imageUrl: news.imageUrl!,
                   height: 80,
                   width: 80,
                   fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const SizedBox(
-                      height: 80,
-                      width: 80,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return const SizedBox(
-                      height: 80,
-                      width: 80,
-                      child: Center(
-                        child: Icon(Icons.error, color: Colors.red),
-                      ),
-                    );
-                  },
+                  placeholder: (context, url) => const SizedBox(
+                    height: 80,
+                    width: 80,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => const SizedBox(
+                    height: 80,
+                    width: 80,
+                    child: Center(
+                      child: Icon(Icons.error, color: Colors.red),
+                    ),
+                  ),
                 ),
               ),
             const SizedBox(width: 12),
@@ -68,7 +60,7 @@ class NewsCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    news.source,
+                    'Law Genie News',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
                       color: Colors.white70,

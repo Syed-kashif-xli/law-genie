@@ -15,6 +15,8 @@ import 'package:myapp/features/bare_acts/bare_acts_page.dart';
 
 import 'package:myapp/features/certified_copy/certified_copy_state_selection_page.dart';
 
+import 'package:myapp/features/diary/diary_page.dart';
+
 class FeatureUsageSection extends StatelessWidget {
   const FeatureUsageSection({super.key});
 
@@ -64,172 +66,195 @@ class FeatureUsageSection extends StatelessWidget {
         const SizedBox(height: 20),
         Consumer<UsageProvider>(
           builder: (context, usageProvider, child) {
-            return GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.0,
-              children: [
-                FeatureUsageCard(
-                  title: 'AI Queries',
-                  count: usageProvider.aiQueriesUsage,
-                  limit: usageProvider.aiQueriesLimit,
-                  icon: Iconsax.messages_2,
-                  color: const Color(0xFF02F1C3),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AIChatPage()),
+            final cards = [
+              FeatureUsageCard(
+                title: 'AI Queries',
+                count: usageProvider.aiQueriesUsage,
+                limit: usageProvider.aiQueriesLimit,
+                icon: Iconsax.messages_2,
+                color: const Color(0xFF02F1C3),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AIChatPage()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Cases',
+                count: usageProvider.casesUsage,
+                limit: usageProvider.casesLimit,
+                icon: Iconsax.briefcase,
+                color: const Color(0xFF2C55A9),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CaseListScreen()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Scan to PDF',
+                count: usageProvider.scanToPdfUsage,
+                limit: usageProvider.scanToPdfLimit,
+                icon: Iconsax.scan,
+                color: const Color(0xFFE040FB),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ScannerPage()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Documents',
+                count: usageProvider.documentsUsage,
+                limit: usageProvider.documentsLimit,
+                icon: Iconsax.document_text,
+                color: const Color(0xFFFF5722),
+                onTap: () {
+                  Navigator.pushNamed(context, '/generateDoc');
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Risk Analysis',
+                count: usageProvider.riskAnalysisUsage,
+                limit: usageProvider.riskAnalysisLimit,
+                icon: Iconsax.chart_square,
+                color: const Color(0xFFFFD700),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RiskAnalysisPage()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'AI Voice',
+                count: usageProvider.aiVoiceUsage,
+                limit: usageProvider.aiVoiceLimit,
+                icon: Iconsax.microphone_2,
+                color: const Color(0xFFE91E63),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AiVoicePage()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Case Finder',
+                count: usageProvider.caseFinderUsage,
+                limit: usageProvider.caseFinderLimit,
+                icon: Iconsax.search_favorite,
+                color: const Color(0xFF9C27B0),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CaseFinderPage()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Court Orders',
+                count: usageProvider.courtOrdersUsage,
+                limit: usageProvider.courtOrdersLimit,
+                icon: Iconsax.document_text_1,
+                color: const Color(0xFF00BCD4),
+                onTap: () {
+                  Navigator.pushNamed(context, '/courtOrderReader');
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Translator',
+                count: usageProvider.translatorUsage,
+                limit: usageProvider.translatorLimit,
+                icon: Iconsax.translate,
+                color: const Color(0xFF4CAF50),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TranslatorPage()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Bare Acts',
+                count: usageProvider.bareActsUsage,
+                limit: usageProvider.bareActsLimit,
+                icon: Iconsax.book_1,
+                color: const Color(0xFFFF9800),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const BareActsPage()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Chat History',
+                count: usageProvider.chatHistoryUsage,
+                limit: usageProvider.chatHistoryLimit,
+                icon: Iconsax.archive_book,
+                color: const Color(0xFF607D8B),
+                onTap: () {
+                  Navigator.pushNamed(context, '/chatHistory');
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Certified Copy',
+                count: usageProvider.certifiedCopyUsage,
+                limit: usageProvider.certifiedCopyLimit,
+                icon: Iconsax.document_copy,
+                color: const Color(0xFFE91E63),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const CertifiedCopyStateSelectionPage()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'AI Legal Diary',
+                count: 0, // Placeholder for now
+                limit: 100,
+                icon: Iconsax.note_1,
+                color: const Color(0xFF00E5FF), // Cyan/Blue
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DiaryPage()),
+                  );
+                },
+              ),
+            ];
+
+            return Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: cards.map((card) {
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Calculate width for 2 columns with spacing
+                    // Screen width - padding (32) - spacing (16) / 2
+                    final width = (MediaQuery.of(context).size.width - 48) / 2;
+                    return SizedBox(
+                      width: width,
+                      height: width, // Square aspect ratio
+                      child: card,
                     );
                   },
-                ),
-                FeatureUsageCard(
-                  title: 'Cases',
-                  count: usageProvider.casesUsage,
-                  limit: usageProvider.casesLimit,
-                  icon: Iconsax.briefcase,
-                  color: const Color(0xFF2C55A9),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CaseListScreen()),
-                    );
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'Scan to PDF',
-                  count: usageProvider.scanToPdfUsage,
-                  limit: usageProvider.scanToPdfLimit,
-                  icon: Iconsax.scan,
-                  color: const Color(0xFFE040FB),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ScannerPage()),
-                    );
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'Documents',
-                  count: usageProvider.documentsUsage,
-                  limit: usageProvider.documentsLimit,
-                  icon: Iconsax.document_text,
-                  color: const Color(0xFFFF5722),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/generateDoc');
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'Risk Analysis',
-                  count: usageProvider.riskAnalysisUsage,
-                  limit: usageProvider.riskAnalysisLimit,
-                  icon: Iconsax.chart_square,
-                  color: const Color(0xFFFFD700),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const RiskAnalysisPage()),
-                    );
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'AI Voice',
-                  count: usageProvider.aiVoiceUsage,
-                  limit: usageProvider.aiVoiceLimit,
-                  icon: Iconsax.microphone_2,
-                  color: const Color(0xFFE91E63),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AiVoicePage()),
-                    );
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'Case Finder',
-                  count: usageProvider.caseFinderUsage,
-                  limit: usageProvider.caseFinderLimit,
-                  icon: Iconsax.search_favorite,
-                  color: const Color(0xFF9C27B0),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CaseFinderPage()),
-                    );
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'Court Orders',
-                  count: usageProvider.courtOrdersUsage,
-                  limit: usageProvider.courtOrdersLimit,
-                  icon: Iconsax.document_text_1,
-                  color: const Color(0xFF00BCD4),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/courtOrderReader');
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'Translator',
-                  count: usageProvider.translatorUsage,
-                  limit: usageProvider.translatorLimit,
-                  icon: Iconsax.translate,
-                  color: const Color(0xFF4CAF50),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const TranslatorPage()),
-                    );
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'Bare Acts',
-                  count: usageProvider.bareActsUsage,
-                  limit: usageProvider.bareActsLimit,
-                  icon: Iconsax.book_1,
-                  color: const Color(0xFFFF9800),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const BareActsPage()),
-                    );
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'Chat History',
-                  count: usageProvider.chatHistoryUsage,
-                  limit: usageProvider.chatHistoryLimit,
-                  icon: Iconsax.archive_book,
-                  color: const Color(0xFF607D8B),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/chatHistory');
-                  },
-                ),
-                FeatureUsageCard(
-                  title: 'Certified Copy',
-                  count: usageProvider.certifiedCopyUsage,
-                  limit: usageProvider.certifiedCopyLimit,
-                  icon: Iconsax.document_copy,
-                  color: const Color(0xFFE91E63),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const CertifiedCopyStateSelectionPage()),
-                    );
-                  },
-                ),
-              ],
+                );
+              }).toList(),
             );
           },
         ),
@@ -268,7 +293,7 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3), // Slower for less CPU
       vsync: this,
     )..repeat(reverse: false);
   }
@@ -381,63 +406,65 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return FractionallySizedBox(
-                      widthFactor: percentage,
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 8,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  widget.color.withOpacity(0.7),
-                                  widget.color,
+                RepaintBoundary(
+                  child: AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return FractionallySizedBox(
+                        widthFactor: percentage,
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: 8,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    widget.color.withOpacity(0.7),
+                                    widget.color,
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: widget.color.withOpacity(0.5),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 0),
+                                  ),
                                 ],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: widget.color.withOpacity(0.5),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 0),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (percentage > 0)
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: ShaderMask(
-                                shaderCallback: (rect) {
-                                  return LinearGradient(
-                                    begin: Alignment(
-                                        -1.0 + (_controller.value * 3), 0),
-                                    end: Alignment(
-                                        1.0 + (_controller.value * 3), 0),
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.white.withOpacity(0.5),
-                                      Colors.transparent,
-                                    ],
-                                    stops: const [0.0, 0.5, 1.0],
-                                  ).createShader(rect);
-                                },
-                                blendMode: BlendMode.srcATop,
-                                child: Container(
-                                  height: 8,
-                                  color: Colors.white.withOpacity(0.1),
-                                ),
                               ),
                             ),
-                        ],
-                      ),
-                    );
-                  },
+                            if (percentage > 0)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: ShaderMask(
+                                  shaderCallback: (rect) {
+                                    return LinearGradient(
+                                      begin: Alignment(
+                                          -1.0 + (_controller.value * 3), 0),
+                                      end: Alignment(
+                                          1.0 + (_controller.value * 3), 0),
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.white.withOpacity(0.5),
+                                        Colors.transparent,
+                                      ],
+                                      stops: const [0.0, 0.5, 1.0],
+                                    ).createShader(rect);
+                                  },
+                                  blendMode: BlendMode.srcATop,
+                                  child: Container(
+                                    height: 8,
+                                    color: Colors.white.withOpacity(0.1),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
