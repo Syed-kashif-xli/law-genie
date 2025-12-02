@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UIProvider extends ChangeNotifier {
-  bool _isNavBarVisible = true;
+  bool _isNavBarVisible = false;
   static const String _navBarKey = 'nav_bar_visible';
 
   UIProvider() {
@@ -13,7 +13,7 @@ class UIProvider extends ChangeNotifier {
 
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    _isNavBarVisible = prefs.getBool(_navBarKey) ?? true;
+    _isNavBarVisible = prefs.getBool(_navBarKey) ?? false;
     notifyListeners();
   }
 

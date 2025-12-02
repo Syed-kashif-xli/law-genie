@@ -108,4 +108,27 @@ class FirestoreService {
       return null;
     }
   }
+
+  // Get all orders for a user
+  Future<List<OrderModel>> getUserOrders(String userId) async {
+    try {
+      final querySnapshot = await _db
+          .collection('orders')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      final docs = querySnapshot.docs;
+      // Sort by createdAt descending
+      docs.sort((a, b) {
+        final t1 = a.data()['createdAt'] as Timestamp;
+        final t2 = b.data()['createdAt'] as Timestamp;
+        return t2.compareTo(t1);
+      });
+
+      return docs.map((doc) => OrderModel.fromMap(doc.data(), doc.id)).toList();
+    } catch (e) {
+      print('Error fetching user orders: $e');
+      return [];
+    }
+  }
 }

@@ -52,7 +52,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _refreshData() async {
     await Future.wait([
-      Provider.of<NewsProvider>(context, listen: false).fetchNews(),
+      Provider.of<NewsProvider>(context, listen: false)
+          .fetchNews(forceRefresh: true),
     ]);
   }
 
@@ -177,7 +178,7 @@ class _LegalNewsFeed extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Legal News Feed',
+              'Legal News',
               style: GoogleFonts.poppins(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

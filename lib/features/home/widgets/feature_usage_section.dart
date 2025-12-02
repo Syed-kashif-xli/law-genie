@@ -16,6 +16,7 @@ import 'package:myapp/features/bare_acts/bare_acts_page.dart';
 import 'package:myapp/features/certified_copy/certified_copy_state_selection_page.dart';
 
 import 'package:myapp/features/diary/diary_page.dart';
+import 'package:myapp/features/home/pages/all_news_page.dart';
 
 class FeatureUsageSection extends StatelessWidget {
   const FeatureUsageSection({super.key});
@@ -233,6 +234,20 @@ class FeatureUsageSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const DiaryPage()),
+                  );
+                },
+              ),
+              FeatureUsageCard(
+                title: 'Legal News',
+                count: 0, // Static for now
+                limit: 100,
+                icon: Iconsax.global,
+                color: const Color(0xFF1DE9B6), // Vibrant Teal
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AllNewsPage()),
                   );
                 },
               ),

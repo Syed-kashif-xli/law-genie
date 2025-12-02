@@ -13,7 +13,9 @@ class NewsProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetchNews() async {
+  Future<void> fetchNews({bool forceRefresh = false}) async {
+    if (!forceRefresh && _news.isNotEmpty) return;
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();

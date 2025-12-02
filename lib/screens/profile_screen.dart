@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:myapp/features/auth/auth_wrapper.dart';
 import 'package:myapp/screens/edit_profile_screen.dart';
 import 'package:myapp/screens/language_screen.dart';
@@ -8,6 +9,7 @@ import 'package:myapp/generated/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/ui_provider.dart';
+import 'package:myapp/screens/order_history_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -33,11 +35,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const AuthWrapper()),
-      (Route<dynamic> route) => false,
-    );
+    try {
+      await GoogleSignIn().signOut();
+      await FirebaseAuth.instance.signOut();
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const AuthWrapper()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error signing out: $e')),
+        );
+      }
+    }
   }
 
   void _showHelpCenter() {
@@ -248,7 +261,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ProfileMenuOption(
               title: l10n.orderHistory,
               icon: Icons.history_outlined,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const OrderHistoryScreen()),
+                );
+              },
             ),
             ProfileMenuOption(
               title: l10n.inviteFriends,
