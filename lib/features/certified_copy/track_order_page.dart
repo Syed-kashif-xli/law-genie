@@ -233,14 +233,24 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
 
   void _trackOrder() {
     if (_formKey.currentState!.validate()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => OrderTimelinePage(
-            token: _tokenController.text.trim(),
+      if (_tokenController.text.trim().isEmpty) return;
+
+      try {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderTimelinePage(
+              token: _tokenController.text.trim(),
+            ),
           ),
-        ),
-      );
+        );
+      } catch (e) {
+        print('Error navigating to OrderTimelinePage: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Error: Could not track order. Please try again.')),
+        );
+      }
     }
   }
 

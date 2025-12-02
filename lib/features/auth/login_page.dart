@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -286,136 +287,146 @@ class _LoginPageState extends State<LoginPage> {
     final screenHeight = MediaQuery.of(context).size.height;
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1A0B2E), Color(0xFF42218E)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        systemNavigationBarColor: Color(0xFF42218E),
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        backgroundColor: const Color(0xFF42218E),
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1A0B2E), Color(0xFF42218E)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-                top: -100,
-                left: -100,
-                child:
-                    _buildAmbientLight(const Color(0xFF6B3E9A), 250, 100, 50)),
-            Positioned(
-                bottom: -150,
-                right: -150,
-                child: _buildAmbientLight(Colors.blue, 350, 150, 70)),
-            SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(height: screenHeight * 0.05),
-                      const Icon(Iconsax.user, color: Colors.white, size: 50),
-                      const SizedBox(height: 16),
-                      Text(_isSignUp ? l10n.createAccount : l10n.welcomeBack,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineLarge
-                              ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Text(
-                          _isSignUp
-                              ? l10n.createNewAccount
-                              : l10n.signInToAccount,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.copyWith(color: Colors.white70)),
-                      const SizedBox(height: 32),
-                      _buildGlassCard(
-                        child: Column(
-                          children: [
-                            _buildLoginTypeToggle(),
-                            const SizedBox(height: 24),
-                            if (_isEmailLogin) ...[
-                              _buildTextField(l10n.email, Iconsax.sms,
-                                  controller: _emailController, isEmail: true),
+          child: Stack(
+            children: [
+              Positioned(
+                  top: -100,
+                  left: -100,
+                  child: _buildAmbientLight(
+                      const Color(0xFF6B3E9A), 250, 100, 50)),
+              Positioned(
+                  bottom: -150,
+                  right: -150,
+                  child: _buildAmbientLight(Colors.blue, 350, 150, 70)),
+              SafeArea(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: screenHeight * 0.05),
+                        const Icon(Iconsax.user, color: Colors.white, size: 50),
+                        const SizedBox(height: 16),
+                        Text(_isSignUp ? l10n.createAccount : l10n.welcomeBack,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineLarge
+                                ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Text(
+                            _isSignUp
+                                ? l10n.createNewAccount
+                                : l10n.signInToAccount,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(color: Colors.white70)),
+                        const SizedBox(height: 32),
+                        _buildGlassCard(
+                          child: Column(
+                            children: [
+                              _buildLoginTypeToggle(),
+                              const SizedBox(height: 24),
+                              if (_isEmailLogin) ...[
+                                _buildTextField(l10n.email, Iconsax.sms,
+                                    controller: _emailController,
+                                    isEmail: true),
+                                const SizedBox(height: 16),
+                                _buildTextField(l10n.password, Iconsax.lock_1,
+                                    controller: _passwordController,
+                                    isPassword: true),
+                              ] else if (_codeSent) ...[
+                                _buildTextField(
+                                    l10n.otp, Iconsax.password_check,
+                                    controller: _otpController),
+                                const SizedBox(height: 8),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () => setState(() {
+                                      _codeSent = false;
+                                      _otpController.clear();
+                                      _verificationId = null;
+                                    }),
+                                    child: Text(l10n.changeNumber,
+                                        style: const TextStyle(
+                                            color: Colors.white70)),
+                                  ),
+                                )
+                              ] else ...[
+                                _buildPhoneField(),
+                              ],
                               const SizedBox(height: 16),
-                              _buildTextField(l10n.password, Iconsax.lock_1,
-                                  controller: _passwordController,
-                                  isPassword: true),
-                            ] else if (_codeSent) ...[
-                              _buildTextField(l10n.otp, Iconsax.password_check,
-                                  controller: _otpController),
-                              const SizedBox(height: 8),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: () => setState(() {
-                                    _codeSent = false;
-                                    _otpController.clear();
-                                    _verificationId = null;
-                                  }),
-                                  child: Text(l10n.changeNumber,
+                              if (_isEmailLogin)
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(l10n.forgotPassword,
                                       style: const TextStyle(
                                           color: Colors.white70)),
                                 ),
-                              )
-                            ] else ...[
-                              _buildPhoneField(),
                             ],
-                            const SizedBox(height: 16),
-                            if (_isEmailLogin)
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(l10n.forgotPassword,
-                                    style:
-                                        const TextStyle(color: Colors.white70)),
-                              ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        _buildGlowingButton(),
+                        const SizedBox(height: 32),
+                        Text(l10n.orContinueWith,
+                            style: const TextStyle(color: Colors.white70)),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildSocialButton(
+                                FontAwesomeIcons.google, _signInWithGoogle),
+                            const SizedBox(width: 24),
+                            _buildSocialButton(FontAwesomeIcons.apple, () {}),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      _buildGlowingButton(),
-                      const SizedBox(height: 32),
-                      Text(l10n.orContinueWith,
-                          style: const TextStyle(color: Colors.white70)),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildSocialButton(
-                              FontAwesomeIcons.google, _signInWithGoogle),
-                          const SizedBox(width: 24),
-                          _buildSocialButton(FontAwesomeIcons.apple, () {}),
-                        ],
-                      ),
-                      SizedBox(height: screenHeight * 0.05),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                              _isSignUp
-                                  ? l10n.alreadyHaveAccount
-                                  : l10n.dontHaveAccount,
-                              style: const TextStyle(color: Colors.white70)),
-                          GestureDetector(
-                            onTap: () => setState(() => _isSignUp = !_isSignUp),
-                            child: Text(_isSignUp ? l10n.signIn : l10n.signUp,
-                                style: TextStyle(
-                                    color: Colors.blue.shade300,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
-                    ],
+                        SizedBox(height: screenHeight * 0.05),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                                _isSignUp
+                                    ? l10n.alreadyHaveAccount
+                                    : l10n.dontHaveAccount,
+                                style: const TextStyle(color: Colors.white70)),
+                            GestureDetector(
+                              onTap: () =>
+                                  setState(() => _isSignUp = !_isSignUp),
+                              child: Text(_isSignUp ? l10n.signIn : l10n.signUp,
+                                  style: TextStyle(
+                                      color: Colors.blue.shade300,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

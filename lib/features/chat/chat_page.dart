@@ -34,8 +34,10 @@ class AIChatPage extends StatefulWidget {
 class _Message {
   final String text;
   final bool isUser;
+  bool hasAnimated;
 
-  _Message({required this.text, required this.isUser});
+  _Message(
+      {required this.text, required this.isUser, this.hasAnimated = false});
 }
 
 class _DocumentMessage {
@@ -155,13 +157,15 @@ class _AIChatPageState extends State<AIChatPage> {
         } else {
           _messages.add(_Message(text: message.userMessage, isUser: true));
         }
-        _messages.add(_Message(text: message.botResponse, isUser: false));
+        _messages.add(_Message(
+            text: message.botResponse, isUser: false, hasAnimated: true));
       }
     } else {
       _sessionId = const Uuid().v4();
       _messages.add(_Message(
         text: "🧞‍♂️ I’m Law Genie — your Indian AI Legal Assistant.",
         isUser: false,
+        hasAnimated: true,
       ));
     }
     _scrollToBottom();
@@ -413,7 +417,8 @@ class _AIChatPageState extends State<AIChatPage> {
           name: attachmentName,
         ));
       } else {
-        _messages.add(_Message(text: userMessage, isUser: true));
+        _messages
+            .add(_Message(text: userMessage, isUser: true, hasAnimated: true));
       }
       _textController.clear();
       _selectedFile = null;
@@ -475,7 +480,8 @@ class _AIChatPageState extends State<AIChatPage> {
     } catch (e) {
       setState(() {
         _messages.removeWhere((element) => element is _TypingIndicator);
-        _messages.add(_Message(text: 'Error: ${e.toString()}', isUser: false));
+        _messages.add(_Message(
+            text: 'Error: ${e.toString()}', isUser: false, hasAnimated: true));
         _scrollToBottom();
       });
     }
@@ -520,9 +526,9 @@ class _AIChatPageState extends State<AIChatPage> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF0A032A), Color(0xFF151038)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+          colors: [Color(0xFF0F0C29), Color(0xFF302B63), Color(0xFF24243E)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
       child: Scaffold(
@@ -644,21 +650,7 @@ class _AIChatPageState extends State<AIChatPage> {
         ],
       ),
       actions: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          decoration: BoxDecoration(
-            color: const Color(0xFF02F1C3),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            'AI Online',
-            style: GoogleFonts.poppins(
-              fontSize: 9,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF0A032A),
-            ),
-          ),
-        ),
+        // AI Online badge removed
         IconButton(
           icon: const Icon(Icons.download_outlined, color: Colors.white),
           onPressed: _generatePdf,
@@ -680,18 +672,14 @@ class _AIChatPageState extends State<AIChatPage> {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       decoration: BoxDecoration(
-        color: const Color(0xFF151038).withOpacity(0.98),
+        color: const Color(0xFF151038).withOpacity(0.95),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF02F1C3).withOpacity(0.05),
+            color: Colors.black.withOpacity(0.2),
             offset: const Offset(0, -4),
-            blurRadius: 20,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            offset: const Offset(0, -2),
-            blurRadius: 10,
+            blurRadius: 16,
           ),
         ],
       ),
@@ -701,7 +689,7 @@ class _AIChatPageState extends State<AIChatPage> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.white.withOpacity(0.1)),
               ),
@@ -716,7 +704,7 @@ class _AIChatPageState extends State<AIChatPage> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0A032A),
+                  color: Colors.black.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: Colors.white.withOpacity(0.1)),
                 ),
@@ -728,7 +716,7 @@ class _AIChatPageState extends State<AIChatPage> {
                     hintText: 'Ask Law Genie...',
                     hintStyle: GoogleFonts.poppins(color: Colors.white38),
                     border: InputBorder.none,
-                    filled: false, // Override global theme
+                    filled: false,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 14),
                     suffixIcon: IconButton(
@@ -759,7 +747,7 @@ class _AIChatPageState extends State<AIChatPage> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF02F1C3).withOpacity(0.4),
+                    color: const Color(0xFF02F1C3).withOpacity(0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -789,11 +777,11 @@ class _TypingIndicatorBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Container(
-            margin: const EdgeInsets.only(right: 12, top: 4),
-            padding: const EdgeInsets.all(2), // Reduced padding
+            margin: const EdgeInsets.only(right: 12, bottom: 4),
+            padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               color: const Color(0xFF19173A),
               shape: BoxShape.circle,
@@ -810,18 +798,22 @@ class _TypingIndicatorBubble extends StatelessWidget {
             child: ClipOval(
               child: Image.asset(
                 'assets/images/logo.png',
-                height: 36, // Increased size
-                width: 36, // Increased size
+                height: 28,
+                width: 28,
                 fit: BoxFit.cover,
               ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF19173A),
-              borderRadius:
-                  BorderRadius.circular(20.0).copyWith(topLeft: Radius.zero),
+              color: const Color(0xFF19173A).withOpacity(0.8),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.zero,
+              ),
               border: Border.all(color: Colors.white.withOpacity(0.1)),
             ),
             child: AnimatedTextKit(
@@ -829,11 +821,12 @@ class _TypingIndicatorBubble extends StatelessWidget {
                 TyperAnimatedText(
                   '...',
                   textStyle: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 16,
+                    color: Colors.white70,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
+                    height: 0.5,
                   ),
-                  speed: const Duration(milliseconds: 300),
+                  speed: const Duration(milliseconds: 200),
                 ),
               ],
               repeatForever: true,
@@ -861,8 +854,16 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
     setState(() => isPlaying = true);
     await flutterTts.speak(widget.message.text);
     flutterTts.setCompletionHandler(() {
-      setState(() => isPlaying = false);
+      if (mounted) {
+        setState(() => isPlaying = false);
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
   }
 
   @override
@@ -872,9 +873,9 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
       children: [
         Container(
           margin: const EdgeInsets.only(right: 12, top: 4),
-          padding: const EdgeInsets.all(2), // Reduced padding
+          padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
-            color: const Color(0xFF19173A), // Match the bubble background
+            color: const Color(0xFF19173A),
             shape: BoxShape.circle,
             border: Border.all(
                 color: const Color(0xFF02F1C3).withOpacity(0.3), width: 1),
@@ -889,8 +890,8 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
           child: ClipOval(
             child: Image.asset(
               'assets/images/logo.png',
-              height: 36, // Increased size
-              width: 36, // Increased size
+              height: 32,
+              width: 32,
               fit: BoxFit.cover,
             ),
           ),
@@ -899,60 +900,89 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
           child: Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: const Color(0xFF19173A).withOpacity(0.8),
-              borderRadius:
-                  BorderRadius.circular(20.0).copyWith(topLeft: Radius.zero),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              color: const Color(0xFF19173A).withOpacity(0.9),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.zero,
+                topRight: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnimatedTextKit(
-                  animatedTexts: [
-                    TyperAnimatedText(
-                      widget.message.text,
-                      textStyle: GoogleFonts.poppins(
-                        fontSize: 15,
-                        color: Colors.white,
-                        height: 1.5,
-                      ),
-                      speed: const Duration(milliseconds: 30),
+                if (widget.message.hasAnimated)
+                  Text(
+                    widget.message.text,
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      color: Colors.white,
+                      height: 1.5,
                     ),
-                  ],
-                  totalRepeatCount: 1,
-                  displayFullTextOnTap: true,
-                  isRepeatingAnimation: false,
-                ),
+                  )
+                else
+                  AnimatedTextKit(
+                    animatedTexts: [
+                      TyperAnimatedText(
+                        widget.message.text,
+                        textStyle: GoogleFonts.poppins(
+                          fontSize: 15,
+                          color: Colors.white,
+                          height: 1.5,
+                        ),
+                        speed: const Duration(milliseconds: 20),
+                      ),
+                    ],
+                    totalRepeatCount: 1,
+                    displayFullTextOnTap: true,
+                    isRepeatingAnimation: false,
+                    onFinished: () {
+                      setState(() {
+                        widget.message.hasAnimated = true;
+                      });
+                    },
+                  ),
                 const SizedBox(height: 12),
                 GestureDetector(
                   onTap: _speak,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        '21:52', // This should be dynamic
-                        style: TextStyle(fontSize: 12, color: Colors.white70),
-                      ),
-                      const SizedBox(width: 12),
-                      Icon(
-                        isPlaying ? Iconsax.pause : Iconsax.volume_high,
-                        size: 16,
-                        color: isPlaying
-                            ? const Color(0xFF02F1C3)
-                            : Colors.white70,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        isPlaying ? 'Playing...' : 'Listen',
-                        style: TextStyle(
-                          fontSize: 12,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isPlaying ? Iconsax.pause : Iconsax.volume_high,
+                          size: 14,
                           color: isPlaying
                               ? const Color(0xFF02F1C3)
                               : Colors.white70,
-                          fontWeight: FontWeight.w500,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        Text(
+                          isPlaying ? 'Playing' : 'Listen',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isPlaying
+                                ? const Color(0xFF02F1C3)
+                                : Colors.white70,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -975,28 +1005,35 @@ class _UserMessageBubble extends StatelessWidget {
       children: [
         Flexible(
           child: Container(
-            margin: const EdgeInsets.only(top: 8, bottom: 8, left: 80),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            margin: const EdgeInsets.only(top: 8, bottom: 8, left: 60),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF02F1C3), Color(0xFF00C7A0)],
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF02F1C3).withOpacity(0.15),
+                  const Color(0xFF02F1C3).withOpacity(0.05)
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius:
-                  BorderRadius.circular(20).copyWith(bottomRight: Radius.zero),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF02F1C3).withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.zero,
+                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
+              border: Border.all(
+                color: const Color(0xFF02F1C3).withOpacity(0.2),
+                width: 1,
+              ),
             ),
             child: Text(
               message.text,
               style: GoogleFonts.poppins(
-                  color: const Color(0xFF0A032A), fontSize: 15),
+                color: Colors.white.withOpacity(0.95),
+                fontSize: 15,
+                height: 1.4,
+              ),
             ),
           ),
         ),

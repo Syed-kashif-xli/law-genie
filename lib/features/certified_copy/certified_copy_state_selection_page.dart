@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'certified_copy_page.dart';
@@ -9,197 +10,204 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        title: Text(
-          'Select State',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        systemNavigationBarColor: Color(0xFF1A0B4E),
+        systemNavigationBarIconBrightness: Brightness.light,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF0A032A),
-              Color(0xFF1A0B4E),
-            ],
+      child: Scaffold(
+        backgroundColor: const Color(0xFF1A0B4E),
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+              onPressed: () => Navigator.pop(context),
+            ),
           ),
+          title: Text(
+            'Select State',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 20,
+            ),
+          ),
+          centerTitle: true,
         ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF02F1C3).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: const Color(0xFF02F1C3).withOpacity(0.2),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Iconsax.info_circle,
-                          color: const Color(0xFF02F1C3).withOpacity(0.8)),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Select the state where the property is registered to proceed with the certified copy request.',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white70,
-                            fontSize: 13,
-                            height: 1.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Track Order Card
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const TrackOrderPage(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF0A032A),
+                Color(0xFF1A0B4E),
+              ],
+            ),
+          ),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF02F1C3).withOpacity(0.2),
-                          const Color(0xFF02F1C3).withOpacity(0.05),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
+                      color: const Color(0xFF02F1C3).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFF02F1C3).withOpacity(0.3),
+                        color: const Color(0xFF02F1C3).withOpacity(0.2),
                       ),
                     ),
                     child: Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF02F1C3),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Iconsax.ticket,
-                            color: Colors.black,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
+                        Icon(Iconsax.info_circle,
+                            color: const Color(0xFF02F1C3).withOpacity(0.8)),
+                        const SizedBox(width: 12),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Track Application',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Check status of existing requests',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            'Select the state where the property is registered to proceed with the certified copy request.',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white70,
+                              fontSize: 13,
+                              height: 1.5,
+                            ),
                           ),
-                        ),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFF02F1C3),
-                          size: 16,
                         ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                Text(
-                  'Available States',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
+                  const SizedBox(height: 24),
+                  // Track Order Card
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TrackOrderPage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF02F1C3).withOpacity(0.2),
+                            const Color(0xFF02F1C3).withOpacity(0.05),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFF02F1C3).withOpacity(0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF02F1C3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Iconsax.ticket,
+                              color: Colors.black,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Track Application',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Check status of existing requests',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Color(0xFF02F1C3),
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                _buildStateCard(
-                  context,
-                  'Madhya Pradesh',
-                  'Active & Available',
-                  () {
-                    _showServiceSelectionBottomSheet(context);
-                  },
-                  true,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Coming Soon',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white54,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
+                  const SizedBox(height: 32),
+                  Text(
+                    'Available States',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                _buildStateCard(
-                  context,
-                  'Maharashtra',
-                  'Coming Soon',
-                  null,
-                  false,
-                ),
-                const SizedBox(height: 16),
-                _buildStateCard(
-                  context,
-                  'Delhi',
-                  'Coming Soon',
-                  null,
-                  false,
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  _buildStateCard(
+                    context,
+                    'Madhya Pradesh',
+                    'Active & Available',
+                    () {
+                      _showServiceSelectionBottomSheet(context);
+                    },
+                    true,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Coming Soon',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white54,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildStateCard(
+                    context,
+                    'Maharashtra',
+                    'Coming Soon',
+                    null,
+                    false,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildStateCard(
+                    context,
+                    'Delhi',
+                    'Coming Soon',
+                    null,
+                    false,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -362,9 +370,8 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
               : Colors.white.withOpacity(0.02),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: isActive
-                ? const Color(0xFF02F1C3).withOpacity(0.5)
-                : Colors.white.withOpacity(0.05),
+            color:
+                isActive ? Colors.transparent : Colors.white.withOpacity(0.05),
             width: isActive ? 1.5 : 1,
           ),
           boxShadow: isActive
