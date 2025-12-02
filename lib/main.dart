@@ -36,6 +36,7 @@ import 'package:myapp/providers/locale_provider.dart';
 import 'package:myapp/providers/ui_provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
 import 'package:myapp/providers/diary_provider.dart';
+import 'package:myapp/screens/permission_screen.dart';
 
 import 'package:firebase_app_check/firebase_app_check.dart';
 
@@ -209,6 +210,7 @@ class MyApp extends StatelessWidget {
             '/caseFinder': (context) => const CaseFinderPage(),
             '/bareActs': (context) => const BareActsPage(),
             '/translator': (context) => const TranslatorPage(),
+            '/permissions': (context) => const PermissionScreen(),
           },
           onGenerateRoute: (settings) {
             if (settings.name == '/aiChat') {

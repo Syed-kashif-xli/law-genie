@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:myapp/features/home/main_layout.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:myapp/services/firestore_service.dart';
@@ -268,10 +268,7 @@ class _LoginPageState extends State<LoginPage> {
     if (widget.agreedToTerms) {
       await _firestoreService.saveTermsAcceptance(user.uid);
     }
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainLayout()),
-    );
+    Navigator.pushReplacementNamed(context, '/permissions');
   }
 
   @override
@@ -397,8 +394,6 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             _buildSocialButton(
                                 FontAwesomeIcons.google, _signInWithGoogle),
-                            const SizedBox(width: 24),
-                            _buildSocialButton(FontAwesomeIcons.apple, () {}),
                           ],
                         ),
                         SizedBox(height: screenHeight * 0.05),
