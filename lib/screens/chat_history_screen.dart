@@ -94,10 +94,10 @@ class ChatHistoryScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF19173A),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -122,7 +122,7 @@ class ChatHistoryScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF02F1C3).withOpacity(0.1),
+                    color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Iconsax.message,
@@ -244,9 +244,10 @@ class ChatHistoryScreen extends StatelessWidget {
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               hintText: 'Enter new title',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
               enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white.withOpacity(0.5))),
+                  borderSide:
+                      BorderSide(color: Colors.white.withValues(alpha: 0.5))),
               focusedBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFF02F1C3))),
             ),

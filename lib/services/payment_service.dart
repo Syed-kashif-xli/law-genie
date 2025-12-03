@@ -7,7 +7,7 @@ class PaymentService {
   final Function(PaymentFailureResponse) onFailure;
   final Function(ExternalWalletResponse) onExternalWallet;
 
-  // TODO: Replace with your actual Razorpay Key ID
+  // NOTE: Replace with your actual Razorpay Key ID
   // IMPORTANT: Use the 'Key ID' (starts with rzp_test_...), NOT the 'Key Secret'.
   static const String _keyId = 'rzp_test_RmKhIbHkbXgir9';
 

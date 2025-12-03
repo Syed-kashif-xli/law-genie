@@ -1,4 +1,5 @@
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:flutter/foundation.dart';
 
 class GeminiService {
   final GenerativeModel _model;
@@ -30,7 +31,7 @@ class GeminiService {
       }
       return _chatSession!.sendMessageStream(Content.text(message));
     } catch (e) {
-      print('Error generating stream: $e');
+      debugPrint('Error generating stream: $e');
       rethrow;
     }
   }
@@ -43,7 +44,7 @@ class GeminiService {
       final response = await _chatSession!.sendMessage(Content.text(message));
       return response.text ?? '';
     } catch (e) {
-      print('Error generating text: $e');
+      debugPrint('Error generating text: $e');
       return 'Sorry, I encountered an error: $e';
     }
   }

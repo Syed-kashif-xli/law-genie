@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:myapp/models/chat_model.dart';
@@ -15,10 +16,10 @@ class ChatStorageService {
   String? get _userId => _auth.currentUser?.uid;
 
   Future<void> addChatSession(ChatSession session) async {
-    print(
+    debugPrint(
         'DEBUG: addChatSession called. UserID: $_userId, SessionID: ${session.sessionId}');
     if (_userId == null) {
-      print('DEBUG: UserID is null. Cannot save chat.');
+      debugPrint('DEBUG: UserID is null. Cannot save chat.');
       return;
     }
     try {
@@ -29,9 +30,9 @@ class ChatStorageService {
           .child('chats')
           .child(session.sessionId)
           .set(session.toMap());
-      print('DEBUG: Chat session saved successfully.');
+      debugPrint('DEBUG: Chat session saved successfully.');
     } catch (e) {
-      print('DEBUG: Error saving chat session: $e');
+      debugPrint('DEBUG: Error saving chat session: $e');
       rethrow;
     }
   }
@@ -61,7 +62,7 @@ class ChatStorageService {
                     .add(ChatSession.fromMap(Map<String, dynamic>.from(value)));
               }
             } catch (e) {
-              print('DEBUG: Error parsing session $key: $e');
+              debugPrint('DEBUG: Error parsing session $key: $e');
             }
           });
         } else if (data is List) {
@@ -78,16 +79,16 @@ class ChatStorageService {
         sessions.sort((a, b) => b.timestamp.compareTo(a.timestamp));
         return sessions;
       } catch (e) {
-        print('DEBUG: Error processing chat stream: $e');
+        debugPrint('DEBUG: Error processing chat stream: $e');
         return [];
       }
     });
   }
 
   Future<List<ChatSession>> getChatSessions() async {
-    print('DEBUG: getChatSessions called. UserID: $_userId');
+    debugPrint('DEBUG: getChatSessions called. UserID: $_userId');
     if (_userId == null) {
-      print('DEBUG: UserID is null. Returning empty list.');
+      debugPrint('DEBUG: UserID is null. Returning empty list.');
       return [];
     }
     try {
@@ -100,11 +101,11 @@ class ChatStorageService {
           .get();
 
       if (snapshot.exists) {
-        print('DEBUG: Snapshot exists. Parsing data...');
+        debugPrint('DEBUG: Snapshot exists. Parsing data...');
         final data = snapshot.value;
 
         if (data is! Map) {
-          print(
+          debugPrint(
               'DEBUG: Data is not a Map. It is ${data.runtimeType}. Returning empty list.');
           return [];
         }
@@ -116,24 +117,24 @@ class ChatStorageService {
               sessions
                   .add(ChatSession.fromMap(Map<String, dynamic>.from(value)));
             } else {
-              print(
+              debugPrint(
                   'DEBUG: Skipping invalid session data for key $key: $value');
             }
           } catch (e) {
-            print('DEBUG: Error parsing session $key: $e');
+            debugPrint('DEBUG: Error parsing session $key: $e');
           }
         });
 
         // Sort by timestamp descending (newest first)
         sessions.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-        print('DEBUG: Found ${sessions.length} sessions.');
+        debugPrint('DEBUG: Found ${sessions.length} sessions.');
         return sessions;
       } else {
-        print('DEBUG: No chat data found for user.');
+        debugPrint('DEBUG: No chat data found for user.');
       }
       return [];
     } catch (e) {
-      print('DEBUG: Error getting chat sessions: $e');
+      debugPrint('DEBUG: Error getting chat sessions: $e');
       return [];
     }
   }

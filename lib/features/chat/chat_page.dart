@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_ai/firebase_ai.dart';
@@ -10,6 +10,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -203,11 +204,11 @@ class _AIChatPageState extends State<AIChatPage> {
   }
 
   Future<void> _saveChatSession() async {
-    print(
+    debugPrint(
         'DEBUG: _saveChatSession called. Messages count: ${_messages.length}');
 
     if (_messages.length <= 1) {
-      print('DEBUG: Not enough messages to save.');
+      debugPrint('DEBUG: Not enough messages to save.');
       return;
     }
 
@@ -249,7 +250,7 @@ class _AIChatPageState extends State<AIChatPage> {
         final type = currentData.$4;
         final name = currentData.$5;
 
-        if (firstUserMessage == null) firstUserMessage = userText;
+        firstUserMessage ??= userText;
 
         // Look ahead for bot response
         if (i + 1 < _messages.length) {
@@ -268,7 +269,7 @@ class _AIChatPageState extends State<AIChatPage> {
       }
     }
 
-    print('DEBUG: Chat messages to save: ${chatMessages.length}');
+    debugPrint('DEBUG: Chat messages to save: ${chatMessages.length}');
 
     if (chatMessages.isNotEmpty) {
       String title = widget.chatSession?.title ?? 'New Chat';
@@ -284,7 +285,7 @@ class _AIChatPageState extends State<AIChatPage> {
         messages: chatMessages,
         title: title,
       );
-      print('DEBUG: Saving session: ${session.sessionId}, Title: $title');
+      debugPrint('DEBUG: Saving session: ${session.sessionId}, Title: $title');
 
       if (widget.chatSession == null) {
         Provider.of<UsageProvider>(context, listen: false)
@@ -294,7 +295,7 @@ class _AIChatPageState extends State<AIChatPage> {
       try {
         await _chatProvider.addChatSession(session);
       } catch (e) {
-        print('ERROR: Failed to save chat session: $e');
+        debugPrint('ERROR: Failed to save chat session: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -305,10 +306,10 @@ class _AIChatPageState extends State<AIChatPage> {
         }
       }
     } else {
-      print('DEBUG: No valid chat pairs to save. Check message types.');
+      debugPrint('DEBUG: No valid chat pairs to save. Check message types.');
       // Debug print types
       for (var m in _messages) {
-        print('DEBUG: Msg Type: ${m.runtimeType}');
+        debugPrint('DEBUG: Msg Type: ${m.runtimeType}');
       }
     }
   }
@@ -324,6 +325,7 @@ class _AIChatPageState extends State<AIChatPage> {
       await _speechToText.listen(onResult: _onSpeechResult);
       setState(() {});
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Microphone permission is required for voice input.'),
@@ -337,7 +339,7 @@ class _AIChatPageState extends State<AIChatPage> {
     setState(() {});
   }
 
-  void _onSpeechResult(result) {
+  void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
       _textController.text = result.recognizedWords;
     });
@@ -372,7 +374,7 @@ class _AIChatPageState extends State<AIChatPage> {
       final downloadUrl = await storageRef.getDownloadURL();
       return downloadUrl;
     } catch (e) {
-      print('Error uploading file: $e');
+      debugPrint('Error uploading file: $e');
       return null;
     }
   }
@@ -518,6 +520,7 @@ class _AIChatPageState extends State<AIChatPage> {
         })
         .where((item) => item != null)
         .join('\n\n');
+    // ignore: deprecated_member_use
     Share.share(chatHistory, subject: 'Chat History with Law Genie');
   }
 
@@ -607,7 +610,7 @@ class _AIChatPageState extends State<AIChatPage> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -672,12 +675,13 @@ class _AIChatPageState extends State<AIChatPage> {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       decoration: BoxDecoration(
-        color: const Color(0xFF151038).withOpacity(0.95),
+        color: const Color(0xFF151038).withValues(alpha: 0.95),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
+        border:
+            Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             offset: const Offset(0, -4),
             blurRadius: 16,
           ),
@@ -689,9 +693,9 @@ class _AIChatPageState extends State<AIChatPage> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
               child: IconButton(
                 icon: const Icon(Iconsax.attach_square, color: Colors.white70),
@@ -704,9 +708,10 @@ class _AIChatPageState extends State<AIChatPage> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                  border:
+                      Border.all(color: Colors.white.withValues(alpha: 0.1)),
                 ),
                 child: TextField(
                   controller: _textController,
@@ -747,7 +752,7 @@ class _AIChatPageState extends State<AIChatPage> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF02F1C3).withOpacity(0.3),
+                    color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -786,10 +791,11 @@ class _TypingIndicatorBubble extends StatelessWidget {
               color: const Color(0xFF19173A),
               shape: BoxShape.circle,
               border: Border.all(
-                  color: const Color(0xFF02F1C3).withOpacity(0.3), width: 1),
+                  color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
+                  width: 1),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF02F1C3).withOpacity(0.1),
+                  color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                   blurRadius: 8,
                   spreadRadius: 1,
                 ),
@@ -807,14 +813,14 @@ class _TypingIndicatorBubble extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF19173A).withOpacity(0.8),
+              color: const Color(0xFF19173A).withValues(alpha: 0.8),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
                 bottomRight: Radius.circular(20),
                 bottomLeft: Radius.zero,
               ),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: AnimatedTextKit(
               animatedTexts: [
@@ -878,10 +884,11 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
             color: const Color(0xFF19173A),
             shape: BoxShape.circle,
             border: Border.all(
-                color: const Color(0xFF02F1C3).withOpacity(0.3), width: 1),
+                color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
+                width: 1),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF02F1C3).withOpacity(0.1),
+                color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                 blurRadius: 8,
                 spreadRadius: 1,
               ),
@@ -900,17 +907,17 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
           child: Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: const Color(0xFF19173A).withOpacity(0.9),
+              color: const Color(0xFF19173A).withValues(alpha: 0.9),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.zero,
                 topRight: Radius.circular(20),
                 bottomRight: Radius.circular(20),
                 bottomLeft: Radius.circular(20),
               ),
-              border: Border.all(color: Colors.white.withOpacity(0.08)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -957,7 +964,7 @@ class _AIMessageBubbleState extends State<_AIMessageBubble> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -1010,8 +1017,8 @@ class _UserMessageBubble extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF02F1C3).withOpacity(0.15),
-                  const Color(0xFF02F1C3).withOpacity(0.05)
+                  const Color(0xFF02F1C3).withValues(alpha: 0.15),
+                  const Color(0xFF02F1C3).withValues(alpha: 0.05)
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -1023,14 +1030,14 @@ class _UserMessageBubble extends StatelessWidget {
                 bottomLeft: Radius.circular(20),
               ),
               border: Border.all(
-                color: const Color(0xFF02F1C3).withOpacity(0.2),
+                color: const Color(0xFF02F1C3).withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
             child: Text(
               message.text,
               style: GoogleFonts.poppins(
-                color: Colors.white.withOpacity(0.95),
+                color: Colors.white.withValues(alpha: 0.95),
                 fontSize: 15,
                 height: 1.4,
               ),
@@ -1195,7 +1202,7 @@ class _AttachmentMessageBubble extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(

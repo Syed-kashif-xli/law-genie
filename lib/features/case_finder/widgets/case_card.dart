@@ -58,12 +58,12 @@ class CaseCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: _getCategoryColor().withOpacity(0.3),
+          color: _getCategoryColor().withValues(alpha: 0.3),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: _getCategoryColor().withOpacity(0.1),
+            color: _getCategoryColor().withValues(alpha: 0.1),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -89,7 +89,7 @@ class CaseCard extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: _getCategoryColor().withOpacity(0.15),
+                        color: _getCategoryColor().withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -120,10 +120,10 @@ class CaseCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
                         ),
                         child: Text(
@@ -155,7 +155,7 @@ class CaseCard extends StatelessWidget {
                 Text(
                   legalCase.caseNumber,
                   style: GoogleFonts.poppins(
-                    color: const Color(0xFF02F1C3).withOpacity(0.7),
+                    color: const Color(0xFF02F1C3).withValues(alpha: 0.7),
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -209,10 +209,10 @@ class CaseCard extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.1),
+                            color: Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: Colors.orange.withOpacity(0.3),
+                              color: Colors.orange.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Row(
@@ -248,10 +248,10 @@ class CaseCard extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: _getCategoryColor().withOpacity(0.1),
+                            color: _getCategoryColor().withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: _getCategoryColor().withOpacity(0.3),
+                              color: _getCategoryColor().withValues(alpha: 0.3),
                             ),
                           ),
                           child: Row(

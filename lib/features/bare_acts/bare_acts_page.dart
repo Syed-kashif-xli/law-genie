@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 import '../../services/bare_act_service.dart';
 import 'models/bare_act.dart';
 import 'bare_act_viewer_page.dart';
@@ -116,7 +116,7 @@ class _BareActsPageState extends State<BareActsPage> {
                       color: const Color(0xFF1A1832),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFF02F1C3).withOpacity(0.3),
+                        color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
                       ),
                     ),
                     child: TextField(
@@ -165,13 +165,14 @@ class _BareActsPageState extends State<BareActsPage> {
                                 horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? const Color(0xFF02F1C3).withOpacity(0.15)
-                                  : Colors.white.withOpacity(0.05),
+                                  ? const Color(0xFF02F1C3)
+                                      .withValues(alpha: 0.15)
+                                  : Colors.white.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isSelected
                                     ? const Color(0xFF02F1C3)
-                                    : Colors.white.withOpacity(0.1),
+                                    : Colors.white.withValues(alpha: 0.1),
                               ),
                             ),
                             child: Text(
@@ -219,7 +220,7 @@ class _BareActsPageState extends State<BareActsPage> {
                                 color: const Color(0xFF1A1832),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.05),
+                                  color: Colors.white.withValues(alpha: 0.05),
                                 ),
                               ),
                               child: ListTile(
@@ -228,7 +229,7 @@ class _BareActsPageState extends State<BareActsPage> {
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFF02F1C3)
-                                        .withOpacity(0.1),
+                                        .withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Icon(

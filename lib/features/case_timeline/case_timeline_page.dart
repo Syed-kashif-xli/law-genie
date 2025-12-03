@@ -91,7 +91,8 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: _getStatusColor(item.status).withOpacity(0.5),
+                          color: _getStatusColor(item.status)
+                              .withValues(alpha: 0.5),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),
@@ -115,7 +116,7 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                   child: Card(
                     elevation: 8,
                     color: const Color(0xFF19173A), // Dark card background
-                    shadowColor: Colors.black.withOpacity(0.5),
+                    shadowColor: Colors.black.withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -124,7 +125,7 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                         borderRadius: BorderRadius.circular(15),
                         gradient: LinearGradient(
                           colors: [
-                            _getStatusColor(item.status).withOpacity(0.2),
+                            _getStatusColor(item.status).withValues(alpha: 0.2),
                             const Color(0xFF19173A), // Dark gradient end
                           ],
                           begin: Alignment.topLeft,
@@ -153,14 +154,14 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                                       Icon(Icons.calendar_today,
                                           size: 16,
                                           color: theme.colorScheme.onSurface
-                                              .withOpacity(0.6)),
+                                              .withValues(alpha: 0.6)),
                                       const SizedBox(width: 8),
                                       Text(
                                         DateFormat.yMMMMd().format(item.date),
                                         style: theme.textTheme.bodyMedium
                                             ?.copyWith(
                                           color: theme.colorScheme.onSurface
-                                              .withOpacity(0.8),
+                                              .withValues(alpha: 0.8),
                                         ),
                                       ),
                                     ],
@@ -170,7 +171,7 @@ class CaseTimelinePageState extends State<CaseTimelinePage> {
                                     item.description,
                                     style: theme.textTheme.bodyLarge?.copyWith(
                                       color: theme.colorScheme.onSurface
-                                          .withOpacity(0.9),
+                                          .withValues(alpha: 0.9),
                                     ),
                                   ),
                                   const SizedBox(height: 16),
@@ -370,6 +371,7 @@ class AddEventDialogState extends State<AddEventDialog> {
                 ],
               ),
               DropdownButtonFormField<TimelineStatus>(
+                // ignore: deprecated_member_use
                 value: _selectedStatus,
                 onChanged: (newValue) {
                   setState(() {
@@ -448,6 +450,8 @@ class AddEventDialogState extends State<AddEventDialog> {
     );
     if (pickedDate == null) return; // User cancelled
 
+    if (!mounted) return;
+
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_reminderDate ?? DateTime.now()),
@@ -479,6 +483,7 @@ class AddEventDialogState extends State<AddEventDialog> {
     DateTime? finalReminderDate;
     if (_isReminderSet && _reminderDate != null) {
       if (_reminderDate!.isBefore(DateTime.now())) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Reminder date must be in the future')),
         );

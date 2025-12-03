@@ -72,7 +72,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Iconsax.receipt_item,
-                      size: 64, color: Colors.white.withOpacity(0.5)),
+                      size: 64, color: Colors.white.withValues(alpha: 0.5)),
                   const SizedBox(height: 16),
                   Text(
                     'No orders found',
@@ -126,10 +126,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF151038),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -140,7 +140,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 24),
@@ -173,11 +173,12 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: _getStatusColor(order.status).withOpacity(0.1),
+                        color: _getStatusColor(order.status)
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                            color:
-                                _getStatusColor(order.status).withOpacity(0.3)),
+                            color: _getStatusColor(order.status)
+                                .withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         order.status.toUpperCase(),

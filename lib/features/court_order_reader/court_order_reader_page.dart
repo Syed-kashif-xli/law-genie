@@ -97,6 +97,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
 
       if (summary != null) {
         usageProvider.incrementCourtOrders();
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -105,9 +106,11 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error summarizing documents: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error summarizing documents: $e')),
+        );
+      }
     } finally {
       setState(() {
         _isLoading = false;
@@ -206,7 +209,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             spreadRadius: 2,
             blurRadius: 12,
             offset: const Offset(0, 5),

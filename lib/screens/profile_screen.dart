@@ -86,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: const Color(0xFF0A032A),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF02F1C3).withOpacity(0.3),
+                  color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
                 ),
               ),
               child: Row(
@@ -184,10 +184,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   radius: 60,
                   backgroundImage:
                       photoUrl != null ? NetworkImage(photoUrl) : null,
+                  backgroundColor: Colors.grey.shade300,
                   child: photoUrl == null
                       ? const Icon(Icons.person, size: 60, color: Colors.white)
                       : null,
-                  backgroundColor: Colors.grey.shade300,
                 ),
                 Positioned(
                   bottom: 0,
@@ -273,6 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: l10n.inviteFriends,
               icon: Icons.group_add_outlined,
               onTap: () {
+                // ignore: deprecated_member_use
                 Share.share('Check out Law Genie, your AI Legal Partner!');
               },
             ),
@@ -335,7 +336,7 @@ class ProfileMenuOption extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 spreadRadius: 1,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
@@ -399,7 +400,7 @@ class ProfileMenuOptionWithSwitch extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 3),
@@ -427,7 +428,7 @@ class ProfileMenuOptionWithSwitch extends StatelessWidget {
             Switch(
               value: value,
               onChanged: onChanged,
-              activeColor: const Color(0xFF2C55A9),
+              activeThumbColor: const Color(0xFF2C55A9),
             ),
           ],
         ),

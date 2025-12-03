@@ -34,13 +34,17 @@ class SummaryDisplayPage extends StatelessWidget {
       await file.writeAsBytes(await pdf.save());
       OpenFile.open(file.path);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Summary saved to ${file.path}')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Summary saved to ${file.path}')),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save summary: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save summary: $e')),
+        );
+      }
     }
   }
 
@@ -80,7 +84,7 @@ class SummaryDisplayPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 spreadRadius: 2,
                 blurRadius: 12,
                 offset: const Offset(0, 5),

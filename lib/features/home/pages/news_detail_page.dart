@@ -71,10 +71,11 @@ class NewsDetailPage extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF6C63FF).withOpacity(0.2),
+                          color: const Color(0xFF6C63FF).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                              color: const Color(0xFF6C63FF).withOpacity(0.5)),
+                              color: const Color(0xFF6C63FF)
+                                  .withValues(alpha: 0.5)),
                         ),
                         child: Text(
                           'Law Genie News',
@@ -87,14 +88,14 @@ class NewsDetailPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Icon(Icons.access_time,
-                          size: 14, color: Colors.white.withOpacity(0.6)),
+                          size: 14, color: Colors.white.withValues(alpha: 0.6)),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           _formatDate(news.publishedAt),
                           style: GoogleFonts.poppins(
                             fontSize: 12,
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -106,7 +107,7 @@ class NewsDetailPage extends StatelessWidget {
                     _cleanDescription(news.description),
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       height: 1.6,
                     ),
                   ),

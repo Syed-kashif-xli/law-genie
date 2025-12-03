@@ -48,13 +48,11 @@ class _PermissionScreenState extends State<PermissionScreen> {
       _isRequesting = true;
     });
 
-    Map<Permission, PermissionStatus> statuses = await [
+    await [
       Permission.camera,
       Permission.microphone,
       Permission.storage,
       Permission.notification,
-      // Add media permissions for Android 13+ if needed,
-      // but usually storage permission handling covers the intent or specific media types
       Permission.photos,
       Permission.videos,
       Permission.audio,

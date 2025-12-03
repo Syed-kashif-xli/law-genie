@@ -61,7 +61,9 @@ Future<void> main() async {
 
   // Initialize App Check with Debug Provider
   await FirebaseAppCheck.instance.activate(
+    // ignore: deprecated_member_use
     androidProvider: AndroidProvider.debug,
+    // ignore: deprecated_member_use
     appleProvider: AppleProvider.debug,
   );
 
@@ -74,8 +76,8 @@ Future<void> main() async {
   // Global Error Handling
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
-    // TODO: Log to Crashlytics or similar service
-    print('Flutter Error: ${details.exception}');
+    // NOTE: Log to Crashlytics or similar service
+    debugPrint('Flutter Error: ${details.exception}');
   };
 
   // Async Error Handling
@@ -122,8 +124,10 @@ class MyApp extends StatelessWidget {
           fontWeight: FontWeight.bold, fontSize: 57, color: textColor),
       titleLarge: const TextStyle(
           fontWeight: FontWeight.bold, fontSize: 22, color: textColor),
-      bodyLarge: TextStyle(fontSize: 16, color: textColor.withAlpha(230)),
-      bodyMedium: TextStyle(fontSize: 14, color: textColor.withAlpha(204)),
+      bodyLarge:
+          TextStyle(fontSize: 16, color: textColor.withValues(alpha: 0.9)),
+      bodyMedium:
+          TextStyle(fontSize: 14, color: textColor.withValues(alpha: 0.8)),
     );
 
     final ThemeData newTheme = ThemeData(
@@ -136,7 +140,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
         primary: primaryColor,
         secondary: accentColor,
-        background: backgroundColor,
+        surface: backgroundColor,
       ),
       textTheme: appTextTheme,
       appBarTheme: AppBarTheme(
@@ -148,7 +152,7 @@ class MyApp extends StatelessWidget {
       cardTheme: CardThemeData(
         elevation: 1,
         color: Colors.white,
-        shadowColor: Colors.black.withOpacity(0.05),
+        shadowColor: Colors.black.withValues(alpha: 0.05),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),

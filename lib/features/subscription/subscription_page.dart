@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax/iconsax.dart';
+
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
@@ -44,7 +44,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
         backgroundColor: Colors.green,
       ),
     );
-    // TODO: Update user subscription status in backend
+    // NOTE: Update user subscription status in backend
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -133,7 +133,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -176,7 +176,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                   height: 300,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF02F1C3).withOpacity(0.15),
+                    color: const Color(0xFF02F1C3).withValues(alpha: 0.15),
                   ),
                 ),
               ),
@@ -191,7 +191,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                   height: 300,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF7B1FA2).withOpacity(0.15),
+                    color: const Color(0xFF7B1FA2).withValues(alpha: 0.15),
                   ),
                 ),
               ),
@@ -212,7 +212,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                       height: 1.2,
                       shadows: [
                         BoxShadow(
-                          color: const Color(0xFF02F1C3).withOpacity(0.3),
+                          color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
                           blurRadius: 20,
                         ),
                       ],
@@ -265,7 +265,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                               ? [
                                   BoxShadow(
                                     color: const Color(0xFF02F1C3)
-                                        .withOpacity(0.5),
+                                        .withValues(alpha: 0.5),
                                     blurRadius: 8,
                                   )
                                 ]
@@ -290,7 +290,8 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             gradient: LinearGradient(
                               colors: [
                                 _plans[_currentIndex]['color'],
-                                _plans[_currentIndex]['color'].withOpacity(0.8),
+                                _plans[_currentIndex]['color']
+                                    .withValues(alpha: 0.8),
                                 _plans[_currentIndex]['color'],
                               ],
                               stops: const [0.0, 0.5, 1.0],
@@ -303,7 +304,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             boxShadow: [
                               BoxShadow(
                                 color: _plans[_currentIndex]['color']
-                                    .withOpacity(0.4),
+                                    .withValues(alpha: 0.4),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),
@@ -330,10 +331,12 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                               // Amount calculation (Example: Pro = 499, Ultra = 999)
                               // User requested 2000 specifically, but let's use plan price or 2000 as fallback
                               double amount = 2000.0;
-                              if (_plans[_currentIndex]['price'] == '₹499')
+                              if (_plans[_currentIndex]['price'] == '₹499') {
                                 amount = 499.0;
-                              if (_plans[_currentIndex]['price'] == '₹999')
+                              }
+                              if (_plans[_currentIndex]['price'] == '₹999') {
                                 amount = 999.0;
+                              }
 
                               // Override for user request if needed, but sticking to plan price is safer.
                               // User said "2000 bhi razar pay se hogya", implies maybe a specific service or just general.
@@ -398,20 +401,23 @@ class _SubscriptionPageState extends State<SubscriptionPage>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF19173A).withOpacity(0.95),
-            const Color(0xFF19173A).withOpacity(0.85),
-            if (isSelected) color.withOpacity(0.15) else Colors.transparent,
+            const Color(0xFF19173A).withValues(alpha: 0.95),
+            const Color(0xFF19173A).withValues(alpha: 0.85),
+            if (isSelected)
+              color.withValues(alpha: 0.15)
+            else
+              Colors.transparent,
           ],
         ),
         borderRadius: BorderRadius.circular(32),
         border: Border.all(
-          color: isSelected ? color : Colors.white.withOpacity(0.1),
+          color: isSelected ? color : Colors.white.withValues(alpha: 0.1),
           width: isSelected ? 2 : 1,
         ),
         boxShadow: isSelected
             ? [
                 BoxShadow(
-                  color: color.withOpacity(0.25),
+                  color: color.withValues(alpha: 0.25),
                   blurRadius: 30,
                   spreadRadius: -5,
                 )
@@ -435,7 +441,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                     ),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [color, color.withOpacity(0.8)],
+                        colors: [color, color.withValues(alpha: 0.8)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -444,7 +450,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: color.withOpacity(0.5),
+                          color: color.withValues(alpha: 0.5),
                           blurRadius: 10,
                         ),
                       ],
@@ -480,7 +486,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFFFD700).withOpacity(0.5),
+                          color: const Color(0xFFFFD700).withValues(alpha: 0.5),
                           blurRadius: 10,
                         ),
                       ],
@@ -506,15 +512,15 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
+                        color: color.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: color.withOpacity(0.3),
+                          color: color.withValues(alpha: 0.3),
                           width: 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: color.withOpacity(0.2),
+                            color: color.withValues(alpha: 0.2),
                             blurRadius: 10,
                           ),
                         ],
@@ -534,7 +540,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                         fontWeight: FontWeight.bold,
                         shadows: [
                           BoxShadow(
-                            color: color.withOpacity(0.5),
+                            color: color.withValues(alpha: 0.5),
                             blurRadius: 10,
                           ),
                         ],
@@ -561,7 +567,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             fontWeight: FontWeight.bold,
                             shadows: [
                               BoxShadow(
-                                color: color.withOpacity(0.3),
+                                color: color.withValues(alpha: 0.3),
                                 blurRadius: 10,
                               ),
                             ],
@@ -580,7 +586,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                       ],
                     ),
                     const SizedBox(height: 24),
-                    Divider(color: Colors.white.withOpacity(0.1)),
+                    Divider(color: Colors.white.withValues(alpha: 0.1)),
                     const SizedBox(height: 24),
                     ...List.generate((plan['features'] as List).length, (i) {
                       return Padding(
@@ -591,11 +597,11 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             Container(
                               padding: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
-                                color: color.withOpacity(0.2),
+                                color: color.withValues(alpha: 0.2),
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: color.withOpacity(0.2),
+                                    color: color.withValues(alpha: 0.2),
                                     blurRadius: 4,
                                   ),
                                 ],
@@ -611,7 +617,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                               child: Text(
                                 plan['features'][i],
                                 style: GoogleFonts.poppins(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   fontSize: 13,
                                   height: 1.2,
                                 ),

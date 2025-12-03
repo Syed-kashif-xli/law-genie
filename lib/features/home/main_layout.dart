@@ -31,7 +31,7 @@ class _MainLayoutState extends State<MainLayout> {
       builder: (context, uiProvider, child) {
         return PopScope(
           canPop: _currentIndex == 0,
-          onPopInvoked: (didPop) {
+          onPopInvokedWithResult: (didPop, result) {
             if (didPop) return;
             setState(() {
               _currentIndex = 0;

@@ -49,7 +49,7 @@ class _OrderTimelinePageState extends State<OrderTimelinePage>
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -157,15 +157,15 @@ class _OrderTimelinePageState extends State<OrderTimelinePage>
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: const Color(0xFF02F1C3).withOpacity(0.3),
+            color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF02F1C3).withOpacity(0.1),
+              color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -235,9 +235,9 @@ class _OrderTimelinePageState extends State<OrderTimelinePage>
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Column(
           children: [
@@ -305,8 +305,8 @@ class _OrderTimelinePageState extends State<OrderTimelinePage>
               child: Container(
                 decoration: BoxDecoration(
                   color: isPast
-                      ? color.withOpacity(0.2)
-                      : Colors.white.withOpacity(0.05),
+                      ? color.withValues(alpha: 0.2)
+                      : Colors.white.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isPast ? color : Colors.white24,
@@ -315,7 +315,7 @@ class _OrderTimelinePageState extends State<OrderTimelinePage>
                   boxShadow: isPulse
                       ? [
                           BoxShadow(
-                            color: color.withOpacity(0.5),
+                            color: color.withValues(alpha: 0.5),
                             blurRadius: 10 * _pulseAnimation.value,
                             spreadRadius: 2 * _pulseAnimation.value,
                           )

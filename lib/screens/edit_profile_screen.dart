@@ -39,9 +39,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (user != null && user.displayName != newName) {
         await user.updateDisplayName(newName);
         // Refresh user data in the parent screen by popping
+        if (!mounted) return;
         Navigator.of(context).pop(true);
       }
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.profileUpdatedSuccessfully),
@@ -49,12 +51,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.errorUpdatingProfile(e.toString())),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.errorUpdatingProfile(e.toString())),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

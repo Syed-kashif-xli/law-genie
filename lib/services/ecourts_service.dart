@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 import 'package:html/parser.dart' as html_parser;
 import '../features/case_finder/models/legal_case.dart';
 
@@ -9,7 +10,7 @@ class EcourtsService {
   Future<LegalCase?> getCaseStatusByCnr(String cnr) async {
     try {
       final url = '$_baseUrl/?pno=1&cnr=$cnr';
-      print('Fetching case status from: $url');
+      debugPrint('Fetching case status from: $url');
 
       final response = await http.get(
         Uri.parse(url),
@@ -22,11 +23,11 @@ class EcourtsService {
       if (response.statusCode == 200) {
         return _parseCaseStatus(response.body, cnr, url);
       } else {
-        print('Failed to fetch case status: ${response.statusCode}');
+        debugPrint('Failed to fetch case status: ${response.statusCode}');
         return null;
       }
     } catch (e) {
-      print('Error fetching case status: $e');
+      debugPrint('Error fetching case status: $e');
       return null;
     }
   }
@@ -89,8 +90,9 @@ class EcourtsService {
           final value = cells[1].text.trim();
 
           if (label.contains('case no')) caseNumber = value;
-          if (label.contains('case status') || label.contains('stage'))
+          if (label.contains('case status') || label.contains('stage')) {
             status = value;
+          }
           if (label.contains('next hearing date')) nextHearingDate = value;
           if (label.contains('petitioner')) petitioner = value;
           if (label.contains('respondent')) respondent = value;
@@ -120,7 +122,7 @@ class EcourtsService {
         respondent: respondent,
       );
     } catch (e) {
-      print('Error parsing case status HTML: $e');
+      debugPrint('Error parsing case status HTML: $e');
       return null;
     }
   }

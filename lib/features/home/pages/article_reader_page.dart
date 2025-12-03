@@ -237,7 +237,7 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
             HtmlWidget(
               _fullContent ?? '<p>Could not load full content.</p>',
               textStyle: GoogleFonts.poppins(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 fontSize: 16,
                 height: 1.6,
               ),

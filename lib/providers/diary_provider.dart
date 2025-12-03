@@ -28,7 +28,7 @@ class DiaryProvider with ChangeNotifier {
             notifyListeners();
           },
           onError: (error) {
-            print('Error listening to diary entries: $error');
+            debugPrint('Error listening to diary entries: $error');
             _isLoading = false;
             notifyListeners();
           },

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:myapp/models/chat_model.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -49,7 +50,7 @@ class PdfService {
       await file.writeAsBytes(await pdf.save());
       await OpenFile.open(file.path);
     } catch (e) {
-      print("Error generating or opening PDF: $e");
+      debugPrint("Error generating or opening PDF: $e");
     }
   }
 }

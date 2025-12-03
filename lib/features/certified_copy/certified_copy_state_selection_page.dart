@@ -24,7 +24,7 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
           leading: Container(
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -62,16 +62,17 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF02F1C3).withOpacity(0.1),
+                      color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFF02F1C3).withOpacity(0.2),
+                        color: const Color(0xFF02F1C3).withValues(alpha: 0.2),
                       ),
                     ),
                     child: Row(
                       children: [
                         Icon(Iconsax.info_circle,
-                            color: const Color(0xFF02F1C3).withOpacity(0.8)),
+                            color:
+                                const Color(0xFF02F1C3).withValues(alpha: 0.8)),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -102,15 +103,15 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFF02F1C3).withOpacity(0.2),
-                            const Color(0xFF02F1C3).withOpacity(0.05),
+                            const Color(0xFF02F1C3).withValues(alpha: 0.2),
+                            const Color(0xFF02F1C3).withValues(alpha: 0.05),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFF02F1C3).withOpacity(0.3),
+                          color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -298,10 +299,10 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
           ),
         ),
         child: Row(
@@ -309,7 +310,7 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF02F1C3).withOpacity(0.1),
+                color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -366,18 +367,19 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: isActive
-              ? const Color(0xFF02F1C3).withOpacity(0.05)
-              : Colors.white.withOpacity(0.02),
+              ? const Color(0xFF02F1C3).withValues(alpha: 0.05)
+              : Colors.white.withValues(alpha: 0.02),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color:
-                isActive ? Colors.transparent : Colors.white.withOpacity(0.05),
+            color: isActive
+                ? Colors.transparent
+                : Colors.white.withValues(alpha: 0.05),
             width: isActive ? 1.5 : 1,
           ),
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: const Color(0xFF02F1C3).withOpacity(0.1),
+                    color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   )
@@ -396,12 +398,12 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
                         end: Alignment.bottomRight,
                       )
                     : null,
-                color: isActive ? null : Colors.white.withOpacity(0.05),
+                color: isActive ? null : Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(18),
                 boxShadow: isActive
                     ? [
                         BoxShadow(
-                          color: const Color(0xFF02F1C3).withOpacity(0.4),
+                          color: const Color(0xFF02F1C3).withValues(alpha: 0.4),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         )
@@ -461,10 +463,10 @@ class CertifiedCopyStateSelectionPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF02F1C3).withOpacity(0.1),
+                  color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFF02F1C3).withOpacity(0.2),
+                    color: const Color(0xFF02F1C3).withValues(alpha: 0.2),
                   ),
                 ),
                 child: const Icon(

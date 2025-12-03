@@ -11,7 +11,6 @@ class CaseListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final caseProvider = Provider.of<CaseProvider>(context);
-    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A032A), // Dark background
@@ -180,8 +179,6 @@ class AddCaseDialogState extends State<AddCaseDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AlertDialog(
       backgroundColor: const Color(0xFF19173A), // Dark dialog
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

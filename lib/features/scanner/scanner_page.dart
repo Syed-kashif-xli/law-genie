@@ -31,7 +31,6 @@ class _ScannerPageState extends State<ScannerPage> {
   final List<String> _scannedImages = [];
   List<Map<String, dynamic>> _recentScans = [];
   bool _isGenerating = false;
-  bool _isProcessingOcr = false;
 
   @override
   void initState() {
@@ -183,7 +182,7 @@ class _ScannerPageState extends State<ScannerPage> {
             final controller = TextEditingController(
                 text: 'Scan_${DateTime.now().toString().split(' ')[0]}');
             return AlertDialog(
-              backgroundColor: const Color(0xFF19173A).withOpacity(0.95),
+              backgroundColor: const Color(0xFF19173A).withValues(alpha: 0.95),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24)),
               title: Text('Save Document',
@@ -201,7 +200,7 @@ class _ScannerPageState extends State<ScannerPage> {
                     style: GoogleFonts.outfit(color: Colors.white),
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
+                      fillColor: Colors.white.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -312,9 +311,10 @@ class _ScannerPageState extends State<ScannerPage> {
       await textRecognizer.close();
       if (mounted) _showOcrResult(recognizedText.text);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('OCR Failed: $e')));
+      }
     }
   }
 
@@ -322,7 +322,7 @@ class _ScannerPageState extends State<ScannerPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF19173A).withOpacity(0.95),
+        backgroundColor: const Color(0xFF19173A).withValues(alpha: 0.95),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text('Extracted Text',
             style: GoogleFonts.outfit(
@@ -367,7 +367,7 @@ class _ScannerPageState extends State<ScannerPage> {
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.arrow_back_ios_new,
@@ -389,7 +389,7 @@ class _ScannerPageState extends State<ScannerPage> {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF02F1C3).withOpacity(0.1),
+                  color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Iconsax.clock,
@@ -406,7 +406,7 @@ class _ScannerPageState extends State<ScannerPage> {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.redAccent.withOpacity(0.1),
+                  color: Colors.redAccent.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Iconsax.trash,
@@ -444,10 +444,10 @@ class _ScannerPageState extends State<ScannerPage> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF2C55A9).withOpacity(0.2),
+                color: const Color(0xFF2C55A9).withValues(alpha: 0.2),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF2C55A9).withOpacity(0.4),
+                    color: const Color(0xFF2C55A9).withValues(alpha: 0.4),
                     blurRadius: 100,
                     spreadRadius: 20,
                   ),
@@ -463,10 +463,10 @@ class _ScannerPageState extends State<ScannerPage> {
               height: 250,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF02F1C3).withOpacity(0.1),
+                color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF02F1C3).withOpacity(0.2),
+                    color: const Color(0xFF02F1C3).withValues(alpha: 0.2),
                     blurRadius: 80,
                     spreadRadius: 20,
                   ),
@@ -499,16 +499,19 @@ class _ScannerPageState extends State<ScannerPage> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                     colors: [
-                                      const Color(0xFF02F1C3).withOpacity(0.2),
-                                      const Color(0xFF2C55A9).withOpacity(0.1),
+                                      const Color(0xFF02F1C3)
+                                          .withValues(alpha: 0.2),
+                                      const Color(0xFF2C55A9)
+                                          .withValues(alpha: 0.1),
                                     ],
                                   ),
                                   border: Border.all(
-                                      color: Colors.white.withOpacity(0.1)),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.1)),
                                   boxShadow: [
                                     BoxShadow(
                                       color: const Color(0xFF02F1C3)
-                                          .withOpacity(0.1),
+                                          .withValues(alpha: 0.1),
                                       blurRadius: 50,
                                       spreadRadius: 10,
                                     ),
@@ -558,12 +561,14 @@ class _ScannerPageState extends State<ScannerPage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: Colors.white.withOpacity(0.2),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
                                       width: 1,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.3),
+                                        color:
+                                            Colors.black.withValues(alpha: 0.3),
                                         blurRadius: 12,
                                         offset: const Offset(0, 6),
                                       ),
@@ -591,11 +596,12 @@ class _ScannerPageState extends State<ScannerPage> {
                                     child: Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.6),
+                                        color:
+                                            Colors.black.withValues(alpha: 0.6),
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                            color:
-                                                Colors.white.withOpacity(0.2)),
+                                            color: Colors.white
+                                                .withValues(alpha: 0.2)),
                                       ),
                                       child: const Icon(
                                         Icons.close,
@@ -614,11 +620,12 @@ class _ScannerPageState extends State<ScannerPage> {
                                     child: Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.6),
+                                        color:
+                                            Colors.black.withValues(alpha: 0.6),
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                            color:
-                                                Colors.white.withOpacity(0.2)),
+                                            color: Colors.white
+                                                .withValues(alpha: 0.2)),
                                       ),
                                       child: const Icon(
                                         Iconsax.text_block,
@@ -635,7 +642,8 @@ class _ScannerPageState extends State<ScannerPage> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.6),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.6),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
@@ -707,10 +715,6 @@ class _ScannerPageState extends State<ScannerPage> {
   }
 
   Future<void> _performOcrOnPdf(String pdfPath) async {
-    setState(() {
-      _isProcessingOcr = true;
-    });
-
     try {
       final file = File(pdfPath);
       if (!await file.exists()) {
@@ -746,13 +750,7 @@ class _ScannerPageState extends State<ScannerPage> {
           SnackBar(content: Text('OCR Failed: $e')),
         );
       }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isProcessingOcr = false;
-        });
-      }
-    }
+    } finally {}
   }
 
   Widget _buildRecentScansDrawer() {
@@ -783,10 +781,10 @@ class _ScannerPageState extends State<ScannerPage> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border:
-                              Border.all(color: Colors.white.withOpacity(0.1)),
+                          border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.1)),
                         ),
                         child: IconButton(
                           onPressed: () => Navigator.pop(context),
@@ -803,7 +801,8 @@ class _ScannerPageState extends State<ScannerPage> {
                           fontWeight: FontWeight.bold,
                           shadows: [
                             BoxShadow(
-                              color: const Color(0xFF02F1C3).withOpacity(0.3),
+                              color: const Color(0xFF02F1C3)
+                                  .withValues(alpha: 0.3),
                               blurRadius: 20,
                               offset: const Offset(0, 4),
                             ),
@@ -824,8 +823,8 @@ class _ScannerPageState extends State<ScannerPage> {
                               Container(
                                 padding: const EdgeInsets.all(24),
                                 decoration: BoxDecoration(
-                                  color:
-                                      const Color(0xFF2C55A9).withOpacity(0.1),
+                                  color: const Color(0xFF2C55A9)
+                                      .withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -857,18 +856,19 @@ class _ScannerPageState extends State<ScannerPage> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
-                                    color: Colors.white.withOpacity(0.08)),
+                                    color:
+                                        Colors.white.withValues(alpha: 0.08)),
                                 gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                   colors: [
-                                    Colors.white.withOpacity(0.08),
-                                    Colors.white.withOpacity(0.02),
+                                    Colors.white.withValues(alpha: 0.08),
+                                    Colors.white.withValues(alpha: 0.02),
                                   ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
+                                    color: Colors.black.withValues(alpha: 0.2),
                                     blurRadius: 16,
                                     offset: const Offset(0, 8),
                                   ),
@@ -904,7 +904,8 @@ class _ScannerPageState extends State<ScannerPage> {
                                                   BoxShadow(
                                                     color:
                                                         const Color(0xFF2C55A9)
-                                                            .withOpacity(0.4),
+                                                            .withValues(
+                                                                alpha: 0.4),
                                                     blurRadius: 8,
                                                     offset: const Offset(0, 4),
                                                   ),
@@ -965,7 +966,8 @@ class _ScannerPageState extends State<ScannerPage> {
                                         const SizedBox(height: 20),
                                         Container(
                                           height: 1,
-                                          color: Colors.white.withOpacity(0.1),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.1),
                                         ),
                                         const SizedBox(height: 16),
                                         Row(
@@ -987,9 +989,13 @@ class _ScannerPageState extends State<ScannerPage> {
                                             _buildActionButton(
                                               icon: Iconsax.export_1,
                                               label: 'Share',
-                                              onTap: () => Share.shareXFiles(
-                                                  [XFile(scan['path'])],
-                                                  text: 'Shared via Law Genie'),
+                                              onTap: () {
+                                                // ignore: deprecated_member_use
+                                                Share.shareXFiles(
+                                                    [XFile(scan['path'])],
+                                                    text:
+                                                        'Shared via Law Genie');
+                                              },
                                             ),
                                           ],
                                         ),
@@ -1019,9 +1025,9 @@ class _ScannerPageState extends State<ScannerPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Row(
           children: [
@@ -1057,17 +1063,19 @@ class _ScannerPageState extends State<ScannerPage> {
         gradient: isPrimary
             ? LinearGradient(
                 colors: color != null
-                    ? [color, color.withOpacity(0.8)]
+                    ? [color, color.withValues(alpha: 0.8)]
                     : [const Color(0xFF2C55A9), const Color(0xFF4C75C9)],
               )
             : null,
-        color: isPrimary ? null : Colors.white.withOpacity(0.05),
-        border:
-            isPrimary ? null : Border.all(color: Colors.white.withOpacity(0.1)),
+        color: isPrimary ? null : Colors.white.withValues(alpha: 0.05),
+        border: isPrimary
+            ? null
+            : Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: isPrimary
             ? [
                 BoxShadow(
-                  color: (color ?? const Color(0xFF2C55A9)).withOpacity(0.3),
+                  color:
+                      (color ?? const Color(0xFF2C55A9)).withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 )

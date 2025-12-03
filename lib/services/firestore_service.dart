@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:myapp/models/timeline_event.dart';
 import 'package:myapp/models/user_model.dart';
 import 'package:myapp/models/order_model.dart';
@@ -104,7 +105,7 @@ class FirestoreService {
       }
       return null;
     } catch (e) {
-      print('Error fetching user latest order: $e');
+      debugPrint('Error fetching user latest order: $e');
       return null;
     }
   }
@@ -127,7 +128,7 @@ class FirestoreService {
 
       return docs.map((doc) => OrderModel.fromMap(doc.data(), doc.id)).toList();
     } catch (e) {
-      print('Error fetching user orders: $e');
+      debugPrint('Error fetching user orders: $e');
       return [];
     }
   }

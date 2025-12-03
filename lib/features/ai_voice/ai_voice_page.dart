@@ -256,6 +256,58 @@ class _AiVoicePageState extends State<AiVoicePage>
     }
   }
 
+  void _showKeyboardInput() {
+    final TextEditingController textController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A00),
+        title: Text(
+          'Type your query',
+          style: GoogleFonts.outfit(color: Colors.white),
+        ),
+        content: TextField(
+          controller: textController,
+          style: GoogleFonts.outfit(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: 'Ask something...',
+            hintStyle: GoogleFonts.outfit(color: Colors.white54),
+            enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white54),
+            ),
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.cyanAccent),
+            ),
+          ),
+          autofocus: true,
+          onSubmitted: (value) {
+            Navigator.pop(context);
+            if (value.trim().isNotEmpty) {
+              _handleUserInput(value.trim());
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel',
+                style: GoogleFonts.outfit(color: Colors.white54)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              if (textController.text.trim().isNotEmpty) {
+                _handleUserInput(textController.text.trim());
+              }
+            },
+            child: Text('Send',
+                style: GoogleFonts.outfit(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _logToFirebase(String role, String message) {
     try {
       _database.child('chat_logs').push().set({
@@ -264,7 +316,7 @@ class _AiVoicePageState extends State<AiVoicePage>
         'timestamp': ServerValue.timestamp,
       });
     } catch (e) {
-      print("Firebase error: $e");
+      debugPrint("Firebase error: $e");
     }
   }
 
@@ -357,7 +409,7 @@ class _AiVoicePageState extends State<AiVoicePage>
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.outfit(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontSize: 20,
                         fontWeight: FontWeight.w300,
                       ),
@@ -367,13 +419,13 @@ class _AiVoicePageState extends State<AiVoicePage>
                 // "Use Keyboard" Button
                 GestureDetector(
                   onTap: () {
-                    // TODO: Implement keyboard input
+                    _showKeyboardInput();
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(color: Colors.white10),
                     ),
@@ -424,8 +476,8 @@ class _AiVoicePageState extends State<AiVoicePage>
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: _aiState == AiState.listening
-                                  ? Colors.cyanAccent.withOpacity(0.5)
-                                  : Colors.amber.withOpacity(0.5),
+                                  ? Colors.cyanAccent.withValues(alpha: 0.5)
+                                  : Colors.amber.withValues(alpha: 0.5),
                               width: 2,
                             ),
                             boxShadow: [
@@ -433,7 +485,7 @@ class _AiVoicePageState extends State<AiVoicePage>
                                 color: (_aiState == AiState.listening
                                         ? Colors.cyanAccent
                                         : Colors.amber)
-                                    .withOpacity(0.2),
+                                    .withValues(alpha: 0.2),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               )
@@ -518,7 +570,7 @@ class GalaxyPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final linePaint = Paint()
-      ..color = baseColor.withOpacity(0.15)
+      ..color = baseColor.withValues(alpha: 0.15)
       ..strokeWidth = 1.0;
 
     // Project 3D points to 2D
@@ -568,7 +620,7 @@ class GalaxyPainter extends CustomPainter {
           canvas.drawLine(
             projectedPoints[i],
             projectedPoints[j],
-            linePaint..color = baseColor.withOpacity(opacity),
+            linePaint..color = baseColor.withValues(alpha: opacity),
           );
         }
       }
@@ -584,11 +636,11 @@ class GalaxyPainter extends CustomPainter {
       double opacity = 1.0;
       if (z < -0.5) opacity = 0.5;
 
-      paint.color = baseColor.withOpacity(opacity);
+      paint.color = baseColor.withValues(alpha: opacity);
       canvas.drawCircle(projectedPoints[i], size, paint);
 
       // Glow
-      paint.color = baseColor.withOpacity(opacity * 0.3);
+      paint.color = baseColor.withValues(alpha: opacity * 0.3);
       canvas.drawCircle(projectedPoints[i], size * 3, paint);
     }
 
@@ -597,7 +649,7 @@ class GalaxyPainter extends CustomPainter {
       final corePaint = Paint()
         ..shader = RadialGradient(
           colors: [
-            baseColor.withOpacity(0.2),
+            baseColor.withValues(alpha: 0.2),
             Colors.transparent,
           ],
         ).createShader(Rect.fromCircle(center: center, radius: radius * 0.8));

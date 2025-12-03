@@ -23,10 +23,10 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
   final GeminiService _geminiService = GeminiService();
 
   String _selectedCaseType = 'Civil';
-  List<String> _parties = [];
-  List<String> _keyFacts = [];
-  List<String> _attachedFileNames = [];
-  List<String> _evidenceTypes = [];
+  final List<String> _parties = [];
+  final List<String> _keyFacts = [];
+  final List<String> _attachedFileNames = [];
+  final List<String> _evidenceTypes = [];
 
   final List<String> _caseTypes = [
     'Civil',
@@ -367,7 +367,7 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
                         children: _parties.map((party) {
                           return Chip(
                             backgroundColor:
-                                const Color(0xFF02F1C3).withOpacity(0.2),
+                                const Color(0xFF02F1C3).withValues(alpha: 0.2),
                             label: Text(
                               party,
                               style: GoogleFonts.poppins(
@@ -463,8 +463,8 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
                                 margin: const EdgeInsets.only(top: 2),
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color:
-                                      const Color(0xFF02F1C3).withOpacity(0.2),
+                                  color: const Color(0xFF02F1C3)
+                                      .withValues(alpha: 0.2),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Text(
@@ -642,7 +642,7 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)),
                     elevation: 5,
-                    shadowColor: const Color(0xFF02F1C3).withOpacity(0.4),
+                    shadowColor: const Color(0xFF02F1C3).withValues(alpha: 0.4),
                   ),
                   child: _isLoading
                       ? const SizedBox(
@@ -862,7 +862,7 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
                       ),
                     ],
                   ),
-                  borderColor: riskColor.withOpacity(0.5),
+                  borderColor: riskColor.withValues(alpha: 0.5),
                 ),
               ),
             ),
@@ -954,7 +954,7 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
         border: Border.all(color: borderColor ?? Colors.white10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1020,9 +1020,9 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1080,9 +1080,9 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
         height: 160,
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.05),
+          color: color.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: color.withOpacity(0.2)),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

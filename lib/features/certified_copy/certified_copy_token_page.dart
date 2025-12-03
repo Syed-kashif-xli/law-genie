@@ -34,7 +34,7 @@ class CertifiedCopyTokenPage extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF02F1C3).withOpacity(0.1),
+                    color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -68,10 +68,10 @@ class CertifiedCopyTokenPage extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: const Color(0xFF02F1C3).withOpacity(0.3),
+                      color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -109,12 +109,13 @@ class CertifiedCopyTokenPage extends StatelessWidget {
                       Navigator.of(context).popUntil((route) => route.isFirst);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.1),
+                      backgroundColor: Colors.white.withValues(alpha: 0.1),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(color: Colors.white.withOpacity(0.1)),
+                        side: BorderSide(
+                            color: Colors.white.withValues(alpha: 0.1)),
                       ),
                     ),
                     child: Text(
@@ -138,9 +139,9 @@ class CertifiedCopyTokenPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.2),
+        color: Colors.black.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
@@ -196,8 +197,8 @@ class CertifiedCopyTokenPage extends StatelessWidget {
         indicator: Container(
           decoration: BoxDecoration(
             color: isPast
-                ? const Color(0xFF02F1C3).withOpacity(0.2)
-                : Colors.white.withOpacity(0.05),
+                ? const Color(0xFF02F1C3).withValues(alpha: 0.2)
+                : Colors.white.withValues(alpha: 0.05),
             shape: BoxShape.circle,
             border: Border.all(
               color: isPast ? const Color(0xFF02F1C3) : Colors.white24,
@@ -206,7 +207,7 @@ class CertifiedCopyTokenPage extends StatelessWidget {
             boxShadow: isPulse
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF02F1C3).withOpacity(0.5),
+                      color: const Color(0xFF02F1C3).withValues(alpha: 0.5),
                       blurRadius: 10,
                       spreadRadius: 2,
                     )

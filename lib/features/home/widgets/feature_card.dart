@@ -31,7 +31,7 @@ class FeatureCard extends StatelessWidget {
           color: const Color(0xFF19173A),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             width: 1,
           ),
         ),
@@ -46,11 +46,12 @@ class FeatureCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: (color ?? const Color(0xFF02F1C3)).withOpacity(0.1),
+                    color: (color ?? const Color(0xFF02F1C3))
+                        .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color:
-                          (color ?? const Color(0xFF02F1C3)).withOpacity(0.2),
+                      color: (color ?? const Color(0xFF02F1C3))
+                          .withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
@@ -101,8 +102,8 @@ class FeatureCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: usage! / maxUsage!,
-                      backgroundColor:
-                          (color ?? const Color(0xFF02F1C3)).withOpacity(0.1),
+                      backgroundColor: (color ?? const Color(0xFF02F1C3))
+                          .withValues(alpha: 0.1),
                       valueColor: AlwaysStoppedAnimation<Color>(
                         color ?? const Color(0xFF02F1C3),
                       ),

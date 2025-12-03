@@ -151,7 +151,7 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -204,10 +204,10 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white.withValues(alpha: 0.05),
         ),
       ),
       child: Column(
@@ -313,15 +313,15 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF02F1C3).withOpacity(0.15),
-            const Color(0xFF02F1C3).withOpacity(0.05),
+            const Color(0xFF02F1C3).withValues(alpha: 0.15),
+            const Color(0xFF02F1C3).withValues(alpha: 0.05),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF02F1C3).withOpacity(0.3),
+          color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -469,7 +469,7 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF02F1C3).withOpacity(0.3),
+            color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

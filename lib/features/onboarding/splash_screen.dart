@@ -7,7 +7,7 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen>
@@ -94,10 +94,10 @@ class _SplashScreenState extends State<SplashScreen>
                 height: 250,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF6B3E9A).withAlpha(60),
+                  color: const Color(0xFF6B3E9A).withValues(alpha: 0.24),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6B3E9A).withAlpha(80),
+                      color: const Color(0xFF6B3E9A).withValues(alpha: 0.31),
                       blurRadius: 40,
                       spreadRadius: 20,
                     ),
@@ -113,10 +113,10 @@ class _SplashScreenState extends State<SplashScreen>
                 height: 350,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue.withAlpha(50),
+                  color: Colors.blue.withValues(alpha: 0.2),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueAccent.withAlpha(80),
+                      color: Colors.blueAccent.withValues(alpha: 0.31),
                       blurRadius: 60,
                       spreadRadius: 30,
                     ),

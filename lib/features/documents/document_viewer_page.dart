@@ -156,9 +156,11 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
           'LawGenie_Doc_${DateTime.now().millisecondsSinceEpoch}.pdf';
       await Printing.sharePdf(bytes: pdfData, filename: fileName);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sharing PDF: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error sharing PDF: $e')),
+        );
+      }
     } finally {
       setState(() => _isDownloading = false);
     }
@@ -182,9 +184,11 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
         name: fileName,
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error downloading PDF: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error downloading PDF: $e')),
+        );
+      }
     } finally {
       setState(() => _isDownloading = false);
     }
@@ -197,7 +201,7 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF2C55A9), // Match app primary color
         elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.3),
+        shadowColor: Colors.black.withValues(alpha: 0.3),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),

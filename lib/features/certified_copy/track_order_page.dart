@@ -46,12 +46,13 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
         insetPadding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF1A0B4E).withOpacity(0.9),
+            color: const Color(0xFF1A0B4E).withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: const Color(0xFF02F1C3).withOpacity(0.3)),
+            border: Border.all(
+                color: const Color(0xFF02F1C3).withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF02F1C3).withOpacity(0.15),
+                color: const Color(0xFF02F1C3).withValues(alpha: 0.15),
                 blurRadius: 30,
                 spreadRadius: 2,
               ),
@@ -65,7 +66,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 30),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF02F1C3).withOpacity(0.1),
+                  color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(30)),
                 ),
@@ -74,15 +75,16 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF02F1C3).withOpacity(0.2),
+                        color: const Color(0xFF02F1C3).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFF02F1C3).withOpacity(0.5),
+                          color: const Color(0xFF02F1C3).withValues(alpha: 0.5),
                           width: 2,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF02F1C3).withOpacity(0.2),
+                            color:
+                                const Color(0xFF02F1C3).withValues(alpha: 0.2),
                             blurRadius: 15,
                             spreadRadius: 5,
                           ),
@@ -125,10 +127,10 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 20, horizontal: 16),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: const Color(0xFF02F1C3).withOpacity(0.3),
+                          color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -187,8 +189,8 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color:
-                                      const Color(0xFF02F1C3).withOpacity(0.3),
+                                  color: const Color(0xFF02F1C3)
+                                      .withValues(alpha: 0.3),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -245,7 +247,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
           ),
         );
       } catch (e) {
-        print('Error navigating to OrderTimelinePage: $e');
+        debugPrint('Error navigating to OrderTimelinePage: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text('Error: Could not track order. Please try again.')),
@@ -264,7 +266,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -329,7 +331,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                         hintText: 'e.g., MP-REG-2024-1234',
                         hintStyle: GoogleFonts.poppins(color: Colors.white30),
                         filled: true,
-                        fillColor: Colors.black.withOpacity(0.2),
+                        fillColor: Colors.black.withValues(alpha: 0.2),
                         prefixIcon: const Icon(Iconsax.ticket,
                             color: Color(0xFF02F1C3), size: 20),
                         contentPadding: const EdgeInsets.symmetric(
@@ -340,8 +342,8 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide:
-                              BorderSide(color: Colors.white.withOpacity(0.05)),
+                          borderSide: BorderSide(
+                              color: Colors.white.withValues(alpha: 0.05)),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),

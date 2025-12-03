@@ -3,8 +3,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class UsageProvider extends ChangeNotifier {
   late Box _box;
-  bool _isInitialized = false;
-
   UsageProvider() {
     _init();
   }
@@ -12,7 +10,6 @@ class UsageProvider extends ChangeNotifier {
   Future<void> _init() async {
     _box = await Hive.openBox('usage_stats');
     _loadUsage();
-    _isInitialized = true;
     notifyListeners();
   }
 
@@ -34,27 +31,27 @@ class UsageProvider extends ChangeNotifier {
 
   // AI Queries
   int _aiQueriesUsage = 0;
-  int _aiQueriesLimit = 500;
+  final int _aiQueriesLimit = 500;
 
   // Cases
   int _casesUsage = 1;
-  int _casesLimit = 50;
+  final int _casesLimit = 50;
 
   // Scan to PDF
   int _scanToPdfUsage = 0;
-  int _scanToPdfLimit = 50;
+  final int _scanToPdfLimit = 50;
 
   // Documents
   int _documentsUsage = 0;
-  int _documentsLimit = 20;
+  final int _documentsLimit = 20;
 
   // Risk Analysis
   int _riskAnalysisUsage = 0;
-  int _riskAnalysisLimit = 10;
+  final int _riskAnalysisLimit = 10;
 
   // AI Voice
   int _aiVoiceUsage = 0;
-  int _aiVoiceLimit = 100;
+  final int _aiVoiceLimit = 100;
 
   // Getters
   int get aiQueriesUsage => _aiQueriesUsage;
@@ -77,26 +74,26 @@ class UsageProvider extends ChangeNotifier {
 
   // Case Finder
   int _caseFinderUsage = 0;
-  int _caseFinderLimit = 50;
+  final int _caseFinderLimit = 50;
 
   int get caseFinderUsage => _caseFinderUsage;
   int get caseFinderLimit => _caseFinderLimit;
 
   // Court Orders
   int _courtOrdersUsage = 0;
-  int _courtOrdersLimit = 30;
+  final int _courtOrdersLimit = 30;
 
   // Translator
   int _translatorUsage = 0;
-  int _translatorLimit = 100;
+  final int _translatorLimit = 100;
 
   // Bare Acts
   int _bareActsUsage = 0;
-  int _bareActsLimit = 1000;
+  final int _bareActsLimit = 1000;
 
   // Chat History
   int _chatHistoryUsage = 0;
-  int _chatHistoryLimit = 100;
+  final int _chatHistoryLimit = 100;
 
   int get courtOrdersUsage => _courtOrdersUsage;
   int get courtOrdersLimit => _courtOrdersLimit;
@@ -201,7 +198,7 @@ class UsageProvider extends ChangeNotifier {
 
   // Certified Copy
   int _certifiedCopyUsage = 0;
-  int _certifiedCopyLimit = 10;
+  final int _certifiedCopyLimit = 10;
 
   int get certifiedCopyUsage => _certifiedCopyUsage;
   int get certifiedCopyLimit => _certifiedCopyLimit;

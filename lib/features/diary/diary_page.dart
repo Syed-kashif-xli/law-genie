@@ -77,7 +77,7 @@ class _DiaryPageState extends State<DiaryPage> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF02F1C3).withOpacity(0.4),
+                color: const Color(0xFF02F1C3).withValues(alpha: 0.4),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
@@ -112,11 +112,11 @@ class _DiaryPageState extends State<DiaryPage> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(Iconsax.note_1,
-                          size: 64, color: Colors.white.withOpacity(0.2)),
+                          size: 64, color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     const SizedBox(height: 24),
                     Text(
@@ -158,12 +158,12 @@ class _DiaryPageState extends State<DiaryPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFF19173A).withOpacity(0.6),
+        color: const Color(0xFF19173A).withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -185,10 +185,11 @@ class _DiaryPageState extends State<DiaryPage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: _getMoodColor(entry.mood).withOpacity(0.2),
+                        color: _getMoodColor(entry.mood).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color: _getMoodColor(entry.mood).withOpacity(0.5)),
+                            color: _getMoodColor(entry.mood)
+                                .withValues(alpha: 0.5)),
                       ),
                       child: Row(
                         children: [
@@ -244,15 +245,16 @@ class _DiaryPageState extends State<DiaryPage> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          const Color(0xFF02F1C3).withOpacity(0.1),
-                          const Color(0xFF02F1C3).withOpacity(0.05)
+                          const Color(0xFF02F1C3).withValues(alpha: 0.1),
+                          const Color(0xFF02F1C3).withValues(alpha: 0.05)
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                          color: const Color(0xFF02F1C3).withOpacity(0.2)),
+                          color:
+                              const Color(0xFF02F1C3).withValues(alpha: 0.2)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -277,7 +279,7 @@ class _DiaryPageState extends State<DiaryPage> {
                         Text(
                           entry.aiSuggestion!,
                           style: GoogleFonts.poppins(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 13,
                             fontStyle: FontStyle.italic,
                             height: 1.5,
@@ -391,9 +393,11 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
         _aiSuggestion = response.text;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error generating suggestion: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error generating suggestion: $e')),
+        );
+      }
     } finally {
       setState(() {
         _isGenerating = false;
@@ -453,7 +457,8 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
               child: TextButton(
                 onPressed: _save,
                 style: TextButton.styleFrom(
-                  backgroundColor: const Color(0xFF02F1C3).withOpacity(0.1),
+                  backgroundColor:
+                      const Color(0xFF02F1C3).withValues(alpha: 0.1),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -498,12 +503,12 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? const Color(0xFF02F1C3)
-                                    : Colors.white.withOpacity(0.05),
+                                    : Colors.white.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                   color: isSelected
                                       ? const Color(0xFF02F1C3)
-                                      : Colors.white.withOpacity(0.1),
+                                      : Colors.white.withValues(alpha: 0.1),
                                 ),
                               ),
                               child: Text(
@@ -568,10 +573,11 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF02F1C3).withOpacity(0.1),
+                          color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                              color: const Color(0xFF02F1C3).withOpacity(0.3)),
+                              color: const Color(0xFF02F1C3)
+                                  .withValues(alpha: 0.3)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -582,7 +588,7 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFF02F1C3)
-                                        .withOpacity(0.2),
+                                        .withValues(alpha: 0.2),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(Iconsax.magic_star,
@@ -604,7 +610,7 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
                               data: _aiSuggestion!,
                               styleSheet: MarkdownStyleSheet(
                                 p: GoogleFonts.poppins(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   fontSize: 14,
                                   height: 1.6,
                                 ),
@@ -625,7 +631,7 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
                 color: const Color(0xFF19173A),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 20,
                     offset: const Offset(0, -5),
                   ),
@@ -647,7 +653,8 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF02F1C3).withOpacity(0.4),
+                              color: const Color(0xFF02F1C3)
+                                  .withValues(alpha: 0.4),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),

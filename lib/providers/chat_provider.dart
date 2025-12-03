@@ -25,7 +25,7 @@ class ChatProvider with ChangeNotifier {
             notifyListeners();
           },
           onError: (error) {
-            print('Error listening to chat sessions: $error');
+            debugPrint('Error listening to chat sessions: $error');
           },
         );
       } else {

@@ -1,6 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
@@ -160,6 +160,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       final response = await _model.generateContent([Content.text(prompt)]);
       final responseText = response.text;
 
+      if (!mounted) return;
+
       if (responseText != null) {
         Navigator.push(
           context,
@@ -174,9 +176,11 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error generating document: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error generating document: $e')),
+        );
+      }
     } finally {
       setState(() {
         _isGenerating = false;
@@ -217,7 +221,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
                 borderRadius: BorderRadius.circular(16.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     spreadRadius: 2,
                     blurRadius: 12,
                     offset: const Offset(0, 5),

@@ -257,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       // ignore: avoid_print
-      print("Google Sign-In Error: $e");
+      debugPrint("Google Sign-In Error: $e");
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.googleSignInFailed)));
@@ -268,6 +268,7 @@ class _LoginPageState extends State<LoginPage> {
     if (widget.agreedToTerms) {
       await _firestoreService.saveTermsAcceptance(user.uid);
     }
+    if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/permissions');
   }
 

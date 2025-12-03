@@ -14,13 +14,13 @@ class AllEventsPage extends StatelessWidget {
       ),
       body: Consumer<TimelineProvider>(
         builder: (context, provider, child) {
-          if (provider.isLoading && provider.timeline.isEmpty) {
+          if (provider.isLoading && provider.events.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
           return ListView.builder(
-            itemCount: provider.timeline.length,
+            itemCount: provider.events.length,
             itemBuilder: (context, index) {
-              final event = provider.timeline[index];
+              final event = provider.events[index];
               return Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

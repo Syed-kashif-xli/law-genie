@@ -28,7 +28,7 @@ class _TranslatorPageState extends State<TranslatorPage>
 
   // Document Translation State
   String? _selectedFilePath;
-  String _documentText = '';
+
   String _translatedDocumentText = '';
   bool _isProcessingDocument = false;
 
@@ -95,7 +95,6 @@ class _TranslatorPageState extends State<TranslatorPage>
     if (result != null) {
       setState(() {
         _selectedFilePath = result.files.single.path;
-        _documentText = '';
         _translatedDocumentText = '';
       });
     }
@@ -122,10 +121,6 @@ class _TranslatorPageState extends State<TranslatorPage>
     // 1. Extract Text
     final text =
         await _translationService.extractTextFromPdf(_selectedFilePath!);
-
-    setState(() {
-      _documentText = text;
-    });
 
     if (text.length > 30000) {
       setState(() {
@@ -248,10 +243,10 @@ class _TranslatorPageState extends State<TranslatorPage>
       decoration: BoxDecoration(
         color: const Color(0xFF19173A),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -263,7 +258,7 @@ class _TranslatorPageState extends State<TranslatorPage>
           _buildLanguageChip(_sourceLang),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF02F1C3).withOpacity(0.1),
+              color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -282,7 +277,7 @@ class _TranslatorPageState extends State<TranslatorPage>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -303,7 +298,7 @@ class _TranslatorPageState extends State<TranslatorPage>
         color: const Color(0xFF1A1832),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFF02F1C3).withOpacity(0.3),
+          color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -389,7 +384,7 @@ class _TranslatorPageState extends State<TranslatorPage>
           border: Border.all(
             color: _selectedFilePath != null
                 ? const Color(0xFF02F1C3)
-                : Colors.white.withOpacity(0.1),
+                : Colors.white.withValues(alpha: 0.1),
             width: _selectedFilePath != null ? 1.5 : 1,
             style: BorderStyle.solid,
           ),
@@ -399,7 +394,7 @@ class _TranslatorPageState extends State<TranslatorPage>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF02F1C3).withOpacity(0.1),
+                color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -451,12 +446,12 @@ class _TranslatorPageState extends State<TranslatorPage>
             : const LinearGradient(
                 colors: [Color(0xFF02F1C3), Color(0xFF00D0A6)],
               ),
-        color: isDisabled ? Colors.white.withOpacity(0.1) : null,
+        color: isDisabled ? Colors.white.withValues(alpha: 0.1) : null,
         boxShadow: isDisabled
             ? null
             : [
                 BoxShadow(
-                  color: const Color(0xFF02F1C3).withOpacity(0.3),
+                  color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -497,7 +492,8 @@ class _TranslatorPageState extends State<TranslatorPage>
       decoration: BoxDecoration(
         color: const Color(0xFF19173A),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFF02F1C3).withOpacity(0.3)),
+        border:
+            Border.all(color: const Color(0xFF02F1C3).withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,4 +1,5 @@
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flutter/foundation.dart';
 
 class TtsService {
   final FlutterTts _flutterTts = FlutterTts();
@@ -61,7 +62,7 @@ class TtsService {
         }
       }
     } catch (e) {
-      print("Error setting voice: $e");
+      debugPrint("Error setting voice: $e");
     }
 
     await _flutterTts.speak(text);
