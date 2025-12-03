@@ -79,6 +79,9 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    // Increase daily limit count on success
+    await _firestoreService.increaseLimitCount();
+
     final token = _generateToken();
     final user = FirebaseAuth.instance.currentUser;
 
@@ -96,8 +99,18 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
           'fromDate': widget.fromDate,
           'toDate': widget.toDate,
           'deedType': widget.deedType,
+          'searchByParty': widget.searchByParty,
+          'partyType': widget.partyType,
           'partyName': widget.partyNameEng,
+          'partyNameHindi': widget.partyNameHindi,
+          'mobileNumber': widget.mobileNumber,
+          'email': user.email, // Save email explicitly
+          'searchByProperty': widget.searchByProperty,
+          'propertyType': widget.propertyType,
           'propertyAddress': widget.propertyAddressEng,
+          'propertyAddressHindi': widget.propertyAddressHindi,
+          'propertyId': widget.propertyId,
+          'isDigitalCopy': widget.isDigitalCopy,
           'paymentId': response.paymentId,
           'amount': 2.0,
         },
@@ -476,7 +489,21 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
+          // Check daily limit before payment
+          final isAllowed = await _firestoreService.checkDailyLimit();
+          if (!isAllowed) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Today’s limit reached, try again tomorrow.'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+            return;
+          }
+
           final user = FirebaseAuth.instance.currentUser;
           final email = user?.email ?? 'user@example.com';
           final phone = user?.phoneNumber ?? '9876543210';

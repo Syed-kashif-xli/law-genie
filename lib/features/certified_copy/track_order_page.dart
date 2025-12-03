@@ -4,7 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/firestore_service.dart';
 import '../../models/order_model.dart';
-import 'order_timeline_page.dart';
+import 'certified_copy_token_page.dart';
 
 class TrackOrderPage extends StatefulWidget {
   const TrackOrderPage({super.key});
@@ -241,7 +241,7 @@ class _TrackOrderPageState extends State<TrackOrderPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => OrderTimelinePage(
+            builder: (context) => CertifiedCopyTokenPage(
               token: _tokenController.text.trim(),
             ),
           ),

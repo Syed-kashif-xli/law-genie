@@ -1,0 +1,268 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import '../../models/order_model.dart';
+import '../../services/firestore_service.dart';
+import 'certified_copy_payment_page.dart';
+
+class CertifiedCopyPreviewPage extends StatefulWidget {
+  final OrderModel order;
+
+  const CertifiedCopyPreviewPage({super.key, required this.order});
+
+  @override
+  State<CertifiedCopyPreviewPage> createState() =>
+      _CertifiedCopyPreviewPageState();
+}
+
+class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
+  final FirestoreService _firestoreService = FirestoreService();
+  bool _isLoading = false;
+  String? _localPdfPath;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.order.previewUrl != null) {
+      final processedUrl = _convertGoogleDriveUrl(widget.order.previewUrl!);
+      try {
+        final uri = Uri.parse(processedUrl);
+        // Auto-download if it looks like a PDF or is a drive link (assume PDF)
+        if (uri.path.toLowerCase().endsWith('.pdf') ||
+            widget.order.previewUrl!.contains('drive.google.com')) {
+          _downloadPdf();
+        }
+      } catch (e) {
+        debugPrint('Error parsing URL in initState: $e');
+      }
+    }
+  }
+
+  Future<void> _downloadPdf() async {
+    try {
+      final processedUrl = _convertGoogleDriveUrl(widget.order.previewUrl!);
+      debugPrint('DEBUG: Starting PDF download from $processedUrl');
+      final response = await http.get(Uri.parse(processedUrl));
+      debugPrint('DEBUG: Download response status: ${response.statusCode}');
+
+      if (response.statusCode != 200) {
+        debugPrint('DEBUG: Failed to download PDF');
+        return;
+      }
+
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/preview_${widget.order.id}.pdf');
+      await file.writeAsBytes(response.bodyBytes);
+      debugPrint('DEBUG: PDF saved to ${file.path}');
+
+      if (mounted) {
+        setState(() {
+          _localPdfPath = file.path;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error downloading PDF: $e');
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _handleIncorrect() async {
+    setState(() => _isLoading = true);
+    await _firestoreService.updateOrderPreviewStatus(widget.order.id, 'wrong');
+    if (mounted) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('We will re-check your document.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> _handleCorrect() async {
+    // Navigate to Payment Page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CertifiedCopyPaymentPage(order: widget.order),
+      ),
+    );
+  }
+
+  String _convertGoogleDriveUrl(String url) {
+    if (url.contains('drive.google.com')) {
+      final idRegex = RegExp(r'[-\w]{25,}');
+      final match = idRegex.firstMatch(url);
+      if (match != null) {
+        return 'https://drive.google.com/uc?export=download&id=${match.group(0)}';
+      }
+    }
+    return url;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool isPdf = false;
+    String? processedUrl;
+
+    if (widget.order.previewUrl != null) {
+      processedUrl = _convertGoogleDriveUrl(widget.order.previewUrl!);
+      try {
+        // Check for PDF in the original URL or if it's a drive link (assume PDF for drive if not obvious)
+        final uri = Uri.parse(processedUrl);
+        isPdf = uri.path.toLowerCase().endsWith('.pdf') ||
+            widget.order.previewUrl!.contains('drive.google.com');
+      } catch (e) {
+        debugPrint('Error parsing preview URL: $e');
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Document Preview',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF0A032A),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0A032A), Color(0xFF1A0B4E)],
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white24),
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.black.withOpacity(0.2),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: processedUrl == null
+                      ? const Center(
+                          child: Text('No preview available',
+                              style: TextStyle(color: Colors.white)))
+                      : isPdf
+                          ? _localPdfPath != null
+                              ? PDFView(filePath: _localPdfPath!)
+                              : _isLoading
+                                  ? const Center(
+                                      child: CircularProgressIndicator())
+                                  : Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.error_outline,
+                                              color: Colors.red, size: 48),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'Failed to load PDF',
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.white),
+                                          ),
+                                          TextButton(
+                                            onPressed: _downloadPdf,
+                                            child: const Text('Retry'),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                          : CachedNetworkImage(
+                              imageUrl: processedUrl,
+                              placeholder: (context, url) => const Center(
+                                  child: CircularProgressIndicator()),
+                              errorWidget: (context, url, error) => Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.broken_image,
+                                        color: Colors.white54, size: 48),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      'Could not load image',
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white70),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              fit: BoxFit.contain,
+                            ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _handleIncorrect,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.withOpacity(0.2),
+                        foregroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: const BorderSide(color: Colors.red),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.red))
+                          : Text(
+                              'This is Incorrect',
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _handleCorrect,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF02F1C3),
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'This is Correct',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -132,4 +132,130 @@ class FirestoreService {
       return [];
     }
   }
+
+  // --- Daily Limit Methods ---
+
+  // Check if daily limit is reached
+  Future<bool> checkDailyLimit() async {
+    try {
+      final docRef = _db.collection('system').doc('limits');
+      final doc = await docRef.get();
+
+      if (!doc.exists) return true;
+
+      final data = doc.data()!;
+      final todayStr = DateTime.now().toIso8601String().split('T')[0];
+      final storedDate = data['TodayDate'] as String?;
+      final count = data['Count'] as int? ?? 0;
+
+      if (storedDate == todayStr) {
+        if (count >= 20) {
+          return false;
+        }
+      }
+      // If date doesn't match, it's a new day, so count is effectively 0.
+      return true;
+    } catch (e) {
+      debugPrint('Error checking daily limit: $e');
+      // If error occurs, we default to allowing to avoid blocking on network glitches,
+      // unless strict enforcement is required. Given the user prompt, let's allow.
+      return true;
+    }
+  }
+
+  // Increase the daily limit count
+  Future<void> increaseLimitCount() async {
+    final docRef = _db.collection('system').doc('limits');
+    final todayStr = DateTime.now().toIso8601String().split('T')[0];
+
+    try {
+      await _db.runTransaction((transaction) async {
+        final doc = await transaction.get(docRef);
+
+        if (!doc.exists) {
+          transaction.set(docRef, {
+            'TodayDate': todayStr,
+            'Count': 1,
+          });
+        } else {
+          final data = doc.data()!;
+          final storedDate = data['TodayDate'] as String?;
+          int currentCount = data['Count'] as int? ?? 0;
+
+          if (storedDate == todayStr) {
+            transaction.update(docRef, {'Count': currentCount + 1});
+          } else {
+            // New day, reset count to 1
+            transaction.set(docRef, {
+              'TodayDate': todayStr,
+              'Count': 1,
+            });
+          }
+        }
+      });
+    } catch (e) {
+      debugPrint('Error increasing limit count: $e');
+    }
+  }
+
+  // Update Order Preview Status
+  Future<void> updateOrderPreviewStatus(String orderId, String status) async {
+    try {
+      await _db.collection('orders').doc(orderId).update({
+        'previewStatus': status,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('Error updating order preview status: $e');
+    }
+  }
+
+  // Update Order Status
+  Future<void> updateOrderStatus(String orderId, String status) async {
+    try {
+      await _db.collection('orders').doc(orderId).update({
+        'status': status,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('Error updating order status: $e');
+    }
+  }
+
+  // Update Order with Final Payment Details
+  Future<void> updateOrderFinalPayment({
+    required String orderId,
+    required double amount,
+    required String paymentId,
+    required String email,
+    required String phone,
+  }) async {
+    try {
+      await _db.collection('orders').doc(orderId).update({
+        'status': 'completed',
+        'finalPayment': {
+          'amount': amount,
+          'paymentId': paymentId,
+          'email': email,
+          'phone': phone,
+          'paidAt': FieldValue.serverTimestamp(),
+        },
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      // Update Order with Final File URL
+      Future<void> updateOrderFinalFile(String orderId, String fileUrl) async {
+        try {
+          await _db.collection('orders').doc(orderId).update({
+            'finalFileUrl': fileUrl,
+            'finalFileSentAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        } catch (e) {
+          debugPrint('Error updating order final file: $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error updating order final payment: $e');
+    }
+  }
 }

@@ -1,176 +1,268 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-
 import 'package:timeline_tile/timeline_tile.dart';
+import '../../services/firestore_service.dart';
+import '../../models/order_model.dart';
+import 'certified_copy_preview_page.dart';
 
 class CertifiedCopyTokenPage extends StatelessWidget {
   final String token;
-  const CertifiedCopyTokenPage({super.key, required this.token});
+  final FirestoreService _firestoreService = FirestoreService();
+
+  CertifiedCopyTokenPage({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        title: Text(
+          'Track Order',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
               Color(0xFF0A032A),
               Color(0xFF1A0B4E),
+              Color(0xFF2D1B69),
             ],
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Iconsax.verify,
-                    color: Color(0xFF02F1C3),
-                    size: 50,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Request Submitted!',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Your certified copy request has been successfully submitted. Track your status below.',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: 13,
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Token Number',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white54,
-                          fontSize: 12,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        token,
-                        style: GoogleFonts.poppins(
-                          color: const Color(0xFF02F1C3),
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
-                _buildTimeline(),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withValues(alpha: 0.1),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                            color: Colors.white.withValues(alpha: 0.1)),
+          child: StreamBuilder<OrderModel?>(
+            stream: _firestoreService.streamOrder(token.trim()),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final order = snapshot.data;
+              final status = order?.status ?? 'received';
+              final previewAvailable = order?.previewUrl != null;
+              final isCompleted = status == 'completed';
+
+              // Helper to check if a step is active/past
+              bool isStepActive(int stepIndex) {
+                if (stepIndex == 0) return true;
+                if (stepIndex == 1) {
+                  return ['searching', 'found', 'not_found', 'completed']
+                      .contains(status);
+                }
+                if (stepIndex == 2) {
+                  return ['found', 'not_found', 'completed'].contains(status) ||
+                      previewAvailable;
+                }
+                return false;
+              }
+
+              // Helper to check if a step is currently in progress (pulsing)
+              bool isStepPulsing(int stepIndex) {
+                if (stepIndex == 1) return status == 'searching';
+                if (stepIndex == 2) {
+                  return (previewAvailable && !isCompleted) ||
+                      status == 'found';
+                }
+                return false;
+              }
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    // Token Card with Glassmorphism
+                    _buildGlassCard(
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF02F1C3).withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Iconsax.ticket,
+                              color: Color(0xFF02F1C3),
+                              size: 32,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Order Token',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white54,
+                              fontSize: 14,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            token,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Text(
-                      'Back to Home',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(height: 32),
+                    // Timeline
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        children: [
+                          _buildTimelineTile(
+                            isFirst: true,
+                            isLast: false,
+                            isPast: isStepActive(0),
+                            title: 'Request Received',
+                            subtitle: 'Token generated & payment verified',
+                            icon: Iconsax.receipt_item,
+                          ),
+                          _buildTimelineTile(
+                            isFirst: false,
+                            isLast: false,
+                            isPast: isStepActive(1),
+                            isPulse: isStepPulsing(1),
+                            title: 'Searching Records',
+                            subtitle: 'Our team is searching for the registry',
+                            icon: Iconsax.search_status,
+                          ),
+                          _buildTimelineTile(
+                            isFirst: false,
+                            isLast: true,
+                            isPast: isStepActive(2),
+                            isPulse: isStepPulsing(2),
+                            title: 'Registry Status',
+                            subtitle: isCompleted
+                                ? 'File will be provided within 5 hours'
+                                : previewAvailable
+                                    ? 'Preview Available'
+                                    : 'Pending',
+                            icon: Iconsax.document_text,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 40),
+                    if (previewAvailable && !isCompleted)
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        duration: const Duration(milliseconds: 500),
+                        builder: (context, value, child) {
+                          return Transform.scale(
+                            scale: value,
+                            child: Container(
+                              width: double.infinity,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF02F1C3)
+                                        .withOpacity(0.3),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (order != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            CertifiedCopyPreviewPage(
+                                                order: order),
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF02F1C3),
+                                  foregroundColor: Colors.black,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Iconsax.eye, size: 24),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      'View Preview',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTimeline() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-      ),
-      child: Column(
-        children: [
-          _buildTimelineTile(
-            isFirst: true,
-            isLast: false,
-            isPast: true,
-            title: 'Request Received',
-            subtitle: 'Token generated & payment verified',
-            icon: Iconsax.receipt_item,
+  Widget _buildGlassCard({required Widget child}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.1),
+            ),
           ),
-          _buildTimelineTile(
-            isFirst: false,
-            isLast: false,
-            isPast: true, // Mark as "current/active" visually
-            isPulse: true,
-            title: 'Searching Records',
-            subtitle: 'Our team is searching for the registry',
-            icon: Iconsax.search_status,
-          ),
-          _buildTimelineTile(
-            isFirst: false,
-            isLast: true,
-            isPast: false,
-            title: 'Registry Status',
-            subtitle: 'Found / Not Found (Pending)',
-            icon: Iconsax.document_text,
-          ),
-        ],
+          child: child,
+        ),
       ),
     );
   }
@@ -188,50 +280,60 @@ class CertifiedCopyTokenPage extends StatelessWidget {
       isFirst: isFirst,
       isLast: isLast,
       beforeLineStyle: LineStyle(
-        color: isPast ? const Color(0xFF02F1C3) : Colors.white24,
+        color: isPast ? const Color(0xFF02F1C3) : Colors.white12,
         thickness: 2,
       ),
       indicatorStyle: IndicatorStyle(
-        width: 40,
-        height: 40,
+        width: 50,
+        height: 50,
         indicator: Container(
           decoration: BoxDecoration(
-            color: isPast
-                ? const Color(0xFF02F1C3).withValues(alpha: 0.2)
-                : Colors.white.withValues(alpha: 0.05),
+            color: const Color(0xFF0A032A),
             shape: BoxShape.circle,
             border: Border.all(
-              color: isPast ? const Color(0xFF02F1C3) : Colors.white24,
+              color: isPast ? const Color(0xFF02F1C3) : Colors.white12,
               width: 2,
             ),
-            boxShadow: isPulse
+            boxShadow: isPast
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF02F1C3).withValues(alpha: 0.5),
-                      blurRadius: 10,
+                      color: const Color(0xFF02F1C3).withOpacity(0.4),
+                      blurRadius: 12,
                       spreadRadius: 2,
                     )
                   ]
-                : null,
+                : [],
           ),
           child: Center(
             child: Icon(
               icon,
-              color: isPast ? const Color(0xFF02F1C3) : Colors.white54,
-              size: 20,
+              color: isPast ? const Color(0xFF02F1C3) : Colors.white38,
+              size: 24,
             ),
           ),
         ),
       ),
       endChild: Container(
-        margin: const EdgeInsets.only(left: 16, bottom: 24, top: 10),
+        margin: const EdgeInsets.only(left: 20, bottom: 40, top: 5),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isPast
+              ? const Color(0xFF02F1C3).withOpacity(0.05)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isPast
+                ? const Color(0xFF02F1C3).withOpacity(0.1)
+                : Colors.transparent,
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
               style: GoogleFonts.poppins(
-                color: isPast ? Colors.white : Colors.white54,
+                color: isPast ? Colors.white : Colors.white60,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -241,7 +343,8 @@ class CertifiedCopyTokenPage extends StatelessWidget {
               subtitle,
               style: GoogleFonts.poppins(
                 color: isPast ? Colors.white70 : Colors.white38,
-                fontSize: 12,
+                fontSize: 13,
+                height: 1.4,
               ),
             ),
           ],
