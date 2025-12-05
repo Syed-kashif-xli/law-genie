@@ -96,8 +96,11 @@ class FirestoreService {
         final docs = querySnapshot.docs;
         // Sort by createdAt descending
         docs.sort((a, b) {
-          final t1 = a.data()['createdAt'] as Timestamp;
-          final t2 = b.data()['createdAt'] as Timestamp;
+          final t1 = a.data()['createdAt'] as Timestamp?;
+          final t2 = b.data()['createdAt'] as Timestamp?;
+          if (t1 == null && t2 == null) return 0;
+          if (t1 == null) return 1;
+          if (t2 == null) return -1;
           return t2.compareTo(t1);
         });
 
@@ -147,18 +150,16 @@ class FirestoreService {
       final todayStr = DateTime.now().toIso8601String().split('T')[0];
       final storedDate = data['TodayDate'] as String?;
       final count = data['Count'] as int? ?? 0;
+      final limit = data['Limit'] as int? ?? 20; // Read limit, default 20
 
       if (storedDate == todayStr) {
-        if (count >= 20) {
+        if (count >= limit) {
           return false;
         }
       }
-      // If date doesn't match, it's a new day, so count is effectively 0.
       return true;
     } catch (e) {
       debugPrint('Error checking daily limit: $e');
-      // If error occurs, we default to allowing to avoid blocking on network glitches,
-      // unless strict enforcement is required. Given the user prompt, let's allow.
       return true;
     }
   }
@@ -176,19 +177,26 @@ class FirestoreService {
           transaction.set(docRef, {
             'TodayDate': todayStr,
             'Count': 1,
+            'Limit': 20,
           });
         } else {
           final data = doc.data()!;
           final storedDate = data['TodayDate'] as String?;
           int currentCount = data['Count'] as int? ?? 0;
+          // Preserve existing limit, or default to 20 if missing
+          int currentLimit = data['Limit'] as int? ?? 20;
 
           if (storedDate == todayStr) {
-            transaction.update(docRef, {'Count': currentCount + 1});
+            transaction.update(docRef, {
+              'Count': currentCount + 1,
+              'Limit': currentLimit, // Keep existing limit
+            });
           } else {
-            // New day, reset count to 1
+            // New day, reset count to 1 but keep limit
             transaction.set(docRef, {
               'TodayDate': todayStr,
               'Count': 1,
+              'Limit': currentLimit, // Keep existing limit
             });
           }
         }
@@ -242,20 +250,22 @@ class FirestoreService {
         },
         'updatedAt': FieldValue.serverTimestamp(),
       });
-      // Update Order with Final File URL
-      Future<void> updateOrderFinalFile(String orderId, String fileUrl) async {
-        try {
-          await _db.collection('orders').doc(orderId).update({
-            'finalFileUrl': fileUrl,
-            'finalFileSentAt': FieldValue.serverTimestamp(),
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
-        } catch (e) {
-          debugPrint('Error updating order final file: $e');
-        }
-      }
     } catch (e) {
       debugPrint('Error updating order final payment: $e');
+    }
+  }
+
+  // Update Order with Final File URL
+  Future<void> updateOrderFinalFile(String orderId, String fileUrl) async {
+    try {
+      await _db.collection('orders').doc(orderId).update({
+        'finalFileUrl': fileUrl,
+        'finalFileSentAt': FieldValue.serverTimestamp(),
+        'status': 'completed', // Ensure status is completed
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('Error updating order final file: $e');
     }
   }
 }

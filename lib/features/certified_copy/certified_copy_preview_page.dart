@@ -5,14 +5,20 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'package:share_plus/share_plus.dart';
 import '../../models/order_model.dart';
 import '../../services/firestore_service.dart';
 import 'certified_copy_payment_page.dart';
 
 class CertifiedCopyPreviewPage extends StatefulWidget {
   final OrderModel order;
+  final bool isFinalFile;
 
-  const CertifiedCopyPreviewPage({super.key, required this.order});
+  const CertifiedCopyPreviewPage({
+    super.key,
+    required this.order,
+    this.isFinalFile = false,
+  });
 
   @override
   State<CertifiedCopyPreviewPage> createState() =>
@@ -24,16 +30,19 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
   bool _isLoading = false;
   String? _localPdfPath;
 
+  String? get _targetUrl =>
+      widget.isFinalFile ? widget.order.finalFileUrl : widget.order.previewUrl;
+
   @override
   void initState() {
     super.initState();
-    if (widget.order.previewUrl != null) {
-      final processedUrl = _convertGoogleDriveUrl(widget.order.previewUrl!);
+    if (_targetUrl != null) {
+      final processedUrl = _convertGoogleDriveUrl(_targetUrl!);
       try {
         final uri = Uri.parse(processedUrl);
         // Auto-download if it looks like a PDF or is a drive link (assume PDF)
         if (uri.path.toLowerCase().endsWith('.pdf') ||
-            widget.order.previewUrl!.contains('drive.google.com')) {
+            _targetUrl!.contains('drive.google.com')) {
           _downloadPdf();
         }
       } catch (e) {
@@ -44,7 +53,7 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
 
   Future<void> _downloadPdf() async {
     try {
-      final processedUrl = _convertGoogleDriveUrl(widget.order.previewUrl!);
+      final processedUrl = _convertGoogleDriveUrl(_targetUrl!);
       debugPrint('DEBUG: Starting PDF download from $processedUrl');
       final response = await http.get(Uri.parse(processedUrl));
       debugPrint('DEBUG: Download response status: ${response.statusCode}');
@@ -55,7 +64,8 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
       }
 
       final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/preview_${widget.order.id}.pdf');
+      final prefix = widget.isFinalFile ? 'final' : 'preview';
+      final file = File('${dir.path}/${prefix}_${widget.order.id}.pdf');
       await file.writeAsBytes(response.bodyBytes);
       debugPrint('DEBUG: PDF saved to ${file.path}');
 
@@ -71,6 +81,26 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  Future<void> _shareFile() async {
+    if (_localPdfPath == null) {
+      setState(() => _isLoading = true);
+      await _downloadPdf();
+    }
+
+    if (_localPdfPath != null) {
+      final file = XFile(_localPdfPath!);
+      // ignore: deprecated_member_use
+      await Share.shareXFiles([file], text: 'Here is your Certified Copy');
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not prepare file for sharing')),
+        );
+      }
+    }
+    setState(() => _isLoading = false);
   }
 
   Future<void> _handleIncorrect() async {
@@ -114,13 +144,13 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
     bool isPdf = false;
     String? processedUrl;
 
-    if (widget.order.previewUrl != null) {
-      processedUrl = _convertGoogleDriveUrl(widget.order.previewUrl!);
+    if (_targetUrl != null) {
+      processedUrl = _convertGoogleDriveUrl(_targetUrl!);
       try {
         // Check for PDF in the original URL or if it's a drive link (assume PDF for drive if not obvious)
         final uri = Uri.parse(processedUrl);
         isPdf = uri.path.toLowerCase().endsWith('.pdf') ||
-            widget.order.previewUrl!.contains('drive.google.com');
+            _targetUrl!.contains('drive.google.com');
       } catch (e) {
         debugPrint('Error parsing preview URL: $e');
       }
@@ -129,12 +159,35 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Document Preview',
+          widget.isFinalFile ? 'Certified Copy' : 'Document Preview',
           style: GoogleFonts.poppins(color: Colors.white),
         ),
         backgroundColor: const Color(0xFF0A032A),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
+      floatingActionButton: widget.isFinalFile
+          ? FloatingActionButton.extended(
+              onPressed: _isLoading ? null : _shareFile,
+              backgroundColor: const Color(0xFF02F1C3),
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Icon(Icons.share, color: Colors.black),
+              label: Text(
+                _isLoading ? 'Preparing...' : 'Share / Save',
+                style: GoogleFonts.poppins(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+          : null,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -152,13 +205,13 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.white24),
                   borderRadius: BorderRadius.circular(12),
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: processedUrl == null
                       ? const Center(
-                          child: Text('No preview available',
+                          child: Text('No document available',
                               style: TextStyle(color: Colors.white)))
                       : isPdf
                           ? _localPdfPath != null
@@ -210,56 +263,58 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _handleIncorrect,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.withOpacity(0.2),
-                        foregroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: const BorderSide(color: Colors.red),
+            if (!widget.isFinalFile)
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _handleIncorrect,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.withValues(alpha: 0.2),
+                          foregroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: const BorderSide(color: Colors.red),
+                          ),
                         ),
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.red))
-                          : Text(
-                              'This is Incorrect',
-                              style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w600),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _handleCorrect,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF02F1C3),
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        'This is Correct',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.red))
+                            : Text(
+                                'This is Incorrect',
+                                style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600),
+                              ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _handleCorrect,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF02F1C3),
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'This is Correct',
+                          style:
+                              GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ),

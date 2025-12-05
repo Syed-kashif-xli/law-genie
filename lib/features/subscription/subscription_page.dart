@@ -6,6 +6,8 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import '../home/providers/usage_provider.dart';
 import '../../services/payment_service.dart';
 
 class SubscriptionPage extends StatefulWidget {
@@ -38,13 +40,21 @@ class _SubscriptionPageState extends State<SubscriptionPage>
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    // In a real app, verify signature here before granting access
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Payment Successful: ${response.paymentId}"),
         backgroundColor: Colors.green,
       ),
     );
-    // NOTE: Update user subscription status in backend
+
+    // Activate Premium Feature
+    Provider.of<UsageProvider>(context, listen: false).upgradeToPremium();
+
+    // Optionally navigate back or show success dialog
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) Navigator.pop(context);
+    });
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -80,45 +90,28 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       'description': 'Essential tools for every citizen',
       'color': const Color(0xFF4CAF50),
       'features': [
-        'Basic Case Search',
-        'Limited AI Queries (5/day)',
-        'Community Support',
-        'Standard Access',
+        'Basic Case Search (Limited)',
+        'Limited AI Queries',
+        'Standard Support',
       ],
       'isPopular': false,
       'isBestValue': false,
     },
     {
-      'name': 'Pro',
+      'name': 'Premium',
       'price': '₹499',
       'period': '/month',
-      'description': 'Advanced power for legal professionals',
-      'color': const Color(0xFF02F1C3),
-      'features': [
-        'Unlimited Case Search',
-        'Advanced AI Assistant',
-        'Document Generator',
-        'No Ads',
-        'Priority Support',
-      ],
-      'isPopular': true,
-      'isBestValue': false,
-    },
-    {
-      'name': 'Ultra Pro',
-      'price': '₹999',
-      'period': '/month',
-      'description': 'The ultimate legal command center',
+      'description': 'Unlimited access to all features',
       'color': const Color(0xFFFFD700),
       'features': [
-        'All Pro Features',
-        'Priority Legal Consultation',
-        'Certified Copies (Fast Track)',
-        'Voice Assistant (Unlimited)',
-        'Exclusive Templates',
-        '24/7 Dedicated Support',
+        'Unlimited AI Queries',
+        'Unlimited Case Search',
+        'Document Generator',
+        'Bare Acts Access',
+        'Priority Support',
+        'Ad-Free Experience',
       ],
-      'isPopular': false,
+      'isPopular': true,
       'isBestValue': true,
     },
   ];
@@ -328,14 +321,12 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                               final email = user?.email ?? 'user@example.com';
                               final phone = user?.phoneNumber ?? '9876543210';
 
-                              // Amount calculation (Example: Pro = 499, Ultra = 999)
-                              // User requested 2000 specifically, but let's use plan price or 2000 as fallback
-                              double amount = 2000.0;
-                              if (_plans[_currentIndex]['price'] == '₹499') {
+                              // Amount calculation
+                              double amount = 0.0;
+
+                              if (_currentIndex == 1) {
+                                // Premium Plan
                                 amount = 499.0;
-                              }
-                              if (_plans[_currentIndex]['price'] == '₹999') {
-                                amount = 999.0;
                               }
 
                               // Override for user request if needed, but sticking to plan price is safer.

@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/ui_provider.dart';
 import 'package:myapp/screens/order_history_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -135,6 +136,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 fontStyle: FontStyle.italic,
               ),
             ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final Uri url =
+                      Uri.parse('https://www.instagram.com/lawgenie.in');
+                  if (!await launchUrl(url,
+                      mode: LaunchMode.externalApplication)) {
+                    debugPrint('Could not launch $url');
+                  }
+                },
+                icon: const Icon(Icons.camera_alt, color: Colors.white),
+                label: const Text('Follow us on Instagram'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFC13584), // Instagram Color
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
         actions: [
@@ -242,11 +267,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 });
               },
             ),
-            ProfileMenuOption(
-              title: l10n.paymentMethod,
-              icon: Icons.credit_card,
-              onTap: () {},
-            ),
+            // Payment Method Removed
             ProfileMenuOption(
               title: l10n.language,
               icon: Icons.language_outlined,

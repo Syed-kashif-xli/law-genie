@@ -13,10 +13,14 @@ class UsageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Subscription Status
+  bool _isPremium = false;
+  bool get isPremium => _isPremium;
+
   void _loadUsage() {
+    _isPremium = _box.get('isPremium', defaultValue: false);
     _aiQueriesUsage = _box.get('aiQueriesUsage', defaultValue: 0);
-    _casesUsage = _box.get('casesUsage',
-        defaultValue: 1); // Default 1 as per original code
+    _casesUsage = _box.get('casesUsage', defaultValue: 1);
     _scanToPdfUsage = _box.get('scanToPdfUsage', defaultValue: 0);
     _documentsUsage = _box.get('documentsUsage', defaultValue: 0);
     _riskAnalysisUsage = _box.get('riskAnalysisUsage', defaultValue: 0);
@@ -29,87 +33,92 @@ class UsageProvider extends ChangeNotifier {
     _certifiedCopyUsage = _box.get('certifiedCopyUsage', defaultValue: 0);
   }
 
+  Future<void> upgradeToPremium() async {
+    _isPremium = true;
+    await _box.put('isPremium', true);
+    notifyListeners();
+  }
+
+  // Helper to get limit based on status
+  int _getLimit(int baseLimit) => _isPremium ? 999999 : baseLimit;
+
   // AI Queries
   int _aiQueriesUsage = 0;
-  final int _aiQueriesLimit = 500;
+  final int _baseAiQueriesLimit = 500;
+  int get aiQueriesLimit => _getLimit(_baseAiQueriesLimit);
 
   // Cases
   int _casesUsage = 1;
-  final int _casesLimit = 50;
+  final int _baseCasesLimit = 50;
+  int get casesLimit => _getLimit(_baseCasesLimit);
 
   // Scan to PDF
   int _scanToPdfUsage = 0;
-  final int _scanToPdfLimit = 50;
+  final int _baseScanToPdfLimit = 50;
+  int get scanToPdfLimit => _getLimit(_baseScanToPdfLimit);
 
   // Documents
   int _documentsUsage = 0;
-  final int _documentsLimit = 20;
+  final int _baseDocumentsLimit = 20;
+  int get documentsLimit => _getLimit(_baseDocumentsLimit);
 
   // Risk Analysis
   int _riskAnalysisUsage = 0;
-  final int _riskAnalysisLimit = 10;
+  final int _baseRiskAnalysisLimit = 10;
+  int get riskAnalysisLimit => _getLimit(_baseRiskAnalysisLimit);
 
   // AI Voice
   int _aiVoiceUsage = 0;
-  final int _aiVoiceLimit = 100;
+  final int _baseAiVoiceLimit = 100;
+  int get aiVoiceLimit => _getLimit(_baseAiVoiceLimit);
 
   // Getters
   int get aiQueriesUsage => _aiQueriesUsage;
-  int get aiQueriesLimit => _aiQueriesLimit;
-
   int get casesUsage => _casesUsage;
-  int get casesLimit => _casesLimit;
-
   int get scanToPdfUsage => _scanToPdfUsage;
-  int get scanToPdfLimit => _scanToPdfLimit;
-
   int get documentsUsage => _documentsUsage;
-  int get documentsLimit => _documentsLimit;
-
   int get riskAnalysisUsage => _riskAnalysisUsage;
-  int get riskAnalysisLimit => _riskAnalysisLimit;
-
   int get aiVoiceUsage => _aiVoiceUsage;
-  int get aiVoiceLimit => _aiVoiceLimit;
 
   // Case Finder
   int _caseFinderUsage = 0;
-  final int _caseFinderLimit = 50;
-
+  final int _baseCaseFinderLimit = 50;
+  int get caseFinderLimit => _getLimit(_baseCaseFinderLimit);
   int get caseFinderUsage => _caseFinderUsage;
-  int get caseFinderLimit => _caseFinderLimit;
 
   // Court Orders
   int _courtOrdersUsage = 0;
-  final int _courtOrdersLimit = 30;
+  final int _baseCourtOrdersLimit = 30;
+  int get courtOrdersLimit => _getLimit(_baseCourtOrdersLimit);
+  int get courtOrdersUsage => _courtOrdersUsage;
 
   // Translator
   int _translatorUsage = 0;
-  final int _translatorLimit = 100;
+  final int _baseTranslatorLimit = 100;
+  int get translatorLimit => _getLimit(_baseTranslatorLimit);
+  int get translatorUsage => _translatorUsage;
 
   // Bare Acts
   int _bareActsUsage = 0;
-  final int _bareActsLimit = 1000;
+  final int _baseBareActsLimit = 1000;
+  int get bareActsLimit => _getLimit(_baseBareActsLimit);
+  int get bareActsUsage => _bareActsUsage;
 
   // Chat History
   int _chatHistoryUsage = 0;
-  final int _chatHistoryLimit = 100;
-
-  int get courtOrdersUsage => _courtOrdersUsage;
-  int get courtOrdersLimit => _courtOrdersLimit;
-
-  int get translatorUsage => _translatorUsage;
-  int get translatorLimit => _translatorLimit;
-
-  int get bareActsUsage => _bareActsUsage;
-  int get bareActsLimit => _bareActsLimit;
-
+  final int _baseChatHistoryLimit = 100;
+  int get chatHistoryLimit => _getLimit(_baseChatHistoryLimit);
   int get chatHistoryUsage => _chatHistoryUsage;
-  int get chatHistoryLimit => _chatHistoryLimit;
 
-  // Methods to increment usage
+  // Certified Copy
+  int _certifiedCopyUsage = 0;
+  final int _baseCertifiedCopyLimit = 10;
+  int get certifiedCopyLimit => _getLimit(_baseCertifiedCopyLimit);
+  int get certifiedCopyUsage => _certifiedCopyUsage;
+
+  // Methods to increment usage - check against dynamic limit
   void incrementAiQueries() {
-    if (_aiQueriesUsage < _aiQueriesLimit) {
+    if (_aiQueriesUsage < aiQueriesLimit) {
       _aiQueriesUsage++;
       _box.put('aiQueriesUsage', _aiQueriesUsage);
       notifyListeners();
@@ -117,7 +126,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementAiVoice() {
-    if (_aiVoiceUsage < _aiVoiceLimit) {
+    if (_aiVoiceUsage < aiVoiceLimit) {
       _aiVoiceUsage++;
       _box.put('aiVoiceUsage', _aiVoiceUsage);
       notifyListeners();
@@ -125,7 +134,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementCases() {
-    if (_casesUsage < _casesLimit) {
+    if (_casesUsage < casesLimit) {
       _casesUsage++;
       _box.put('casesUsage', _casesUsage);
       notifyListeners();
@@ -133,7 +142,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementScanToPdf() {
-    if (_scanToPdfUsage < _scanToPdfLimit) {
+    if (_scanToPdfUsage < scanToPdfLimit) {
       _scanToPdfUsage++;
       _box.put('scanToPdfUsage', _scanToPdfUsage);
       notifyListeners();
@@ -141,7 +150,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementDocuments() {
-    if (_documentsUsage < _documentsLimit) {
+    if (_documentsUsage < documentsLimit) {
       _documentsUsage++;
       _box.put('documentsUsage', _documentsUsage);
       notifyListeners();
@@ -149,7 +158,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementRiskAnalysis() {
-    if (_riskAnalysisUsage < _riskAnalysisLimit) {
+    if (_riskAnalysisUsage < riskAnalysisLimit) {
       _riskAnalysisUsage++;
       _box.put('riskAnalysisUsage', _riskAnalysisUsage);
       notifyListeners();
@@ -157,7 +166,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementCourtOrders() {
-    if (_courtOrdersUsage < _courtOrdersLimit) {
+    if (_courtOrdersUsage < courtOrdersLimit) {
       _courtOrdersUsage++;
       _box.put('courtOrdersUsage', _courtOrdersUsage);
       notifyListeners();
@@ -165,7 +174,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementTranslator() {
-    if (_translatorUsage < _translatorLimit) {
+    if (_translatorUsage < translatorLimit) {
       _translatorUsage++;
       _box.put('translatorUsage', _translatorUsage);
       notifyListeners();
@@ -173,7 +182,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementBareActs() {
-    if (_bareActsUsage < _bareActsLimit) {
+    if (_bareActsUsage < bareActsLimit) {
       _bareActsUsage++;
       _box.put('bareActsUsage', _bareActsUsage);
       notifyListeners();
@@ -181,7 +190,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementChatHistory() {
-    if (_chatHistoryUsage < _chatHistoryLimit) {
+    if (_chatHistoryUsage < chatHistoryLimit) {
       _chatHistoryUsage++;
       _box.put('chatHistoryUsage', _chatHistoryUsage);
       notifyListeners();
@@ -189,22 +198,15 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void incrementCaseFinder() {
-    if (_caseFinderUsage < _caseFinderLimit) {
+    if (_caseFinderUsage < caseFinderLimit) {
       _caseFinderUsage++;
       _box.put('caseFinderUsage', _caseFinderUsage);
       notifyListeners();
     }
   }
 
-  // Certified Copy
-  int _certifiedCopyUsage = 0;
-  final int _certifiedCopyLimit = 10;
-
-  int get certifiedCopyUsage => _certifiedCopyUsage;
-  int get certifiedCopyLimit => _certifiedCopyLimit;
-
   void incrementCertifiedCopy() {
-    if (_certifiedCopyUsage < _certifiedCopyLimit) {
+    if (_certifiedCopyUsage < certifiedCopyLimit) {
       _certifiedCopyUsage++;
       _box.put('certifiedCopyUsage', _certifiedCopyUsage);
       notifyListeners();

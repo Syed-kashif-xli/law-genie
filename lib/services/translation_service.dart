@@ -31,6 +31,21 @@ class TranslationService {
     }
   }
 
+  Future<String> transliterateToHindi(String text) async {
+    if (text.isEmpty) return '';
+
+    final prompt =
+        'Transliterate the following English text to Hindi phonetically. DO NOT TRANSLATE IT. Just write the English words in Hindi script. For example "Rahul" -> "राहुल", "Property" -> "प्रॉपर्टी". Only provide the Hindi text, no explanations.\n\nText: $text';
+
+    try {
+      final content = [Content.text(prompt)];
+      final response = await _model.generateContent(content);
+      return response.text?.trim() ?? '';
+    } catch (e) {
+      return ''; // Return empty on error to avoid disrupting UI
+    }
+  }
+
   Future<String> extractTextFromPdf(String path) async {
     try {
       // Load the existing PDF document.

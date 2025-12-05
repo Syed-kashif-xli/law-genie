@@ -53,11 +53,15 @@ class OrderModel {
       previewUrl: map['previewUrl'],
       previewStatus: map['previewStatus'],
       finalFileUrl: map['finalFileUrl'],
-      finalFileSentAt: map['finalFileSentAt'] != null
+      finalFileSentAt: map['finalFileSentAt'] is Timestamp
           ? (map['finalFileSentAt'] as Timestamp).toDate()
           : null,
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
-      updatedAt: (map['updatedAt'] as Timestamp).toDate(),
+      createdAt: map['createdAt'] != null
+          ? (map['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+      updatedAt: map['updatedAt'] != null
+          ? (map['updatedAt'] as Timestamp).toDate()
+          : DateTime.now(),
       details: map['details'] ?? {},
     );
   }

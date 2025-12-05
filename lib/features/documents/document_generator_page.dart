@@ -6,6 +6,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'document_fields.dart'; // Import the new file
 import 'document_viewer_page.dart';
+import '../../services/ad_service.dart';
 
 class DocumentGeneratorPage extends StatefulWidget {
   const DocumentGeneratorPage({super.key});
@@ -102,6 +103,33 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       return;
     }
 
+    _showAdAndGenerate();
+  }
+
+  void _showAdAndGenerate() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    AdService.showRewardedAd(
+      onUserEarnedReward: () {
+        Navigator.pop(context); // Close loading
+        _performGeneration();
+      },
+      onAdFailedToLoad: () {
+        Navigator.pop(context); // Close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Failed to load ad. Generating document...')),
+        );
+        _performGeneration();
+      },
+    );
+  }
+
+  Future<void> _performGeneration() async {
     setState(() {
       _isGenerating = true;
     });

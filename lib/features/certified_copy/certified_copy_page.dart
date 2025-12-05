@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'certified_copy_review_page.dart';
+import '../../services/translation_service.dart';
 
 class CertifiedRegistryCopyPage extends StatefulWidget {
   final bool isDigitalCopy;
@@ -20,8 +22,10 @@ class CertifiedRegistryCopyPage extends StatefulWidget {
 class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // 1. District
+  // 1. District / Area
   String? _selectedDistrict;
+  String _areaType = 'Urban'; // Default to Urban
+  final TextEditingController _tehsilNameController = TextEditingController();
   final List<String> _districts = [
     'Agar Malwa',
     'Alirajpur',
@@ -156,8 +160,17 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
 
   // 5. Party Details
   String? _partyType;
+  String? _partyRole;
   final TextEditingController _partyNameEngController = TextEditingController();
   final TextEditingController _partyNameHindiController =
+      TextEditingController();
+  final TextEditingController _partyFatherNameEngController =
+      TextEditingController();
+  final TextEditingController _partyFatherNameHindiController =
+      TextEditingController();
+  final TextEditingController _motherNameEngController =
+      TextEditingController();
+  final TextEditingController _motherNameHindiController =
       TextEditingController();
   final TextEditingController _mobileNumberController = TextEditingController();
 
@@ -169,10 +182,107 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
       TextEditingController();
   final TextEditingController _propertyIdController = TextEditingController();
 
+  // Transliteration
+  final TranslationService _translationService = TranslationService();
+
+  // Focus Nodes
+  final FocusNode _partyNameFocus = FocusNode();
+  final FocusNode _partyFatherNameFocus = FocusNode();
+  final FocusNode _motherNameFocus = FocusNode();
+  final FocusNode _propertyAddressFocus = FocusNode();
+
+  // Loading States
+  bool _isTransliteratingPartyName = false;
+  bool _isTransliteratingFatherName = false;
+  bool _isTransliteratingMotherName = false;
+  bool _isTransliteratingAddress = false;
+
   @override
   void initState() {
     super.initState();
     _updateDateRange(_selectedDateOption);
+    _setupTransliterationListeners();
+    _prefillUserData();
+  }
+
+  void _prefillUserData() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user?.phoneNumber != null && user!.phoneNumber!.isNotEmpty) {
+      _mobileNumberController.text = user.phoneNumber!;
+    }
+  }
+
+  void _setupTransliterationListeners() {
+    _partyNameFocus.addListener(() {
+      if (!_partyNameFocus.hasFocus &&
+          _partyNameEngController.text.isNotEmpty) {
+        _performTransliteration(
+          _partyNameEngController.text,
+          (val) => _partyNameHindiController.text = val,
+          (loading) => setState(() => _isTransliteratingPartyName = loading),
+        );
+      }
+    });
+
+    _partyFatherNameFocus.addListener(() {
+      if (!_partyFatherNameFocus.hasFocus &&
+          _partyFatherNameEngController.text.isNotEmpty) {
+        _performTransliteration(
+          _partyFatherNameEngController.text,
+          (val) => _partyFatherNameHindiController.text = val,
+          (loading) => setState(() => _isTransliteratingFatherName = loading),
+        );
+      }
+    });
+
+    _motherNameFocus.addListener(() {
+      if (!_motherNameFocus.hasFocus &&
+          _motherNameEngController.text.isNotEmpty) {
+        _performTransliteration(
+          _motherNameEngController.text,
+          (val) => _motherNameHindiController.text = val,
+          (loading) => setState(() => _isTransliteratingMotherName = loading),
+        );
+      }
+    });
+
+    _propertyAddressFocus.addListener(() {
+      if (!_propertyAddressFocus.hasFocus &&
+          _propertyAddressEngController.text.isNotEmpty) {
+        _performTransliteration(
+          _propertyAddressEngController.text,
+          (val) => _propertyAddressHindiController.text = val,
+          (loading) => setState(() => _isTransliteratingAddress = loading),
+        );
+      }
+    });
+  }
+
+  Future<void> _performTransliteration(
+    String text,
+    Function(String) onResult,
+    Function(bool) onLoading,
+  ) async {
+    onLoading(true);
+    try {
+      final hindiText = await _translationService.transliterateToHindi(text);
+      if (hindiText.isNotEmpty) {
+        setState(() {
+          onResult(hindiText);
+        });
+      }
+    } finally {
+      onLoading(false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _partyNameFocus.dispose();
+    _partyFatherNameFocus.dispose();
+    _motherNameFocus.dispose();
+    _propertyAddressFocus.dispose();
+    super.dispose();
   }
 
   void _updateDateRange(String option) {
@@ -269,8 +379,13 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
             deedType: _selectedDeedType,
             searchByParty: true,
             partyType: _partyType,
+            partyRole: _partyRole,
             partyNameEng: _partyNameEngController.text,
             partyNameHindi: _partyNameHindiController.text,
+            partyFatherNameEng: _partyFatherNameEngController.text,
+            partyFatherNameHindi: _partyFatherNameHindiController.text,
+            motherNameEng: _motherNameEngController.text,
+            motherNameHindi: _motherNameHindiController.text,
             mobileNumber: _mobileNumberController.text,
             searchByProperty: true,
             propertyType: _propertyType,
@@ -278,6 +393,8 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
             propertyAddressHindi: _propertyAddressHindiController.text,
             propertyId: _propertyIdController.text,
             isDigitalCopy: widget.isDigitalCopy,
+            areaType: _areaType,
+            tehsilName: _tehsilNameController.text,
           ),
         ),
       );
@@ -395,16 +512,44 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
                   ),
                   const SizedBox(height: 32),
                   _buildSectionContainer(
-                    title: 'District Details',
+                    title: 'Location Details',
                     icon: Iconsax.map_1,
-                    child: _buildDropdown(
-                      label: 'District',
-                      hint: 'Select District',
-                      value: _selectedDistrict,
-                      items: _districts,
-                      onChanged: (val) =>
-                          setState(() => _selectedDistrict = val),
-                      isRequired: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildDropdown(
+                          label: 'District',
+                          hint: 'Select District',
+                          value: _selectedDistrict,
+                          items: _districts,
+                          onChanged: (val) =>
+                              setState(() => _selectedDistrict = val),
+                          isRequired: true,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Area Type',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            _buildRadioButton('Urban', 'Urban'),
+                            const SizedBox(width: 24),
+                            _buildRadioButton('Rural', 'Rural'),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        _buildTextField(
+                          label: 'Tehsil Name',
+                          hint: 'Enter Tehsil Name (English)',
+                          controller: _tehsilNameController,
+                          isRequired: true,
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -738,19 +883,37 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
     return Column(
       children: [
         const Divider(color: Colors.white10, height: 32),
-        _buildDropdown(
-          label: 'Party Type',
-          hint: 'Select Party Type',
-          value: _partyType,
-          items: ['Individual', 'Organization', 'Government'],
-          onChanged: (val) => setState(() => _partyType = val),
-          isRequired: true,
+        Row(
+          children: [
+            Expanded(
+              child: _buildDropdown(
+                label: 'Party Type',
+                hint: 'Select',
+                value: _partyType,
+                items: ['Individual', 'Organization', 'Government'],
+                onChanged: (val) => setState(() => _partyType = val),
+                isRequired: true,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildDropdown(
+                label: 'Party Role',
+                hint: 'Select Role',
+                value: _partyRole,
+                items: ['Buyer (Kharidar)', 'Seller (Bechne wala)'],
+                onChanged: (val) => setState(() => _partyRole = val),
+                isRequired: true,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 20),
         _buildTextField(
           label: 'Party Name (English)',
           hint: 'Enter party name in English',
           controller: _partyNameEngController,
+          focusNode: _partyNameFocus,
           isRequired: true,
         ),
         const SizedBox(height: 20),
@@ -759,6 +922,39 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
           hint: 'Enter party name in Hindi',
           controller: _partyNameHindiController,
           isRequired: true,
+          isLoading: _isTransliteratingPartyName,
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(
+          label: 'Father Name (English)',
+          hint: 'Enter father name in English',
+          controller: _partyFatherNameEngController,
+          focusNode: _partyFatherNameFocus,
+          isRequired: true,
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(
+          label: 'Father Name (Hindi)',
+          hint: 'Enter father name in Hindi',
+          controller: _partyFatherNameHindiController,
+          isRequired: true,
+          isLoading: _isTransliteratingFatherName,
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(
+          label: 'Mother Name (English)',
+          hint: 'Enter mother name in English',
+          controller: _motherNameEngController,
+          focusNode: _motherNameFocus,
+          isRequired: true,
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(
+          label: 'Mother Name (Hindi)',
+          hint: 'Enter mother name in Hindi',
+          controller: _motherNameHindiController,
+          isRequired: true,
+          isLoading: _isTransliteratingMotherName,
         ),
         const SizedBox(height: 20),
         _buildTextField(
@@ -793,6 +989,7 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
           label: 'Property Address (English)',
           hint: 'Colony | Building | Block | Plot | Flat',
           controller: _propertyAddressEngController,
+          focusNode: _propertyAddressFocus,
           isRequired: true,
         ),
         const SizedBox(height: 20),
@@ -800,7 +997,8 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
           label: 'Property Address (Hindi)',
           hint: 'Colony | Building | Block | Plot | Flat',
           controller: _propertyAddressHindiController,
-          isRequired: false,
+          isRequired: true,
+          isLoading: _isTransliteratingAddress,
         ),
         const SizedBox(height: 20),
         _buildTextField(
@@ -818,7 +1016,9 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
     required String hint,
     required TextEditingController controller,
     bool isRequired = false,
-    TextInputType? keyboardType,
+    TextInputType keyboardType = TextInputType.text,
+    FocusNode? focusNode,
+    bool isLoading = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -842,6 +1042,7 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
         const SizedBox(height: 10),
         TextFormField(
           controller: controller,
+          focusNode: focusNode,
           keyboardType: keyboardType,
           style: GoogleFonts.poppins(color: Colors.white),
           decoration: InputDecoration(
@@ -865,11 +1066,64 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
               borderSide:
                   const BorderSide(color: Color(0xFF02F1C3), width: 1.5),
             ),
+            suffixIcon: isLoading
+                ? const Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Color(0xFF02F1C3),
+                      ),
+                    ),
+                  )
+                : null,
           ),
           validator:
               isRequired ? (val) => val!.isEmpty ? 'Required' : null : null,
         ),
       ],
+    );
+  }
+
+  Widget _buildRadioButton(String label, String value) {
+    bool isSelected = _areaType == value;
+    return GestureDetector(
+      onTap: () => setState(() => _areaType = value),
+      child: Row(
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isSelected ? const Color(0xFF02F1C3) : Colors.white60,
+                width: 2,
+              ),
+            ),
+            padding: const EdgeInsets.all(2),
+            child: isSelected
+                ? Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFF02F1C3),
+                    ),
+                  )
+                : null,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -251,6 +251,16 @@ class FeatureUsageSection extends StatelessWidget {
                   );
                 },
               ),
+              FeatureUsageCard(
+                title: 'Profile',
+                count: 0, // Static
+                limit: 0, // No limit applicable
+                icon: Iconsax.user,
+                color: const Color(0xFF9C27B0), // Purple
+                onTap: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+              ),
             ];
 
             return Wrap(

@@ -6,6 +6,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:myapp/services/translation_service.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/ad_service.dart';
 
 class TranslatorPage extends StatefulWidget {
   const TranslatorPage({super.key});
@@ -18,6 +21,10 @@ class _TranslatorPageState extends State<TranslatorPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late TranslationService _translationService;
+
+  // Ad State
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
 
   // Text Translation State
   final TextEditingController _textController = TextEditingController();
@@ -37,12 +44,25 @@ class _TranslatorPageState extends State<TranslatorPage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _translationService = TranslationService();
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = AdService.createBannerAd(
+      onAdLoaded: (ad) {
+        setState(() {
+          _isAdLoaded = true;
+        });
+      },
+    );
+    _bannerAd?.load();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     _textController.dispose();
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -98,6 +118,82 @@ class _TranslatorPageState extends State<TranslatorPage>
         _translatedDocumentText = '';
       });
     }
+  }
+
+  Future<void> _checkDocumentUsageAndTranslate() async {
+    if (_selectedFilePath == null) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    int documentTranslations = prefs.getInt('document_translations_count') ?? 0;
+
+    // "jab document ho toh eik do ka baad watch wla add da dena"
+    // Logic: Allow 2 free translations, then show ad for every subsequent one.
+    // Or: Show ad after every 2 translations?
+    // Let's go with: 2 free per day (or total?), then ad for each.
+    // Simpler interpretation: After 2 uses, show ad.
+
+    if (documentTranslations >= 2) {
+      _showAdDialog();
+    } else {
+      await _translateDocument();
+      await prefs.setInt(
+          'document_translations_count', documentTranslations + 1);
+    }
+  }
+
+  void _showAdDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF19173A),
+        title: Text('Unlock Translation',
+            style: GoogleFonts.poppins(color: Colors.white)),
+        content: Text(
+          'Watch a short ad to translate this document?',
+          style: GoogleFonts.poppins(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child:
+                Text('Cancel', style: GoogleFonts.poppins(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showAd();
+            },
+            child: Text('Watch Ad',
+                style: GoogleFonts.poppins(color: const Color(0xFF02F1C3))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAd() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    AdService.showRewardedAd(
+      onUserEarnedReward: () async {
+        Navigator.pop(context); // Close loading
+        await _translateDocument();
+        // We don't increment the counter here effectively because we want to keep showing ads now?
+        // Or do we reset? "eik do ka baad" -> maybe it means every 3rd time?
+        // Let's stick to: Once limit reached, always show ad.
+      },
+      onAdFailedToLoad: () async {
+        Navigator.pop(context); // Close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load ad. Translating...')),
+        );
+        await _translateDocument();
+      },
+    );
   }
 
   Future<void> _translateDocument() async {
@@ -210,6 +306,14 @@ class _TranslatorPageState extends State<TranslatorPage>
           _buildTranslateButton(_isTranslating, _translateText),
           const SizedBox(height: 24),
           if (_translatedText.isNotEmpty) _buildOutputArea(_translatedText),
+          if (_isAdLoaded && _bannerAd != null) ...[
+            const SizedBox(height: 24),
+            SizedBox(
+              height: _bannerAd!.size.height.toDouble(),
+              width: _bannerAd!.size.width.toDouble(),
+              child: AdWidget(ad: _bannerAd!),
+            ),
+          ],
         ],
       ),
     );
@@ -226,7 +330,7 @@ class _TranslatorPageState extends State<TranslatorPage>
           const SizedBox(height: 24),
           _buildTranslateButton(
               _isProcessingDocument || _selectedFilePath == null,
-              _translateDocument,
+              _checkDocumentUsageAndTranslate,
               label: 'Translate Document'),
           const SizedBox(height: 24),
           if (_translatedDocumentText.isNotEmpty)
@@ -416,6 +520,8 @@ class _TranslatorPageState extends State<TranslatorPage>
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             if (_selectedFilePath == null)
               Padding(

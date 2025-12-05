@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../../services/bare_act_service.dart';
+import '../../services/ad_service.dart';
 import 'models/bare_act.dart';
 import 'bare_act_viewer_page.dart';
 import 'package:provider/provider.dart';
@@ -57,16 +58,67 @@ class _BareActsPageState extends State<BareActsPage> {
   void _checkUsageAndNavigate(BareAct act) {
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
     if (usageProvider.bareActsUsage >= usageProvider.bareActsLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Free plan limit reached. Upgrade to continue.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showAdDialog(act);
       return;
     }
 
     usageProvider.incrementBareActs();
+    _navigateToViewer(act);
+  }
+
+  void _showAdDialog(BareAct act) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF19173A),
+        title: Text('Unlock Bare Act',
+            style: GoogleFonts.poppins(color: Colors.white)),
+        content: Text(
+          'Watch a short ad to unlock this Bare Act?',
+          style: GoogleFonts.poppins(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child:
+                Text('Cancel', style: GoogleFonts.poppins(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showAd(act);
+            },
+            child: Text('Watch Ad',
+                style: GoogleFonts.poppins(color: const Color(0xFF02F1C3))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAd(BareAct act) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    AdService.showRewardedAd(
+      onUserEarnedReward: () {
+        Navigator.pop(context); // Close loading
+        _navigateToViewer(act);
+      },
+      onAdFailedToLoad: () {
+        Navigator.pop(context); // Close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load ad. Opening act...')),
+        );
+        _navigateToViewer(act);
+      },
+    );
+  }
+
+  void _navigateToViewer(BareAct act) {
     Navigator.push(
       context,
       MaterialPageRoute(

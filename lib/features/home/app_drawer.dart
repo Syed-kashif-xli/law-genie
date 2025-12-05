@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
@@ -12,23 +11,29 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      elevation: 0,
       backgroundColor: Colors.transparent,
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A0B2E).withAlpha(230),
-              border:
-                  Border(right: BorderSide(color: Colors.white.withAlpha(51))),
-            ),
-            child: Column(
-              children: [
-                _buildHeader(context),
-                _buildProPlanCard(context),
-                _buildMenuList(context),
-              ],
+      elevation: 0,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.85,
+        child: ClipRRect(
+          borderRadius:
+              const BorderRadius.horizontal(right: Radius.circular(30)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF0A032A).withValues(alpha: 0.85),
+                border: Border(
+                  right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                ),
+              ),
+              child: Column(
+                children: [
+                  _buildHeader(context),
+                  _buildProPlanCard(context),
+                  _buildMenuList(context),
+                ],
+              ),
             ),
           ),
         ),
@@ -38,16 +43,27 @@ class AppDrawer extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
+      padding: const EdgeInsets.fromLTRB(25, 60, 20, 20),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              'assets/images/logo.png',
-              height: 40,
-              width: 40,
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF2575FC).withValues(alpha: 0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
+              ],
             ),
+            child: const Icon(Iconsax.judge, color: Colors.white, size: 28),
           ),
           const SizedBox(width: 15),
           Column(
@@ -76,7 +92,7 @@ class AppDrawer extends StatelessWidget {
           ),
           const Spacer(),
           Material(
-            color: Colors.white.withAlpha(51),
+            color: Colors.white.withValues(alpha: 0.2),
             shape: const CircleBorder(),
             child: IconButton(
               padding: EdgeInsets.zero,
@@ -100,12 +116,12 @@ class AppDrawer extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.deepPurple.withAlpha(102),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            color: const Color(0xFF2575FC).withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           )
         ],
       ),
@@ -113,27 +129,25 @@ class AppDrawer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Iconsax.crown_1, color: Colors.white, size: 20),
-              const SizedBox(width: 10),
               Text(
                 'Free Plan',
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
               ),
-              const Spacer(),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(230),
-                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  'Active',
-                  style: TextStyle(
+                child: Text(
+                  'UPGRADE',
+                  style: GoogleFonts.poppins(
                       color: Colors.purple,
                       fontSize: 12,
                       fontWeight: FontWeight.bold),
@@ -147,7 +161,7 @@ class AppDrawer extends StatelessWidget {
             child: LinearProgressIndicator(
               value:
                   usageProvider.aiQueriesUsage / usageProvider.aiQueriesLimit,
-              backgroundColor: Colors.white.withAlpha(77),
+              backgroundColor: Colors.white.withValues(alpha: 0.3),
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
               minHeight: 6,
             ),
@@ -156,7 +170,7 @@ class AppDrawer extends StatelessWidget {
           Text(
             '${usageProvider.aiQueriesUsage}/${usageProvider.aiQueriesLimit} queries used',
             style: GoogleFonts.poppins(
-                color: Colors.white.withAlpha(204), fontSize: 12),
+                color: Colors.white.withValues(alpha: 0.8), fontSize: 12),
           ),
         ],
       ),
@@ -209,7 +223,7 @@ class AppDrawer extends StatelessWidget {
         boxShadow: isSelected
             ? [
                 BoxShadow(
-                  color: Colors.deepPurple.withAlpha(102),
+                  color: Colors.deepPurple.withValues(alpha: 0.4),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 )

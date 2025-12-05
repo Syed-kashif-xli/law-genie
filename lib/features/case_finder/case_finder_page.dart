@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/ad_service.dart';
 
 class CaseFinderPage extends StatefulWidget {
   const CaseFinderPage({super.key});
@@ -14,10 +16,13 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
   bool _isLoading = true;
   bool _isReady = false; // New state to track if custom CSS is applied
   int _loadingProgress = 0;
+  int _dailySearches = 0;
+  static const int _freeLimit = 5;
 
   @override
   void initState() {
     super.initState();
+    _loadDailySearches();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0xFF0A032A))
@@ -25,10 +30,7 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
         'AppChannel',
         onMessageReceived: (JavaScriptMessage message) {
           if (message.message == 'hide') {
-            setState(() {
-              _isReady = false;
-              _isLoading = true;
-            });
+            _handleSearchAction();
           }
         },
       )
@@ -184,6 +186,112 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
           Uri.parse('https://judgments.ecourts.gov.in/pdfsearch/index.php'));
   }
 
+  Future<void> _loadDailySearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    final today = DateTime.now().toIso8601String().split('T')[0];
+    final lastDate = prefs.getString('last_search_date');
+
+    if (lastDate != today) {
+      await prefs.setString('last_search_date', today);
+      await prefs.setInt('daily_searches', 0);
+      setState(() => _dailySearches = 0);
+    } else {
+      setState(() => _dailySearches = prefs.getInt('daily_searches') ?? 0);
+    }
+  }
+
+  Future<void> _incrementSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() => _dailySearches++);
+    await prefs.setInt('daily_searches', _dailySearches);
+  }
+
+  void _handleSearchAction() {
+    if (_dailySearches < _freeLimit) {
+      setState(() {
+        _isReady = false;
+        _isLoading = true;
+      });
+      _incrementSearches();
+    } else {
+      // Limit reached, show ad dialog
+      // We need to pause/hide the webview first
+      setState(() => _isReady = false);
+      _showAdDialog();
+    }
+  }
+
+  void _showAdDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF19173A),
+        title: Text('Daily Limit Reached',
+            style: GoogleFonts.poppins(color: Colors.white)),
+        content: Text(
+          'You have used your 5 free searches for today. Watch a short ad to get an extra search?',
+          style: GoogleFonts.poppins(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // If they cancel, we just show the webview again (or maybe reload to reset state?)
+              // Reloading might be safer to prevent the search from continuing if it was already submitted
+              _controller.reload();
+            },
+            child:
+                Text('Cancel', style: GoogleFonts.poppins(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showAd();
+            },
+            child: Text('Watch Ad',
+                style: GoogleFonts.poppins(color: const Color(0xFF02F1C3))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAd() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    AdService.showRewardedAd(
+      onUserEarnedReward: () {
+        Navigator.pop(context); // Close loading
+        _incrementSearches(); // Grant extra search
+        setState(() {
+          _isReady = false;
+          _isLoading = true;
+        });
+        // We don't need to do anything else, the webview submitted the form already.
+        // We just unhide it when it finishes loading the results.
+        // Wait, if we hid it, the request might still be processing in background.
+        // If we just set _isLoading = true, the onPageFinished will eventually fire and show it.
+      },
+      onAdFailedToLoad: () {
+        Navigator.pop(context); // Close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Failed to load ad. Granting search...')),
+        );
+        _incrementSearches();
+        setState(() {
+          _isReady = false;
+          _isLoading = true;
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -195,12 +303,25 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Case Finder',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Case Finder',
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+              ),
+            ),
+            Text(
+              '${_freeLimit - _dailySearches > 0 ? _freeLimit - _dailySearches : 0} free searches left',
+              style: GoogleFonts.poppins(
+                color: Colors.white54,
+                fontSize: 12,
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(

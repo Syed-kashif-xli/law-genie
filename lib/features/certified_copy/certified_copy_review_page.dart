@@ -14,11 +14,18 @@ class CertifiedCopyReviewPage extends StatefulWidget {
   final String dateOption;
   final String fromDate;
   final String toDate;
+  final String areaType;
+  final String tehsilName;
   final String? deedType;
   final bool searchByParty;
   final String? partyType;
+  final String? partyRole;
   final String? partyNameEng;
   final String? partyNameHindi;
+  final String? partyFatherNameEng;
+  final String? partyFatherNameHindi;
+  final String? motherNameEng;
+  final String? motherNameHindi;
   final String? mobileNumber;
   final bool searchByProperty;
   final String? propertyType;
@@ -33,11 +40,18 @@ class CertifiedCopyReviewPage extends StatefulWidget {
     required this.dateOption,
     required this.fromDate,
     required this.toDate,
+    required this.areaType,
+    required this.tehsilName,
     this.deedType,
     required this.searchByParty,
     this.partyType,
+    this.partyRole,
     this.partyNameEng,
     this.partyNameHindi,
+    this.partyFatherNameEng,
+    this.partyFatherNameHindi,
+    this.motherNameEng,
+    this.motherNameHindi,
     this.mobileNumber,
     required this.searchByProperty,
     this.propertyType,
@@ -95,15 +109,24 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
         updatedAt: DateTime.now(),
         details: {
           'district': widget.district,
+          'areaType': widget.areaType,
+          'tehsilName': widget.tehsilName,
           'dateOption': widget.dateOption,
           'fromDate': widget.fromDate,
           'toDate': widget.toDate,
           'deedType': widget.deedType,
           'searchByParty': widget.searchByParty,
           'partyType': widget.partyType,
+          'partyRole': widget.partyRole,
           'partyName': widget.partyNameEng,
           'partyNameHindi': widget.partyNameHindi,
+          'partyFatherNameEng': widget.partyFatherNameEng,
+          'partyFatherNameHindi': widget.partyFatherNameHindi,
+          'motherNameEng': widget.motherNameEng,
+          'motherNameHindi': widget.motherNameHindi,
           'mobileNumber': widget.mobileNumber,
+          'userPhoneNumber':
+              user.phoneNumber, // Save verified auth phone number
           'email': user.email, // Save email explicitly
           'searchByProperty': widget.searchByProperty,
           'propertyType': widget.propertyType,
@@ -244,6 +267,8 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
           const SizedBox(height: 24),
           _buildDetailRow('State', 'Madhya Pradesh'),
           _buildDetailRow('District', widget.district),
+          _buildDetailRow('Area Type', widget.areaType),
+          _buildDetailRow('Tehsil', widget.tehsilName),
           _buildDetailRow(
               'Date Range', '${widget.fromDate} to ${widget.toDate}'),
           if (widget.deedType != null)
@@ -260,8 +285,22 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
             ),
             const SizedBox(height: 16),
             _buildDetailRow('Party Type', widget.partyType ?? '-'),
+            if (widget.partyRole != null)
+              _buildDetailRow('Party Role', widget.partyRole!),
             _buildDetailRow('Name (Eng)', widget.partyNameEng ?? '-'),
             _buildDetailRow('Name (Hindi)', widget.partyNameHindi ?? '-'),
+            if (widget.partyFatherNameEng != null &&
+                widget.partyFatherNameEng!.isNotEmpty)
+              _buildDetailRow('Father (Eng)', widget.partyFatherNameEng!),
+            if (widget.partyFatherNameHindi != null &&
+                widget.partyFatherNameHindi!.isNotEmpty)
+              _buildDetailRow('Father (Hindi)', widget.partyFatherNameHindi!),
+            if (widget.motherNameEng != null &&
+                widget.motherNameEng!.isNotEmpty)
+              _buildDetailRow('Mother (Eng)', widget.motherNameEng!),
+            if (widget.motherNameHindi != null &&
+                widget.motherNameHindi!.isNotEmpty)
+              _buildDetailRow('Mother (Hindi)', widget.motherNameHindi!),
             if (widget.mobileNumber != null && widget.mobileNumber!.isNotEmpty)
               _buildDetailRow('Mobile', widget.mobileNumber!),
           ],
