@@ -533,7 +533,11 @@ class AddEventDialogState extends State<AddEventDialog> {
         }
       }
     } catch (e) {
-      // Silently fail if notification permission is not granted
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Event saved but reminder failed: $e')),
+        );
+      }
     }
 
     if (mounted) {

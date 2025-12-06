@@ -30,7 +30,7 @@ class NotificationService {
   Future<void> init() async {
     // 1. Initialize Local Notifications
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_stat_law');
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
@@ -49,6 +49,21 @@ class NotificationService {
 
     // 2. Setup Firebase Messaging
     await _setupFirebaseMessaging();
+
+    // 3. Create Reminders Channel
+    const AndroidNotificationChannel remindersChannel =
+        AndroidNotificationChannel(
+      'reminders_channel',
+      'Reminders',
+      description: 'Notifications for case reminders',
+      importance: Importance.max,
+      playSound: true,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(remindersChannel);
   }
 
   Future<void> _setupFirebaseMessaging() async {
@@ -168,11 +183,12 @@ class NotificationService {
       tz.TZDateTime.from(scheduledDate, tz.local),
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'your_channel_id',
-          'your_channel_name',
-          channelDescription: 'your_channel_description',
+          'reminders_channel',
+          'Reminders',
+          channelDescription: 'Notifications for case reminders',
           importance: Importance.max,
           priority: Priority.high,
+          icon: '@drawable/ic_stat_law',
         ),
         iOS: DarwinNotificationDetails(),
       ),
