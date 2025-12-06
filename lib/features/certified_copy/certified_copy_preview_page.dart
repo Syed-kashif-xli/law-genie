@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
@@ -215,7 +215,7 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
                               style: TextStyle(color: Colors.white)))
                       : isPdf
                           ? _localPdfPath != null
-                              ? PDFView(filePath: _localPdfPath!)
+                              ? const PDF().fromPath(_localPdfPath!)
                               : _isLoading
                                   ? const Center(
                                       child: CircularProgressIndicator())
