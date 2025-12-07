@@ -60,69 +60,109 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A032A),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, size: 32, color: Colors.white),
-            onPressed: () => Scaffold.of(context).openDrawer(),
+          builder: (context) => Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Iconsax.menu_1, size: 24, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
           ),
         ),
-        flexibleSpace: const _WelcomeMessage(),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.workspace_premium,
-                size: 32, color: Color(0xFFFFD700)),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const SubscriptionPage()),
-              );
-            },
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Iconsax.crown1,
+                  size: 24, color: Color(0xFFFFD700)),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SubscriptionPage()),
+                );
+              },
+            ),
           ),
-          IconButton(
-            icon:
-                const Icon(Iconsax.notification, size: 32, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationsScreen()),
-              );
-            },
+          const SizedBox(width: 8),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Iconsax.notification,
+                  size: 24, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationsScreen()),
+                );
+              },
+            ),
           ),
           const SizedBox(width: 16),
         ],
       ),
       drawer: const AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: _refreshData,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                const FeatureUsageSection(),
-                const SizedBox(height: 24),
-                const _LegalNewsFeed(),
-                if (_isAdLoaded && _bannerAd != null) ...[
-                  const SizedBox(height: 24),
-                  Center(
-                    child: SizedBox(
-                      width: _bannerAd!.size.width.toDouble(),
-                      height: _bannerAd!.size.height.toDouble(),
-                      child: AdWidget(ad: _bannerAd!),
-                    ),
+      body: RepaintBoundary(
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF0F0C29), Color(0xFF302B63), Color(0xFF24243E)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: SafeArea(
+            child: RefreshIndicator(
+              onRefresh: _refreshData,
+              color: const Color(0xFF2C55A9),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      const _HomeHeader(),
+                      const SizedBox(height: 30),
+                      const FeatureUsageSection(),
+                      const SizedBox(height: 30),
+                      const _LegalNewsFeed(),
+                      if (_isAdLoaded && _bannerAd != null) ...[
+                        const SizedBox(height: 24),
+                        Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: SizedBox(
+                              width: _bannerAd!.size.width.toDouble(),
+                              height: _bannerAd!.size.height.toDouble(),
+                              child: AdWidget(ad: _bannerAd!),
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 80),
+                    ],
                   ),
-                ],
-                const SizedBox(height: 80), // Extra space for FAB or bottom nav
-              ],
+                ),
+              ),
             ),
           ),
         ),
@@ -131,35 +171,46 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _WelcomeMessage extends StatelessWidget {
-  const _WelcomeMessage();
+class _HomeHeader extends StatelessWidget {
+  const _HomeHeader();
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Positioned.fill(
-          child: Container(color: const Color(0xFF0A032A)),
-        ),
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 72, bottom: 12),
-            child: AnimatedTextKit(
-              animatedTexts: [
-                TypewriterAnimatedText(
-                  'Welcome back',
-                  textStyle: GoogleFonts.poppins(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AnimatedTextKit(
+                  animatedTexts: [
+                    TypewriterAnimatedText(
+                      'Welcome back,',
+                      textStyle: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.2,
+                      ),
+                      speed: const Duration(milliseconds: 100),
+                    ),
+                  ],
+                  totalRepeatCount: 1,
+                ),
+                Text(
+                  'Your Personal AI Legal Assistant',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w500,
                   ),
-                  speed: const Duration(milliseconds: 100),
                 ),
               ],
-              totalRepeatCount: 1,
             ),
-          ),
+          ],
         ),
       ],
     );
@@ -177,13 +228,27 @@ class _LegalNewsFeed extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Legal News',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1DE9B6).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Iconsax.global,
+                      color: Color(0xFF1DE9B6), size: 20),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Legal News',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
             GestureDetector(
               onTap: () {
@@ -192,49 +257,96 @@ class _LegalNewsFeed extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const AllNewsPage()),
                 );
               },
-              child: Text(
-                'View All',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: const Color.fromARGB(255, 4, 238, 203),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border:
+                      Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      'View All',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(Iconsax.arrow_right_3,
+                        color: Colors.white, size: 14),
+                  ],
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         Consumer<NewsProvider>(
           builder: (context, provider, child) {
             if (provider.isLoading && provider.news.isEmpty) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                  child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: CircularProgressIndicator(color: Color(0xFF1DE9B6)),
+              ));
             } else if (provider.errorMessage != null) {
-              return Center(
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                ),
                 child: Column(
                   children: [
                     Text(
-                      'Error: ${provider.errorMessage}',
-                      style: const TextStyle(color: Colors.red),
+                      'Unable to load news',
+                      style: GoogleFonts.poppins(
+                          color: Colors.white, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
+                    Text(
+                      provider.errorMessage!,
+                      style: GoogleFonts.poppins(
+                          color: Colors.white70, fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () => provider.fetchNews(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
                       child: const Text('Retry'),
                     ),
                   ],
                 ),
               );
             } else if (provider.news.isEmpty) {
-              return const Center(
-                child: Text(
-                  'No news articles found.',
-                  style: TextStyle(color: Colors.white70),
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    'No news articles found.',
+                    style: GoogleFonts.poppins(color: Colors.white70),
+                  ),
                 ),
               );
             }
-            return ListView.builder(
+            return ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: provider.news.length,
+              itemCount: provider.news.length > 3
+                  ? 3
+                  : provider.news.length, // Show top 3
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final item = provider.news[index];
                 return NewsCard(news: item);

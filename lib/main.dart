@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:myapp/features/ai_voice/ai_voice_page.dart';
+
 import 'package:myapp/features/court_order_reader/court_order_reader_page.dart';
 import 'package:myapp/features/home/main_layout.dart';
 import 'package:myapp/models/chat_model.dart';
@@ -210,7 +210,6 @@ class MyApp extends StatelessWidget {
             '/notifications': (context) => const NotificationsScreen(),
             '/profile': (context) => const ProfileScreen(),
             '/courtOrderReader': (context) => const CourtOrderReaderPage(),
-            '/aiVoice': (context) => const AiVoicePage(),
             '/caseFinder': (context) => const CaseFinderPage(),
             '/bareActs': (context) => const BareActsPage(),
             '/translator': (context) => const TranslatorPage(),

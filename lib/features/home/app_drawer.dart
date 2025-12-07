@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
@@ -15,26 +14,28 @@ class AppDrawer extends StatelessWidget {
       elevation: 0,
       child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.85,
-        child: ClipRRect(
-          borderRadius:
-              const BorderRadius.horizontal(right: Radius.circular(30)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF0A032A).withValues(alpha: 0.85),
-                border: Border(
-                  right: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                ),
-              ),
-              child: Column(
-                children: [
-                  _buildHeader(context),
-                  _buildProPlanCard(context),
-                  _buildMenuList(context),
-                ],
-              ),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF0A032A).withValues(alpha: 0.95),
+                const Color(0xFF24243E).withValues(alpha: 0.90),
+              ],
             ),
+            borderRadius:
+                const BorderRadius.horizontal(right: Radius.circular(30)),
+            border: Border(
+              right: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+            ),
+          ),
+          child: Column(
+            children: [
+              _buildHeader(context),
+              _buildProPlanCard(context),
+              _buildMenuList(context),
+            ],
           ),
         ),
       ),
@@ -191,7 +192,6 @@ class AppDrawer extends StatelessWidget {
           _buildMenuItem(context, Iconsax.book_1, 'Bare Acts', '/bareActs'),
           _buildMenuItem(
               context, Iconsax.translate, 'Translator', '/translator'),
-          _buildMenuItem(context, Iconsax.microphone_2, 'AI Voice', '/aiVoice'),
           _buildMenuItem(context, Iconsax.document_text, 'Order Reader',
               '/courtOrderReader'),
           _buildMenuItem(

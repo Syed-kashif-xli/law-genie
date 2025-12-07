@@ -88,6 +88,11 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
         }
 
         if (articleBody != null) {
+          // Remove H1 tags to prevent double headings (since we show title in AppBar/Body)
+          articleBody
+              .querySelectorAll('h1')
+              .forEach((element) => element.remove());
+
           // Remove unwanted elements
           final unwantedSelectors = [
             'script',
@@ -132,7 +137,10 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
             '.category',
             '.date',
             '.author',
-            '.submitted-by'
+            '.submitted-by',
+            '.join-group',
+            '.telegram-widget',
+            '.whatsapp-widget'
           ];
 
           for (final selector in unwantedSelectors) {
@@ -142,26 +150,44 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
           }
 
           // Aggressively remove any element containing "Follow Us" or social links
+          // But CAREFULLY preserve PDF downloads
           articleBody.querySelectorAll('*').forEach((element) {
             // Strip style attributes to ensure dark theme consistency
             element.attributes.remove('style');
 
             final text = element.text.toLowerCase();
-            if (text.contains('follow us') ||
+
+            // Check for promotional text
+            bool isPromotional = text.contains('follow us') ||
                 text.contains('subscribe') ||
-                text.contains('read more')) {
-              // Only remove if it's a small container
-              if (element.text.length < 100) {
+                text.contains('read more') ||
+                text.contains('join our') ||
+                text.contains('join whatsapp') ||
+                text.contains('join telegram') ||
+                text.contains('follow bar and bench') ||
+                text.contains('follow livelaw');
+
+            // Check if it might be a valid download link
+            bool isDownload = text.contains('download') || text.contains('pdf');
+
+            // Remove if it's promotional AND (not a download link OR the promotional text is very specific)
+            if (isPromotional) {
+              // If it's a small container, it's likely a footer/button
+              if (element.text.length < 200) {
+                // Special case: If it says "Download PDF", we might want to keep it
+                // But often "Join our WhatsApp to get PDF" is spam.
+                // Let's assume if it says "Join" or "Follow", it's spam even if it mentions PDF.
                 element.remove();
               }
             }
 
-            // Specific check for Bar & Bench / LiveLaw links in the body
+            // Specific check for Bar & Bench / LiveLaw links in the body if they look like clutter
             if (text.contains('bar & bench') ||
                 text.contains('livelaw') ||
                 text.contains('news')) {
-              // Remove if it's a standalone link or small text block (likely breadcrumb)
-              if (element.localName == 'a' || element.text.length < 30) {
+              // Remove if it's a standalone link or small text block (likely breadcrumb or source citation)
+              if ((element.localName == 'a' || element.text.length < 50) &&
+                  !isDownload) {
                 element.remove();
               }
             }

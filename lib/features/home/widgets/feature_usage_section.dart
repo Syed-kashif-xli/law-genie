@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
-import 'package:myapp/features/ai_voice/ai_voice_page.dart';
 
 import 'package:myapp/features/risk_analysis/risk_analysis_page.dart';
 import 'package:myapp/features/case_finder/case_finder_page.dart';
@@ -130,20 +129,6 @@ class FeatureUsageSection extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const RiskAnalysisPage()),
-                  );
-                },
-              ),
-              FeatureUsageCard(
-                title: 'AI Voice',
-                count: usageProvider.aiVoiceUsage,
-                limit: usageProvider.aiVoiceLimit,
-                icon: Iconsax.microphone_2,
-                color: const Color(0xFFE91E63),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AiVoicePage()),
                   );
                 },
               ),

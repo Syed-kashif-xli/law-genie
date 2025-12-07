@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 // Top-level background handler
@@ -50,7 +51,10 @@ class NotificationService {
     // 2. Setup Firebase Messaging
     await _setupFirebaseMessaging();
 
-    // 3. Create Reminders Channel
+    // 3. Configure Local Timezone
+    await _configureLocalTimeZone();
+
+    // 4. Create Reminders Channel
     const AndroidNotificationChannel remindersChannel =
         AndroidNotificationChannel(
       'reminders_channel',
@@ -60,28 +64,29 @@ class NotificationService {
       playSound: true,
     );
 
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(remindersChannel);
+    final androidImplementation =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    await androidImplementation?.createNotificationChannel(remindersChannel);
+    await androidImplementation?.requestNotificationsPermission();
+  }
+
+  Future<void> _configureLocalTimeZone() async {
+    try {
+      final timeZoneName = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(timeZoneName.toString()));
+    } catch (e) {
+      debugPrint('Could not configure local timezone: $e');
+      // Fallback to UTC or a default location if needed, but usually this is safe
+      // as long as timezone data is initialized in main.dart
+      try {
+        tz.setLocalLocation(tz.getLocation('UTC'));
+      } catch (_) {}
+    }
   }
 
   Future<void> _setupFirebaseMessaging() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    // Request Permissions
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    debugPrint('User granted permission: ${settings.authorizationStatus}');
-
     // Set Background Handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
