@@ -255,8 +255,9 @@ class FeatureUsageSection extends StatelessWidget {
                 return LayoutBuilder(
                   builder: (context, constraints) {
                     // Calculate width for 2 columns with spacing
-                    // Screen width - padding (32) - spacing (16) / 2
-                    final width = (MediaQuery.of(context).size.width - 48) / 2;
+                    // Screen width - padding (40) - spacing (16) = W - 56
+                    // Using 60 to be safe
+                    final width = (MediaQuery.of(context).size.width - 60) / 2;
                     return SizedBox(
                       width: width,
                       height: width, // Square aspect ratio

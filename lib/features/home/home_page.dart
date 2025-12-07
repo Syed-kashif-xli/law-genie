@@ -343,9 +343,9 @@ class _LegalNewsFeed extends StatelessWidget {
             return ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: provider.news.length > 3
-                  ? 3
-                  : provider.news.length, // Show top 3
+              itemCount: provider.news.length > 6
+                  ? 6
+                  : provider.news.length, // Show top 6
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final item = provider.news[index];
