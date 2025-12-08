@@ -14,7 +14,11 @@ class SpeechToTextService with ChangeNotifier {
   String get status => _status;
   String get error => _error;
 
+  bool _isInitialized = false;
+
   Future<void> initialize() async {
+    if (_isInitialized) return;
+
     await _speechToText.initialize(
       onError: (val) {
         _error = val.errorMsg;
@@ -31,12 +35,18 @@ class SpeechToTextService with ChangeNotifier {
         notifyListeners();
       },
     );
+    _isInitialized = true;
     notifyListeners();
   }
 
-  void startListening() {
+  Future<void> startListening() async {
     _lastWords = ''; // Reset words on new listen
     _error = '';
+
+    if (!_isInitialized) {
+      await initialize();
+    }
+
     if (!_speechToText.isListening) {
       _speechToText.listen(
         onResult: _onSpeechResult,

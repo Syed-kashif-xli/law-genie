@@ -59,12 +59,12 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize App Check with Debug Provider
+  // Initialize App Check with appropriate provider based on build mode
   await FirebaseAppCheck.instance.activate(
-    // ignore: deprecated_member_use
-    androidProvider: AndroidProvider.debug,
-    // ignore: deprecated_member_use
-    appleProvider: AppleProvider.debug,
+    // Use debug provider only in debug mode, Play Integrity in release
+    androidProvider:
+        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+    appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
   );
 
   await NotificationService().init();
@@ -95,8 +95,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => ChatProvider()),
         ChangeNotifierProvider(create: (context) => CaseProvider()),
         Provider(create: (context) => TtsService()),
-        ChangeNotifierProvider(
-            create: (context) => SpeechToTextService()..initialize()),
+        ChangeNotifierProvider(create: (context) => SpeechToTextService()),
         ChangeNotifierProvider(create: (context) => UIProvider()),
         ChangeNotifierProvider(create: (context) => UsageProvider()),
         ChangeNotifierProvider(create: (context) => DiaryProvider()),

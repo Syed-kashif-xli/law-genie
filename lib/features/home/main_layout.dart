@@ -8,6 +8,9 @@ import 'package:myapp/screens/profile_screen.dart'; // Import the new profile sc
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/ui_provider.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/services/notification_service.dart';
+
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
 
@@ -24,6 +27,19 @@ class _MainLayoutState extends State<MainLayout> {
     const CaseListScreen(),
     const ProfileScreen(), // Use the new ProfileScreen
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Monitor orders for local notifications (fallback)
+      NotificationService().monitorUserOrders(user.uid);
+
+      // Request permissions (important for Android 13+)
+      NotificationService().requestNotificationPermissions();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App theme colors matching Flutter theme -->
+    <color name="primary_color">#2C55A9</color>
+    <color name="background_color">#F0F4F8</color>
+    <color name="white">#FFFFFF</color>
+</resources>

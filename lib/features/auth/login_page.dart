@@ -134,10 +134,13 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     setState(() => _isLoading = true);
+    debugPrint('Starting phone verification for: $_fullPhoneNumber');
 
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: _fullPhoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
+        debugPrint(
+            'Verification completed automatically: ${credential.smsCode}');
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
         if (mounted) {
@@ -155,23 +158,41 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       verificationFailed: (FirebaseAuthException e) {
+        debugPrint('Verification Failed: code=${e.code}, message=${e.message}');
         if (mounted) {
           setState(() => _isLoading = false);
+
+          String errorMessage = 'Verification Failed: ${e.message}';
+          if (e.code == 'too-many-requests') {
+            errorMessage =
+                'Too many attempts. Please wait a while or use a test number.';
+          } else if (e.code == 'invalid-phone-number') {
+            errorMessage = 'The phone number entered is invalid.';
+          }
+
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.verificationFailed(e.message!))),
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },
       codeSent: (String verificationId, int? resendToken) {
+        debugPrint('Code Sent. Verification ID: $verificationId');
         if (mounted) {
           setState(() {
             _verificationId = verificationId;
             _isLoading = false;
             _codeSent = true;
           });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('OTP sent successfully')),
+          );
         }
       },
       codeAutoRetrievalTimeout: (String verificationId) {
+        debugPrint('Auto retrieval timeout. Verification ID: $verificationId');
         if (mounted) {
           setState(() {
             _verificationId = verificationId;
@@ -183,6 +204,9 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _signInWithOTP() async {
     final l10n = AppLocalizations.of(context)!;
+    debugPrint(
+        'Signing in with OTP. Verification ID: $_verificationId, User Input: ${_otpController.text}');
+
     if (_verificationId == null || _otpController.text.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -201,6 +225,7 @@ class _LoginPageState extends State<LoginPage> {
           await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (userCredential.user != null && mounted) {
+        debugPrint('Sign in successful. User: ${userCredential.user!.uid}');
         final user = UserModel(
           uid: userCredential.user!.uid,
           phoneNumber: userCredential.user!.phoneNumber,
@@ -213,9 +238,13 @@ class _LoginPageState extends State<LoginPage> {
         _navigateToHome(userCredential.user!);
       }
     } catch (e) {
+      debugPrint('Sign in failed: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.failedToSignIn(e.toString()))),
+        SnackBar(
+          content: Text('Login Failed: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     } finally {
       if (mounted) {

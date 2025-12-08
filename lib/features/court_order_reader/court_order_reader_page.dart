@@ -219,45 +219,83 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Selected Files',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            constraints: const BoxConstraints(
-              maxHeight: 150, // This will fix the overflow
-            ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: _fileNames.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.check_circle,
-                          color: Colors.green.shade600, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _fileNames[index],
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Selected Files',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${_fileNames.length} files',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF02F1C3),
                   ),
-                );
-              },
-            ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _fileNames.map((fileName) {
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Iconsax.document_text,
+                        color: Colors.white70, size: 16),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        fileName,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          final index = _fileNames.indexOf(fileName);
+                          if (index != -1) {
+                            _fileNames.removeAt(index);
+                            _fileBytesList.removeAt(index);
+                          }
+                        });
+                      },
+                      child: const Icon(Icons.close,
+                          color: Colors.white38, size: 16),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),

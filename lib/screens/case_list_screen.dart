@@ -3,6 +3,8 @@ import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/models/case_model.dart';
 import 'package:myapp/providers/case_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
 class CaseListScreen extends StatelessWidget {
@@ -41,56 +43,131 @@ class CaseListScreen extends StatelessWidget {
                   itemCount: caseProvider.cases.length,
                   itemBuilder: (context, index) {
                     final caseItem = caseProvider.cases[index];
-                    return Card(
-                      elevation: 4,
-                      color: const Color(0xFF19173A), // Dark card
-                      margin: const EdgeInsets.symmetric(vertical: 8.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF19173A),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.05)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: const Color(0xFF2C55A9),
-                          child: const Icon(Icons.folder, color: Colors.white),
-                        ),
-                        title: Text(
-                          caseItem.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        subtitle: Text(
-                          'Case #: ${caseItem.caseNumber}\nCreated on: ${DateFormat.yMMMMd().format(caseItem.creationDate)}',
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-                        trailing: PopupMenuButton<String>(
-                          onSelected: (value) {
-                            if (value == 'rename') {
-                              _showAddCaseDialog(context, caseItem: caseItem);
-                            } else if (value == 'delete') {
-                              _showDeleteConfirmationDialog(context, caseItem);
-                            }
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CaseTimelinePage(caseId: caseItem.id!),
+                              ),
+                            );
                           },
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<String>>[
-                            const PopupMenuItem<String>(
-                              value: 'rename',
-                              child: Text('Rename'),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF2C55A9)
+                                        .withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Iconsax.folder_2,
+                                      color: Color(0xFF5C9DFF), size: 24),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        caseItem.title,
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Case #: ${caseItem.caseNumber}',
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white70,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Created: ${DateFormat('MMM d, y').format(caseItem.creationDate)}',
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white38,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuButton<String>(
+                                  icon: const Icon(Icons.more_vert,
+                                      color: Colors.white38),
+                                  color: const Color(0xFF2A2650),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  onSelected: (value) {
+                                    if (value == 'rename') {
+                                      _showAddCaseDialog(context,
+                                          caseItem: caseItem);
+                                    } else if (value == 'delete') {
+                                      _showDeleteConfirmationDialog(
+                                          context, caseItem);
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) =>
+                                      <PopupMenuEntry<String>>[
+                                    PopupMenuItem<String>(
+                                      value: 'rename',
+                                      child: Row(
+                                        children: [
+                                          const Icon(Iconsax.edit,
+                                              size: 18, color: Colors.white),
+                                          const SizedBox(width: 12),
+                                          Text('Rename',
+                                              style: GoogleFonts.poppins(
+                                                  color: Colors.white)),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem<String>(
+                                      value: 'delete',
+                                      child: Row(
+                                        children: [
+                                          const Icon(Iconsax.trash,
+                                              size: 18,
+                                              color: Colors.redAccent),
+                                          const SizedBox(width: 12),
+                                          Text('Delete',
+                                              style: GoogleFonts.poppins(
+                                                  color: Colors.redAccent)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            const PopupMenuItem<String>(
-                              value: 'delete',
-                              child: Text('Delete'),
-                            ),
-                          ],
+                          ),
                         ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  CaseTimelinePage(caseId: caseItem.id!),
-                            ),
-                          );
-                        },
                       ),
                     );
                   },

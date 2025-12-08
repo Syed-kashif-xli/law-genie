@@ -69,7 +69,7 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
               _isLoading = false;
             });
 
-            // 1. Inject CSS for Premium Card UI
+            // 1. Inject CSS for Premium Card UI - REFINED
             _controller.runJavaScript('''
               (function() {
                 var style = document.createElement('style');
@@ -79,102 +79,199 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
                     color: white !important;
                     background-image: none !important;
                     font-family: 'Poppins', sans-serif !important;
+                    overflow-x: hidden !important; 
                   }
                   
-                  /* Hide EVERYTHING by default, then selectively show main content */
-                   header, footer, nav, .navbar, .top-bar, #header, #footer,
-                  .header-top, .accessibility, .lang-dropdown, .logo,
-                  .breadcrumb, .page-header, #top-bar, .top-header,
-                  .sidebar, .left-sidebar, .right-sidebar,
-                  img[alt*="logo"], .banner, .marquee {
+                  /* FORCE HIDE all accessibility/header junk */
+                  /* Common Accessibility Classes/IDs */
+                  .accessibility, .accessibility-box, .accessibility-toolbar,
+                  #accessibility, #accessibility-box, #accessibility-toolbar,
+                  .skip-to-content, .skip-to-main-content, .skip-link, 
+                  #skip-to-main, #skip-content,
+                  .font-resize, .text-resize, .font-switcher, .font-size-control,
+                  .lang-dropdown, .language-select, #language,
+                  
+                  /* Bootstrap/Common Header Containers */
+                  header, footer, nav, .navbar, .top-bar, .header-top, .top-strip,
+                  .container-fluid.bg-white, .bg-light,
+                  .row.top-row, .d-flex.justify-content-end,
+                  
+                  /* Elements containing specific text (handled by JS, but css backup) */
+                  [aria-label*="Skip"], [title*="Skip"],
+                  
+                  /* Images/Logos */
+                  img:not([id*="captcha"]):not([src*="captcha"]),
+                  
+                  /* Government Branding */
+                  .header-bg, .footer-bg, a[href*="gov.in"],
+                  .text-center.text-white, div[style*="background"]
+                  {
                     display: none !important;
+                    opacity: 0 !important;
+                    height: 0 !important;
+                    width: 0 !important;
+                    overflow: hidden !important;
+                    position: absolute !important;
+                    top: -9999px !important;
                   }
 
                   /* Card-like styling for Table Rows (Results) */
-                  /* Assuming typical eCourts table structure */
                   table {
                     width: 100% !important;
                     border-collapse: separate !important;
-                    border-spacing: 0 15px !important; /* Space between cards */
+                    border-spacing: 0 16px !important; 
                     background: transparent !important;
                   }
                   
-                  thead {
-                    display: none !important; /* Hide header row */
+                  thead, tfoot {
+                    display: none !important; 
                   }
                   
-                  /* Turn rows into cards */
                   tr {
                     display: block !important;
                     background: #151038 !important;
                     border: 1px solid #2C55A9 !important;
                     border-radius: 16px !important;
-                    padding: 15px !important;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-                    margin-bottom: 20px !important;
+                    padding: 2px !important; /* Minimal padding on wrapper */
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+                    margin-bottom: 24px !important;
+                    position: relative !important;
                   }
                   
-                  /* Make cells flow vertically and look good */
                   td {
                     display: block !important;
                     border: none !important;
-                    padding: 5px 0 !important;
+                    padding: 12px 16px !important;
                     text-align: left !important;
                     color: #E0E0E0 !important;
-                    font-size: 14px !important;
+                    font-size: 15px !important;
+                    line-height: 1.6 !important;
                   }
 
-                  /* Highlight links (PDFs/Orders) */
+                  /* Make the first cell (often the link) look like a header */
+                  td:first-child {
+                    padding-top: 16px !important;
+                    padding-bottom: 8px !important;
+                  }
+
+                  /* Highlight links (Case Titles/PDFs) */
                   a {
-                    color: #02F1C3 !important;
-                    font-weight: bold !important;
+                    color: #0A032A !important;
+                    font-weight: 700 !important;
                     text-decoration: none !important;
                     font-size: 16px !important;
-                    display: inline-block !important;
-                    margin-top: 10px !important;
-                    padding: 8px 16px !important;
-                    background: rgba(2, 241, 195, 0.1) !important;
-                    border-radius: 8px !important;
+                    display: block !important; /* Full width button */
+                    padding: 14px 20px !important;
+                    background: #02F1C3 !important;
+                    border-radius: 12px !important;
+                    text-align: center !important;
+                    margin-top: 12px !important;
+                    box-shadow: 0 4px 10px rgba(2, 241, 195, 0.2) !important;
+                    transition: transform 0.2s !important;
+                  }
+                  
+                  a:active {
+                    transform: scale(0.98) !important;
+                  }
+                  
+                  /* Highlight keyword matches */
+                  span[style*="background-color:yellow"], 
+                  span[style*="background-color: yellow"] {
+                     background-color: rgba(255, 215, 0, 0.3) !important;
+                     color: #FFD700 !important;
+                     border-radius: 4px !important;
+                     padding: 0 4px !important;
+                     font-weight: bold !important;
                   }
 
                    /* Form Styling */
-                  .form-control, input[type="text"], select {
+                  input[type="text"], select, textarea {
                     background-color: #1A1832 !important;
                     color: white !important;
                     border: 1px solid #42218E !important;
                     border-radius: 12px !important;
-                    padding: 12px !important;
-                    margin-bottom: 15px !important;
+                    padding: 14px !important;
+                    margin-bottom: 16px !important;
+                    font-size: 16px !important;
                   }
 
-                  /* Buttons */
-                  button, input[type="submit"], .btn {
+                  button, input[type="submit"], input[type="button"], .btn {
                     background: linear-gradient(135deg, #02F1C3, #02d1a8) !important;
                     color: #0A032A !important;
                     font-weight: bold !important;
                     border: none !important;
                     border-radius: 12px !important;
-                    padding: 12px 24px !important;
+                    padding: 14px 0 !important;
                     box-shadow: 0 4px 12px rgba(2, 241, 195, 0.3) !important;
                     cursor: pointer !important;
                     width: 100% !important;
+                    font-size: 16px !important;
                     margin-top: 10px !important;
                   }
 
-                  /* Hide captchas images except the relevant one */
-                  img:not([id*="captcha"]):not([src*="captcha"]) {
-                    display: none !important;
+                  /* Custom Paging */
+                  .dataTables_paginate {
+                    margin-top: 20px !important;
+                    text-align: center !important;
                   }
                 `;
                 document.head.appendChild(style);
               })();
             ''');
 
-            // 2. Run JS for logic-based hiding and error checking
+            // 2. Run JS for purely logic-based hiding (accessibility text check)
             _controller.runJavaScript('''
               (function() {
-                // ... (Existing hideSpecificElements logic remains if needed, but CSS covers most)
                 
+                function cleanUI() {
+                  // 1. Text-based filtering for "Skip to..." buttons
+                  var walker = document.createTreeWalker(
+                      document.body, 
+                      NodeFilter.SHOW_ELEMENT, 
+                      null, 
+                      false
+                  );
+
+                  var node;
+                  while(node = walker.nextNode()) {
+                      // Check for accessibility text
+                      var txt = node.innerText ? node.innerText.toLowerCase().trim() : "";
+                      if (!txt) continue;
+
+                      if (txt.includes('skip to navigation') || 
+                          txt.includes('skip to main') ||
+                          txt === 'a-' || txt === 'a' || txt === 'a+' ||
+                          txt === 'screen reader access') {
+                          
+                          // Hide this element
+                          node.style.display = 'none';
+                          
+                          // Hide parent if it's a small container (likely a button wrapper)
+                          if (node.parentElement && node.parentElement.offsetHeight < 60) {
+                              node.parentElement.style.display = 'none';
+                              // Go up one more level just in case (e.g. UL > LI > A)
+                              if (node.parentElement.parentElement && node.parentElement.parentElement.offsetHeight < 60) {
+                                  node.parentElement.parentElement.style.display = 'none';
+                              }
+                          }
+                      }
+                  }
+                  
+                  // 2. Hide any top-level divs that are NOT the main content area
+                  // This is risky but often necessary for these gov sites
+                  // We look for the main container (often has specific ID or class) or just hide first few large divs
+                  // For now, let's stick to hiding known bad classes found in previous steps.
+                }
+
+                cleanUI();
+                
+                // Monitor for dynamic changes
+                var observer = new MutationObserver(function(mutations) {
+                  cleanUI();
+                  checkCaptchaErrors();
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+
                 function checkCaptchaErrors() {
                    var bodyText = document.body.innerText;
                    if (bodyText.includes('Invalid Captcha') || 
@@ -187,23 +284,6 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
                        }
                    }
                 }
-                
-                checkCaptchaErrors();
-                
-                 // Attach listener to Search/Submit buttons for immediate hiding
-                document.querySelectorAll('button, input[type="submit"], .btn').forEach(btn => {
-                  btn.addEventListener('click', function() {
-                      if (this.type === 'submit' || this.innerText.toLowerCase().includes('search')) {
-                         AppChannel.postMessage('hide');
-                      }
-                  });
-                });
-
-                var observer = new MutationObserver(function(mutations) {
-                  checkCaptchaErrors();
-                });
-                observer.observe(document.body, { childList: true, subtree: true });
-
               })();
             ''');
 
@@ -220,20 +300,6 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
             debugPrint('WebView error: ${error.description}');
           },
           onNavigationRequest: (NavigationRequest request) {
-            // Intercept PDF Links
-            if (request.url.toLowerCase().endsWith('.pdf') ||
-                request.url.contains('/pdf')) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PdfViewerPage(
-                    url: request.url,
-                    title: 'Judgment / Order',
-                  ),
-                ),
-              );
-              return NavigationDecision.prevent;
-            }
             return NavigationDecision.navigate;
           },
         ),

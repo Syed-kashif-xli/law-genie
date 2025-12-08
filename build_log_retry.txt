@@ -1,0 +1,27 @@
+Running Gradle task 'assembleRelease'...                        
+Warning: Flutter support for your project's Kotlin version (1.9.24) will soon be dropped. Please upgrade your Kotlin version to a version of at least 2.1.0 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's KGP version is typically defined in the plugins block of the `settings.gradle` file (C:\Users\veo18\Desktop\Law\law-genie\android/settings.gradle), by a plugin with the id of org.jetbrains.kotlin.android. 
+If you don't see a plugins block, your project was likely created with an older template version, in which case it is most likely defined in the top-level build.gradle file (C:\Users\veo18\Desktop\Law\law-genie\android/build.gradle) by the ext.kotlin_version property.
+
+This application cannot tree shake icons fonts. It has non-constant instances of IconData at the following locations:
+  - file:///C:/Users/veo18/Desktop/Law/law-genie/lib/models/timeline_event.dart:54:13
+Target aot_android_asset_bundle failed: Error: Avoid non-constant invocations of IconData or try to build again with --no-tree-shake-icons.
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildRelease'.
+> Process 'command 'C:\flutter_windows_3.35.6-stable\flutter\bin\flutter.bat'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 2m 47s
+Running Gradle task 'assembleRelease'...                          167.8s
+Gradle task assembleRelease failed with exit code 1

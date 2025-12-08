@@ -11,6 +11,8 @@ import '../../features/home/providers/news_provider.dart';
 import '../../features/home/pages/all_news_page.dart';
 import '../../features/subscription/subscription_page.dart';
 import '../../screens/notifications_screen.dart';
+import '../../features/chat/chat_page.dart';
+import '../../features/scanner/scanner_page.dart';
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../services/ad_service.dart';
@@ -141,7 +143,11 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       const SizedBox(height: 10),
                       const _HomeHeader(),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 24),
+                      const _StatsSection(),
+                      const SizedBox(height: 24),
+                      const _QuickActionsSection(),
+                      const SizedBox(height: 24),
                       const FeatureUsageSection(),
                       const SizedBox(height: 30),
                       const _LegalNewsFeed(),
@@ -166,6 +172,196 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _StatsSection extends StatelessWidget {
+  const _StatsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          _buildStatCard(
+            label: 'AI Chat',
+            value: '5',
+            icon: Iconsax.message_question,
+            color: const Color(0xFF02F1C3),
+          ),
+          const SizedBox(width: 12),
+          _buildStatCard(
+            label: 'Documents',
+            value: '12',
+            icon: Iconsax.document_text,
+            color: const Color(0xFFC5CAE9),
+          ),
+          const SizedBox(width: 12),
+          _buildStatCard(
+            label: 'Saved Cases',
+            value: '8',
+            icon: Iconsax.bookmark,
+            color: const Color(0xFFF48FB1),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required String label,
+    required String value,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      width: 130,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF19173A),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(icon, color: color, size: 20),
+              Text(
+                value,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickActionsSection extends StatelessWidget {
+  const _QuickActionsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Actions',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildActionButton(
+              context,
+              icon: Iconsax.message_add,
+              label: 'New Chat',
+              color: const Color(0xFF02F1C3),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AIChatPage()),
+                );
+              },
+            ),
+            _buildActionButton(
+              context,
+              icon: Iconsax.scan,
+              label: 'Scan',
+              color: const Color(0xFFFFD700),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ScannerPage()),
+                );
+              },
+            ),
+            _buildActionButton(
+              context,
+              icon: Iconsax.judge,
+              label: 'Lawyer',
+              color: const Color(0xFFFF6B6B),
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Lawyer directory coming soon!'),
+                      backgroundColor: Color(0xFF19173A)),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: color.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.white70,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -340,16 +536,19 @@ class _LegalNewsFeed extends StatelessWidget {
                 ),
               );
             }
-            return ListView.separated(
+            return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: provider.news.length > 6
-                  ? 6
-                  : provider.news.length, // Show top 6
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
+              padding: EdgeInsets.zero,
+              itemCount: provider.news.length > 10
+                  ? 10
+                  : provider.news.length, // Show top 10
               itemBuilder: (context, index) {
                 final item = provider.news[index];
-                return NewsCard(news: item);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: NewsCard(news: item),
+                );
               },
             );
           },

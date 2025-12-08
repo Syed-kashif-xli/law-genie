@@ -68,7 +68,7 @@ class FeatureUsageSection extends StatelessWidget {
           builder: (context, usageProvider, child) {
             final cards = [
               FeatureUsageCard(
-                title: 'AI Queries',
+                title: 'AI Chat',
                 count: usageProvider.aiQueriesUsage,
                 limit: usageProvider.aiQueriesLimit,
                 icon: Iconsax.messages_2,

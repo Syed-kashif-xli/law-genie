@@ -32,15 +32,31 @@ class _BareActsPageState extends State<BareActsPage> {
   }
 
   Future<void> _loadInitialData() async {
-    _categories = _bareActService.getCategories();
+    // 1. Fetch all acts first to populate cache and derive categories
     _acts = await _bareActService.getAllActs();
+
+    // 2. Get the derived categories
+    _categories = _bareActService.getCategories();
+
+    // 3. Update UI
     setState(() {
       _isLoading = false;
+      // Re-apply filter in case we were reloading with a selected category
+      if (_selectedCategory != 'All' &&
+          !_categories.contains(_selectedCategory)) {
+        _selectedCategory = 'All'; // Reset if category no longer exists
+      }
     });
+
+    if (_selectedCategory != 'All') {
+      _filterActs();
+    }
   }
 
   Future<void> _filterActs() async {
-    setState(() => _isLoading = true);
+    // No set state loading here for instant feel if cached,
+    // but if we were strictly async we would.
+    // Since service uses cache, we can just await and set state.
 
     List<BareAct> results;
     if (_searchController.text.isNotEmpty) {
@@ -51,11 +67,10 @@ class _BareActsPageState extends State<BareActsPage> {
 
     setState(() {
       _acts = results;
-      _isLoading = false;
     });
   }
 
-  void _checkUsageAndNavigate(BareAct act) {
+  Future<void> _checkUsageAndNavigate(BareAct act) async {
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
     if (usageProvider.bareActsUsage >= usageProvider.bareActsLimit) {
       _showAdDialog(act);
@@ -63,7 +78,48 @@ class _BareActsPageState extends State<BareActsPage> {
     }
 
     usageProvider.incrementBareActs();
-    _navigateToViewer(act);
+
+    // Resolve URL before navigating
+    _resolveAndNavigate(act);
+  }
+
+  Future<void> _resolveAndNavigate(BareAct act) async {
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF02F1C3))),
+    );
+
+    // Fetch URL
+    final String resolvedUrl = await _bareActService.resolvePdfUrl(act);
+
+    // Pop loading
+    if (mounted) Navigator.pop(context);
+
+    if (resolvedUrl.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Could not load PDF. Please try again.')),
+        );
+      }
+      return;
+    }
+
+    // Create a temporary BareAct with the resolved URL for the viewer
+    final resolvedAct = BareAct(
+      id: act.id,
+      title: act.title,
+      category: act.category,
+      pdfUrl: resolvedUrl, // Use the actual http URL
+      year: act.year,
+    );
+
+    if (mounted) {
+      _navigateToViewer(resolvedAct);
+    }
   }
 
   void _showAdDialog(BareAct act) {
@@ -71,8 +127,10 @@ class _BareActsPageState extends State<BareActsPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF19173A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('Unlock Bare Act',
-            style: GoogleFonts.poppins(color: Colors.white)),
+            style: GoogleFonts.poppins(
+                color: Colors.white, fontWeight: FontWeight.bold)),
         content: Text(
           'Watch a short ad to unlock this Bare Act?',
           style: GoogleFonts.poppins(color: Colors.white70),
@@ -89,7 +147,9 @@ class _BareActsPageState extends State<BareActsPage> {
               _showAd(act);
             },
             child: Text('Watch Ad',
-                style: GoogleFonts.poppins(color: const Color(0xFF02F1C3))),
+                style: GoogleFonts.poppins(
+                    color: const Color(0xFF02F1C3),
+                    fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -100,20 +160,23 @@ class _BareActsPageState extends State<BareActsPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF02F1C3))),
     );
 
     AdService.showRewardedAd(
       onUserEarnedReward: () {
         Navigator.pop(context); // Close loading
-        _navigateToViewer(act);
+        // Now resolve URL and navigate
+        _resolveAndNavigate(act);
       },
       onAdFailedToLoad: () {
         Navigator.pop(context); // Close loading
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to load ad. Opening act...')),
         );
-        _navigateToViewer(act);
+        // Resolve URL and navigate even if ad failed
+        _resolveAndNavigate(act);
       },
     );
   }
@@ -132,7 +195,7 @@ class _BareActsPageState extends State<BareActsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF0A032A),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF0A032A),
         elevation: 0,
         centerTitle: true,
         title: Text(
@@ -140,6 +203,7 @@ class _BareActsPageState extends State<BareActsPage> {
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,
+            fontSize: 20,
           ),
         ),
         leading: IconButton(
@@ -159,7 +223,7 @@ class _BareActsPageState extends State<BareActsPage> {
           children: [
             // Search and Filter Section
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
               child: Column(
                 children: [
                   // Search Bar
@@ -168,14 +232,21 @@ class _BareActsPageState extends State<BareActsPage> {
                       color: const Color(0xFF1A1832),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
+                        color: const Color(0xFF2C55A9).withValues(alpha: 0.3),
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: TextField(
                       controller: _searchController,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: 'Search Acts (e.g., IPC, Contract)...',
+                        hintText: 'Search laws, acts, years...',
                         hintStyle: GoogleFonts.poppins(color: Colors.white30),
                         prefixIcon: const Icon(Iconsax.search_normal,
                             color: Color(0xFF02F1C3)),
@@ -196,54 +267,70 @@ class _BareActsPageState extends State<BareActsPage> {
                       onChanged: (val) => _filterActs(),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   // Categories
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: _categories.map((category) {
-                        final isSelected = _selectedCategory == category;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedCategory = category;
-                              _searchController.clear();
-                            });
-                            _filterActs();
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 8),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFF02F1C3)
-                                      .withValues(alpha: 0.15)
-                                  : Colors.white.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
+                  if (_categories.isNotEmpty)
+                    SizedBox(
+                      height: 40,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _categories.length,
+                        itemBuilder: (context, index) {
+                          final category = _categories[index];
+                          final isSelected = _selectedCategory == category;
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedCategory = category;
+                                _searchController.clear();
+                              });
+                              _filterActs();
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              margin: const EdgeInsets.only(right: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 18, vertical: 8),
+                              decoration: BoxDecoration(
                                 color: isSelected
                                     ? const Color(0xFF02F1C3)
-                                    : Colors.white.withValues(alpha: 0.1),
+                                    : const Color(0xFF1A1832),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? const Color(0xFF02F1C3)
+                                      : Colors.white.withValues(alpha: 0.1),
+                                ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: const Color(0xFF02F1C3)
+                                              .withValues(alpha: 0.3),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        )
+                                      ]
+                                    : [],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  category,
+                                  style: GoogleFonts.poppins(
+                                    color: isSelected
+                                        ? const Color(0xFF0A032A)
+                                        : Colors.white70,
+                                    fontSize: 13,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
+                                  ),
+                                ),
                               ),
                             ),
-                            child: Text(
-                              category,
-                              style: GoogleFonts.poppins(
-                                color: isSelected
-                                    ? const Color(0xFF02F1C3)
-                                    : Colors.white70,
-                                fontSize: 13,
-                                fontWeight: isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        },
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -256,70 +343,146 @@ class _BareActsPageState extends State<BareActsPage> {
                           CircularProgressIndicator(color: Color(0xFF02F1C3)))
                   : _acts.isEmpty
                       ? Center(
-                          child: Text(
-                            'No Acts found',
-                            style: GoogleFonts.poppins(color: Colors.white54),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Iconsax.document_text,
+                                  size: 60, color: Colors.white10),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No Acts Found',
+                                style: GoogleFonts.poppins(
+                                    color: Colors.white54, fontSize: 16),
+                              ),
+                            ],
                           ),
                         )
                       : ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                           itemCount: _acts.length,
                           itemBuilder: (context, index) {
                             final act = _acts[index];
                             return Container(
-                              margin: const EdgeInsets.only(bottom: 12),
+                              margin: const EdgeInsets.only(bottom: 16),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1A1832),
-                                borderRadius: BorderRadius.circular(16),
+                                color: const Color(0xFF1A1832)
+                                    .withValues(alpha: 0.6),
+                                borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.05),
+                                  color: const Color(0xFF2C55A9)
+                                      .withValues(alpha: 0.3),
                                 ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.all(16),
-                                leading: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF02F1C3)
-                                        .withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Iconsax.document_text,
-                                    color: Color(0xFF02F1C3),
-                                  ),
-                                ),
-                                title: Text(
-                                  act.title,
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '${act.category} • ${act.year}',
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white54,
-                                        fontSize: 12,
-                                      ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(20),
+                                  onTap: () => _checkUsageAndNavigate(act),
+                                  splashColor: const Color(0xFF02F1C3)
+                                      .withValues(alpha: 0.1),
+                                  highlightColor: const Color(0xFF02F1C3)
+                                      .withValues(alpha: 0.05),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: [
+                                                const Color(0xFF02F1C3)
+                                                    .withValues(alpha: 0.15),
+                                                const Color(0xFF2C55A9)
+                                                    .withValues(alpha: 0.15),
+                                              ],
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            border: Border.all(
+                                                color: const Color(0xFF02F1C3)
+                                                    .withValues(alpha: 0.2)),
+                                          ),
+                                          child: const Icon(
+                                            Iconsax.document_text,
+                                            color: Color(0xFF02F1C3),
+                                            size: 24,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                act.title,
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 16,
+                                                  height: 1.3,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 6),
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white
+                                                          .withValues(
+                                                              alpha: 0.05),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                    ),
+                                                    child: Text(
+                                                      act.category,
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        color: const Color(
+                                                            0xFF02F1C3),
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    '•  ${act.year}',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Colors.white54,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const Icon(
+                                          Iconsax.arrow_right_3,
+                                          color: Colors.white30,
+                                          size: 18,
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.visibility_rounded,
-                                      color: Color(0xFF02F1C3)),
-                                  onPressed: () {
-                                    _checkUsageAndNavigate(act);
-                                  },
-                                ),
-                                onTap: () {
-                                  _checkUsageAndNavigate(act);
-                                },
                               ),
                             );
                           },

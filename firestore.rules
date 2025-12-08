@@ -1,18 +1,55 @@
-rules_version='2'
-
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if the request is from the owner of the data
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // 1. Users Collection:
+    // Users can read/write ONLY their own document.
+    match /users/{userId} {
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow read, update, delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // 2. Chat History Collection:
+    // Assuming documents have a 'userId' field or are subcollections
+    // Based on previous code, chats seem to be Hive (local), but if synced:
+    match /chats/{chatId} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // 3. Certified Copies (Orders):
+    // Users can create orders for themselves.
+    // Users can read/update ONLY their own orders.
+    match /certified_copies/{orderId} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // 4. Bare Acts (Read Only for everyone, Admin write)
+    match /bare_acts/{actId} {
+      allow read: if true; // Publicly readable
+      allow write: if false; // Only manageable via Admin Console
+    }
+
+    // 5. News (Read Only for everyone, Admin write)
+    match /news/{newsId} {
+      allow read: if true; // Publicly readable
+      allow write: if false; // Only manageable via Admin Console
+    }
+    
+    // Default: Deny everything else
     match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2025, 12, 11);
+      allow read, write: if false;
     }
   }
 }

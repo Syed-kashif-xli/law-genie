@@ -1,8 +1,13 @@
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:open_file/open_file.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:url_launcher/url_launcher.dart';
 import 'models/bare_act.dart';
 
 class BareActViewerPage extends StatelessWidget {
@@ -11,13 +16,81 @@ class BareActViewerPage extends StatelessWidget {
   const BareActViewerPage({super.key, required this.bareAct});
 
   Future<void> _downloadPdf(BuildContext context) async {
-    final Uri url = Uri.parse(bareAct.pdfUrl);
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
+    try {
+      // Show loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF02F1C3)),
+        ),
+      );
+
+      // Check Permissions
+      if (Platform.isAndroid) {
+        var status = await Permission.storage.status;
+        if (!status.isGranted) {
+          status = await Permission.storage.request();
+        }
+
+        // For Android 13+ (SDK 33), permission.storage might be denied permanently or not needed for public media dirs,
+        // but for Download folder using File API, we might need manageExternalStorage or just scoped storage which is complex.
+        // We will try to save to a safe App Directory first if external fails, or suggest 'Open' which caches it.
+      }
+
+      // Download
+      final response = await http.get(Uri.parse(bareAct.pdfUrl));
+      if (response.statusCode != 200)
+        throw Exception('Download failed: ${response.statusCode}');
+
+      // Determine path
+      Directory? directory;
+      if (Platform.isAndroid) {
+        // Try public Download folder
+        directory = Directory('/storage/emulated/0/Download');
+        if (!await directory.exists()) {
+          directory = await getExternalStorageDirectory();
+        }
+      } else {
+        directory = await getApplicationDocumentsDirectory();
+      }
+
+      if (directory != null) {
+        final safeTitle =
+            bareAct.title.replaceAll(RegExp(r'[^\w\s\-]'), '').trim();
+        // Ensure LawGenie folder exists
+        final safeDir = Directory('${directory.path}/LawGenie');
+        if (!await safeDir.exists()) {
+          await safeDir.create(recursive: true).catchError(
+              (e) => directory!); // Fallback to root if create fails
+        }
+
+        final saveDiv = await safeDir.exists() ? safeDir : directory;
+
+        final String filePath = '${saveDiv.path}/$safeTitle.pdf';
+        final File file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+
+        if (context.mounted) {
+          Navigator.pop(context); // Close loading
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Downloaded to: $filePath'),
+              backgroundColor: Colors.green,
+              action: SnackBarAction(
+                label: 'OPEN',
+                textColor: Colors.white,
+                onPressed: () => OpenFile.open(filePath),
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
       if (context.mounted) {
+        Navigator.pop(context); // Close loading
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not launch download link')),
+          SnackBar(content: Text('Download error: $e')),
         );
       }
     }

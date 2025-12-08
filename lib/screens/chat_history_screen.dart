@@ -76,7 +76,7 @@ class ChatHistoryScreen extends StatelessWidget {
                       itemCount: chatProvider.chatSessions.length,
                       itemBuilder: (context, index) {
                         final session = chatProvider.chatSessions[index];
-                        return _buildChatHistoryItem(
+                        return _buildChatListItem(
                             context, session, chatProvider);
                       },
                     ),
@@ -87,7 +87,7 @@ class ChatHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildChatHistoryItem(
+  Widget _buildChatListItem(
       BuildContext context, ChatSession session, ChatProvider chatProvider) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -95,132 +95,93 @@ class ChatHistoryScreen extends StatelessWidget {
         color: const Color(0xFF19173A),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AIChatPage(chatSession: session),
-              ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Iconsax.message,
-                      color: Color(0xFF02F1C3), size: 20),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        session.title,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        DateFormat.yMMMd().add_jm().format(session.timestamp),
-                        style: GoogleFonts.poppins(
-                          color: Colors.white54,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Theme(
-                  data: Theme.of(context).copyWith(
-                    cardColor: const Color(0xFF2A2650),
-                    iconTheme: const IconThemeData(color: Colors.white),
-                  ),
-                  child: PopupMenuButton<String>(
-                    color: const Color(0xFF2A2650),
-                    icon: const Icon(Icons.more_vert, color: Colors.white54),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    onSelected: (value) {
-                      if (value == 'rename') {
-                        _showRenameDialog(context, session, chatProvider);
-                      } else if (value == 'download') {
-                        chatProvider.downloadChatSession(session);
-                      } else if (value == 'delete') {
-                        _showDeleteConfirmationDialog(
-                            context, session, chatProvider);
-                      }
-                    },
-                    itemBuilder: (BuildContext context) =>
-                        <PopupMenuEntry<String>>[
-                      PopupMenuItem<String>(
-                        value: 'rename',
-                        child: Row(
-                          children: [
-                            const Icon(Iconsax.edit,
-                                size: 18, color: Colors.white),
-                            const SizedBox(width: 12),
-                            Text('Rename',
-                                style:
-                                    GoogleFonts.poppins(color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem<String>(
-                        value: 'download',
-                        child: Row(
-                          children: [
-                            const Icon(Iconsax.document_download,
-                                size: 18, color: Colors.white),
-                            const SizedBox(width: 12),
-                            Text('Download PDF',
-                                style:
-                                    GoogleFonts.poppins(color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            const Icon(Iconsax.trash,
-                                size: 18, color: Colors.redAccent),
-                            const SizedBox(width: 12),
-                            Text('Delete',
-                                style: GoogleFonts.poppins(
-                                    color: Colors.redAccent)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AIChatPage(chatSession: session),
             ),
+          );
+        },
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
+            shape: BoxShape.circle,
           ),
+          child:
+              const Icon(Iconsax.message, color: Color(0xFF02F1C3), size: 24),
+        ),
+        title: Text(
+          session.title,
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          DateFormat('MMM d, y • h:mm a').format(session.timestamp),
+          style: GoogleFonts.poppins(
+            color: Colors.white54,
+            fontSize: 12,
+          ),
+        ),
+        trailing: PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert, color: Colors.white38),
+          color: const Color(0xFF2A2650),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          onSelected: (value) {
+            if (value == 'rename') {
+              _showRenameDialog(context, session, chatProvider);
+            } else if (value == 'download') {
+              chatProvider.downloadChatSession(session);
+            } else if (value == 'delete') {
+              _showDeleteConfirmationDialog(context, session, chatProvider);
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            PopupMenuItem<String>(
+              value: 'rename',
+              child: Row(
+                children: [
+                  const Icon(Iconsax.edit, size: 18, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Text('Rename',
+                      style: GoogleFonts.poppins(color: Colors.white)),
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'download',
+              child: Row(
+                children: [
+                  const Icon(Iconsax.document_download,
+                      size: 18, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Text('Download PDF',
+                      style: GoogleFonts.poppins(color: Colors.white)),
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'delete',
+              child: Row(
+                children: [
+                  const Icon(Iconsax.trash, size: 18, color: Colors.redAccent),
+                  const SizedBox(width: 12),
+                  Text('Delete',
+                      style: GoogleFonts.poppins(color: Colors.redAccent)),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

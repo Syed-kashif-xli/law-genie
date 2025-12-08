@@ -53,3 +53,7 @@ gen/
 *~
 packages
 pubspec.lock
+!backend_functions/package.json
+!firebase.json
+!firestore.indexes.json
+!firebase.json

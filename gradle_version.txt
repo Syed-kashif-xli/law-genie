@@ -1,0 +1,20 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/C:/Users/veo18/.gradle/wrapper/dists/gradle-8.12-all/ejduaidbjup3bmmkhw3rie4zb/gradle-8.12/lib/native-platform-0.22-milestone-27.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+
+------------------------------------------------------------
+Gradle 8.12
+------------------------------------------------------------
+
+Build time:    2024-12-20 15:46:53 UTC
+Revision:      a3cacb207fec727859be9354c1937da2e59004c1
+
+Kotlin:        2.0.21
+Groovy:        3.0.22
+Ant:           Apache Ant(TM) version 1.10.15 compiled on August 25 2024
+Launcher JVM:  25.0.1 (Eclipse Adoptium 25.0.1+8-LTS)
+Daemon JVM:    C:\Program Files\Eclipse Adoptium\jdk-25.0.1.8-hotspot (no JDK specified, using current Java home)
+OS:            Windows 11 10.0 amd64
+

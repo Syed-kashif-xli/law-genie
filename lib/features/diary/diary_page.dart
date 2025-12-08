@@ -140,13 +140,22 @@ class _DiaryPageState extends State<DiaryPage> {
               );
             }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(20),
-              itemCount: provider.entries.length,
-              itemBuilder: (context, index) {
-                final entry = provider.entries[index];
-                return _buildEntryCard(entry);
-              },
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(20),
+                    itemCount: provider.entries.length,
+                    itemBuilder: (context, index) {
+                      final entry = provider.entries[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _buildEntryCard(entry),
+                      );
+                    },
+                  ),
+                ),
+              ],
             );
           },
         ),
@@ -156,7 +165,6 @@ class _DiaryPageState extends State<DiaryPage> {
 
   Widget _buildEntryCard(DiaryEntry entry) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: const Color(0xFF19173A).withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(24),
@@ -172,7 +180,7 @@ class _DiaryPageState extends State<DiaryPage> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Glassmorphism
+          filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -194,8 +202,8 @@ class _DiaryPageState extends State<DiaryPage> {
                       child: Row(
                         children: [
                           Icon(_getMoodIcon(entry.mood),
-                              size: 14, color: _getMoodColor(entry.mood)),
-                          const SizedBox(width: 6),
+                              size: 16, color: _getMoodColor(entry.mood)),
+                          const SizedBox(width: 8),
                           Text(
                             entry.mood,
                             style: GoogleFonts.poppins(
@@ -208,7 +216,7 @@ class _DiaryPageState extends State<DiaryPage> {
                       ),
                     ),
                     Text(
-                      DateFormat('MMM d, h:mm a').format(entry.date),
+                      DateFormat('MMM d, yyyy').format(entry.date),
                       style: GoogleFonts.poppins(
                         color: Colors.white38,
                         fontSize: 12,
@@ -218,77 +226,38 @@ class _DiaryPageState extends State<DiaryPage> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  entry.title,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    height: 1.2,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        entry.title,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
+                    if (entry.aiSuggestion != null)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Icon(Iconsax.magic_star,
+                            color: const Color(0xFF02F1C3), size: 20),
+                      ),
+                  ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 Text(
                   entry.content,
                   style: GoogleFonts.poppins(
                     color: Colors.white70,
-                    fontSize: 15,
+                    fontSize: 14,
                     height: 1.6,
                   ),
-                  maxLines: 4,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (entry.aiSuggestion != null) ...[
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF02F1C3).withValues(alpha: 0.1),
-                          const Color(0xFF02F1C3).withValues(alpha: 0.05)
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                          color:
-                              const Color(0xFF02F1C3).withValues(alpha: 0.2)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Iconsax.magic_star,
-                                size: 18, color: Color(0xFF02F1C3)),
-                            const SizedBox(width: 8),
-                            Text(
-                              'AI Insight',
-                              style: GoogleFonts.poppins(
-                                color: const Color(0xFF02F1C3),
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          entry.aiSuggestion!,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            fontSize: 13,
-                            fontStyle: FontStyle.italic,
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
           ),

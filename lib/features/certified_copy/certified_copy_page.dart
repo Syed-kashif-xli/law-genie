@@ -91,71 +91,7 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
   // 3. Deed Type
   String? _selectedDeedType;
   final List<String> _deedTypes = [
-    'Acknowledgement of debt',
-    'Acknowledgement of receipt of payment',
-    'Administration Bond',
-    'Affidavit',
-    'Agreement or Memorandum of an agreement',
-    'Agreement relating to Deposit of Title Deed/pawn/pledge or hypothecation',
-    'Agreement/Memorandum of an agreement',
-    'Amendment Deed/Correction Deed',
-    'Appointment in execution of a power',
-    'Appraisement or valuation',
-    'Apprenticeship deed',
-    'Articles of Association of a Company',
-    'Authority to adopt',
-    'Award',
-    'Award without Property',
-    'Bank Guarantee',
-    'Bond',
-    'Bottomry Bond',
-    'Cancellation deed',
-    'Certificate of Enrolment',
-    'Certificate of Practice as Notary',
-    'Certificate of Sale',
-    'Certificate or other document',
-    'Charter Party',
-    'Clearance List',
-    'Composition Deed',
-    'Consent Deed',
-    'Conveyance',
-    'Copy or Extract',
-    'Counterpart or Duplicate',
-    'Customs Bond or Excise Bond',
-    'Declaration under Madhya Pradesh Prakoshtha Swamitva Adhiniyam, 2000',
-    'Delivery Order in Respect of goods',
-    'Divorce',
-    'Entry of Certificate of marriage',
-    'Exchange Deed',
-    'Further Charge',
-    'Gift',
-    'Indemnity Bond',
-    'Lease Deed',
-    'Letter of Allotment of Shares',
-    'Letter of Guarantee',
-    'Letter of License',
-    'License relating to Arms or Ammunitions (Arms Act, 1959)',
-    'Memorandum of company',
-    'Mortgage',
-    'Mortgage of a Crop',
-    'Notarial Act',
-    'Note of Protest',
-    'Note or Memorandum',
-    'Partition',
-    'Partnership',
-    'Protest of Bill or Note',
-    'Re-conveyance of mortgage property',
-    'Release',
-    'Respondentia Bond',
-    'Security Bond Not Mortgage Deed',
-    'Settlement',
-    'Share Warrant',
-    'Shipping Order',
-    'Surrender of Lease',
-    'Transfer',
-    'Transfer of Lease',
-    'Trust',
-    'Warrant for Goods',
+    'Conveyance Deed',
   ];
 
   // 5. Party Details
@@ -203,6 +139,9 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
     _updateDateRange(_selectedDateOption);
     _setupTransliterationListeners();
     _prefillUserData();
+    if (_deedTypes.isNotEmpty) {
+      _selectedDeedType = _deedTypes.first;
+    }
   }
 
   void _prefillUserData() {

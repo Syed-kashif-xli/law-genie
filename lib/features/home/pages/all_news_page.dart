@@ -79,14 +79,17 @@ class _AllNewsPageState extends State<AllNewsPage> {
             final itemCount = provider.news.length + (showAd ? 1 : 0);
 
             return ListView.builder(
+              padding: const EdgeInsets.all(16.0),
               itemCount: itemCount,
               itemBuilder: (context, index) {
                 if (showAd && index == 1) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    height: _bannerAd!.size.height.toDouble(),
-                    width: _bannerAd!.size.width.toDouble(),
-                    child: AdWidget(ad: _bannerAd!),
+                  return Center(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 16.0),
+                      height: _bannerAd!.size.height.toDouble(),
+                      width: _bannerAd!.size.width.toDouble(),
+                      child: AdWidget(ad: _bannerAd!),
+                    ),
                   );
                 }
 
@@ -95,8 +98,7 @@ class _AllNewsPageState extends State<AllNewsPage> {
                 final item = provider.news[newsIndex];
 
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.only(bottom: 16.0),
                   child: NewsCard(news: item),
                 );
               },
