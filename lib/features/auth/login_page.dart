@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -30,10 +31,50 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _codeSent = false;
   String? _verificationId;
+  int? _resendToken;
   bool _isSignUp = false;
+
+  // Timer for Resend OTP
+  Timer? _timer;
+  int _start = 30;
+  bool _canResendOtp = false;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirestoreService _firestoreService = FirestoreService();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _otpController.dispose();
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    const oneSec = Duration(seconds: 1);
+    // Always reset to 30 seconds
+    _start = 30;
+    _canResendOtp = false;
+    _timer?.cancel();
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_start == 0) {
+          setState(() {
+            timer.cancel();
+            _canResendOtp = true;
+          });
+        } else {
+          setState(() {
+            _start--;
+          });
+        }
+      },
+    );
+  }
+
+  // ... existing code ...
 
   Future<void> _handleAuthAction() async {
     if (_isEmailLogin) {
@@ -124,7 +165,94 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _verifyPhoneNumber() async {
+  Future<void> _sendPasswordResetEmail() async {
+    final TextEditingController resetEmailController = TextEditingController();
+    // Pre-fill if the user has typed something in the main email field
+    if (_isEmailLogin && _emailController.text.isNotEmpty) {
+      resetEmailController.text = _emailController.text;
+    }
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A0B2E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Reset Password',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Enter your email address to receive a password reset link.',
+              style: TextStyle(color: Colors.white70),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: resetEmailController,
+              keyboardType: TextInputType.emailAddress,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Email',
+                labelStyle: const TextStyle(color: Colors.white70),
+                filled: true,
+                fillColor: Colors.white.withAlpha(26),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = resetEmailController.text.trim();
+              if (email.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Please enter an email address')),
+                );
+                return;
+              }
+              Navigator.pop(context); // Close dialog
+
+              try {
+                await FirebaseAuth.instance
+                    .sendPasswordResetEmail(email: email);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Password reset link sent to $email'),
+                        backgroundColor: Colors.green),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Error: ${e.toString()}'),
+                        backgroundColor: Colors.red),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueAccent,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Send Link'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _verifyPhoneNumber({bool isResend = false}) async {
     final l10n = AppLocalizations.of(context)!;
     if (_fullPhoneNumber.isEmpty) {
       if (!mounted) return;
@@ -136,8 +264,12 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
     debugPrint('Starting phone verification for: $_fullPhoneNumber');
 
+    // Only start timer if it's a new request or resend
+    _startTimer();
+
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: _fullPhoneNumber,
+      forceResendingToken: isResend ? _resendToken : null,
       verificationCompleted: (PhoneAuthCredential credential) async {
         debugPrint(
             'Verification completed automatically: ${credential.smsCode}');
@@ -183,6 +315,7 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           setState(() {
             _verificationId = verificationId;
+            _resendToken = resendToken;
             _isLoading = false;
             _codeSent = true;
           });
@@ -242,7 +375,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Login Failed: $e'),
+          content: Text('Login Failed: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -302,157 +435,181 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _otpController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final l10n = AppLocalizations.of(context)!;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        systemNavigationBarColor: Color(0xFF42218E),
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.light,
       ),
-      child: Scaffold(
-        backgroundColor: const Color(0xFF42218E),
-        resizeToAvoidBottomInset: false,
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF1A0B2E), Color(0xFF42218E)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+      child: Stack(
+        children: [
+          // 1. Background Gradient (Fills entire screen)
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1A0B2E), Color(0xFF42218E)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
           ),
-          child: Stack(
-            children: [
-              Positioned(
-                  top: -100,
-                  left: -100,
-                  child: _buildAmbientLight(
-                      const Color(0xFF6B3E9A), 250, 100, 50)),
-              Positioned(
-                  bottom: -150,
-                  right: -150,
-                  child: _buildAmbientLight(Colors.blue, 350, 150, 70)),
-              SafeArea(
+
+          // 2. Ambient Lights (Behind content)
+          Positioned(
+              top: -100,
+              left: -100,
+              child: _buildAmbientLight(const Color(0xFF6B3E9A), 250, 100, 50)),
+          Positioned(
+              bottom: -150,
+              right: -150,
+              child: _buildAmbientLight(Colors.blue, 350, 150, 70)),
+
+          // 3. Main Content (Transparent Scaffold)
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            resizeToAvoidBottomInset:
+                true, // Allow content to adjust for keyboard
+            body: SafeArea(
+              child: Center(
                 child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: screenHeight * 0.05),
-                        const Icon(Iconsax.user, color: Colors.white, size: 50),
-                        const SizedBox(height: 16),
-                        Text(_isSignUp ? l10n.createAccount : l10n.welcomeBack,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineLarge
-                                ?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        Text(
-                            _isSignUp
-                                ? l10n.createNewAccount
-                                : l10n.signInToAccount,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(color: Colors.white70)),
-                        const SizedBox(height: 32),
-                        _buildGlassCard(
-                          child: Column(
-                            children: [
-                              _buildLoginTypeToggle(),
-                              const SizedBox(height: 24),
-                              if (_isEmailLogin) ...[
-                                _buildTextField(l10n.email, Iconsax.sms,
-                                    controller: _emailController,
-                                    isEmail: true),
-                                const SizedBox(height: 16),
-                                _buildTextField(l10n.password, Iconsax.lock_1,
-                                    controller: _passwordController,
-                                    isPassword: true),
-                              ] else if (_codeSent) ...[
-                                _buildTextField(
-                                    l10n.otp, Iconsax.password_check,
-                                    controller: _otpController),
-                                const SizedBox(height: 8),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
+                  physics: const ClampingScrollPhysics(),
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Iconsax.user, color: Colors.white, size: 50),
+                      const SizedBox(height: 16),
+                      Text(_isSignUp ? l10n.createAccount : l10n.welcomeBack,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge
+                              ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text(
+                          _isSignUp
+                              ? l10n.createNewAccount
+                              : l10n.signInToAccount,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: Colors.white70)),
+                      const SizedBox(height: 32),
+                      _buildGlassCard(
+                        child: Column(
+                          children: [
+                            _buildLoginTypeToggle(),
+                            const SizedBox(height: 24),
+                            if (_isEmailLogin) ...[
+                              _buildTextField(l10n.email, Iconsax.sms,
+                                  controller: _emailController, isEmail: true),
+                              const SizedBox(height: 16),
+                              _buildTextField(l10n.password, Iconsax.lock_1,
+                                  controller: _passwordController,
+                                  isPassword: true),
+                            ] else if (_codeSent) ...[
+                              _buildTextField(l10n.otp, Iconsax.password_check,
+                                  controller: _otpController),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextButton(
+                                    onPressed: _canResendOtp
+                                        ? () {
+                                            _verifyPhoneNumber(isResend: true);
+                                          }
+                                        : null,
+                                    child: Text(
+                                      _canResendOtp
+                                          ? 'Resend OTP'
+                                          : 'Resend in ${_start}s',
+                                      style: TextStyle(
+                                        color: _canResendOtp
+                                            ? Colors.blueAccent
+                                            : Colors.white54,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
                                     onPressed: () => setState(() {
                                       _codeSent = false;
                                       _otpController.clear();
                                       _verificationId = null;
+                                      _timer?.cancel();
                                     }),
                                     child: Text(l10n.changeNumber,
                                         style: const TextStyle(
                                             color: Colors.white70)),
                                   ),
-                                )
-                              ] else ...[
-                                _buildPhoneField(),
-                              ],
-                              const SizedBox(height: 16),
-                              if (_isEmailLogin)
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(l10n.forgotPassword,
-                                      style: const TextStyle(
-                                          color: Colors.white70)),
-                                ),
+                                ],
+                              )
+                            ] else ...[
+                              _buildPhoneField(),
                             ],
+                            const SizedBox(height: 16),
+                            if (_isEmailLogin)
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: _sendPasswordResetEmail,
+                                  child: Text(
+                                    l10n.forgotPassword,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      _buildGlowingButton(),
+                      const SizedBox(height: 32),
+                      Text(l10n.orContinueWith,
+                          style: const TextStyle(color: Colors.white70)),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildSocialButton(
+                              FontAwesomeIcons.google, _signInWithGoogle),
+                        ],
+                      ),
+                      SizedBox(height: screenHeight * 0.05),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                              _isSignUp
+                                  ? l10n.alreadyHaveAccount
+                                  : l10n.dontHaveAccount,
+                              style: const TextStyle(color: Colors.white70)),
+                          GestureDetector(
+                            onTap: () => setState(() => _isSignUp = !_isSignUp),
+                            child: Text(_isSignUp ? l10n.signIn : l10n.signUp,
+                                style: TextStyle(
+                                    color: Colors.blue.shade300,
+                                    fontWeight: FontWeight.bold)),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        _buildGlowingButton(),
-                        const SizedBox(height: 32),
-                        Text(l10n.orContinueWith,
-                            style: const TextStyle(color: Colors.white70)),
-                        const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildSocialButton(
-                                FontAwesomeIcons.google, _signInWithGoogle),
-                          ],
-                        ),
-                        SizedBox(height: screenHeight * 0.05),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                                _isSignUp
-                                    ? l10n.alreadyHaveAccount
-                                    : l10n.dontHaveAccount,
-                                style: const TextStyle(color: Colors.white70)),
-                            GestureDetector(
-                              onTap: () =>
-                                  setState(() => _isSignUp = !_isSignUp),
-                              child: Text(_isSignUp ? l10n.signIn : l10n.signUp,
-                                  style: TextStyle(
-                                      color: Colors.blue.shade300,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -510,6 +667,7 @@ class _LoginPageState extends State<LoginPage> {
                 _codeSent = false;
                 _otpController.clear();
                 _verificationId = null;
+                _timer?.cancel();
               });
             }
           }),
