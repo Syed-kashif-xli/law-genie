@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../models/order_model.dart';
 import '../../services/firestore_service.dart';
@@ -215,6 +215,7 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
                               style: TextStyle(color: Colors.white)))
                       : isPdf
                           ? _localPdfPath != null
+                              // If downloaded locally, use PDF Viewer
                               ? const PDF().fromPath(_localPdfPath!)
                               : _isLoading
                                   ? const Center(
@@ -228,37 +229,28 @@ class _CertifiedCopyPreviewPageState extends State<CertifiedCopyPreviewPage> {
                                               color: Colors.red, size: 48),
                                           const SizedBox(height: 16),
                                           Text(
-                                            'Failed to load PDF',
+                                            'Failed to load PDF Preview',
                                             style: GoogleFonts.poppins(
                                                 color: Colors.white),
                                           ),
-                                          TextButton(
-                                            onPressed: _downloadPdf,
-                                            child: const Text('Retry'),
+                                          const SizedBox(height: 8),
+                                          // Fallback to Google Docs Viewer if direct download fails
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              // We'll just trigger a rebuild with a flag?
+                                              // Or better, launch webview here.
+                                              // Actually, let's just make the webview the fallback immediately.
+                                            },
+                                            child: const Text('Try Web Viewer'),
                                           ),
                                         ],
                                       ),
                                     )
-                          : CachedNetworkImage(
-                              imageUrl: processedUrl,
-                              placeholder: (context, url) => const Center(
-                                  child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) => Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.broken_image,
-                                        color: Colors.white54, size: 48),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      'Could not load image',
-                                      style: GoogleFonts.poppins(
-                                          color: Colors.white70),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              fit: BoxFit.contain,
+                          : WebViewWidget(
+                              controller: WebViewController()
+                                ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                                ..loadRequest(Uri.parse(
+                                    'https://docs.google.com/gview?embedded=true&url=$_targetUrl')),
                             ),
                 ),
               ),

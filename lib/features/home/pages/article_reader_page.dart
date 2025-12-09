@@ -5,6 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../../services/ad_service.dart';
 
 class ArticleReaderPage extends StatefulWidget {
   final String title;
@@ -25,12 +27,32 @@ class ArticleReaderPage extends StatefulWidget {
 class _ArticleReaderPageState extends State<ArticleReaderPage> {
   String? _fullContent;
   bool _isLoading = true;
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _fullContent = widget.content;
     _fetchFullArticle();
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = AdService.createBannerAd(
+      onAdLoaded: (ad) {
+        setState(() {
+          _isAdLoaded = true;
+        });
+      },
+    );
+    _bannerAd?.load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchFullArticle() async {
@@ -273,6 +295,16 @@ class _ArticleReaderPageState extends State<ArticleReaderPage> {
             ),
             const SizedBox(height: 32),
             const SizedBox(height: 32),
+            const SizedBox(height: 32),
+            if (_isAdLoaded && _bannerAd != null) ...[
+              const SizedBox(height: 24),
+              SizedBox(
+                height: _bannerAd!.size.height.toDouble(),
+                width: _bannerAd!.size.width.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
+              ),
+              const SizedBox(height: 24),
+            ],
             const SizedBox(height: 32),
           ],
         ),
