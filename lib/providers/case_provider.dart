@@ -26,7 +26,11 @@ class CaseProvider with ChangeNotifier {
   }
 
   Future<void> fetchCases() async {
-    if (_userId == null) return;
+    if (_userId == null) {
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
     try {
       _setLoading(true);
       final snapshot = await _firestore
@@ -38,23 +42,27 @@ class CaseProvider with ChangeNotifier {
       _cases =
           snapshot.docs.map((doc) => Case.fromMap(doc.data(), doc.id)).toList();
     } catch (e) {
-      // Handle error
+      debugPrint("Error fetching cases: $e");
     } finally {
       _setLoading(false);
     }
   }
 
   Future<void> addCase(Case caseItem) async {
-    if (_userId == null) return;
+    if (_userId == null) {
+      debugPrint("Error adding case: User ID is null");
+      return;
+    }
     try {
       await _firestore
           .collection('users')
           .doc(_userId)
           .collection('cases')
           .add(caseItem.toMap());
-      fetchCases();
+      await fetchCases();
     } catch (e) {
-      // Handle error
+      debugPrint("Error adding case: $e");
+      rethrow; // Rethrow to let UI know
     }
   }
 
@@ -67,9 +75,10 @@ class CaseProvider with ChangeNotifier {
           .collection('cases')
           .doc(caseItem.id)
           .update(caseItem.toMap());
-      fetchCases();
+      await fetchCases();
     } catch (e) {
-      // Handle error
+      debugPrint("Error updating case: $e");
+      rethrow;
     }
   }
 
@@ -82,9 +91,9 @@ class CaseProvider with ChangeNotifier {
           .collection('cases')
           .doc(caseId)
           .delete();
-      fetchCases();
+      await fetchCases();
     } catch (e) {
-      // Handle error
+      debugPrint("Error deleting case: $e");
     }
   }
 }

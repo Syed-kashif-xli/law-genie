@@ -6,6 +6,8 @@ import 'package:myapp/services/gemini_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../services/ad_service.dart';
 
 class RiskAnalysisPage extends StatefulWidget {
   const RiskAnalysisPage({super.key});
@@ -55,6 +57,10 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
   Map<String, dynamic>? _analysisResult;
   late AnimationController _inputAnimationController;
 
+  // Ad State
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
@@ -63,6 +69,13 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
       duration: const Duration(milliseconds: 1200),
     );
     _inputAnimationController.forward();
+    _bannerAd = AdService.createBannerAd(
+      onAdLoaded: (ad) {
+        setState(() {
+          _isAdLoaded = true;
+        });
+      },
+    )..load();
   }
 
   @override
@@ -71,7 +84,9 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
     _partiesController.dispose();
     _descriptionController.dispose();
     _keyFactController.dispose();
+    _keyFactController.dispose();
     _inputAnimationController.dispose();
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -235,450 +250,467 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
               color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            _AnimatedSlideIn(
-              delay: 0,
-              controller: _inputAnimationController,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Case Information",
-                    style: GoogleFonts.poppins(
-                        color: const Color(0xFF02F1C3),
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    "Provide detailed information for accurate risk assessment",
-                    style: GoogleFonts.poppins(
-                        color: Colors.white54, fontSize: 13),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 25),
-
-            // Case Type Dropdown
-            _AnimatedSlideIn(
-              delay: 100,
-              controller: _inputAnimationController,
-              child: _buildInputSection(
-                icon: Iconsax.category,
-                label: "Case Type",
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0A032A),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF2C55A9)),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _selectedCaseType,
-                      isExpanded: true,
-                      dropdownColor: const Color(0xFF0A032A),
-                      style: GoogleFonts.poppins(
-                          color: Colors.white, fontSize: 14),
-                      icon: const Icon(Icons.keyboard_arrow_down,
-                          color: Color(0xFF02F1C3)),
-                      items: _caseTypes.map((String type) {
-                        return DropdownMenuItem<String>(
-                          value: type,
-                          child: Text(type),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedCaseType = newValue!;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Case Title
-            _AnimatedSlideIn(
-              delay: 200,
-              controller: _inputAnimationController,
-              child: _buildInputSection(
-                icon: Iconsax.document_text,
-                label: "Case Title",
-                child: _buildTextField(
-                  controller: _caseTitleController,
-                  hint: "e.g., Property Dispute - Ancestral Land",
-                  maxLines: 1,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Parties Involved
-            _AnimatedSlideIn(
-              delay: 300,
-              controller: _inputAnimationController,
-              child: _buildInputSection(
-                icon: Iconsax.people,
-                label: "Parties Involved",
-                child: Column(
-                  children: [
-                    Row(
+                  // Header
+                  _AnimatedSlideIn(
+                    delay: 0,
+                    controller: _inputAnimationController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: _buildTextField(
-                            controller: _partiesController,
-                            hint: "Add party name (Plaintiff/Defendant)",
-                            maxLines: 1,
-                          ),
+                        Text(
+                          "Case Information",
+                          style: GoogleFonts.poppins(
+                              color: const Color(0xFF02F1C3),
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(width: 10),
-                        Material(
-                          color: const Color(0xFF02F1C3),
-                          borderRadius: BorderRadius.circular(12),
-                          child: InkWell(
-                            onTap: _addParty,
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.all(12.5),
-                              child: const Icon(Icons.add,
-                                  color: Color(0xFF0A032A)),
-                            ),
-                          ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "Provide detailed information for accurate risk assessment",
+                          style: GoogleFonts.poppins(
+                              color: Colors.white54, fontSize: 13),
                         ),
                       ],
                     ),
-                    if (_parties.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _parties.map((party) {
-                          return Chip(
-                            backgroundColor:
-                                const Color(0xFF02F1C3).withValues(alpha: 0.2),
-                            label: Text(
-                              party,
-                              style: GoogleFonts.poppins(
-                                  color: const Color(0xFF02F1C3), fontSize: 12),
-                            ),
-                            deleteIcon: const Icon(Icons.close,
-                                size: 16, color: Color(0xFF02F1C3)),
-                            onDeleted: () {
-                              setState(() {
-                                _parties.remove(party);
-                              });
-                            },
-                            side: BorderSide.none,
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
+                  ),
 
-            const SizedBox(height: 20),
+                  const SizedBox(height: 25),
 
-            // Case Description
-            _AnimatedSlideIn(
-              delay: 400,
-              controller: _inputAnimationController,
-              child: _buildInputSection(
-                icon: Iconsax.note_text,
-                label: "Case Description",
-                child: _buildTextField(
-                  controller: _descriptionController,
-                  hint:
-                      "Provide detailed description of the case, including background, current status, and any relevant context...",
-                  maxLines: 5,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Key Facts
-            _AnimatedSlideIn(
-              delay: 500,
-              controller: _inputAnimationController,
-              child: _buildInputSection(
-                icon: Iconsax.clipboard_tick,
-                label: "Key Facts",
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            controller: _keyFactController,
-                            hint: "Add important fact or evidence",
-                            maxLines: 1,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Material(
-                          color: const Color(0xFF02F1C3),
-                          borderRadius: BorderRadius.circular(12),
-                          child: InkWell(
-                            onTap: _addKeyFact,
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.all(12.5),
-                              child: const Icon(Icons.add,
-                                  color: Color(0xFF0A032A)),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (_keyFacts.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      ...List.generate(_keyFacts.length, (index) {
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF0A032A),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: const Color(0xFF2C55A9)),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(top: 2),
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF02F1C3)
-                                      .withValues(alpha: 0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Text(
-                                  '${index + 1}',
-                                  style: GoogleFonts.poppins(
-                                      color: const Color(0xFF02F1C3),
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Text(
-                                    _keyFacts[index],
-                                    style: GoogleFonts.poppins(
-                                        color: Colors.white, fontSize: 13),
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close,
-                                    size: 18, color: Colors.white54),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                onPressed: () {
-                                  setState(() {
-                                    _keyFacts.removeAt(index);
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Evidence Available
-            _AnimatedSlideIn(
-              delay: 600,
-              controller: _inputAnimationController,
-              child: _buildInputSection(
-                icon: Iconsax.folder_open,
-                label: "Evidence Available",
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _availableEvidence.map((evidence) {
-                    final isSelected = _evidenceTypes.contains(evidence);
-                    return FilterChip(
-                      selected: isSelected,
-                      label: Text(evidence),
-                      labelStyle: GoogleFonts.poppins(
-                        color:
-                            isSelected ? const Color(0xFF0A032A) : Colors.white,
-                        fontSize: 12,
-                      ),
-                      backgroundColor: const Color(0xFF0A032A),
-                      selectedColor: const Color(0xFF02F1C3),
-                      checkmarkColor: const Color(0xFF0A032A),
-                      side: BorderSide(
-                        color: isSelected
-                            ? const Color(0xFF02F1C3)
-                            : const Color(0xFF2C55A9),
-                      ),
-                      onSelected: (selected) {
-                        setState(() {
-                          if (selected) {
-                            _evidenceTypes.add(evidence);
-                          } else {
-                            _evidenceTypes.remove(evidence);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Document Upload
-            _AnimatedSlideIn(
-              delay: 700,
-              controller: _inputAnimationController,
-              child: _buildInputSection(
-                icon: Iconsax.document_upload,
-                label: "Supporting Documents",
-                child: Column(
-                  children: [
-                    InkWell(
-                      onTap: _pickDocument,
-                      borderRadius: BorderRadius.circular(12),
+                  // Case Type Dropdown
+                  _AnimatedSlideIn(
+                    delay: 100,
+                    controller: _inputAnimationController,
+                    child: _buildInputSection(
+                      icon: Iconsax.category,
+                      label: "Case Type",
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           color: const Color(0xFF0A032A),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: const Color(0xFF2C55A9),
-                              width: 1.0,
-                              style: BorderStyle.solid),
+                          border: Border.all(color: const Color(0xFF2C55A9)),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Iconsax.document_upload,
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedCaseType,
+                            isExpanded: true,
+                            dropdownColor: const Color(0xFF0A032A),
+                            style: GoogleFonts.poppins(
+                                color: Colors.white, fontSize: 14),
+                            icon: const Icon(Icons.keyboard_arrow_down,
                                 color: Color(0xFF02F1C3)),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Upload Documents",
-                              style: GoogleFonts.poppins(
-                                  color: const Color(0xFF02F1C3),
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ],
+                            items: _caseTypes.map((String type) {
+                              return DropdownMenuItem<String>(
+                                value: type,
+                                child: Text(type),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedCaseType = newValue!;
+                              });
+                            },
+                          ),
                         ),
                       ),
                     ),
-                    if (_attachedFileNames.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      Wrap(
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Case Title
+                  _AnimatedSlideIn(
+                    delay: 200,
+                    controller: _inputAnimationController,
+                    child: _buildInputSection(
+                      icon: Iconsax.document_text,
+                      label: "Case Title",
+                      child: _buildTextField(
+                        controller: _caseTitleController,
+                        hint: "e.g., Property Dispute - Ancestral Land",
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Parties Involved
+                  _AnimatedSlideIn(
+                    delay: 300,
+                    controller: _inputAnimationController,
+                    child: _buildInputSection(
+                      icon: Iconsax.people,
+                      label: "Parties Involved",
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildTextField(
+                                  controller: _partiesController,
+                                  hint: "Add party name (Plaintiff/Defendant)",
+                                  maxLines: 1,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Material(
+                                color: const Color(0xFF02F1C3),
+                                borderRadius: BorderRadius.circular(12),
+                                child: InkWell(
+                                  onTap: _addParty,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12.5),
+                                    child: const Icon(Icons.add,
+                                        color: Color(0xFF0A032A)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (_parties.isNotEmpty) ...[
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _parties.map((party) {
+                                return Chip(
+                                  backgroundColor: const Color(0xFF02F1C3)
+                                      .withValues(alpha: 0.2),
+                                  label: Text(
+                                    party,
+                                    style: GoogleFonts.poppins(
+                                        color: const Color(0xFF02F1C3),
+                                        fontSize: 12),
+                                  ),
+                                  deleteIcon: const Icon(Icons.close,
+                                      size: 16, color: Color(0xFF02F1C3)),
+                                  onDeleted: () {
+                                    setState(() {
+                                      _parties.remove(party);
+                                    });
+                                  },
+                                  side: BorderSide.none,
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Case Description
+                  _AnimatedSlideIn(
+                    delay: 400,
+                    controller: _inputAnimationController,
+                    child: _buildInputSection(
+                      icon: Iconsax.note_text,
+                      label: "Case Description",
+                      child: _buildTextField(
+                        controller: _descriptionController,
+                        hint:
+                            "Provide detailed description of the case, including background, current status, and any relevant context...",
+                        maxLines: 5,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Key Facts
+                  _AnimatedSlideIn(
+                    delay: 500,
+                    controller: _inputAnimationController,
+                    child: _buildInputSection(
+                      icon: Iconsax.clipboard_tick,
+                      label: "Key Facts",
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildTextField(
+                                  controller: _keyFactController,
+                                  hint: "Add important fact or evidence",
+                                  maxLines: 1,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Material(
+                                color: const Color(0xFF02F1C3),
+                                borderRadius: BorderRadius.circular(12),
+                                child: InkWell(
+                                  onTap: _addKeyFact,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12.5),
+                                    child: const Icon(Icons.add,
+                                        color: Color(0xFF0A032A)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (_keyFacts.isNotEmpty) ...[
+                            const SizedBox(height: 10),
+                            ...List.generate(_keyFacts.length, (index) {
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF0A032A),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: const Color(0xFF2C55A9)),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 2),
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF02F1C3)
+                                            .withValues(alpha: 0.2),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        '${index + 1}',
+                                        style: GoogleFonts.poppins(
+                                            color: const Color(0xFF02F1C3),
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 4),
+                                        child: Text(
+                                          _keyFacts[index],
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontSize: 13),
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.close,
+                                          size: 18, color: Colors.white54),
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      onPressed: () {
+                                        setState(() {
+                                          _keyFacts.removeAt(index);
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Evidence Available
+                  _AnimatedSlideIn(
+                    delay: 600,
+                    controller: _inputAnimationController,
+                    child: _buildInputSection(
+                      icon: Iconsax.folder_open,
+                      label: "Evidence Available",
+                      child: Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: _attachedFileNames.map((fileName) {
-                          return Chip(
-                            backgroundColor: const Color(0xFF02F1C3),
-                            label: Text(
-                              fileName,
-                              style: GoogleFonts.poppins(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500),
+                        children: _availableEvidence.map((evidence) {
+                          final isSelected = _evidenceTypes.contains(evidence);
+                          return FilterChip(
+                            selected: isSelected,
+                            label: Text(evidence),
+                            labelStyle: GoogleFonts.poppins(
+                              color: isSelected
+                                  ? const Color(0xFF0A032A)
+                                  : Colors.white,
+                              fontSize: 12,
                             ),
-                            deleteIcon: const Icon(Icons.close,
-                                size: 16, color: Colors.black54),
-                            onDeleted: () {
+                            backgroundColor: const Color(0xFF0A032A),
+                            selectedColor: const Color(0xFF02F1C3),
+                            checkmarkColor: const Color(0xFF0A032A),
+                            side: BorderSide(
+                              color: isSelected
+                                  ? const Color(0xFF02F1C3)
+                                  : const Color(0xFF2C55A9),
+                            ),
+                            onSelected: (selected) {
                               setState(() {
-                                _attachedFileNames.remove(fileName);
+                                if (selected) {
+                                  _evidenceTypes.add(evidence);
+                                } else {
+                                  _evidenceTypes.remove(evidence);
+                                }
                               });
                             },
-                            side: BorderSide.none,
                           );
                         }).toList(),
                       ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Analyze Button
-            _AnimatedSlideIn(
-              delay: 800,
-              controller: _inputAnimationController,
-              child: SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _analyzeRisk,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF02F1C3),
-                    foregroundColor: const Color(0xFF0A032A),
-                    disabledBackgroundColor: Colors.white24,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
-                    elevation: 5,
-                    shadowColor: const Color(0xFF02F1C3).withValues(alpha: 0.4),
+                    ),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2.5),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Iconsax.magic_star,
-                                size: 24, color: Colors.white),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Analyze Risk",
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+
+                  const SizedBox(height: 30),
+
+                  // Document Upload
+                  _AnimatedSlideIn(
+                    delay: 700,
+                    controller: _inputAnimationController,
+                    child: _buildInputSection(
+                      icon: Iconsax.document_upload,
+                      label: "Supporting Documents",
+                      child: Column(
+                        children: [
+                          InkWell(
+                            onTap: _pickDocument,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF0A032A),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: const Color(0xFF2C55A9),
+                                    width: 1.0,
+                                    style: BorderStyle.solid),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Iconsax.document_upload,
+                                      color: Color(0xFF02F1C3)),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    "Upload Documents",
+                                    style: GoogleFonts.poppins(
+                                        color: const Color(0xFF02F1C3),
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
                             ),
+                          ),
+                          if (_attachedFileNames.isNotEmpty) ...[
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _attachedFileNames.map((fileName) {
+                                return Chip(
+                                  backgroundColor: const Color(0xFF02F1C3),
+                                  label: Text(
+                                    fileName,
+                                    style: GoogleFonts.poppins(
+                                        color: Colors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  deleteIcon: const Icon(Icons.close,
+                                      size: 16, color: Colors.black54),
+                                  onDeleted: () {
+                                    setState(() {
+                                      _attachedFileNames.remove(fileName);
+                                    });
+                                  },
+                                  side: BorderSide.none,
+                                );
+                              }).toList(),
+                            ),
                           ],
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Analyze Button
+                  _AnimatedSlideIn(
+                    delay: 800,
+                    controller: _inputAnimationController,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _analyzeRisk,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF02F1C3),
+                          foregroundColor: const Color(0xFF0A032A),
+                          disabledBackgroundColor: Colors.white24,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          elevation: 5,
+                          shadowColor:
+                              const Color(0xFF02F1C3).withValues(alpha: 0.4),
                         ),
-                ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                    color: Colors.white, strokeWidth: 2.5),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Iconsax.magic_star,
+                                      size: 24, color: Colors.white),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    "Analyze Risk",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Results Section
+                  if (_analysisResult != null) ...[
+                    _buildDashboard(),
+                  ],
+                ],
               ),
             ),
-
-            const SizedBox(height: 30),
-
-            // Results Section
-            if (_analysisResult != null) ...[
-              _buildDashboard(),
-            ],
-          ],
-        ),
+          ),
+          if (_isAdLoaded && _bannerAd != null)
+            SizedBox(
+              height: _bannerAd!.size.height.toDouble(),
+              width: _bannerAd!.size.width.toDouble(),
+              child: AdWidget(ad: _bannerAd!),
+            ),
+        ],
       ),
     );
   }

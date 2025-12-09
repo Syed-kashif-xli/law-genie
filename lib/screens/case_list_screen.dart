@@ -238,6 +238,7 @@ class AddCaseDialogState extends State<AddCaseDialog> {
   late TextEditingController _caseNumberController;
   late TextEditingController _courtNameController;
   late TextEditingController _partiesController;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -255,14 +256,111 @@ class AddCaseDialogState extends State<AddCaseDialog> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _caseNumberController.dispose();
+    _courtNameController.dispose();
+    _partiesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveCase() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isSaving = true;
+      });
+
+      try {
+        final parties = _partiesController.text
+            .split(',')
+            .map((p) => p.trim())
+            .where((p) => p.isNotEmpty)
+            .toList();
+
+        if (widget.caseItem == null) {
+          final newCase = Case(
+            title: _titleController.text.trim(),
+            description: _descriptionController.text.trim(),
+            caseNumber: _caseNumberController.text.trim(),
+            courtName: _courtNameController.text.trim(),
+            parties: parties,
+            creationDate: DateTime.now(),
+          );
+          await Provider.of<CaseProvider>(context, listen: false)
+              .addCase(newCase);
+        } else {
+          final updatedCase = widget.caseItem!.copyWith(
+            title: _titleController.text.trim(),
+            description: _descriptionController.text.trim(),
+            caseNumber: _caseNumberController.text.trim(),
+            courtName: _courtNameController.text.trim(),
+            parties: parties,
+          );
+          await Provider.of<CaseProvider>(context, listen: false)
+              .updateCase(updatedCase);
+        }
+        if (mounted) Navigator.of(context).pop();
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error saving case: $e')),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isSaving = false;
+          });
+        }
+      }
+    }
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    IconData? icon,
+    bool isMultiLine = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      style: GoogleFonts.poppins(color: Colors.white),
+      maxLines: isMultiLine ? 3 : 1,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: GoogleFonts.poppins(color: Colors.white70),
+        prefixIcon: icon != null ? Icon(icon, color: Colors.white70) : null,
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.1),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFF2C55A9))),
+      ),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Please enter $label';
+        }
+        return null;
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: const Color(0xFF19173A), // Dark dialog
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(
         widget.caseItem == null ? 'Add a New Case' : 'Edit Case',
-        style:
-            const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold, color: Colors.white),
       ),
       content: Form(
         key: _formKey,
@@ -270,54 +368,40 @@ class AddCaseDialogState extends State<AddCaseDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                    labelText: 'Case Title', border: OutlineInputBorder()),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter a title' : null,
-              ),
+              _buildTextField(
+                  controller: _titleController,
+                  label: 'Case Title',
+                  icon: Iconsax.folder),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                    labelText: 'Description', border: OutlineInputBorder()),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter a description' : null,
-              ),
+              _buildTextField(
+                  controller: _descriptionController,
+                  label: 'Description',
+                  icon: Iconsax.document,
+                  isMultiLine: true),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _caseNumberController,
-                decoration: const InputDecoration(
-                    labelText: 'Case Number', border: OutlineInputBorder()),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter a case number' : null,
-              ),
+              _buildTextField(
+                  controller: _caseNumberController,
+                  label: 'Case Number',
+                  icon: Iconsax.hashtag),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _courtNameController,
-                decoration: const InputDecoration(
-                    labelText: 'Court Name', border: OutlineInputBorder()),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter a court name' : null,
-              ),
+              _buildTextField(
+                  controller: _courtNameController,
+                  label: 'Court Name',
+                  icon: Iconsax.courthouse),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _partiesController,
-                decoration: const InputDecoration(
-                    labelText: 'Parties (comma-separated)',
-                    border: OutlineInputBorder()),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter the parties' : null,
-              ),
+              _buildTextField(
+                  controller: _partiesController,
+                  label: 'Parties (comma-separated)',
+                  icon: Iconsax.people),
             ],
           ),
         ),
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          onPressed: _isSaving ? null : () => Navigator.of(context).pop(),
+          child:
+              Text('Cancel', style: GoogleFonts.poppins(color: Colors.white54)),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -325,41 +409,22 @@ class AddCaseDialogState extends State<AddCaseDialog> {
             foregroundColor: Colors.white,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           ),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              if (widget.caseItem == null) {
-                final newCase = Case(
-                  title: _titleController.text,
-                  description: _descriptionController.text,
-                  caseNumber: _caseNumberController.text,
-                  courtName: _courtNameController.text,
-                  parties: _partiesController.text
-                      .split(',')
-                      .map((p) => p.trim())
-                      .toList(),
-                  creationDate: DateTime.now(),
-                );
-                Provider.of<CaseProvider>(context, listen: false)
-                    .addCase(newCase);
-              } else {
-                final updatedCase = widget.caseItem!.copyWith(
-                  title: _titleController.text,
-                  description: _descriptionController.text,
-                  caseNumber: _caseNumberController.text,
-                  courtName: _courtNameController.text,
-                  parties: _partiesController.text
-                      .split(',')
-                      .map((p) => p.trim())
-                      .toList(),
-                );
-                Provider.of<CaseProvider>(context, listen: false)
-                    .updateCase(updatedCase);
-              }
-              Navigator.of(context).pop();
-            }
-          },
-          child: Text(widget.caseItem == null ? 'Add Case' : 'Save'),
+          onPressed: _isSaving ? null : _saveCase,
+          child: _isSaving
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : Text(
+                  widget.caseItem == null ? 'Add Case' : 'Save',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                ),
         ),
       ],
     );

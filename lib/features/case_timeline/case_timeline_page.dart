@@ -480,6 +480,10 @@ class AddEventDialogState extends State<AddEventDialog> {
       await _notificationService.cancelNotification(widget.event!.id.hashCode);
     }
 
+    if (_isReminderSet) {
+      await _notificationService.requestNotificationPermissions();
+    }
+
     DateTime? finalReminderDate;
     if (_isReminderSet && _reminderDate != null) {
       if (_reminderDate!.isBefore(DateTime.now())) {

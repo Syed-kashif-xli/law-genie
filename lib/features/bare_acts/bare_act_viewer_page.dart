@@ -7,15 +7,86 @@ import 'package:open_file/open_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'models/bare_act.dart';
 
-class BareActViewerPage extends StatelessWidget {
+class BareActViewerPage extends StatefulWidget {
   final BareAct bareAct;
 
   const BareActViewerPage({super.key, required this.bareAct});
 
-  Future<void> _downloadPdf(BuildContext context) async {
+  @override
+  State<BareActViewerPage> createState() => _BareActViewerPageState();
+}
+
+class _BareActViewerPageState extends State<BareActViewerPage> {
+  RewardedAd? _rewardedAd;
+  bool _isAdLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRewardedAd();
+  }
+
+  void _loadRewardedAd() {
+    setState(() {
+      _isAdLoading = true;
+    });
+
+    RewardedAd.load(
+      adUnitId: Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/5224354917' // Test ID for Android
+          : 'ca-app-pub-3940256099942544/1712485313', // Test ID for iOS
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          debugPrint('Ad loaded.');
+          setState(() {
+            _rewardedAd = ad;
+            _isAdLoading = false;
+          });
+          _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+              _loadRewardedAd(); // Reload for next time
+            },
+            onAdFailedToShowFullScreenContent: (ad, error) {
+              ad.dispose();
+              _startDownload(context); // Fallback to download if ad fails
+              _loadRewardedAd();
+            },
+          );
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          debugPrint('Ad failed to load: $error');
+          setState(() {
+            _rewardedAd = null;
+            _isAdLoading = false;
+          });
+        },
+      ),
+    );
+  }
+
+  void _handleDownloadPress(BuildContext context) {
+    if (_rewardedAd != null) {
+      _rewardedAd!.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
+          // User watched the ad, proceed to download
+          _startDownload(context);
+        },
+      );
+    } else {
+      // Ad not ready or failed to load, proceed to download anyway
+      _startDownload(context);
+      // Attempt to load again if it failed previously
+      if (!_isAdLoading) _loadRewardedAd();
+    }
+  }
+
+  Future<void> _startDownload(BuildContext context) async {
     try {
       // Show loading
       showDialog(
@@ -32,16 +103,13 @@ class BareActViewerPage extends StatelessWidget {
         if (!status.isGranted) {
           status = await Permission.storage.request();
         }
-
-        // For Android 13+ (SDK 33), permission.storage might be denied permanently or not needed for public media dirs,
-        // but for Download folder using File API, we might need manageExternalStorage or just scoped storage which is complex.
-        // We will try to save to a safe App Directory first if external fails, or suggest 'Open' which caches it.
       }
 
       // Download
-      final response = await http.get(Uri.parse(bareAct.pdfUrl));
-      if (response.statusCode != 200)
+      final response = await http.get(Uri.parse(widget.bareAct.pdfUrl));
+      if (response.statusCode != 200) {
         throw Exception('Download failed: ${response.statusCode}');
+      }
 
       // Determine path
       Directory? directory;
@@ -57,7 +125,7 @@ class BareActViewerPage extends StatelessWidget {
 
       if (directory != null) {
         final safeTitle =
-            bareAct.title.replaceAll(RegExp(r'[^\w\s\-]'), '').trim();
+            widget.bareAct.title.replaceAll(RegExp(r'[^\w\s\-]'), '').trim();
         // Ensure LawGenie folder exists
         final safeDir = Directory('${directory.path}/LawGenie');
         if (!await safeDir.exists()) {
@@ -97,6 +165,12 @@ class BareActViewerPage extends StatelessWidget {
   }
 
   @override
+  void dispose() {
+    _rewardedAd?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A032A),
@@ -111,7 +185,7 @@ class BareActViewerPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              bareAct.title,
+              widget.bareAct.title,
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 16,
@@ -121,7 +195,7 @@ class BareActViewerPage extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              '${bareAct.category} • ${bareAct.year}',
+              '${widget.bareAct.category} • ${widget.bareAct.year}',
               style: GoogleFonts.poppins(
                 color: Colors.white70,
                 fontSize: 12,
@@ -132,13 +206,13 @@ class BareActViewerPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.download_rounded, color: Colors.orange),
-            onPressed: () => _downloadPdf(context),
+            onPressed: () => _handleDownloadPress(context),
             tooltip: 'Download PDF',
           ),
         ],
       ),
       body: const PDF().fromUrl(
-        bareAct.pdfUrl,
+        widget.bareAct.pdfUrl,
         placeholder: (progress) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -173,7 +247,7 @@ class BareActViewerPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
-                onPressed: () => _downloadPdf(context),
+                onPressed: () => _handleDownloadPress(context),
                 icon: const Icon(Icons.open_in_new),
                 label: const Text('Open in Browser'),
                 style: ElevatedButton.styleFrom(

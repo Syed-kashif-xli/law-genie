@@ -342,103 +342,229 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        title: Text(
-          widget.isDigitalCopy
-              ? 'Certified Digital Copy'
-              : 'Certified Registry Copy',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
+    return Stack(
+      children: [
+        Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF0A032A),
+                Color(0xFF1A0B4E),
+              ],
+            ),
           ),
         ),
-        centerTitle: true,
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF0A032A),
-              Color(0xFF1A0B4E),
-            ],
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          resizeToAvoidBottomInset: true,
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon:
+                    const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            title: Text(
+              widget.isDigitalCopy
+                  ? 'Certified Digital Copy'
+                  : 'Certified Registry Copy',
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+              ),
+            ),
+            centerTitle: true,
           ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF02F1C3).withValues(alpha: 0.2),
-                          const Color(0xFF02F1C3).withValues(alpha: 0.05),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF02F1C3).withValues(alpha: 0.2),
+                            const Color(0xFF02F1C3).withValues(alpha: 0.05),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF02F1C3),
-                            shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                const Color(0xFF02F1C3).withValues(alpha: 0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
-                          child: const Icon(Iconsax.location,
-                              color: Colors.black, size: 24),
-                        ),
-                        const SizedBox(width: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Selected State',
-                              style: GoogleFonts.poppins(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF02F1C3),
+                              shape: BoxShape.circle,
                             ),
+                            child: const Icon(Iconsax.location,
+                                color: Colors.black, size: 24),
+                          ),
+                          const SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Selected State',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              Text(
+                                'Madhya Pradesh',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    _buildSectionContainer(
+                      title: 'Location Details',
+                      icon: Iconsax.map_1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildDropdown(
+                            label: 'District',
+                            hint: 'Select District',
+                            value: _selectedDistrict,
+                            items: _districts,
+                            onChanged: (val) =>
+                                setState(() => _selectedDistrict = val),
+                            isRequired: true,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            'Area Type',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              _buildRadioButton('Urban', 'Urban'),
+                              const SizedBox(width: 24),
+                              _buildRadioButton('Rural', 'Rural'),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          _buildTextField(
+                            label: 'Tehsil Name',
+                            hint: 'Enter Tehsil Name (English)',
+                            controller: _tehsilNameController,
+                            isRequired: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionContainer(
+                      title: 'Date Range',
+                      icon: Iconsax.calendar_1,
+                      child: _buildDateRangeSection(),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionContainer(
+                      title: 'Deed Information',
+                      icon: Iconsax.document_text,
+                      child: _buildDropdown(
+                        label: 'Deed Type',
+                        hint: 'Select Deed Type',
+                        value: _selectedDeedType,
+                        items: _deedTypes,
+                        onChanged: (val) =>
+                            setState(() => _selectedDeedType = val),
+                        isRequired: false,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    _buildSectionContainer(
+                      title: 'Party Details',
+                      icon: Iconsax.user,
+                      child: _buildPartyDetailsForm(),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionContainer(
+                      title: 'Property Details',
+                      icon: Iconsax.building,
+                      child: _buildPropertyDetailsForm(),
+                    ),
+                    const SizedBox(height: 40),
+                    Container(
+                      width: double.infinity,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                const Color(0xFF02F1C3).withValues(alpha: 0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: _submitForm,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF02F1C3),
+                          foregroundColor: Colors.black,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Iconsax.search_normal, size: 24),
+                            const SizedBox(width: 12),
                             Text(
-                              'Madhya Pradesh',
+                              'Search Records',
                               style: GoogleFonts.poppins(
-                                color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.5,
@@ -446,131 +572,16 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  _buildSectionContainer(
-                    title: 'Location Details',
-                    icon: Iconsax.map_1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildDropdown(
-                          label: 'District',
-                          hint: 'Select District',
-                          value: _selectedDistrict,
-                          items: _districts,
-                          onChanged: (val) =>
-                              setState(() => _selectedDistrict = val),
-                          isRequired: true,
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Area Type',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            _buildRadioButton('Urban', 'Urban'),
-                            const SizedBox(width: 24),
-                            _buildRadioButton('Rural', 'Rural'),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        _buildTextField(
-                          label: 'Tehsil Name',
-                          hint: 'Enter Tehsil Name (English)',
-                          controller: _tehsilNameController,
-                          isRequired: true,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSectionContainer(
-                    title: 'Date Range',
-                    icon: Iconsax.calendar_1,
-                    child: _buildDateRangeSection(),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSectionContainer(
-                    title: 'Deed Information',
-                    icon: Iconsax.document_text,
-                    child: _buildDropdown(
-                      label: 'Deed Type',
-                      hint: 'Select Deed Type',
-                      value: _selectedDeedType,
-                      items: _deedTypes,
-                      onChanged: (val) =>
-                          setState(() => _selectedDeedType = val),
-                      isRequired: false,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  _buildSectionContainer(
-                    title: 'Party Details',
-                    icon: Iconsax.user,
-                    child: _buildPartyDetailsForm(),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSectionContainer(
-                    title: 'Property Details',
-                    icon: Iconsax.building,
-                    child: _buildPropertyDetailsForm(),
-                  ),
-                  const SizedBox(height: 40),
-                  Container(
-                    width: double.infinity,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: _submitForm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF02F1C3),
-                        foregroundColor: Colors.black,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Iconsax.search_normal, size: 24),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Search Records',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                ],
+                    const SizedBox(height: 32),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 

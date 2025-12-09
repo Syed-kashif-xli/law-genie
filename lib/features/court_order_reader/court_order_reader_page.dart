@@ -8,6 +8,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/court_order_reader/summary_display_page.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
+import 'package:myapp/features/home/widgets/inline_banner_ad_widget.dart';
 
 class CourtOrderReaderPage extends StatefulWidget {
   const CourtOrderReaderPage({super.key});
@@ -154,6 +155,8 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
               if (_fileNames.isNotEmpty) _buildSelectedFilesList(),
               const SizedBox(height: 24),
               _buildGenerateButton(),
+              const SizedBox(height: 32),
+              const InlineBannerAdWidget(),
             ],
           ),
         ),

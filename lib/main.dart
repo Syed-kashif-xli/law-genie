@@ -60,16 +60,26 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize App Check with appropriate provider based on build mode
-  await FirebaseAppCheck.instance.activate(
-    // Use debug provider only in debug mode, Play Integrity in release
-    androidProvider:
-        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-    appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
-  );
+  try {
+    // Initialize App Check with appropriate provider based on build mode
+    await FirebaseAppCheck.instance.activate(
+      // Use debug provider only in debug mode, Play Integrity in release
+      // ignore: deprecated_member_use
+      androidProvider:
+          kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+      // ignore: deprecated_member_use
+      appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
+    );
+  } catch (e) {
+    debugPrint("Error initializing App Check: $e");
+  }
 
-  await NotificationService().init();
   tz.initializeTimeZones();
+  try {
+    await NotificationService().init();
+  } catch (e) {
+    debugPrint("Error initializing NotificationService: $e");
+  }
   await Hive.initFlutter();
   Hive.registerAdapter(ChatSessionAdapter());
   Hive.registerAdapter(ChatMessageAdapter());

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/diary_provider.dart';
+import 'package:myapp/features/home/widgets/inline_banner_ad_widget.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
@@ -105,38 +106,46 @@ class _DiaryPageState extends State<DiaryPage> {
             }
 
             if (provider.entries.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.05),
-                        shape: BoxShape.circle,
+              return Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.05),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Iconsax.note_1,
+                                size: 64,
+                                color: Colors.white.withValues(alpha: 0.2)),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            'Your Legal Journey',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Document your thoughts and get AI insights.',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white54,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Icon(Iconsax.note_1,
-                          size: 64, color: Colors.white.withValues(alpha: 0.2)),
                     ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Your Legal Journey',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Document your thoughts and get AI insights.',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white54,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const InlineBannerAdWidget(),
+                ],
               );
             }
 
@@ -155,6 +164,7 @@ class _DiaryPageState extends State<DiaryPage> {
                     },
                   ),
                 ),
+                const InlineBannerAdWidget(),
               ],
             );
           },

@@ -1,0 +1,247 @@
+﻿Running Gradle task 'assembleRelease'...                        
+flutter : e: file:///C:/User
+s/veo18/Desktop/Law/law-geni
+e/android/app/build.gradle.k
+ts:46:1: Unexpected symbol
+At line:1 char:1
++ flutter build apk 
+--release --target-platform 
+android-arm64 --no-tree ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (e: fi  
+  le:///C:/U...expected s   
+ ymbol:String) [], Remot    
+eException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:48:1: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:48:9: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:49:5: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:49:12: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:49:14: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:49:15: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:49:20: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:50:1: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:52:1: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:52:14: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:54:5: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:54:26: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:54:27: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:54:28: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:54:68: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:54:69: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:55:1: 
+Unexpected symbol
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:41:13: 
+Unresolved reference: 
+signingConfig
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:42:13: 
+Unresolved reference: 
+isMinifyEnabled
+e: file:///C:/Users/veo18/De
+sktop/Law/law-genie/android/
+app/build.gradle.kts:43:13: 
+Unresolved reference: 
+isShrinkResources
+
+FAILURE: Build failed with 
+an exception.
+
+* Where:
+Build file 'C:\Users\veo18\D
+esktop\Law\law-genie\android
+\app\build.gradle.kts' 
+line: 41
+
+* What went wrong:
+Script compilation errors:
+
+  Line 41:             
+signingConfig = signingConfi
+gs.getByName("debug")
+                       ^ 
+Unresolved reference: 
+signingConfig
+
+  Line 42:             
+isMinifyEnabled = false
+                       ^ 
+Unresolved reference: 
+isMinifyEnabled
+
+  Line 43:             
+isShrinkResources = false
+                       ^ 
+Unresolved reference: 
+isShrinkResources
+
+  Line 46: }
+           ^ Unexpected 
+symbol
+
+  Line 48: flutter {
+           ^ Unexpected 
+symbol
+
+  Line 48: flutter {
+                   ^ 
+Unexpected symbol
+
+  Line 49:     source = 
+"../.."
+               ^ Unexpected 
+symbol
+
+  Line 49:     source = 
+"../.."
+                      ^ 
+Unexpected symbol
+
+  Line 49:     source = 
+"../.."
+                        ^ 
+Unexpected symbol
+
+  Line 49:     source = 
+"../.."
+                         ^ 
+Unexpected symbol
+
+  Line 49:     source = 
+"../.."
+                            
+  ^ Unexpected symbol
+
+  Line 50: }
+           ^ Unexpected 
+symbol
+
+  Line 52: dependencies {
+           ^ Unexpected 
+symbol
+
+  Line 52: dependencies {
+                        ^ 
+Unexpected symbol
+
+  Line 54:     coreLibraryDe
+sugaring("com.android.tools:
+desugar_jdk_libs:2.1.4")
+               ^ Unexpected 
+symbol
+
+  Line 54:     coreLibraryDe
+sugaring("com.android.tools:
+desugar_jdk_libs:2.1.4")
+                            
+        ^ Unexpected symbol
+
+  Line 54:     coreLibraryDe
+sugaring("com.android.tools:
+desugar_jdk_libs:2.1.4")
+                            
+         ^ Unexpected symbol
+
+  Line 54:     coreLibraryDe
+sugaring("com.android.tools:
+desugar_jdk_libs:2.1.4")
+                            
+          ^ Unexpected 
+symbol
+
+  Line 54:     coreLibraryDe
+sugaring("com.android.tools:
+desugar_jdk_libs:2.1.4")
+                            
+                            
+                      ^ 
+Unexpected symbol
+
+  Line 54:     coreLibraryDe
+sugaring("com.android.tools:
+desugar_jdk_libs:2.1.4")
+                            
+                            
+                       ^ 
+Unexpected symbol
+
+  Line 55: }
+           ^ Unexpected 
+symbol
+
+21 errors
+
+* Try:
+> Run with --stacktrace 
+option to get the stack 
+trace.
+> Run with --info or 
+--debug option to get more 
+log output.
+> Run with --scan to get 
+full insights.
+> Get more help at 
+https://help.gradle.org.
+
+BUILD FAILED in 8s
+Running Gradle task 'assembleRelease'...                            9.5s
+Gradle task assembleRelease 
+failed with exit code 1

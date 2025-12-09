@@ -3,9 +3,25 @@ import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/case_timeline/timeline_provider.dart';
 import 'package:provider/provider.dart';
+import '../../services/notification_service.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
+
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch reminders when the screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<TimelineProvider>(context, listen: false)
+          .fetchUpcomingReminders();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +39,13 @@ class NotificationsScreen extends StatelessWidget {
       ),
       body: Consumer<TimelineProvider>(
         builder: (context, timelineProvider, child) {
-          if (timelineProvider.isLoading) {
+          if (timelineProvider.isRemindersLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final upcomingEvents = timelineProvider.events
-              .where((event) =>
-                  event.reminderDate != null &&
-                  event.reminderDate!.isAfter(DateTime.now()))
-              .toList();
+          final upcomingReminders = timelineProvider.reminders;
 
-          if (upcomingEvents.isEmpty) {
+          if (upcomingReminders.isEmpty) {
             return Center(
               child: Text(
                 'No upcoming reminders.',
@@ -42,15 +54,11 @@ class NotificationsScreen extends StatelessWidget {
             );
           }
 
-          // Sort events by reminder date
-          upcomingEvents
-              .sort((a, b) => a.reminderDate!.compareTo(b.reminderDate!));
-
           return ListView.builder(
             padding: const EdgeInsets.all(16.0),
-            itemCount: upcomingEvents.length,
+            itemCount: upcomingReminders.length,
             itemBuilder: (context, index) {
-              final event = upcomingEvents[index];
+              final event = upcomingReminders[index];
               return Card(
                 elevation: 4,
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -80,13 +88,29 @@ class NotificationsScreen extends StatelessWidget {
                       const Icon(Icons.chevron_right, color: Colors.white54),
                   onTap: () {
                     // Navigate to the case timeline or show event details
-                    Navigator.pushNamed(context, '/caseTimeline');
+                    // Ideally we should pass the caseId if we knew it to open the specific timeline
+                    Navigator.pushNamed(context, '/caseList');
                   },
                 ),
               );
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await NotificationService().showNotification(
+            id: 999,
+            title: 'Test Notification',
+            body: 'This is a test notification to verify settings.',
+          );
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Test notification sent')),
+            );
+          }
+        },
+        child: const Icon(Icons.notifications_active, color: Colors.white),
       ),
     );
   }

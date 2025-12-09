@@ -283,11 +283,26 @@ class _TranslatorPageState extends State<TranslatorPage>
             colors: [Color(0xFF0A032A), Color(0xFF151038)],
           ),
         ),
-        child: TabBarView(
-          controller: _tabController,
+        child: Column(
           children: [
-            _buildTextTab(),
-            _buildDocumentTab(),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildTextTab(),
+                  _buildDocumentTab(),
+                ],
+              ),
+            ),
+            if (_isAdLoaded && _bannerAd != null) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                height: _bannerAd!.size.height.toDouble(),
+                width: _bannerAd!.size.width.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
+              ),
+              const SizedBox(height: 10),
+            ],
           ],
         ),
       ),
@@ -306,14 +321,6 @@ class _TranslatorPageState extends State<TranslatorPage>
           _buildTranslateButton(_isTranslating, _translateText),
           const SizedBox(height: 24),
           if (_translatedText.isNotEmpty) _buildOutputArea(_translatedText),
-          if (_isAdLoaded && _bannerAd != null) ...[
-            const SizedBox(height: 24),
-            SizedBox(
-              height: _bannerAd!.size.height.toDouble(),
-              width: _bannerAd!.size.width.toDouble(),
-              child: AdWidget(ad: _bannerAd!),
-            ),
-          ],
         ],
       ),
     );

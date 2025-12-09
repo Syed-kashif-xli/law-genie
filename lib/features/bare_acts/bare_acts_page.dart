@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 
 import '../../services/bare_act_service.dart';
 import '../../services/ad_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'models/bare_act.dart';
 import 'bare_act_viewer_page.dart';
 import 'package:provider/provider.dart';
@@ -25,10 +26,21 @@ class _BareActsPageState extends State<BareActsPage> {
   String _selectedCategory = 'All';
   bool _isLoading = true;
 
+  // Ad State
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
     _loadInitialData();
+    _bannerAd = AdService.createBannerAd(
+      onAdLoaded: (ad) {
+        setState(() {
+          _isAdLoaded = true;
+        });
+      },
+    )..load();
   }
 
   Future<void> _loadInitialData() async {
@@ -188,6 +200,12 @@ class _BareActsPageState extends State<BareActsPage> {
         builder: (context) => BareActViewerPage(bareAct: act),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
   }
 
   @override
@@ -467,6 +485,8 @@ class _BareActsPageState extends State<BareActsPage> {
                                                     style: GoogleFonts.poppins(
                                                       color: Colors.white54,
                                                       fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                 ],
@@ -488,6 +508,15 @@ class _BareActsPageState extends State<BareActsPage> {
                           },
                         ),
             ),
+            if (_isAdLoaded && _bannerAd != null) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                height: _bannerAd!.size.height.toDouble(),
+                width: _bannerAd!.size.width.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
+              ),
+              const SizedBox(height: 10),
+            ],
           ],
         ),
       ),

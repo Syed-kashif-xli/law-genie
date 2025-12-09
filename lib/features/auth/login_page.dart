@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:pinput/pinput.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -107,8 +108,8 @@ class _LoginPageState extends State<LoginPage> {
         final user = UserModel(
           uid: userCredential.user!.uid,
           email: userCredential.user!.email,
-          createdAt: DateTime.now(),
-          lastLoginAt: DateTime.now(),
+          createdAt: DateTime.now(), // New user always has createdAt
+          lastLoginAt: null, // FirestoreService will set this
         );
         await _firestoreService.createOrUpdateUser(user);
         _navigateToHome(userCredential.user!);
@@ -144,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
         final user = UserModel(
           uid: userCredential.user!.uid,
           email: userCredential.user!.email,
-          lastLoginAt: DateTime.now(),
+          lastLoginAt: null, // FirestoreService will set this
         );
         await _firestoreService.createOrUpdateUser(user);
         _navigateToHome(userCredential.user!);
@@ -174,7 +175,7 @@ class _LoginPageState extends State<LoginPage> {
 
     await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: const Color(0xFF1A0B2E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Reset Password',
@@ -205,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child:
                 const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
@@ -219,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                 );
                 return;
               }
-              Navigator.pop(context); // Close dialog
+              Navigator.pop(dialogContext); // Close dialog
 
               try {
                 await FirebaseAuth.instance
@@ -276,13 +277,18 @@ class _LoginPageState extends State<LoginPage> {
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
         if (mounted) {
+          final isNewUser =
+              userCredential.additionalUserInfo?.isNewUser ?? false;
+          debugPrint(
+              'Phone Auth - User is ${isNewUser ? "NEW" : "EXISTING"}: ${userCredential.user!.uid}');
+
           final user = UserModel(
             uid: userCredential.user!.uid,
             phoneNumber: userCredential.user!.phoneNumber,
-            createdAt: userCredential.additionalUserInfo?.isNewUser ?? false
-                ? DateTime.now()
-                : null,
-            lastLoginAt: DateTime.now(),
+            // Only set createdAt for NEW users
+            createdAt: isNewUser ? DateTime.now() : null,
+            // lastLoginAt will be set by FirestoreService
+            lastLoginAt: null,
           );
           await _firestoreService.createOrUpdateUser(user);
           setState(() => _isLoading = false);
@@ -358,14 +364,17 @@ class _LoginPageState extends State<LoginPage> {
           await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (userCredential.user != null && mounted) {
-        debugPrint('Sign in successful. User: ${userCredential.user!.uid}');
+        final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+        debugPrint(
+            'Phone OTP Sign in successful. User is ${isNewUser ? "NEW" : "EXISTING"}: ${userCredential.user!.uid}');
+
         final user = UserModel(
           uid: userCredential.user!.uid,
           phoneNumber: userCredential.user!.phoneNumber,
-          createdAt: userCredential.additionalUserInfo?.isNewUser ?? false
-              ? DateTime.now()
-              : null,
-          lastLoginAt: DateTime.now(),
+          // Only set createdAt for NEW users
+          createdAt: isNewUser ? DateTime.now() : null,
+          // lastLoginAt will be set by FirestoreService
+          lastLoginAt: null,
         );
         await _firestoreService.createOrUpdateUser(user);
         _navigateToHome(userCredential.user!);
@@ -403,15 +412,18 @@ class _LoginPageState extends State<LoginPage> {
             await FirebaseAuth.instance.signInWithCredential(credential);
 
         if (userCredential.user != null && mounted) {
+          final isNewUser =
+              userCredential.additionalUserInfo?.isNewUser ?? false;
+          debugPrint(
+              'Google Sign in - User is ${isNewUser ? "NEW" : "EXISTING"}: ${userCredential.user!.uid}');
+
           final user = UserModel(
             uid: userCredential.user!.uid,
             email: userCredential.user!.email,
             displayName: userCredential.user!.displayName,
             photoUrl: userCredential.user!.photoURL,
-            createdAt: userCredential.additionalUserInfo?.isNewUser ?? false
-                ? DateTime.now()
-                : null,
-            lastLoginAt: DateTime.now(),
+            createdAt: isNewUser ? DateTime.now() : null,
+            lastLoginAt: null, // FirestoreService will set this
           );
           await _firestoreService.createOrUpdateUser(user);
           _navigateToHome(userCredential.user!);
@@ -514,8 +526,52 @@ class _LoginPageState extends State<LoginPage> {
                                   controller: _passwordController,
                                   isPassword: true),
                             ] else if (_codeSent) ...[
-                              _buildTextField(l10n.otp, Iconsax.password_check,
-                                  controller: _otpController),
+                              Pinput(
+                                length: 6,
+                                controller: _otpController,
+                                onCompleted: (pin) => _signInWithOTP(),
+                                // Android will auto-detect OTP from SMS
+                                autofillHints: const [
+                                  AutofillHints.oneTimeCode
+                                ],
+                                defaultPinTheme: PinTheme(
+                                  width: 45,
+                                  height: 55,
+                                  textStyle: const TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withAlpha(26),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                        color: Colors.white.withAlpha(51)),
+                                  ),
+                                ),
+                                focusedPinTheme: PinTheme(
+                                  width: 45,
+                                  height: 55,
+                                  textStyle: const TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withAlpha(40),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border:
+                                        Border.all(color: Colors.blueAccent),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.blueAccent
+                                            .withValues(alpha: 0.3),
+                                        blurRadius: 8,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               const SizedBox(height: 8),
                               Row(
                                 mainAxisAlignment:

@@ -7,6 +7,7 @@ import 'package:iconsax/iconsax.dart';
 import 'document_fields.dart'; // Import the new file
 import 'document_viewer_page.dart';
 import '../../services/ad_service.dart';
+import 'package:myapp/features/home/widgets/inline_banner_ad_widget.dart';
 
 class DocumentGeneratorPage extends StatefulWidget {
   const DocumentGeneratorPage({super.key});
@@ -294,6 +295,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
               ),
             ),
             const SizedBox(height: 24),
+            const InlineBannerAdWidget(),
           ],
         ),
       ),

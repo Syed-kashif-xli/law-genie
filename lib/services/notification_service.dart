@@ -201,8 +201,10 @@ class NotificationService {
       debugPrint('Could not configure local timezone: $e');
       // Fallback
       try {
+        tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
+      } catch (_) {
         tz.setLocalLocation(tz.getLocation('UTC'));
-      } catch (_) {}
+      }
     }
   }
 

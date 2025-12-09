@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'dart:ui';
-
 import 'package:flutter/services.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -158,34 +156,42 @@ class _SubscriptionPageState extends State<SubscriptionPage>
         ),
         child: Stack(
           children: [
-            // Ambient Background Effects
+            // Optimized Ambient Background Effects using BoxShadow instead of ImageFiltered
             Positioned(
               top: -100,
               right: -100,
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF02F1C3).withValues(alpha: 0.15),
-                  ),
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.transparent,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF02F1C3).withValues(alpha: 0.15),
+                      blurRadius: 100,
+                      spreadRadius: 50,
+                    ),
+                  ],
                 ),
               ),
             ),
             Positioned(
               bottom: -100,
               left: -100,
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF7B1FA2).withValues(alpha: 0.15),
-                  ),
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.transparent,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF7B1FA2).withValues(alpha: 0.15),
+                      blurRadius: 100,
+                      spreadRadius: 50,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -234,7 +240,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                       },
                       itemCount: _plans.length,
                       itemBuilder: (context, index) {
-                        return _buildPlanCard(index);
+                        return RepaintBoundary(child: _buildPlanCard(index));
                       },
                     ),
                   ),
@@ -274,6 +280,15 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: AnimatedBuilder(
                       animation: _shimmerController,
+                      // Pass the static child to avoid rebuilding it
+                      child: Text(
+                        _currentIndex == 0 ? 'Get Started' : 'Upgrade Now',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                       builder: (context, child) {
                         return Container(
                           width: double.infinity,
@@ -329,10 +344,6 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                                 amount = 499.0;
                               }
 
-                              // Override for user request if needed, but sticking to plan price is safer.
-                              // User said "2000 bhi razar pay se hogya", implies maybe a specific service or just general.
-                              // Let's stick to the plan price for now.
-
                               _paymentService.openCheckout(
                                 amount: amount,
                                 description:
@@ -350,16 +361,8 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
-                            child: Text(
-                              _currentIndex == 0
-                                  ? 'Get Started'
-                                  : 'Upgrade Now',
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
+                            child:
+                                child, // Reuse the child passed to builder (the Text)
                           ),
                         );
                       },
@@ -417,212 +420,210 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(32),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Stack(
-            children: [
-              if (plan['isPopular'])
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
+        // Removed heavy BackdropFilter globally for card, rely on opacity and dark background
+        child: Stack(
+          children: [
+            if (plan['isPopular'])
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [color, color.withValues(alpha: 0.8)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [color, color.withValues(alpha: 0.8)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.5),
+                        blurRadius: 10,
                       ),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
+                    ],
+                  ),
+                  child: Text(
+                    'MOST POPULAR',
+                    style: GoogleFonts.poppins(
+                      color: Colors.black,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ),
+            if (plan['isBestValue'])
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFFD700), Color(0xFFFFA000)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFFD700).withValues(alpha: 0.5),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    'BEST VALUE',
+                    style: GoogleFonts.poppins(
+                      color: Colors.black,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ),
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: color.withValues(alpha: 0.3),
+                        width: 1,
                       ),
                       boxShadow: [
+                        BoxShadow(
+                          color: color.withValues(alpha: 0.2),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.workspace_premium,
+                      color: color,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    plan['name'],
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
                         BoxShadow(
                           color: color.withValues(alpha: 0.5),
                           blurRadius: 10,
                         ),
                       ],
                     ),
-                    child: Text(
-                      'MOST POPULAR',
-                      style: GoogleFonts.poppins(
-                        color: Colors.black,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
-                      ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    plan['description'],
+                    style: GoogleFonts.poppins(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      height: 1.5,
                     ),
                   ),
-                ),
-              if (plan['isBestValue'])
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFFD700), Color(0xFFFFA000)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFFD700).withValues(alpha: 0.5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      'BEST VALUE',
-                      style: GoogleFonts.poppins(
-                        color: Colors.black,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: color.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: color.withValues(alpha: 0.2),
-                            blurRadius: 10,
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.workspace_premium,
-                        color: color,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      plan['name'],
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          BoxShadow(
-                            color: color.withValues(alpha: 0.5),
-                            blurRadius: 10,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      plan['description'],
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 13,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          plan['price'],
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              BoxShadow(
-                                color: color.withValues(alpha: 0.3),
-                                blurRadius: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Text(
-                            plan['period'],
-                            style: GoogleFonts.poppins(
-                              color: Colors.white54,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Divider(color: Colors.white.withValues(alpha: 0.1)),
-                    const SizedBox(height: 24),
-                    ...List.generate((plan['features'] as List).length, (i) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: color.withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: color.withValues(alpha: 0.2),
-                                    blurRadius: 4,
-                                  ),
-                                ],
-                              ),
-                              child: Icon(
-                                Icons.check,
-                                color: color,
-                                size: 12,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                plan['features'][i],
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  fontSize: 13,
-                                  height: 1.2,
-                                ),
-                              ),
+                  const SizedBox(height: 24),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        plan['price'],
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            BoxShadow(
+                              color: color.withValues(alpha: 0.3),
+                              blurRadius: 10,
                             ),
                           ],
                         ),
-                      );
-                    }),
-                  ],
-                ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Text(
+                          plan['period'],
+                          style: GoogleFonts.poppins(
+                            color: Colors.white54,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Divider(color: Colors.white.withValues(alpha: 0.1)),
+                  const SizedBox(height: 24),
+                  ...List.generate((plan['features'] as List).length, (i) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: color.withValues(alpha: 0.2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              color: color,
+                              size: 12,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              plan['features'][i],
+                              style: GoogleFonts.poppins(
+                                color: Colors.white.withValues(alpha: 0.9),
+                                fontSize: 13,
+                                height: 1.2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

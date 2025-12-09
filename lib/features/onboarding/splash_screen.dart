@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/features/onboarding/onboarding_page.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:myapp/services/ad_block_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -58,12 +60,64 @@ class _SplashScreenState extends State<SplashScreen>
       _textAnimationController.forward();
     });
 
-    Timer(const Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 4), _checkAndNavigate);
+  }
+
+  Future<void> _checkAndNavigate() async {
+    // Check for internet connection
+    final List<ConnectivityResult> connectivityResult =
+        await (Connectivity().checkConnectivity());
+
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No Internet Connection. Running in offline mode.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+      _navigateToOnboarding();
+    } else {
+      // Check for Ad Blocker
+      final adBlockStatus = await AdBlockService.detectAdBlocker();
+      if (adBlockStatus == 2) {
+        // Ad Blocker Detected
+        if (mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => AlertDialog(
+              title: const Text('Ad Blocker Detected'),
+              content: const Text(
+                  'Please disable your ad blocker to support Law Genie and continue using the app.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _checkAndNavigate(); // Retry
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+      } else {
+        // No Ad Blocker or No Internet (handled above, but doubled check)
+        _navigateToOnboarding();
+      }
+    }
+  }
+
+  void _navigateToOnboarding() {
+    if (mounted) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const OnboardingPage()),
       );
-    });
+    }
   }
 
   @override

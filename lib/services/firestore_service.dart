@@ -36,18 +36,28 @@ class FirestoreService {
     final doc = await userRef.get();
 
     if (doc.exists) {
-      // Update last login
+      // User already exists - UPDATE only necessary fields
+      debugPrint('FirestoreService: Updating existing user ${user.uid}');
       await userRef.update({
         'lastLoginAt': FieldValue.serverTimestamp(),
-        // Update other fields if they are not null in the new object
+        // Update other fields ONLY if they are not null in the new object
         if (user.displayName != null) 'displayName': user.displayName,
         if (user.photoUrl != null) 'photoUrl': user.photoUrl,
         if (user.phoneNumber != null) 'phoneNumber': user.phoneNumber,
         if (user.email != null) 'email': user.email,
+        // NEVER update createdAt for existing users
       });
     } else {
-      // Create new user
-      await userRef.set(user.toMap());
+      // New user - CREATE with all fields
+      debugPrint('FirestoreService: Creating new user ${user.uid}');
+      final userData = user.toMap();
+      // Ensure createdAt is set for new users
+      if (userData['createdAt'] == null) {
+        userData['createdAt'] = FieldValue.serverTimestamp();
+      }
+      // Also set lastLoginAt for new users
+      userData['lastLoginAt'] = FieldValue.serverTimestamp();
+      await userRef.set(userData);
     }
   }
 

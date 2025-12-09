@@ -12,11 +12,15 @@ class TimelineProvider with ChangeNotifier {
   String? get _userId => _auth.currentUser?.uid;
 
   List<TimelineEvent> _events = [];
+  List<TimelineEvent> _reminders = [];
   bool _isLoading = true;
+  bool _isRemindersLoading = false;
   StreamSubscription<QuerySnapshot>? _timelineSubscription;
 
   List<TimelineEvent> get events => _events;
+  List<TimelineEvent> get reminders => _reminders;
   bool get isLoading => _isLoading;
+  bool get isRemindersLoading => _isRemindersLoading;
 
   // Set loading state
   void _setLoading(bool loading) {
@@ -51,6 +55,53 @@ class TimelineProvider with ChangeNotifier {
       });
     } catch (e) {
       _setLoading(false);
+    }
+  }
+
+  // Fetch ALL upcoming reminders across all cases
+  Future<void> fetchUpcomingReminders() async {
+    if (_userId == null) return;
+
+    _isRemindersLoading = true;
+    notifyListeners();
+
+    try {
+      // 1. Get all cases for the user
+      final casesSnapshot = await _firestore
+          .collection('users')
+          .doc(_userId)
+          .collection('cases')
+          .get();
+
+      List<TimelineEvent> allReminders = [];
+
+      // 2. Iterate through each case and fetch upcomming timeline events
+      // Note: This might be heavy if there are many cases.
+      // Ideally, use a Collection Group Index if scalable.
+      for (var caseDoc in casesSnapshot.docs) {
+        final timelineSnapshot = await caseDoc.reference
+            .collection('timeline')
+            .where('reminderDate', isGreaterThan: Timestamp.now())
+            .get(); // One-time fetch, not stream, to save resources
+
+        final caseEvents = timelineSnapshot.docs
+            .map((doc) => TimelineEvent.fromMap(doc.data(), doc.id))
+            .toList();
+
+        allReminders.addAll(caseEvents);
+      }
+
+      // Sort by reminder date
+      allReminders.sort((a, b) => (a.reminderDate ?? DateTime.now())
+          .compareTo(b.reminderDate ?? DateTime.now()));
+
+      _reminders = allReminders;
+    } catch (e) {
+      debugPrint('Error fetching reminders: $e');
+      _reminders = [];
+    } finally {
+      _isRemindersLoading = false;
+      notifyListeners();
     }
   }
 

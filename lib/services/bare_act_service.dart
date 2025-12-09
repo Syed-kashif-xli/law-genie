@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../features/bare_acts/models/bare_act.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter/foundation.dart';
 
 class BareActService {
   final CollectionReference _actsCollection =
@@ -41,7 +42,7 @@ class BareActService {
         }
       }
     } catch (e) {
-      print('Hive cache error: $e');
+      debugPrint('Hive cache error: $e');
     }
 
     // 2. If memory cache is already populated (fallback)
@@ -78,7 +79,7 @@ class BareActService {
 
       return _cachedActs;
     } catch (e) {
-      print('Error fetching acts: $e');
+      debugPrint('Error fetching acts: $e');
       return _cachedActs;
     }
   }
@@ -104,9 +105,9 @@ class BareActService {
 
       try {
         await batch.commit();
-        print('Migrated batch ${i ~/ batchSize + 1} to Firestore');
+        debugPrint('Migrated batch ${i ~/ batchSize + 1} to Firestore');
       } catch (e) {
-        print('Error migrating batch to Firestore: $e');
+        debugPrint('Error migrating batch to Firestore: $e');
       }
     }
   }
@@ -125,7 +126,7 @@ class BareActService {
           .toList();
       await box.put('acts', serialized);
     } catch (e) {
-      print('Error caching acts: $e');
+      debugPrint('Error caching acts: $e');
     }
   }
 
@@ -154,7 +155,7 @@ class BareActService {
         }
       }
     } catch (e) {
-      print('Error fetching from storage: $e');
+      debugPrint('Error fetching from storage: $e');
     }
     return storageActs;
   }
@@ -194,7 +195,7 @@ class BareActService {
           _storage.ref().child(act.pdfUrl); // act.pdfUrl contains the path now
       return await ref.getDownloadURL();
     } catch (e) {
-      print('Error resolving URL for ${act.title}: $e');
+      debugPrint('Error resolving URL for ${act.title}: $e');
       return '';
     }
   }
