@@ -216,6 +216,9 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
         _isLoading = false;
       });
       usageProvider.incrementRiskAnalysis();
+
+      // Show interstitial ad after analysis
+      _showInterstitialAd();
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -231,6 +234,17 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
         );
       }
     }
+  }
+
+  Future<void> _showInterstitialAd() async {
+    await AdService.loadAndShowInterstitialAd(
+      onAdDismissed: () {
+        // Ad dismissed, continue
+      },
+      onAdFailedToLoad: () {
+        // Ad failed, continue anyway
+      },
+    );
   }
 
   @override

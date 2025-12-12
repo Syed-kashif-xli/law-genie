@@ -28,6 +28,18 @@ class AdService {
     }
   }
 
+  static String get interstitialAdUnitId {
+    if (Platform.isAndroid) {
+      // Production ID
+      return 'ca-app-pub-9032147226605088/1364815800';
+      // Test ID: 'ca-app-pub-3940256099942544/1033173712'
+    } else if (Platform.isIOS) {
+      return 'ca-app-pub-3940256099942544/4411468910'; // Test ID
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
+  }
+
   static BannerAd createBannerAd({required Function(Ad) onAdLoaded}) {
     return BannerAd(
       adUnitId: bannerAdUnitId,
@@ -66,6 +78,37 @@ class AdService {
             // If ad fails, just grant reward to avoid blocking user
             onUserEarnedReward();
           }
+        },
+      ),
+    );
+  }
+
+  static Future<void> loadAndShowInterstitialAd({
+    VoidCallback? onAdDismissed,
+    VoidCallback? onAdFailedToLoad,
+  }) async {
+    await InterstitialAd.load(
+      adUnitId: interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (InterstitialAd ad) {
+              ad.dispose();
+              onAdDismissed?.call();
+            },
+            onAdFailedToShowFullScreenContent:
+                (InterstitialAd ad, AdError error) {
+              debugPrint('Interstitial ad failed to show: $error');
+              ad.dispose();
+              onAdDismissed?.call();
+            },
+          );
+          ad.show();
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          debugPrint('InterstitialAd failed to load: $error');
+          onAdFailedToLoad?.call();
         },
       ),
     );

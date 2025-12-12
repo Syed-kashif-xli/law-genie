@@ -3,8 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'certified_copy_review_page.dart';
 import '../../services/translation_service.dart';
+import '../home/providers/usage_provider.dart';
 
 class CertifiedRegistryCopyPage extends StatefulWidget {
   final bool isDigitalCopy;
@@ -388,6 +390,68 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
               ),
             ),
             centerTitle: true,
+            actions: [
+              // Usage Counter
+              Consumer<UsageProvider>(
+                builder: (context, usage, _) {
+                  final used = usage.certifiedCopyUsage;
+                  final limit = usage.certifiedCopyLimit;
+                  final remaining = limit - used;
+                  final isLimitReached = remaining <= 0;
+
+                  return Container(
+                    margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: isLimitReached
+                            ? [
+                                Colors.red.withValues(alpha: 0.2),
+                                Colors.red.withValues(alpha: 0.1),
+                              ]
+                            : [
+                                const Color(0xFF02F1C3).withValues(alpha: 0.2),
+                                const Color(0xFF02F1C3).withValues(alpha: 0.1),
+                              ],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isLimitReached
+                            ? Colors.red.withValues(alpha: 0.5)
+                            : const Color(0xFF02F1C3).withValues(alpha: 0.5),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isLimitReached
+                              ? Iconsax.close_circle
+                              : Iconsax.document_text,
+                          color: isLimitReached
+                              ? Colors.red
+                              : const Color(0xFF02F1C3),
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '$remaining/$limit',
+                          style: GoogleFonts.poppins(
+                            color: isLimitReached
+                                ? Colors.red
+                                : const Color(0xFF02F1C3),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
           body: SafeArea(
             child: SingleChildScrollView(

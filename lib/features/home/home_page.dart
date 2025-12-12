@@ -9,6 +9,7 @@ import '../../features/home/app_drawer.dart';
 import '../../features/home/widgets/news_card.dart';
 import '../../features/home/widgets/feature_usage_section.dart';
 import '../../features/home/providers/news_provider.dart';
+import '../../features/home/providers/usage_provider.dart';
 import '../../features/home/pages/all_news_page.dart';
 import '../../features/subscription/subscription_page.dart';
 import '../../screens/notifications_screen.dart';
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage> {
     await Future.wait([
       Provider.of<NewsProvider>(context, listen: false)
           .fetchNews(forceRefresh: true),
+      Provider.of<UsageProvider>(context, listen: false).reload(),
     ]);
   }
 

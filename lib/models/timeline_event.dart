@@ -36,12 +36,16 @@ class TimelineEvent {
       'date': Timestamp.fromDate(date),
       'status': status.toString(),
       'icon': icon.codePoint,
-      'reminderDate': reminderDate != null ? Timestamp.fromDate(reminderDate!) : null,
+      'reminderDate':
+          reminderDate != null ? Timestamp.fromDate(reminderDate!) : null,
     };
   }
 
   // Create a TimelineEvent from a Map
   factory TimelineEvent.fromMap(Map<String, dynamic> map, String documentId) {
+    // Extract icon codePoint first to make it tree-shake friendly
+    final int iconCodePoint = map['icon'] as int? ?? Icons.error.codePoint;
+
     return TimelineEvent(
       id: documentId,
       title: map['title'] ?? '',
@@ -51,9 +55,10 @@ class TimelineEvent {
         (e) => e.toString() == map['status'],
         orElse: () => TimelineStatus.upcoming,
       ),
-      icon: IconData(map['icon'] ?? Icons.error.codePoint,
-          fontFamily: 'MaterialIcons'),
-      reminderDate: map['reminderDate'] != null ? (map['reminderDate'] as Timestamp).toDate() : null,
+      icon: IconData(iconCodePoint, fontFamily: 'MaterialIcons'),
+      reminderDate: map['reminderDate'] != null
+          ? (map['reminderDate'] as Timestamp).toDate()
+          : null,
     );
   }
 

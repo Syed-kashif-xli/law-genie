@@ -19,6 +19,8 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
+import 'package:myapp/services/ad_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
@@ -31,11 +33,39 @@ class _ScannerPageState extends State<ScannerPage> {
   final List<String> _scannedImages = [];
   List<Map<String, dynamic>> _recentScans = [];
   bool _isGenerating = false;
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _loadRecentScans();
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: AdService.bannerAdUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          debugPrint('Banner ad failed to load: $error');
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
   }
 
   Future<void> _loadRecentScans() async {
@@ -241,6 +271,9 @@ class _ScannerPageState extends State<ScannerPage> {
         return; // User cancelled
       }
 
+      // Show interstitial ad before saving PDF
+      await _showAdBeforeSave();
+
       final fileName = '$customName.pdf';
       final filePath = '$outputDirectory/$fileName';
       final file = File(filePath);
@@ -299,6 +332,50 @@ class _ScannerPageState extends State<ScannerPage> {
         });
       }
     }
+  }
+
+  Future<void> _showAdBeforeSave() async {
+    // Show loading dialog
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(0xFF19173A).withValues(alpha: 0.95),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(color: Color(0xFF02F1C3)),
+                const SizedBox(height: 16),
+                Text(
+                  'Loading ad...',
+                  style: GoogleFonts.outfit(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Load and show interstitial ad
+    await AdService.loadAndShowInterstitialAd(
+      onAdDismissed: () {
+        if (mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+        }
+      },
+      onAdFailedToLoad: () {
+        if (mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+        }
+      },
+    );
   }
 
   Future<void> _ocrImage(String path) async {
@@ -812,6 +889,24 @@ class _ScannerPageState extends State<ScannerPage> {
                     ],
                   ),
                 ),
+
+                // Banner Ad
+                if (_isBannerAdLoaded && _bannerAd != null)
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: AdWidget(ad: _bannerAd!),
+                    ),
+                  ),
 
                 // Content Section
                 Expanded(

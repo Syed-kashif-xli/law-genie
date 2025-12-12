@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:myapp/services/ad_service.dart';
 
 class DocumentViewerPage extends StatefulWidget {
   final String documentContent;
@@ -167,6 +168,9 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
   }
 
   Future<void> _downloadPdf() async {
+    // Show interstitial ad before download
+    await _showAdBeforeDownload();
+
     setState(() => _isDownloading = true);
     try {
       final pdfData = await _generatePdf();
@@ -192,6 +196,17 @@ class _DocumentViewerPageState extends State<DocumentViewerPage> {
     } finally {
       setState(() => _isDownloading = false);
     }
+  }
+
+  Future<void> _showAdBeforeDownload() async {
+    await AdService.loadAndShowInterstitialAd(
+      onAdDismissed: () {
+        // Ad dismissed, proceed with download
+      },
+      onAdFailedToLoad: () {
+        // Ad failed, proceed anyway
+      },
+    );
   }
 
   @override

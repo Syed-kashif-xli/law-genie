@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../services/ad_service.dart';
 import '../../features/home/providers/usage_provider.dart';
+import '../../utils/usage_limit_helper.dart';
 
 class CaseFinderPage extends StatefulWidget {
   const CaseFinderPage({super.key});
@@ -251,19 +252,33 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
           Uri.parse('https://judgments.ecourts.gov.in/pdfsearch/index.php'));
   }
 
-  void _handleSearchAction() {
-    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+  Future<void> _handleSearchAction() async {
+    // Check if user can use the feature
+    final canProceed = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'caseFinder',
+      customTitle: 'Case Finder Limit Reached',
+    );
 
-    if (usageProvider.caseFinderUsage < usageProvider.caseFinderLimit) {
+    if (canProceed) {
       setState(() {
         _isReady = false;
         _isLoading = true;
       });
-      usageProvider.incrementCaseFinder();
+
+      final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+      await usageProvider.incrementCaseFinder();
+
+      // Show usage info
+      UsageLimitHelper.showUsageSnackbar(
+        context,
+        'Case Finder',
+        usageProvider.dailyCaseFinderUsage,
+        usageProvider.dailyCaseFinderLimit,
+      );
     } else {
-      // Limit reached, show ad dialog
-      setState(() => _isReady = false);
-      _showAdDialog(usageProvider);
+      // User hit limit, reload the page
+      _controller.reload();
     }
   }
 
@@ -346,7 +361,9 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
   @override
   Widget build(BuildContext context) {
     final usageProvider = Provider.of<UsageProvider>(context);
-    final remaining =
+    final dailyRemaining =
+        usageProvider.dailyCaseFinderLimit - usageProvider.dailyCaseFinderUsage;
+    final monthlyRemaining =
         usageProvider.caseFinderLimit - usageProvider.caseFinderUsage;
 
     return Scaffold(
@@ -370,10 +387,10 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
               ),
             ),
             Text(
-              '${remaining > 0 ? remaining : 0} free searches left',
+              '${dailyRemaining > 0 ? dailyRemaining : 0} searches left today • ${monthlyRemaining > 0 ? monthlyRemaining : 0} this month',
               style: GoogleFonts.poppins(
                 color: Colors.white54,
-                fontSize: 12,
+                fontSize: 11,
               ),
             ),
           ],

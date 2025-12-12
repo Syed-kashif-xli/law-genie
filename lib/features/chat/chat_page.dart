@@ -22,6 +22,7 @@ import 'package:myapp/models/chat_model.dart' as my_models;
 import 'package:myapp/providers/chat_provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
 import 'package:myapp/services/pdf_service.dart';
+import 'package:myapp/services/ad_service.dart';
 import '../documents/document_viewer_page.dart';
 
 class AIChatPage extends StatefulWidget {
@@ -68,6 +69,8 @@ class _AIChatPageState extends State<AIChatPage> {
   late final ChatSession _chat;
   late String _sessionId;
   late ChatProvider _chatProvider;
+  int _messagesSinceLastAd = 0;
+  static const int _messagesBeforeAd = 5;
 
   @override
   void initState() {
@@ -478,6 +481,13 @@ class _AIChatPageState extends State<AIChatPage> {
         _scrollToBottom();
         usageProvider.incrementAiQueries();
         _saveChatSession();
+
+        // Increment message count and show ad if needed
+        _messagesSinceLastAd++;
+        if (_messagesSinceLastAd >= _messagesBeforeAd) {
+          _messagesSinceLastAd = 0;
+          _showInterstitialAd();
+        }
       });
     } catch (e) {
       setState(() {
@@ -487,6 +497,17 @@ class _AIChatPageState extends State<AIChatPage> {
         _scrollToBottom();
       });
     }
+  }
+
+  Future<void> _showInterstitialAd() async {
+    await AdService.loadAndShowInterstitialAd(
+      onAdDismissed: () {
+        // Ad dismissed, continue chatting
+      },
+      onAdFailedToLoad: () {
+        // Ad failed, continue anyway
+      },
+    );
   }
 
   void _handleAIResponse(String responseText) {
