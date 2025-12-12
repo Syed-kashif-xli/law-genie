@@ -57,3 +57,4 @@ pubspec.lock
 !firebase.json
 !firestore.indexes.json
 !firebase.json
+.env

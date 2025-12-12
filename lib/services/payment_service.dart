@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PaymentService {
   late Razorpay _razorpay;
@@ -7,9 +8,8 @@ class PaymentService {
   final Function(PaymentFailureResponse) onFailure;
   final Function(ExternalWalletResponse) onExternalWallet;
 
-  // NOTE: Replace with your actual Razorpay Key ID
-  // IMPORTANT: Use the 'Key ID' (starts with rzp_test_...), NOT the 'Key Secret'.
-  static const String _keyId = 'rzp_test_RmKhIbHkbXgir9';
+  // Key ID loaded from .env
+  static String get _keyId => dotenv.env['RAZORPAY_KEY_ID'] ?? '';
 
   PaymentService({
     required this.onSuccess,

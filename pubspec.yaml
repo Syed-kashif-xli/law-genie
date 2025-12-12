@@ -75,6 +75,7 @@ dependencies:
   flutter_timezone: ^5.0.1
   connectivity_plus: ^7.0.0
   pinput: ^6.0.1
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -92,6 +93,7 @@ flutter:
   assets:
     - assets/images/
     - GEMINI.md
+    - .env
 
 flutter_launcher_icons:
   android: "launcher_icon"
