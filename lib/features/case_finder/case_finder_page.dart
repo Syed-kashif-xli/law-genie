@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../../services/ad_service.dart';
+
 import '../../features/home/providers/usage_provider.dart';
 import '../../utils/usage_limit_helper.dart';
 
@@ -260,6 +260,8 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
       customTitle: 'Case Finder Limit Reached',
     );
 
+    if (!mounted) return;
+
     if (canProceed) {
       setState(() {
         _isReady = false;
@@ -268,6 +270,8 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
 
       final usageProvider = Provider.of<UsageProvider>(context, listen: false);
       await usageProvider.incrementCaseFinder();
+
+      if (!mounted) return;
 
       // Show usage info
       UsageLimitHelper.showUsageSnackbar(
@@ -280,82 +284,6 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
       // User hit limit, reload the page
       _controller.reload();
     }
-  }
-
-  void _showAdDialog(UsageProvider usageProvider) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF19173A),
-        title: Text('Daily Limit Reached',
-            style: GoogleFonts.poppins(color: Colors.white)),
-        content: Text(
-          'You have reached your search limit. Watch a short ad to get an extra search?',
-          style: GoogleFonts.poppins(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _controller.reload();
-            },
-            child:
-                Text('Cancel', style: GoogleFonts.poppins(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _showAd(usageProvider);
-            },
-            child: Text('Watch Ad',
-                style: GoogleFonts.poppins(color: const Color(0xFF02F1C3))),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAd(UsageProvider usageProvider) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    AdService.showRewardedAd(
-      onUserEarnedReward: () {
-        Navigator.pop(context); // Close loading
-
-        // Grant usage logic?
-        // UsageProvider doesn't have a "grant extra" method, it respects the limit.
-        // If limit is hardcoded, we can't easily "grant one more".
-        // BUT, UsageProvider increments usage. If usage >= limit, it stops.
-
-        // OPTION: We can't really "lower" usage, but we could "bypass" the check temporarily?
-        // OR: We create a specialized method in UsageProvider later.
-        // FOR NOW: We will assume we can just proceed as if counted, OR we need the provider to allow +1.
-
-        // Hack: Just proceed without checking limit again, but verify counting still happens?
-        // Actually, if usage >= limit, incrementCaseFinder() won't increment.
-        // So the count stays at limit.
-
-        setState(() {
-          _isReady = false;
-          _isLoading = true;
-        });
-
-        // Since we watched an ad, we essentially proceed.
-        // Note: The usage count won't go up if it's hit limit, which is fine.
-        // It just stays at max.
-      },
-      onAdFailedToLoad: () {
-        Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load ad. Please try again.')),
-        );
-      },
-    );
   }
 
   @override

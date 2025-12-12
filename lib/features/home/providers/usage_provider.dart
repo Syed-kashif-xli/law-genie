@@ -377,52 +377,76 @@ class UsageProvider extends ChangeNotifier {
     if (_isPremium) return null;
 
     // Check Daily Limits first
-    if (featureName == 'aiQueries' && _dailyAiQueries >= dailyAiQueriesLimit)
+    if (featureName == 'aiQueries' && _dailyAiQueries >= dailyAiQueriesLimit) {
       return 'Daily limit reached for AI Chat.';
-    if (featureName == 'caseFinder' && _dailyCaseFinder >= dailyCaseFinderLimit)
+    }
+    if (featureName == 'caseFinder' &&
+        _dailyCaseFinder >= dailyCaseFinderLimit) {
       return 'Daily limit reached for Case Finder.';
+    }
     if (featureName == 'riskAnalysis' &&
-        _dailyRiskAnalysis >= dailyRiskAnalysisLimit)
+        _dailyRiskAnalysis >= dailyRiskAnalysisLimit) {
       return 'Daily limit reached for Risk Analysis.';
-    if (featureName == 'translator' && _dailyTranslator >= dailyTranslatorLimit)
+    }
+    if (featureName == 'translator' &&
+        _dailyTranslator >= dailyTranslatorLimit) {
       return 'Daily limit reached for Translator.';
+    }
     if (featureName == 'courtOrders' &&
-        _dailyCourtOrders >= dailyCourtOrdersLimit)
+        _dailyCourtOrders >= dailyCourtOrdersLimit) {
       return 'Daily limit reached for Court Orders.';
-    if (featureName == 'scanToPdf' && _dailyScanToPdf >= dailyScanToPdfLimit)
+    }
+    if (featureName == 'scanToPdf' && _dailyScanToPdf >= dailyScanToPdfLimit) {
       return 'Daily limit reached for Scanner.';
-    if (featureName == 'documents' && _dailyDocuments >= dailyDocumentsLimit)
+    }
+    if (featureName == 'documents' && _dailyDocuments >= dailyDocumentsLimit) {
       return 'Daily limit reached for Documents.';
+    }
 
     // Check Monthly Limits
-    if (featureName == 'aiQueries' && _monthlyAiQueries >= aiQueriesLimit)
+    if (featureName == 'aiQueries' && _monthlyAiQueries >= aiQueriesLimit) {
       return 'Monthly limit reached for AI Chat.';
-    if (featureName == 'caseFinder' && _monthlyCaseFinder >= caseFinderLimit)
+    }
+    if (featureName == 'caseFinder' && _monthlyCaseFinder >= caseFinderLimit) {
       return 'Monthly limit reached for Case Finder.';
+    }
     if (featureName == 'riskAnalysis' &&
-        _monthlyRiskAnalysis >= riskAnalysisLimit)
+        _monthlyRiskAnalysis >= riskAnalysisLimit) {
       return 'Monthly limit reached for Risk Analysis.';
-    if (featureName == 'translator' && _monthlyTranslator >= translatorLimit)
+    }
+    if (featureName == 'translator' && _monthlyTranslator >= translatorLimit) {
       return 'Monthly limit reached for Translator.';
-    if (featureName == 'courtOrders' && _monthlyCourtOrders >= courtOrdersLimit)
+    }
+    if (featureName == 'courtOrders' &&
+        _monthlyCourtOrders >= courtOrdersLimit) {
       return 'Monthly limit reached for Court Orders.';
-    if (featureName == 'scanToPdf' && _monthlyScanToPdf >= scanToPdfLimit)
+    }
+    if (featureName == 'scanToPdf' && _monthlyScanToPdf >= scanToPdfLimit) {
       return 'Monthly limit reached for Scanner.';
-    if (featureName == 'documents' && _monthlyDocuments >= documentsLimit)
+    }
+    if (featureName == 'documents' && _monthlyDocuments >= documentsLimit) {
       return 'Monthly limit reached for Documents.';
-    if (featureName == 'cases' && _monthlyCases >= casesLimit)
+    }
+    if (featureName == 'cases' && _monthlyCases >= casesLimit) {
       return 'Monthly limit reached for Cases.';
-    if (featureName == 'aiVoice' && _monthlyAiVoice >= aiVoiceLimit)
+    }
+    if (featureName == 'aiVoice' && _monthlyAiVoice >= aiVoiceLimit) {
       return 'Monthly limit reached for AI Voice.';
-    if (featureName == 'bareActs' && _monthlyBareActs >= bareActsLimit)
+    }
+    if (featureName == 'bareActs' && _monthlyBareActs >= bareActsLimit) {
       return 'Monthly limit reached for Bare Acts.';
-    if (featureName == 'chatHistory' && _monthlyChatHistory >= chatHistoryLimit)
+    }
+    if (featureName == 'chatHistory' &&
+        _monthlyChatHistory >= chatHistoryLimit) {
       return 'Monthly limit reached for Chat History.';
+    }
     if (featureName == 'certifiedCopy' &&
-        _monthlyCertifiedCopy >= certifiedCopyLimit)
+        _monthlyCertifiedCopy >= certifiedCopyLimit) {
       return 'Monthly limit reached for Certified Copy.';
-    if (featureName == 'diary' && _monthlyDiary >= diaryLimit)
+    }
+    if (featureName == 'diary' && _monthlyDiary >= diaryLimit) {
       return 'Monthly limit reached for Legal Diary.';
+    }
 
     return null;
   }
