@@ -29,6 +29,11 @@ service cloud.firestore {
       match /diary/{diaryId} {
          allow read, write: if isAuthenticated() && isOwner(userId);
       }
+
+      // Allow access to Usage Stats
+      match /usage/{docId} {
+         allow read, write: if isAuthenticated() && isOwner(userId);
+      }
     }
 
     // 2. Chat History Collection:

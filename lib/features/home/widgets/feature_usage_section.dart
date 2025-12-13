@@ -339,14 +339,14 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
     // So force it to 1.0 or hide it?
     // Let's hide the progress bar and "of Limit" text for Premium.
 
-    final double percentage = widget.isPremium
-        ? 1.0 // Full bar for premium? Or just hide it. Let's keep it full to look "active"
-        : (widget.count / widget.limit).clamp(0.0, 1.0);
+    final double percentage = (widget.limit > 0)
+        ? (widget.count / widget.limit).clamp(0.0, 1.0)
+        : 0.0;
 
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: const Color(0xFF19173A),
           borderRadius: BorderRadius.circular(24),
@@ -399,39 +399,36 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
                       width: 1,
                     ),
                   ),
-                  child: Icon(widget.icon, color: widget.color, size: 28),
+                  child: Icon(widget.icon, color: widget.color, size: 24),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      widget.isPremium ? '∞' : widget.count.toString(),
-                      style: GoogleFonts.poppins(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        height: 1,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          widget.count.toString(),
+                          style: GoogleFonts.poppins(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            height: 1,
+                          ),
+                        ),
                       ),
-                    ),
-                    if (!widget.isPremium)
                       Text(
                         'of ${widget.limit}',
                         style: GoogleFonts.poppins(
-                          fontSize: 11,
+                          fontSize: 10,
                           color: Colors.white54,
                           fontWeight: FontWeight.w500,
                         ),
-                      )
-                    else
-                      Text(
-                        'Unlimited',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: const Color(0xFFFFD700),
-                          fontWeight: FontWeight.w500,
-                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -439,140 +436,100 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
             Text(
               widget.title,
               style: GoogleFonts.poppins(
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
                 letterSpacing: 0.3,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
-            // Progress Bar (Only for Free Users)
-            if (!widget.isPremium) ...[
-              Stack(
-                children: [
-                  Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: widget.color.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+            // Progress Bar (For All Users)
+            Stack(
+              children: [
+                Container(
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: widget.color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  RepaintBoundary(
-                    child: AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, child) {
-                        return FractionallySizedBox(
-                          widthFactor: percentage,
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      widget.color.withValues(alpha: 0.7),
-                                      widget.color,
-                                    ],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          widget.color.withValues(alpha: 0.5),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 0),
-                                    ),
+                ),
+                RepaintBoundary(
+                  child: AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return FractionallySizedBox(
+                        widthFactor: percentage,
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: 8,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    widget.color.withValues(alpha: 0.7),
+                                    widget.color,
                                   ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: widget.color.withValues(alpha: 0.5),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (percentage > 0)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: ShaderMask(
+                                  shaderCallback: (rect) {
+                                    return LinearGradient(
+                                      begin: Alignment(
+                                          -1.0 + (_controller.value * 3), 0),
+                                      end: Alignment(
+                                          1.0 + (_controller.value * 3), 0),
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.white.withValues(alpha: 0.5),
+                                        Colors.transparent,
+                                      ],
+                                      stops: const [0.0, 0.5, 1.0],
+                                    ).createShader(rect);
+                                  },
+                                  blendMode: BlendMode.srcATop,
+                                  child: Container(
+                                    height: 8,
+                                    color: Colors.white.withValues(alpha: 0.1),
+                                  ),
                                 ),
                               ),
-                              if (percentage > 0)
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: ShaderMask(
-                                    shaderCallback: (rect) {
-                                      return LinearGradient(
-                                        begin: Alignment(
-                                            -1.0 + (_controller.value * 3), 0),
-                                        end: Alignment(
-                                            1.0 + (_controller.value * 3), 0),
-                                        colors: [
-                                          Colors.transparent,
-                                          Colors.white.withValues(alpha: 0.5),
-                                          Colors.transparent,
-                                        ],
-                                        stops: const [0.0, 0.5, 1.0],
-                                      ).createShader(rect);
-                                    },
-                                    blendMode: BlendMode.srcATop,
-                                    child: Container(
-                                      height: 8,
-                                      color:
-                                          Colors.white.withValues(alpha: 0.1),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  '${(percentage * 100).toInt()}%',
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    color: widget.color,
-                    fontWeight: FontWeight.w600,
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ),
-            ] else ...[
-              // Premium Indicator
-              Container(
-                height: 4,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFD700).withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                alignment: Alignment.centerLeft,
-                child: FractionallySizedBox(
-                  widthFactor: 1.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: const Color(0xFFFFD700),
-                        borderRadius: BorderRadius.circular(2),
-                        boxShadow: [
-                          BoxShadow(
-                            color:
-                                const Color(0xFFFFD700).withValues(alpha: 0.5),
-                            blurRadius: 6,
-                          )
-                        ]),
-                  ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '${(percentage * 100).toInt()}%',
+                style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  color: widget.color,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 6),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  'Active',
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    color: const Color(0xFFFFD700),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ]
+            ),
           ],
         ),
       ),

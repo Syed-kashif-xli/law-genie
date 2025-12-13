@@ -8,6 +8,8 @@ import 'document_fields.dart'; // Import the new file
 import 'document_viewer_page.dart';
 import '../../services/ad_service.dart';
 import 'package:myapp/features/home/widgets/inline_banner_ad_widget.dart';
+import 'package:provider/provider.dart';
+import '../../features/home/providers/usage_provider.dart';
 
 class DocumentGeneratorPage extends StatefulWidget {
   const DocumentGeneratorPage({super.key});
@@ -118,6 +120,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
       onUserEarnedReward: () {
         Navigator.pop(context); // Close loading
         _performGeneration();
+        // Increment usage after watching ad
+        Provider.of<UsageProvider>(context, listen: false).incrementDocuments();
       },
       onAdFailedToLoad: () {
         Navigator.pop(context); // Close loading
@@ -126,6 +130,8 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
               content: Text('Failed to load ad. Generating document...')),
         );
         _performGeneration();
+        // Still increment usage even if ad failed (user intended to generate)
+        Provider.of<UsageProvider>(context, listen: false).incrementDocuments();
       },
     );
   }

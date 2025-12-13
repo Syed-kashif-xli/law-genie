@@ -71,6 +71,7 @@ class _AIChatPageState extends State<AIChatPage> {
   late ChatProvider _chatProvider;
   int _messagesSinceLastAd = 0;
   static const int _messagesBeforeAd = 5;
+  bool _historyIncremented = false;
 
   @override
   void initState() {
@@ -290,9 +291,11 @@ class _AIChatPageState extends State<AIChatPage> {
       );
       debugPrint('DEBUG: Saving session: ${session.sessionId}, Title: $title');
 
-      if (widget.chatSession == null) {
+      if (widget.chatSession == null && !_historyIncremented) {
+        debugPrint('DEBUG: Incrementing Chat History Usage (New Session)');
         Provider.of<UsageProvider>(context, listen: false)
             .incrementChatHistory();
+        _historyIncremented = true;
       }
 
       try {
@@ -386,10 +389,11 @@ class _AIChatPageState extends State<AIChatPage> {
     if (text.isEmpty && _selectedFile == null) return;
 
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    if (usageProvider.aiQueriesUsage >= usageProvider.aiQueriesLimit) {
+    final limitError = usageProvider.canUseFeature('aiQueries');
+    if (limitError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Free plan limit reached. Upgrade to continue.'),
+        SnackBar(
+          content: Text(limitError),
           backgroundColor: Colors.red,
         ),
       );

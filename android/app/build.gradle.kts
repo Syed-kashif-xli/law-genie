@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -10,8 +13,9 @@ plugins {
 }
 
 android {
-    namespace = "com.example.lawgenie"
+    namespace = "com.lawgenie.app"
     compileSdk = flutter.compileSdkVersion
+    buildToolsVersion = "34.0.0"
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -27,7 +31,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.lawgenie"
+        applicationId = "com.LawGenie.in"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -40,12 +44,12 @@ android {
     signingConfigs {
         create("release") {
             val keystorePropertiesFile = rootProject.file("key.properties")
-            val keystoreProperties = java.util.Properties()
+            val keystoreProperties = Properties()
             if (keystorePropertiesFile.exists()) {
-                keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+                storeFile = keystoreProperties["storeFile"]?.let { rootProject.file(it) }
                 storePassword = keystoreProperties["storePassword"] as String
             }
         }

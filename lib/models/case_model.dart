@@ -8,6 +8,7 @@ class Case {
   final String courtName;
   final List<String> parties;
   final DateTime creationDate;
+  final DateTime? nextHearingDate; // Added
 
   Case({
     this.id,
@@ -17,6 +18,7 @@ class Case {
     required this.courtName,
     required this.parties,
     required this.creationDate,
+    this.nextHearingDate, // Added
   });
 
   // Factory constructor to create a Case from a Firestore document
@@ -29,6 +31,9 @@ class Case {
       courtName: map['courtName'] ?? '',
       parties: List<String>.from(map['parties'] ?? []),
       creationDate: (map['creationDate'] as Timestamp).toDate(),
+      nextHearingDate: map['nextHearingDate'] != null
+          ? (map['nextHearingDate'] as Timestamp).toDate()
+          : null, // Added
     );
   }
 
@@ -41,6 +46,9 @@ class Case {
       'courtName': courtName,
       'parties': parties,
       'creationDate': Timestamp.fromDate(creationDate),
+      'nextHearingDate': nextHearingDate != null
+          ? Timestamp.fromDate(nextHearingDate!)
+          : null, // Added
     };
   }
 
@@ -52,6 +60,7 @@ class Case {
     String? courtName,
     List<String>? parties,
     DateTime? creationDate,
+    DateTime? nextHearingDate, // Added
   }) {
     return Case(
       id: id ?? this.id,
@@ -61,6 +70,7 @@ class Case {
       courtName: courtName ?? this.courtName,
       parties: parties ?? this.parties,
       creationDate: creationDate ?? this.creationDate,
+      nextHearingDate: nextHearingDate ?? this.nextHearingDate,
     );
   }
 }

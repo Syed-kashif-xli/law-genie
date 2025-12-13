@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:myapp/features/case_timeline/case_timeline_page.dart';
 import 'package:myapp/models/case_model.dart';
 import 'package:myapp/providers/case_provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:myapp/services/notification_service.dart'; // Added
 
 class CaseListScreen extends StatelessWidget {
   const CaseListScreen({super.key});
@@ -238,6 +240,7 @@ class AddCaseDialogState extends State<AddCaseDialog> {
   late TextEditingController _caseNumberController;
   late TextEditingController _courtNameController;
   late TextEditingController _partiesController;
+  DateTime? _selectedNextHearingDate;
   bool _isSaving = false;
 
   @override
@@ -253,6 +256,7 @@ class AddCaseDialogState extends State<AddCaseDialog> {
         TextEditingController(text: widget.caseItem?.courtName ?? '');
     _partiesController =
         TextEditingController(text: widget.caseItem?.parties.join(', ') ?? '');
+    _selectedNextHearingDate = widget.caseItem?.nextHearingDate;
   }
 
   @override
@@ -263,6 +267,42 @@ class AddCaseDialogState extends State<AddCaseDialog> {
     _courtNameController.dispose();
     _partiesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickNextHearingDate() async {
+    final DateTime now = DateTime.now();
+    final DateTime initialDate =
+        _selectedNextHearingDate ?? now.add(const Duration(days: 1));
+
+    // Show Date Picker
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: now,
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      if (!mounted) return;
+      // Show Time Picker
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime:
+            TimeOfDay.fromDateTime(_selectedNextHearingDate ?? initialDate),
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedNextHearingDate = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
+    }
   }
 
   Future<void> _saveCase() async {
@@ -278,6 +318,9 @@ class AddCaseDialogState extends State<AddCaseDialog> {
             .where((p) => p.isNotEmpty)
             .toList();
 
+        final notificationService = NotificationService();
+        await notificationService.requestNotificationPermissions();
+
         if (widget.caseItem == null) {
           final newCase = Case(
             title: _titleController.text.trim(),
@@ -286,19 +329,67 @@ class AddCaseDialogState extends State<AddCaseDialog> {
             courtName: _courtNameController.text.trim(),
             parties: parties,
             creationDate: DateTime.now(),
+            nextHearingDate: _selectedNextHearingDate,
           );
-          await Provider.of<CaseProvider>(context, listen: false)
+          final docRef = await Provider.of<CaseProvider>(context, listen: false)
               .addCase(newCase);
+
+          if (mounted && docRef != null) {
+            Provider.of<UsageProvider>(context, listen: false).incrementCases();
+
+            // Schedule Notification if date is set
+            if (_selectedNextHearingDate != null) {
+              await notificationService.scheduleNotification(
+                id: docRef.id.hashCode,
+                title: 'Upcoming Hearing: ${newCase.title}',
+                body:
+                    'Your case (${newCase.caseNumber}) has a hearing at ${DateFormat.jm().format(_selectedNextHearingDate!)}',
+                scheduledDate: _selectedNextHearingDate!,
+              );
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Reminder set successfully!')),
+                );
+              }
+            }
+          }
         } else {
+          // Update Case
           final updatedCase = widget.caseItem!.copyWith(
             title: _titleController.text.trim(),
             description: _descriptionController.text.trim(),
             caseNumber: _caseNumberController.text.trim(),
             courtName: _courtNameController.text.trim(),
             parties: parties,
+            nextHearingDate: _selectedNextHearingDate,
           );
           await Provider.of<CaseProvider>(context, listen: false)
               .updateCase(updatedCase);
+
+          // Update Notification
+          if (_selectedNextHearingDate != null) {
+            await notificationService
+                .cancelNotification(widget.caseItem!.id.hashCode);
+            await notificationService.scheduleNotification(
+              id: widget.caseItem!.id
+                  .hashCode, // Use hashcode of ID for notification ID
+              title: 'Upcoming Hearing: ${updatedCase.title}',
+              body:
+                  'Your case (${updatedCase.caseNumber}) has a hearing at ${DateFormat.jm().format(_selectedNextHearingDate!)}',
+              scheduledDate: _selectedNextHearingDate!,
+            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Reminder updated successfully!')),
+              );
+            }
+          } else {
+            // If date removed, cancel notification
+            if (widget.caseItem!.nextHearingDate != null) {
+              await notificationService
+                  .cancelNotification(widget.caseItem!.id.hashCode);
+            }
+          }
         }
         if (mounted) Navigator.of(context).pop();
       } catch (e) {
@@ -393,6 +484,31 @@ class AddCaseDialogState extends State<AddCaseDialog> {
                   controller: _partiesController,
                   label: 'Parties (comma-separated)',
                   icon: Iconsax.people),
+              const SizedBox(height: 16),
+              InkWell(
+                onTap: _pickNextHearingDate,
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Next Hearing Date (Optional)',
+                    labelStyle: GoogleFonts.poppins(color: Colors.white70),
+                    prefixIcon:
+                        const Icon(Icons.calendar_today, color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.1),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none),
+                  ),
+                  child: Text(
+                    _selectedNextHearingDate != null
+                        ? DateFormat.yMMMMd()
+                            .add_jm()
+                            .format(_selectedNextHearingDate!)
+                        : 'Tap to set reminder',
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

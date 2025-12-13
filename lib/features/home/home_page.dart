@@ -4,20 +4,25 @@ import 'package:iconsax/iconsax.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Added
+import 'package:flutter/foundation.dart'; // Added
 
-import '../../features/home/app_drawer.dart';
-import '../../features/home/widgets/news_card.dart';
-import '../../features/home/widgets/feature_usage_section.dart';
-import '../../features/home/providers/news_provider.dart';
-import '../../features/home/providers/usage_provider.dart';
-import '../../features/home/pages/all_news_page.dart';
-import '../../features/subscription/subscription_page.dart';
-import '../../screens/notifications_screen.dart';
-import '../../features/chat/chat_page.dart';
-import '../../features/scanner/scanner_page.dart';
+import 'package:myapp/features/home/app_drawer.dart';
+import 'package:myapp/features/home/widgets/news_card.dart';
+import 'package:myapp/features/home/widgets/feature_usage_section.dart';
 
+// ...
+
+import 'package:myapp/features/home/providers/news_provider.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
+import 'package:myapp/features/home/pages/all_news_page.dart';
+import 'package:myapp/features/subscription/subscription_page.dart';
+import 'package:myapp/screens/notifications_screen.dart';
+import 'package:myapp/services/ad_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../../services/ad_service.dart';
+import 'package:myapp/features/chat/chat_page.dart';
+import 'package:myapp/features/scanner/scanner_page.dart';
+
 import 'widgets/inline_banner_ad_widget.dart';
 import '../../services/notification_service.dart';
 
@@ -110,6 +115,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(width: 8),
+          // Debug buttons removed
           Container(
             margin: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
@@ -132,6 +138,19 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       drawer: const AppDrawer(),
+      /* floatingActionButton: kDebugMode
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Provider.of<UsageProvider>(context, listen: false)
+                    .hardResetStats();
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Database Repaired! Usage set to 1.')));
+              },
+              label: const Text('Repair DB'),
+              icon: const Icon(Icons.build),
+              backgroundColor: Colors.orange,
+            )
+          : null, */
       body: RepaintBoundary(
         child: Container(
           decoration: const BoxDecoration(
@@ -208,33 +227,37 @@ class _StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 100,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          _buildStatCard(
-            label: 'AI Chat',
-            value: '5',
-            icon: Iconsax.message_question,
-            color: const Color(0xFF02F1C3),
+    return Consumer<UsageProvider>(
+      builder: (context, usageProvider, child) {
+        return SizedBox(
+          height: 100,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              _buildStatCard(
+                label: 'AI Chat',
+                value: usageProvider.aiQueriesUsage.toString(),
+                icon: Iconsax.message_question,
+                color: const Color(0xFF02F1C3),
+              ),
+              const SizedBox(width: 12),
+              _buildStatCard(
+                label: 'Documents',
+                value: usageProvider.documentsUsage.toString(),
+                icon: Iconsax.document_text,
+                color: const Color(0xFFC5CAE9),
+              ),
+              const SizedBox(width: 12),
+              _buildStatCard(
+                label: 'Saved Cases',
+                value: usageProvider.casesUsage.toString(),
+                icon: Iconsax.bookmark,
+                color: const Color(0xFFF48FB1),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          _buildStatCard(
-            label: 'Documents',
-            value: '12',
-            icon: Iconsax.document_text,
-            color: const Color(0xFFC5CAE9),
-          ),
-          const SizedBox(width: 12),
-          _buildStatCard(
-            label: 'Saved Cases',
-            value: '8',
-            icon: Iconsax.bookmark,
-            color: const Color(0xFFF48FB1),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 

@@ -48,18 +48,19 @@ class CaseProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addCase(Case caseItem) async {
+  Future<DocumentReference?> addCase(Case caseItem) async {
     if (_userId == null) {
       debugPrint("Error adding case: User ID is null");
-      return;
+      return null;
     }
     try {
-      await _firestore
+      final docRef = await _firestore
           .collection('users')
           .doc(_userId)
           .collection('cases')
           .add(caseItem.toMap());
       await fetchCases();
+      return docRef;
     } catch (e) {
       debugPrint("Error adding case: $e");
       rethrow; // Rethrow to let UI know

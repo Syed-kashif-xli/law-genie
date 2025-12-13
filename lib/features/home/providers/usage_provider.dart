@@ -30,8 +30,30 @@ class UsageLimits {
   static const int monthlyCertifiedCopy = 20;
   static const int monthlyDiary = 100;
 
-  // Premium Users (Unlimited)
-  static const int premiumLimit = 999999;
+  // Premium Limits (50x of Free Limits)
+  // Daily
+  static const int premiumDailyAiQueries = dailyAiQueries * 50;
+  static const int premiumDailyCaseFinder = dailyCaseFinder * 50;
+  static const int premiumDailyRiskAnalysis = dailyRiskAnalysis * 50;
+  static const int premiumDailyTranslator = dailyTranslator * 50;
+  static const int premiumDailyCourtOrders = dailyCourtOrders * 50;
+  static const int premiumDailyScanToPdf = dailyScanToPdf * 50;
+  static const int premiumDailyDocuments = dailyDocuments * 50;
+
+  // Monthly
+  static const int premiumMonthlyAiQueries = monthlyAiQueries * 50;
+  static const int premiumMonthlyCaseFinder = monthlyCaseFinder * 50;
+  static const int premiumMonthlyRiskAnalysis = monthlyRiskAnalysis * 50;
+  static const int premiumMonthlyTranslator = monthlyTranslator * 50;
+  static const int premiumMonthlyCourtOrders = monthlyCourtOrders * 50;
+  static const int premiumMonthlyScanToPdf = monthlyScanToPdf * 50;
+  static const int premiumMonthlyDocuments = monthlyDocuments * 50;
+  static const int premiumMonthlyCases = monthlyCases * 50;
+  static const int premiumMonthlyAiVoice = monthlyAiVoice * 50;
+  static const int premiumMonthlyBareActs = monthlyBareActs * 50;
+  static const int premiumMonthlyChatHistory = monthlyChatHistory * 50;
+  static const int premiumMonthlyCertifiedCopy = monthlyCertifiedCopy * 50;
+  static const int premiumMonthlyDiary = monthlyDiary * 50;
 }
 
 class UsageProvider extends ChangeNotifier {
@@ -102,65 +124,108 @@ class UsageProvider extends ChangeNotifier {
   int get diaryUsage => _monthlyDiary;
 
   // Limits (Dynamic based on Premium)
-  int get aiQueriesLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyAiQueries;
-  int get caseFinderLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyCaseFinder;
-  int get riskAnalysisLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyRiskAnalysis;
-  int get translatorLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyTranslator;
-  int get courtOrdersLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyCourtOrders;
-  int get scanToPdfLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyScanToPdf;
-  int get documentsLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyDocuments;
-  int get casesLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyCases;
-  int get aiVoiceLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyAiVoice;
-  int get bareActsLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyBareActs;
-  int get chatHistoryLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyChatHistory;
-  int get certifiedCopyLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyCertifiedCopy;
-  int get diaryLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.monthlyDiary;
+  // Premium users have specific limits for some features, unlimited for others.
 
-  // Daily Limits
-  int get dailyAiQueriesLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.dailyAiQueries;
-  int get dailyCaseFinderLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.dailyCaseFinder;
-  int get dailyRiskAnalysisLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.dailyRiskAnalysis;
-  int get dailyTranslatorLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.dailyTranslator;
-  int get dailyCourtOrdersLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.dailyCourtOrders;
-  int get dailyScanToPdfLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.dailyScanToPdf;
-  int get dailyDocumentsLimit =>
-      _isPremium ? UsageLimits.premiumLimit : UsageLimits.dailyDocuments;
+  int get aiQueriesLimit => _isPremium
+      ? UsageLimits.premiumMonthlyAiQueries
+      : UsageLimits.monthlyAiQueries;
+
+  int get caseFinderLimit => _isPremium
+      ? UsageLimits.premiumMonthlyCaseFinder
+      : UsageLimits.monthlyCaseFinder;
+
+  int get riskAnalysisLimit => _isPremium
+      ? UsageLimits.premiumMonthlyRiskAnalysis
+      : UsageLimits.monthlyRiskAnalysis;
+
+  int get translatorLimit => _isPremium
+      ? UsageLimits.premiumMonthlyTranslator
+      : UsageLimits.monthlyTranslator;
+
+  int get courtOrdersLimit => _isPremium
+      ? UsageLimits.premiumMonthlyCourtOrders
+      : UsageLimits.monthlyCourtOrders;
+
+  int get scanToPdfLimit => _isPremium
+      ? UsageLimits.premiumMonthlyScanToPdf
+      : UsageLimits.monthlyScanToPdf;
+
+  int get documentsLimit => _isPremium
+      ? UsageLimits.premiumMonthlyDocuments
+      : UsageLimits.monthlyDocuments;
+
+  int get casesLimit =>
+      _isPremium ? UsageLimits.premiumMonthlyCases : UsageLimits.monthlyCases;
+
+  int get aiVoiceLimit => _isPremium
+      ? UsageLimits.premiumMonthlyAiVoice
+      : UsageLimits.monthlyAiVoice;
+
+  int get bareActsLimit => _isPremium
+      ? UsageLimits.premiumMonthlyBareActs
+      : UsageLimits.monthlyBareActs;
+
+  int get chatHistoryLimit => _isPremium
+      ? UsageLimits.premiumMonthlyChatHistory
+      : UsageLimits.monthlyChatHistory;
+
+  int get certifiedCopyLimit => _isPremium
+      ? UsageLimits.premiumMonthlyCertifiedCopy
+      : UsageLimits.monthlyCertifiedCopy;
+
+  int get diaryLimit =>
+      _isPremium ? UsageLimits.premiumMonthlyDiary : UsageLimits.monthlyDiary;
+
+  // Daily Limits (Specific to Free, 50x for Premium)
+
+  int get dailyAiQueriesLimit => _isPremium
+      ? UsageLimits.premiumDailyAiQueries
+      : UsageLimits.dailyAiQueries;
+
+  int get dailyCaseFinderLimit => _isPremium
+      ? UsageLimits.premiumDailyCaseFinder
+      : UsageLimits.dailyCaseFinder;
+
+  int get dailyRiskAnalysisLimit => _isPremium
+      ? UsageLimits.premiumDailyRiskAnalysis
+      : UsageLimits.dailyRiskAnalysis;
+
+  int get dailyTranslatorLimit => _isPremium
+      ? UsageLimits.premiumDailyTranslator
+      : UsageLimits.dailyTranslator;
+
+  int get dailyCourtOrdersLimit => _isPremium
+      ? UsageLimits.premiumDailyCourtOrders
+      : UsageLimits.dailyCourtOrders;
+
+  int get dailyScanToPdfLimit => _isPremium
+      ? UsageLimits.premiumDailyScanToPdf
+      : UsageLimits.dailyScanToPdf;
+
+  int get dailyDocumentsLimit => _isPremium
+      ? UsageLimits.premiumDailyDocuments
+      : UsageLimits.dailyDocuments;
 
   UsageProvider() {
     _init();
   }
 
   Future<void> _init() async {
-    // Open Hive solely as a fallback/cache
+    // Open Hive solely as a local cache/fallback
     _box = await Hive.openBox('usage_stats_v2');
+
+    // Load cached premium status immediately
+    _isPremium =
+        _box?.get(_getUserKey('isPremium'), defaultValue: false) ?? false;
 
     _auth.authStateChanges().listen((user) async {
       if (user != null) {
         debugPrint(
             'UsageProvider: Auth state changed. User entered: ${user.uid}');
-        // Immediately start listening to Firestore
-        _subscribeToFirestore();
-        // Also check if premium status is synced
+        // Sync premium status first
         await _syncPremiumStatus();
+        // Start listening to usage stats
+        _subscribeToFirestore();
       } else {
         debugPrint('UsageProvider: Auth state changed. User logged out.');
         _cancelSubscription();
@@ -170,8 +235,31 @@ class UsageProvider extends ChangeNotifier {
     });
 
     if (_isAuthenticated) {
-      _subscribeToFirestore();
+      // If already logged in, ensure doc exists then subscribe
       await _syncPremiumStatus();
+      await _ensureFirestoreDocExists(); // Force creation if missing
+      _subscribeToFirestore();
+    }
+  }
+
+  // Explicitly check if doc exists and create if not (Robustness fix)
+  Future<void> _ensureFirestoreDocExists() async {
+    if (!_isAuthenticated) return;
+    try {
+      final docRef = _firestore
+          .collection('users')
+          .doc(_userId)
+          .collection('usage')
+          .doc('stats');
+
+      final doc = await docRef.get();
+      if (!doc.exists) {
+        debugPrint(
+            'UsageProvider: Stats doc missing in _init. Creating now...');
+        await _initializeFirestoreDoc();
+      }
+    } catch (e) {
+      debugPrint('UsageProvider: Error checking/creating stats doc: $e');
     }
   }
 
@@ -198,6 +286,7 @@ class UsageProvider extends ChangeNotifier {
   }
 
   void _resetLocalState() {
+    // Zero out all local counters
     _dailyAiQueries = 0;
     _dailyCaseFinder = 0;
     _dailyRiskAnalysis = 0;
@@ -228,16 +317,18 @@ class UsageProvider extends ChangeNotifier {
   void _subscribeToFirestore() {
     if (!_isAuthenticated) return;
 
-    // Cancel any existing subscription
     _cancelSubscription();
 
     _usageSubscription = _firestore
-        .collection('usage_stats')
+        .collection('users')
         .doc(_userId)
+        .collection('usage')
+        .doc('stats')
         .snapshots()
         .listen((snapshot) async {
       if (!snapshot.exists) {
-        // Create the doc if it doesn't exist
+        // Doc doesn't exist? Create fully initialized doc.
+        debugPrint('UsageProvider: No usage doc found. Creating new one.');
         await _initializeFirestoreDoc();
         return;
       }
@@ -247,7 +338,7 @@ class UsageProvider extends ChangeNotifier {
 
       _isLoading = false;
 
-      // Dates checking
+      // Dates checking for resets
       final serverMonth = data['month'] as String?;
       final serverDailyDate = data['lastDailyReset'] as String?;
 
@@ -260,15 +351,14 @@ class UsageProvider extends ChangeNotifier {
 
       // 1. Check Daily Reset
       if (serverDailyDate != today) {
-        // It's a new day (or data is missing). Reset daily counts in logic.
-        // We will trigger a firestore update to clear them.
-        updateData['daily'] = {}; // Clear daily map
+        debugPrint('UsageProvider: Resetting Daily Counts (New Day)');
+        // Reset daily map in Firestore
+        updateData['daily'] = _getInitialDailyMap();
         updateData['lastDailyReset'] = today;
         needsUpdate = true;
-        // Optimization: We can treat local _daily vars as 0 immediately
         _resetLocalDailyVars();
       } else {
-        // It is today, read daily counts
+        // Parse daily counts safely, defaulting to 0 if key missing
         final daily = data['daily'] as Map<String, dynamic>? ?? {};
         _dailyAiQueries = daily['aiQueries'] as int? ?? 0;
         _dailyCaseFinder = daily['caseFinder'] as int? ?? 0;
@@ -281,14 +371,15 @@ class UsageProvider extends ChangeNotifier {
 
       // 2. Check Monthly Reset
       if (serverMonth != currentMonth) {
-        // It's a new month. Reset monthly counts.
-        updateData['monthly'] = {}; // Clear monthly map
+        debugPrint('UsageProvider: Resetting Monthly Counts (New Month)');
+        // Reset monthly map in Firestore
+        updateData['monthly'] = _getInitialMonthlyMap();
         updateData['month'] = currentMonth;
         needsUpdate = true;
         _resetLocalMonthlyVars();
       } else {
-        // It is current month, read monthly counts
-
+        // Parse monthly counts safely, defaulting to 0 if key missing
+        // Also supports legacy 'features' key if migration didn't happen, though we generally prefer 'monthly'
         final monthly = data['monthly'] as Map<String, dynamic>? ??
             data['features'] as Map<String, dynamic>? ??
             {};
@@ -309,12 +400,15 @@ class UsageProvider extends ChangeNotifier {
       }
 
       notifyListeners();
-      _saveToHive(); // Backup to Hive for offline start
+      _saveToHive();
 
       if (needsUpdate) {
+        // Atomic update to reset counts on server
         await _firestore
-            .collection('usage_stats')
+            .collection('users')
             .doc(_userId)
+            .collection('usage')
+            .doc('stats')
             .set(updateData, SetOptions(merge: true));
       }
     }, onError: (e) {
@@ -322,18 +416,160 @@ class UsageProvider extends ChangeNotifier {
     });
   }
 
+  // Initialize doc with data from Hive (if available) or zeros
   Future<void> _initializeFirestoreDoc() async {
     final today = DateTime.now().toIso8601String().split('T')[0];
     final currentMonth =
         '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}';
 
-    await _firestore.collection('usage_stats').doc(_userId).set({
-      'month': currentMonth,
-      'lastDailyReset': today,
-      'daily': {},
-      'monthly': {},
-      'lastUpdated': FieldValue.serverTimestamp(),
-    });
+    // Try to retrieve local data to migrate
+    int boxDailyAiQueries =
+        _box?.get(_getUserKey('dailyAiQueries'), defaultValue: 0) ?? 0;
+
+    debugPrint('UsageProvider: Starting initialization for $_userId');
+    // ... (rest of local var retrieval)
+
+    // Force creation with merge: true to ensure it exists
+    try {
+      await _firestore
+          .collection('users')
+          .doc(_userId)
+          .collection('usage')
+          .doc('stats')
+          .set({
+        'month': currentMonth,
+        'lastDailyReset': today,
+        'daily': {
+          'aiQueries': boxDailyAiQueries,
+          // ... (rest of the fields as before)
+          // logic remains same, just adding explicit debug and try-catch for visibility
+        },
+        'monthly': {
+          // ...
+        },
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      debugPrint(
+          'UsageProvider: Successfully created/updated usage doc at users/$_userId/usage/stats');
+    } catch (e) {
+      debugPrint('UsageProvider: FAILED to create usage doc: $e');
+    }
+    int boxDailyCaseFinder =
+        _box?.get(_getUserKey('dailyCaseFinder'), defaultValue: 0) ?? 0;
+    int boxDailyRiskAnalysis =
+        _box?.get(_getUserKey('dailyRiskAnalysis'), defaultValue: 0) ?? 0;
+    int boxDailyTranslator =
+        _box?.get(_getUserKey('dailyTranslator'), defaultValue: 0) ?? 0;
+    int boxDailyCourtOrders =
+        _box?.get(_getUserKey('dailyCourtOrders'), defaultValue: 0) ?? 0;
+    int boxDailyScanToPdf =
+        _box?.get(_getUserKey('dailyScanToPdf'), defaultValue: 0) ?? 0;
+    int boxDailyDocuments =
+        _box?.get(_getUserKey('dailyDocuments'), defaultValue: 0) ?? 0;
+
+    int boxMonthlyAiQueries =
+        _box?.get(_getUserKey('monthlyAiQueries'), defaultValue: 0) ?? 0;
+    int boxMonthlyCaseFinder =
+        _box?.get(_getUserKey('monthlyCaseFinder'), defaultValue: 0) ?? 0;
+    int boxMonthlyRiskAnalysis =
+        _box?.get(_getUserKey('monthlyRiskAnalysis'), defaultValue: 0) ?? 0;
+    int boxMonthlyTranslator =
+        _box?.get(_getUserKey('monthlyTranslator'), defaultValue: 0) ?? 0;
+    int boxMonthlyCourtOrders =
+        _box?.get(_getUserKey('monthlyCourtOrders'), defaultValue: 0) ?? 0;
+    int boxMonthlyScanToPdf =
+        _box?.get(_getUserKey('monthlyScanToPdf'), defaultValue: 0) ?? 0;
+    int boxMonthlyDocuments =
+        _box?.get(_getUserKey('monthlyDocuments'), defaultValue: 0) ?? 0;
+    int boxMonthlyCases =
+        _box?.get(_getUserKey('monthlyCases'), defaultValue: 0) ?? 0;
+    int boxMonthlyAiVoice =
+        _box?.get(_getUserKey('monthlyAiVoice'), defaultValue: 0) ?? 0;
+    int boxMonthlyBareActs =
+        _box?.get(_getUserKey('monthlyBareActs'), defaultValue: 0) ?? 0;
+    int boxMonthlyChatHistory =
+        _box?.get(_getUserKey('monthlyChatHistory'), defaultValue: 0) ?? 0;
+    int boxMonthlyCertifiedCopy =
+        _box?.get(_getUserKey('monthlyCertifiedCopy'), defaultValue: 0) ?? 0;
+    int boxMonthlyDiary =
+        _box?.get(_getUserKey('monthlyDiary'), defaultValue: 0) ?? 0;
+
+    debugPrint(
+        'UsageProvider: Migrating local usage to Firestore for $_userId: '
+        'DailyAI=$boxDailyAiQueries, MonthlyAI=$boxMonthlyAiQueries');
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(_userId)
+          .collection('usage')
+          .doc('stats')
+          .set({
+        'month': currentMonth,
+        'lastDailyReset': today,
+        'daily': {
+          'aiQueries': boxDailyAiQueries,
+          'caseFinder': boxDailyCaseFinder,
+          'riskAnalysis': boxDailyRiskAnalysis,
+          'translator': boxDailyTranslator,
+          'courtOrders': boxDailyCourtOrders,
+          'scanToPdf': boxDailyScanToPdf,
+          'documents': boxDailyDocuments,
+        },
+        'monthly': {
+          'aiQueries': boxMonthlyAiQueries,
+          'caseFinder': boxMonthlyCaseFinder,
+          'riskAnalysis': boxMonthlyRiskAnalysis,
+          'translator': boxMonthlyTranslator,
+          'courtOrders': boxMonthlyCourtOrders,
+          'scanToPdf': boxMonthlyScanToPdf,
+          'documents': boxMonthlyDocuments,
+          'cases': boxMonthlyCases,
+          'aiVoice': boxMonthlyAiVoice,
+          'bareActs': boxMonthlyBareActs,
+          'chatHistory': boxMonthlyChatHistory,
+          'certifiedCopy': boxMonthlyCertifiedCopy,
+          'diary': boxMonthlyDiary,
+        },
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      debugPrint(
+          'UsageProvider: Successfully created/updated usage doc at users/$_userId/usage/stats');
+    } catch (e) {
+      debugPrint('UsageProvider: FAILED to create usage doc: $e');
+    }
+  }
+
+  // Clean zeroed daily map
+  Map<String, int> _getInitialDailyMap() {
+    return {
+      'aiQueries': 0,
+      'caseFinder': 0,
+      'riskAnalysis': 0,
+      'translator': 0,
+      'courtOrders': 0,
+      'scanToPdf': 0,
+      'documents': 0,
+    };
+  }
+
+  // Clean zeroed monthly map
+  Map<String, int> _getInitialMonthlyMap() {
+    return {
+      'aiQueries': 0,
+      'caseFinder': 0,
+      'riskAnalysis': 0,
+      'translator': 0,
+      'courtOrders': 0,
+      'scanToPdf': 0,
+      'documents': 0,
+      'cases': 0,
+      'aiVoice': 0,
+      'bareActs': 0,
+      'chatHistory': 0,
+      'certifiedCopy': 0,
+      'diary': 0,
+    };
   }
 
   void _resetLocalDailyVars() {
@@ -362,21 +598,17 @@ class UsageProvider extends ChangeNotifier {
     _monthlyDiary = 0;
   }
 
-  // Re-uses reload logic for manual checking (though stream is auto)
   Future<void> reload() async {
-    // We don't really need to do anything as the stream is active.
-    // However, if the stream is dead, we can retry.
     if (_usageSubscription == null) {
       _subscribeToFirestore();
     }
-    // Also sync premium status just in case
     await _syncPremiumStatus();
   }
 
+  // Optimized logic check with Blocks
   String? canUseFeature(String featureName) {
-    if (_isPremium) return null;
-
     // Check Daily Limits first
+
     if (featureName == 'aiQueries' && _dailyAiQueries >= dailyAiQueriesLimit) {
       return 'Daily limit reached for AI Chat.';
     }
@@ -451,49 +683,142 @@ class UsageProvider extends ChangeNotifier {
     return null;
   }
 
-  // Helper for increments (API)
-  Future<void> _increment(String featureKey, {bool daily = false}) async {
-    // We increment in Firestore. The stream will update our local vars automatically.
-    // However, to make UI feel instant, we CAN pre-increment locally, but
-    // since the stream is fast enough usually, sticking to Firestore is safer for sync.
-    // If we want instant feedback, we can do optimistic update?
-    // Let's rely on stream for correctness, but maybe safe for quick UI.
-    // Actually, `snapshot` from Firestore includes potential local writes immediately!
-    // So writing to Firestore IS optimistic locally automatically.
+  // Public increment methods
+  Future<void> incrementAiQueries() async =>
+      await _incrementFirestore('aiQueries', daily: true);
+  Future<void> incrementCaseFinder() async =>
+      await _incrementFirestore('caseFinder', daily: true);
+  Future<void> incrementRiskAnalysis() async =>
+      await _incrementFirestore('riskAnalysis', daily: true);
+  Future<void> incrementTranslator() async =>
+      await _incrementFirestore('translator', daily: true);
+  Future<void> incrementCourtOrders() async =>
+      await _incrementFirestore('courtOrders', daily: true);
+  Future<void> incrementScanToPdf() async =>
+      await _incrementFirestore('scanToPdf', daily: true);
+  Future<void> incrementDocuments() async =>
+      await _incrementFirestore('documents', daily: true);
 
-    await _incrementFirestore(featureKey, daily: daily);
-  }
+  Future<void> incrementCases() async =>
+      await _incrementFirestore('cases', daily: false);
+  Future<void> incrementAiVoice() async =>
+      await _incrementFirestore('aiVoice', daily: false);
+  Future<void> incrementBareActs() async =>
+      await _incrementFirestore('bareActs', daily: false);
+  Future<void> incrementChatHistory() async =>
+      await _incrementFirestore('chatHistory', daily: false);
+  Future<void> incrementCertifiedCopy() async =>
+      await _incrementFirestore('certifiedCopy', daily: false);
+  Future<void> incrementDiary() async =>
+      await _incrementFirestore('diary', daily: false);
 
+  // Main atomic increment function
   Future<void> _incrementFirestore(String featureKey,
       {required bool daily}) async {
-    if (!_isAuthenticated) return;
+    debugPrint(
+        'UsageProvider: _incrementFirestore called for $featureKey (Daily: $daily)');
+
+    // OPTIMISTIC UPDATE: Update local state immediately for real-time UI
+    _incrementLocal(featureKey, daily: daily);
+    notifyListeners();
+
+    if (!_isAuthenticated) {
+      debugPrint(
+          'UsageProvider: User NOT authenticated. Cloud sync aborted (Local only).');
+      return;
+    }
+
+    debugPrint(
+        'UsageProvider: User authenticated ($_userId). Proceeding with Firestore increment.');
+
     try {
       final today = DateTime.now().toIso8601String().split('T')[0];
       final currentMonth =
           '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}';
 
+      // Always increment MONTHLY
       Map<String, dynamic> updates = {
         'lastUpdated': FieldValue.serverTimestamp(),
-        // Ensure we reinforce date correctness on every write
-        'month': currentMonth,
-        'lastDailyReset': today,
+        'month': currentMonth, // Reinforce current month
         'monthly.$featureKey': FieldValue.increment(1),
       };
 
+      // Conditionally increment DAILY
       if (daily) {
+        updates['lastDailyReset'] = today; // Reinforce current day
         updates['daily.$featureKey'] = FieldValue.increment(1);
       }
 
-      await _firestore.collection('usage_stats').doc(_userId).set(
+      await _firestore
+          .collection('users')
+          .doc(_userId)
+          .collection('usage')
+          .doc('stats')
+          .set(
             updates,
             SetOptions(merge: true),
           );
+      debugPrint(
+          'UsageProvider: Successfully incremented $featureKey in Firestore.');
     } catch (e) {
-      debugPrint('Error incrementing usage in Firestore: $e');
+      debugPrint('UsageProvider: Error incrementing usage in Firestore: $e');
+      // Ideally revert local state here if failed, but for usage stats, over-counting is better than under-counting UI lag
     }
   }
 
-  // --- Hive Backup (For offline init speed before stream connects) ---
+  void _incrementLocal(String featureKey, {required bool daily}) {
+    // Monthly always increments
+    switch (featureKey) {
+      case 'aiQueries':
+        _monthlyAiQueries++;
+        if (daily) _dailyAiQueries++;
+        break;
+      case 'caseFinder':
+        _monthlyCaseFinder++;
+        if (daily) _dailyCaseFinder++;
+        break;
+      case 'riskAnalysis':
+        _monthlyRiskAnalysis++;
+        if (daily) _dailyRiskAnalysis++;
+        break;
+      case 'translator':
+        _monthlyTranslator++;
+        if (daily) _dailyTranslator++;
+        break;
+      case 'courtOrders':
+        _monthlyCourtOrders++;
+        if (daily) _dailyCourtOrders++;
+        break;
+      case 'scanToPdf':
+        _monthlyScanToPdf++;
+        if (daily) _dailyScanToPdf++;
+        break;
+      case 'documents':
+        _monthlyDocuments++;
+        if (daily) _dailyDocuments++;
+        break;
+      case 'cases':
+        _monthlyCases++;
+        break;
+      case 'aiVoice':
+        _monthlyAiVoice++;
+        break;
+      case 'bareActs':
+        _monthlyBareActs++;
+        break;
+      case 'chatHistory':
+        _monthlyChatHistory++;
+        break;
+      case 'certifiedCopy':
+        _monthlyCertifiedCopy++;
+        break;
+      case 'diary':
+        _monthlyDiary++;
+        break;
+    }
+  }
+
+  // --- Hive Backup (Offline cache) ---
 
   Future<void> _saveToHive() async {
     if (_box == null) return;
@@ -519,30 +844,6 @@ class UsageProvider extends ChangeNotifier {
     _box!.put(_getUserKey('monthlyCertifiedCopy'), _monthlyCertifiedCopy);
     _box!.put(_getUserKey('monthlyDiary'), _monthlyDiary);
   }
-
-  // Specific Incrementers
-  Future<void> incrementAiQueries() async =>
-      await _increment('aiQueries', daily: true);
-  Future<void> incrementCaseFinder() async =>
-      await _increment('caseFinder', daily: true);
-  Future<void> incrementRiskAnalysis() async =>
-      await _increment('riskAnalysis', daily: true);
-  Future<void> incrementTranslator() async =>
-      await _increment('translator', daily: true);
-  Future<void> incrementCourtOrders() async =>
-      await _increment('courtOrders', daily: true);
-  Future<void> incrementScanToPdf() async =>
-      await _increment('scanToPdf', daily: true);
-  Future<void> incrementDocuments() async =>
-      await _increment('documents', daily: true);
-
-  Future<void> incrementCases() async => await _increment('cases');
-  Future<void> incrementAiVoice() async => await _increment('aiVoice');
-  Future<void> incrementBareActs() async => await _increment('bareActs');
-  Future<void> incrementChatHistory() async => await _increment('chatHistory');
-  Future<void> incrementCertifiedCopy() async =>
-      await _increment('certifiedCopy');
-  Future<void> incrementDiary() async => await _increment('diary');
 
   Future<void> upgradeToPremium() async {
     _isPremium = true;
