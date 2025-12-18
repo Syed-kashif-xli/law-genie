@@ -23,9 +23,7 @@ import 'package:myapp/services/ad_service.dart';
 
 import 'package:myapp/models/chat_model.dart' as my_models;
 import 'package:myapp/providers/chat_provider.dart';
-import 'package:myapp/features/home/providers/usage_provider.dart';
 import 'package:myapp/services/pdf_service.dart';
-import 'package:myapp/services/ad_service.dart';
 import '../documents/document_viewer_page.dart';
 
 class AIChatPage extends StatefulWidget {
@@ -400,6 +398,8 @@ class _AIChatPageState extends State<AIChatPage> {
       customTitle: 'AI Chat Limit Reached',
     );
     if (!canSendMessage) return;
+
+    if (!mounted) return;
 
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
 

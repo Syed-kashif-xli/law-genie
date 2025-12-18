@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Added
-import 'package:flutter/foundation.dart'; // Added
+// Added
+// Added
 
 import 'package:myapp/features/home/app_drawer.dart';
 import 'package:myapp/features/home/widgets/news_card.dart';

@@ -352,20 +352,20 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: widget.isPremium
-                ? const Color(0xFFFFD700).withOpacity(0.3)
-                : widget.color.withOpacity(0.15),
+                ? const Color(0xFFFFD700).withValues(alpha: 0.3)
+                : widget.color.withValues(alpha: 0.15),
             width: widget.isPremium ? 2 : 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
             BoxShadow(
               color: widget.isPremium
-                  ? const Color(0xFFFFD700).withOpacity(0.1)
-                  : widget.color.withOpacity(0.05),
+                  ? const Color(0xFFFFD700).withValues(alpha: 0.1)
+                  : widget.color.withValues(alpha: 0.05),
               blurRadius: 20,
               offset: const Offset(0, 0),
               spreadRadius: 0,
@@ -376,7 +376,7 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
             end: Alignment.bottomRight,
             colors: [
               const Color(0xFF19173A),
-              const Color(0xFF19173A).withOpacity(0.8),
+              const Color(0xFF19173A).withValues(alpha: 0.8),
               const Color(0xFF0A032A),
             ],
           ),
@@ -392,10 +392,10 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: widget.color.withOpacity(0.1),
+                    color: widget.color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: widget.color.withOpacity(0.2),
+                      color: widget.color.withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
@@ -417,17 +417,16 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
                           ),
                         ),
                       ),
-                      if (!widget.isPremium)
-                        Text(
-                          'of ${widget.limit}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 10,
-                            color: Colors.white54,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      Text(
+                        'of ${widget.limit}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          color: Colors.white54,
+                          fontWeight: FontWeight.w500,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
@@ -453,7 +452,7 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
                 Container(
                   height: 8,
                   decoration: BoxDecoration(
-                    color: widget.color.withOpacity(0.15),
+                    color: widget.color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -470,7 +469,7 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    widget.color.withOpacity(0.7),
+                                    widget.color.withValues(alpha: 0.7),
                                     widget.color,
                                   ],
                                   begin: Alignment.centerLeft,
@@ -479,7 +478,7 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: widget.color.withOpacity(0.5),
+                                    color: widget.color.withValues(alpha: 0.5),
                                     blurRadius: 8,
                                     offset: const Offset(0, 0),
                                   ),
@@ -498,7 +497,7 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
                                           1.0 + (_controller.value * 3), 0),
                                       colors: [
                                         Colors.transparent,
-                                        Colors.white.withOpacity(0.5),
+                                        Colors.white.withValues(alpha: 0.5),
                                         Colors.transparent,
                                       ],
                                       stops: const [0.0, 0.5, 1.0],
@@ -507,7 +506,7 @@ class _FeatureUsageCardState extends State<FeatureUsageCard>
                                   blendMode: BlendMode.srcATop,
                                   child: Container(
                                     height: 8,
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: Colors.white.withValues(alpha: 0.1),
                                   ),
                                 ),
                               ),

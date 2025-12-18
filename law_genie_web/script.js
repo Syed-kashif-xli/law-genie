@@ -63,14 +63,73 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Interactive Card Hover (Light Tracking)
+    const cards = document.querySelectorAll('.feature-card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--x', `${x}px`);
+            card.style.setProperty('--y', `${y}px`);
+        });
+    });
+
+    // FAQ Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+
+            // Close all other items
+            faqItems.forEach(otherItem => otherItem.classList.remove('active'));
+
+            // Toggle current item
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        });
+    });
+
+    // Contact Form Handler
+    const contactForm = document.querySelector('.contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = contactForm.querySelector('button');
+            const originalText = btn.innerText;
+
+            btn.innerText = 'Sending...';
+            btn.disabled = true;
+
+            // Mock submission delay
+            setTimeout(() => {
+                alert('Thank you! Your message has been sent. We will get back to you soon.');
+                contactForm.reset();
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 1500);
+        });
+    }
+
     // Smooth Scrolling for nav links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             if (this.getAttribute('href') === '#') return;
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+                // Close mobile menu if open
+                if (navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    navLinks.style.display = 'none';
+                }
+            }
         });
     });
 });
+

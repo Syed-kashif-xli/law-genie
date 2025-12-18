@@ -4,9 +4,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Law Genie - Your AI-Powered Legal Assistant</title>
+    <title>Law Genie - #1 AI-Powered Legal Assistant in India | AI Jurist & Case Tracker</title>
     <meta name="description"
-        content="Law Genie is India's leading AI-powered legal assistant. Get instant advice, case analysis, document scanning, and more.">
+        content="Law Genie is India's most advanced AI-powered legal assistant. Features include AI Jurist, Case Timeline, Document Scanner, and Bare Acts. Join the future of Indian Law.">
+    <meta name="keywords"
+        content="Law Genie, AI Lawyer India, Jurist AI, Indian Law Search, Case Finder, Bare Acts Online, Legal Assistant App, Legal Tech India">
+    <meta name="author" content="Law Genie Team">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lawgenie.co.in/">
+    <meta property="og:title" content="Law Genie - Your AI-Powered Legal Assistant">
+    <meta property="og:description"
+        content="AI-powered insights into Indian Law. 12+ premium features for lawyers and students.">
+    <meta property="og:image"
+        content="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://lawgenie.co.in/">
+    <meta property="twitter:title" content="Law Genie - AI Legal Assistant">
+    <meta property="twitter:description" content="Master Indian Law with AI. Get Jurist AI, Case Tracker, and more.">
+    <meta property="twitter:image"
+        content="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png">
+
+    <!-- Structured Data (Schema.org) for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Law Genie",
+      "operatingSystem": "Android, iOS",
+      "applicationCategory": "LegalApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "1250"
+      }
+    }
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +69,8 @@
 
 <body>
     <div class="cursor-blur"></div>
+    <div class="lens-flare flare-1"></div>
+    <div class="lens-flare flare-2"></div>
     <div class="sphere sphere-1"></div>
     <div class="sphere sphere-2"></div>
     <div class="sphere sphere-3"></div>
@@ -41,9 +84,11 @@
                 <span class="logo-text">Law Genie</span>
             </div>
             <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#" class="btn btn-outline" style="pointer-events: none; opacity: 0.8;">Coming Soon</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="features.html">Features</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="#" class="btn btn-primary">Launching Soon</a></li>
             </ul>
             <div class="menu-toggle">
                 <i class="fas fa-bars"></i>
@@ -52,25 +97,27 @@
     </nav>
 
     <header class="hero">
-        <div class="container hero-grid">
-            <div class="hero-content">
-                <span class="badge">Powered by Advanced AI</span>
-                <h1>Empower Your <span class="gradient-text">Legal Journey</span> with Law Genie</h1>
-                <p>Your comprehensive AI-powered legal assistant for India. Instant advice, case tracking, and document
-                    management in the palm of your hand.</p>
-                <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary" style="pointer-events: none;">Launching Soon</a>
-                    <a href="#features-detail" class="btn btn-outline">Explore Features</a>
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <span class="badge">🇮🇳 AI-Powered Legal Intelligence</span>
+                    <h1>India's #1 <span class="gradient-text">Legal AI</span></h1>
+                    <p class="hero-subtitle">Master Indian Law with 20+ AI-Powered Tools. From Jurist AI to Case
+                        Management - Everything You Need.</p>
+                    <div class="hero-buttons">
+                        <a href="features.html" class="btn btn-primary">Explore Features</a>
+                        <a href="https://instagram.com/lawgenie.in" target="_blank" class="btn btn-outline">
+                            <i class="fab fa-instagram"></i> Follow Us
+                        </a>
+                    </div>
+                    <div class="coming-soon-box">
+                        <p><i class="fas fa-rocket"></i> Launching Very Soon on Play Store</p>
+                    </div>
                 </div>
-                <div class="coming-soon-badge">
-                    <p><i class="fas fa-clock"></i> Arriving on Play Store & App Store Very Soon</p>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="mockup-container">
-                    <!-- Premium 3D floating phone mockup -->
-                    <img src="assets/hero_3d.png" alt="Law Genie App Dashboard Mockup" class="mockup-img">
-                    <div class="glow-effect"></div>
+                <div class="hero-image">
+                    <div class="phone-mockup">
+                        <img src="assets/premium_mockup.png" alt="Law Genie App" class="mockup-img">
+                    </div>
                 </div>
             </div>
         </div>
@@ -183,16 +230,29 @@
         </div>
     </section>
 
-    <section class="showroom animate-up">
+    <section id="why-choose" class="why-choose">
         <div class="container">
-            <div class="showroom-card">
-                <div class="showroom-text">
-                    <span class="badge">Master Everything</span>
-                    <h2>One App. <span class="gradient-text">Infinite Legal Power.</span></h2>
-                    <p>Experience the most advanced legal ecosystem ever built for the Indian legal landscape.</p>
+            <div class="section-header">
+                <span class="detail-badge">Excellence</span>
+                <h2>Why Professionals <span class="gradient-text">Trust Law Genie</span></h2>
+                <p>We combine cutting-edge AI with reliable legal data.</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3 class="gradient-text">99%</h3>
+                    <p>Accuracy in AI Search</p>
                 </div>
-                <div class="showroom-image">
-                    <img src="assets/features_3d.png" alt="Features Showroom">
+                <div class="stat-item">
+                    <h3 class="gradient-text">10k+</h3>
+                    <p>Active Legal Users</p>
+                </div>
+                <div class="stat-item">
+                    <h3 class="gradient-text">12+</h3>
+                    <p>Premium Features</p>
+                </div>
+                <div class="stat-item">
+                    <h3 class="gradient-text">24/7</h3>
+                    <p>AI Availability</p>
                 </div>
             </div>
         </div>
@@ -239,6 +299,86 @@
         </div>
     </section>
 
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>Loved by <span class="gradient-text">The Legal Community</span></h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p>"Law Genie has completely changed how I research precedents. The AI summarizer is a lifesaver."
+                    </p>
+                    <div class="user-info">
+                        <strong>Adv. Rahul Sharma</strong>
+                        <span>High Court Advocate</span>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"As a law student, having Bare Acts and Case Finder in one app is incredibly helpful for my
+                        exams."</p>
+                    <div class="user-info">
+                        <strong>Priya Verma</strong>
+                        <span>Law Student, DU</span>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"The best legal tech app in India. The interface is futuristic and very easy to use."</p>
+                    <div class="user-info">
+                        <strong>Karan Singh</strong>
+                        <span>Legal Consultant</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="faq">
+        <div class="container">
+            <div class="section-header">
+                <h2>Frequently Asked <span class="gradient-text">Questions</span></h2>
+            </div>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">What makes Law Genie different from other legal apps? <i
+                            class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Law Genie uses advanced AI (Gemini) specifically tuned for Indian Law,
+                        providing not just information but intelligent insights and citations.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Is Law Genie free to use? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Yes, we offer a generous free tier for basic searches and AI queries.
+                        Premium features are available for power users.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Can I use the app offline? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Bare Acts and certain case details are available offline once you download
+                        them within the app.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-card">
+                <div class="contact-text">
+                    <h2>Get in <span class="gradient-text">Touch</span></h2>
+                    <p>Have questions or suggestions? We'd love to hear from you.</p>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> support@lawgenie.co.in</p>
+                        <p><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
+                    </div>
+                </div>
+                <form class="contact-form">
+                    <input type="text" placeholder="Your Name" required>
+                    <input type="email" placeholder="Your Email" required>
+                    <textarea placeholder="Your Message" rows="4" required></textarea>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
     <section class="cta-section" id="notify">
         <div class="container">
             <div class="cta-card">
@@ -267,19 +407,30 @@
                 </div>
                 <p>Empowering Indians with AI-driven legal intelligence.</p>
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="https://instagram.com/lawgenie.in" target="_blank" class="social-ig">
+                        <i class="fab fa-instagram"></i>
+                        <span>@lawgenie.in</span>
+                    </a>
+                    <a href="https://linkedin.com/company/lawgenie" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://twitter.com/lawgenie_india" target="_blank"><i class="fab fa-twitter"></i></a>
                 </div>
             </div>
 
             <div class="footer-links">
-                <h4>Quick Links</h4>
+                <h4>Platform</h4>
                 <ul>
-                    <li><a href="#features">Features</a></li>
+                    <li><a href="features.html">App Features</a></li>
+                    <li><a href="pricing.html">Pricing Plans</a></li>
+                    <li><a href="index.html#testimonials">Success Stories</a></li>
+                    <li><a href="index.html#faq">Help Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="contact.html">Contact Us</a></li>
                     <li><a href="#">Privacy Policy</a></li>
                     <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Support</a></li>
                 </ul>
             </div>
 

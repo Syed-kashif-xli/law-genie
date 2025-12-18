@@ -86,6 +86,8 @@ class _TranslatorPageState extends State<TranslatorPage>
     );
     if (!canUse) return;
 
+    if (!mounted) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
 
     setState(() {
@@ -206,6 +208,8 @@ class _TranslatorPageState extends State<TranslatorPage>
       customTitle: 'Translator Limit Reached',
     );
     if (!canUse) return;
+
+    if (!mounted) return;
 
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
 

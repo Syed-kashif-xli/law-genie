@@ -104,6 +104,8 @@ class _ScannerPageState extends State<ScannerPage> {
     );
     if (!canUse) return;
 
+    if (!mounted) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
 
     try {
@@ -131,6 +133,8 @@ class _ScannerPageState extends State<ScannerPage> {
       customTitle: 'Scanner Limit Reached',
     );
     if (!canUse) return;
+
+    if (!mounted) return;
 
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
 

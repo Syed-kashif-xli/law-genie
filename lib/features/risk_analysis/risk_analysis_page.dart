@@ -159,6 +159,8 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
     );
     if (!canUse) return;
 
+    if (!mounted) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
 
     setState(() {

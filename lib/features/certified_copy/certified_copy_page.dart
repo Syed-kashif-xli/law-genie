@@ -317,6 +317,8 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
     );
     if (!canUse) return;
 
+    if (!mounted) return;
+
     if (_formKey.currentState!.validate()) {
       Navigator.push(
         context,

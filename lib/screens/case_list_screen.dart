@@ -318,8 +318,11 @@ class AddCaseDialogState extends State<AddCaseDialog> {
             .where((p) => p.isNotEmpty)
             .toList();
 
+        final caseProvider = Provider.of<CaseProvider>(context, listen: false);
         final notificationService = NotificationService();
         await notificationService.requestNotificationPermissions();
+
+        if (!mounted) return;
 
         if (widget.caseItem == null) {
           final newCase = Case(
@@ -331,8 +334,7 @@ class AddCaseDialogState extends State<AddCaseDialog> {
             creationDate: DateTime.now(),
             nextHearingDate: _selectedNextHearingDate,
           );
-          final docRef = await Provider.of<CaseProvider>(context, listen: false)
-              .addCase(newCase);
+          final docRef = await caseProvider.addCase(newCase);
 
           if (mounted && docRef != null) {
             Provider.of<UsageProvider>(context, listen: false).incrementCases();
@@ -363,8 +365,7 @@ class AddCaseDialogState extends State<AddCaseDialog> {
             parties: parties,
             nextHearingDate: _selectedNextHearingDate,
           );
-          await Provider.of<CaseProvider>(context, listen: false)
-              .updateCase(updatedCase);
+          await caseProvider.updateCase(updatedCase);
 
           // Update Notification
           if (_selectedNextHearingDate != null) {

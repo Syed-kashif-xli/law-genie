@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lawgenie.co.in/sitemap.xml

@@ -78,6 +78,8 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
     );
     if (!canUse) return;
 
+    if (!mounted) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
 
     setState(() {

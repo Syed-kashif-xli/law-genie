@@ -92,6 +92,10 @@ class _BareActsPageState extends State<BareActsPage> {
     );
     if (!canUse) return;
 
+    if (!canUse) return;
+
+    if (!mounted) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
 
     usageProvider.incrementBareActs();

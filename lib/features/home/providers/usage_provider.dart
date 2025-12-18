@@ -291,10 +291,12 @@ class UsageProvider extends ChangeNotifier {
     if (_isLoading) return null;
     int dLimit = getLimit(feature, isMonthly: false);
     int mLimit = getLimit(feature, isMonthly: true);
-    if (dLimit > 0 && getUsageCount(feature, isMonthly: false) >= dLimit)
+    if (dLimit > 0 && getUsageCount(feature, isMonthly: false) >= dLimit) {
       return 'Daily limit reached.';
-    if (mLimit > 0 && getUsageCount(feature, isMonthly: true) >= mLimit)
+    }
+    if (mLimit > 0 && getUsageCount(feature, isMonthly: true) >= mLimit) {
       return 'Monthly limit reached.';
+    }
     return null;
   }
 
