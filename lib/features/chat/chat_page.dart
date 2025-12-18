@@ -17,6 +17,9 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:uuid/uuid.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:mime/mime.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
+import 'package:myapp/utils/usage_limit_helper.dart';
+import 'package:myapp/services/ad_service.dart';
 
 import 'package:myapp/models/chat_model.dart' as my_models;
 import 'package:myapp/providers/chat_provider.dart';
@@ -386,19 +389,19 @@ class _AIChatPageState extends State<AIChatPage> {
   }
 
   void _sendMessage(String text) async {
-    if (text.isEmpty && _selectedFile == null) return;
-
-    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    final limitError = usageProvider.canUseFeature('aiQueries');
-    if (limitError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(limitError),
-          backgroundColor: Colors.red,
-        ),
-      );
+    if (text.isEmpty && _selectedFile == null) {
       return;
     }
+
+    // Check Usage Limits
+    final canSendMessage = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'aiChat',
+      customTitle: 'AI Chat Limit Reached',
+    );
+    if (!canSendMessage) return;
+
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
 
     String userMessage = text;
     File? attachedFile = _selectedFile;

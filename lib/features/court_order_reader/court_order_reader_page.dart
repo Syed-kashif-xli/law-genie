@@ -9,6 +9,7 @@ import 'package:myapp/features/court_order_reader/summary_display_page.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
 import 'package:myapp/features/home/widgets/inline_banner_ad_widget.dart';
+import '../../utils/usage_limit_helper.dart';
 
 class CourtOrderReaderPage extends StatefulWidget {
   const CourtOrderReaderPage({super.key});
@@ -69,16 +70,15 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
       return;
     }
 
+    // Check Usage Limits
+    final canUse = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'courtOrders',
+      customTitle: 'Court Order Reader Limit Reached',
+    );
+    if (!canUse) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    if (usageProvider.courtOrdersUsage >= usageProvider.courtOrdersLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Free plan limit reached. Upgrade to continue.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
 
     setState(() {
       _isLoading = true;

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'certified_copy_review_page.dart';
 import '../../services/translation_service.dart';
 import '../home/providers/usage_provider.dart';
+import '../../utils/usage_limit_helper.dart';
 
 class CertifiedRegistryCopyPage extends StatefulWidget {
   final bool isDigitalCopy;
@@ -307,7 +308,15 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
     }
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
+    // Check Usage Limits
+    final canUse = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'certifiedCopy',
+      customTitle: 'Certified Copy Limit Reached',
+    );
+    if (!canUse) return;
+
     if (_formKey.currentState!.validate()) {
       Navigator.push(
         context,

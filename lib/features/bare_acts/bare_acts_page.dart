@@ -9,6 +9,7 @@ import 'models/bare_act.dart';
 import 'bare_act_viewer_page.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
+import '../../utils/usage_limit_helper.dart';
 
 class BareActsPage extends StatefulWidget {
   const BareActsPage({super.key});
@@ -83,11 +84,15 @@ class _BareActsPageState extends State<BareActsPage> {
   }
 
   Future<void> _checkUsageAndNavigate(BareAct act) async {
+    // Check Usage Limits
+    final canUse = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'bareActs',
+      customTitle: 'Bare Acts Limit Reached',
+    );
+    if (!canUse) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    if (usageProvider.bareActsUsage >= usageProvider.bareActsLimit) {
-      _showAdDialog(act);
-      return;
-    }
 
     usageProvider.incrementBareActs();
 
@@ -132,65 +137,6 @@ class _BareActsPageState extends State<BareActsPage> {
     if (mounted) {
       _navigateToViewer(resolvedAct);
     }
-  }
-
-  void _showAdDialog(BareAct act) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF19173A),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Unlock Bare Act',
-            style: GoogleFonts.poppins(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Text(
-          'Watch a short ad to unlock this Bare Act?',
-          style: GoogleFonts.poppins(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child:
-                Text('Cancel', style: GoogleFonts.poppins(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _showAd(act);
-            },
-            child: Text('Watch Ad',
-                style: GoogleFonts.poppins(
-                    color: const Color(0xFF02F1C3),
-                    fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAd(BareAct act) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-          child: CircularProgressIndicator(color: Color(0xFF02F1C3))),
-    );
-
-    AdService.showRewardedAd(
-      onUserEarnedReward: () {
-        Navigator.pop(context); // Close loading
-        // Now resolve URL and navigate
-        _resolveAndNavigate(act);
-      },
-      onAdFailedToLoad: () {
-        Navigator.pop(context); // Close loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load ad. Opening act...')),
-        );
-        // Resolve URL and navigate even if ad failed
-        _resolveAndNavigate(act);
-      },
-    );
   }
 
   void _navigateToViewer(BareAct act) {

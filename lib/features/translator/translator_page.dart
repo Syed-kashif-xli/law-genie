@@ -9,6 +9,7 @@ import 'package:myapp/features/home/providers/usage_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/ad_service.dart';
+import '../../utils/usage_limit_helper.dart';
 
 class TranslatorPage extends StatefulWidget {
   const TranslatorPage({super.key});
@@ -77,16 +78,15 @@ class _TranslatorPageState extends State<TranslatorPage>
   Future<void> _translateText() async {
     if (_textController.text.isEmpty) return;
 
+    // Check Usage Limits
+    final canUse = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'translator',
+      customTitle: 'Translator Limit Reached',
+    );
+    if (!canUse) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    if (usageProvider.translatorUsage >= usageProvider.translatorLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Free plan limit reached. Upgrade to continue.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
 
     setState(() {
       _isTranslating = true;
@@ -199,16 +199,15 @@ class _TranslatorPageState extends State<TranslatorPage>
   Future<void> _translateDocument() async {
     if (_selectedFilePath == null) return;
 
+    // Check Usage Limits
+    final canUse = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'translator',
+      customTitle: 'Translator Limit Reached',
+    );
+    if (!canUse) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    if (usageProvider.translatorUsage >= usageProvider.translatorLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Free plan limit reached. Upgrade to continue.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
 
     setState(() {
       _isProcessingDocument = true;

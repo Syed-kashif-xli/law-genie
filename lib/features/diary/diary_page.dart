@@ -8,6 +8,7 @@ import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
 import 'package:myapp/providers/diary_provider.dart';
 import 'package:myapp/features/home/widgets/inline_banner_ad_widget.dart';
+import 'package:myapp/features/home/providers/usage_provider.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
@@ -392,6 +393,19 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
       return;
     }
 
+    // Check Usage Limits
+    final usageProvider = Provider.of<UsageProvider>(context, listen: false);
+    final limitError = usageProvider.canUseFeature('diary');
+    if (limitError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$limitError (Legal Diary)'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final entry = DiaryEntry(
       title: _titleController.text,
       content: _contentController.text,
@@ -401,6 +415,7 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
     );
 
     widget.onSave(entry);
+    usageProvider.incrementDiary(); // Increment Firestore Count
     Navigator.pop(context);
   }
 

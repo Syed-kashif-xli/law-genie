@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
 import 'package:myapp/services/ad_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../utils/usage_limit_helper.dart';
 
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
@@ -95,16 +96,15 @@ class _ScannerPageState extends State<ScannerPage> {
   }
 
   Future<void> _startScan() async {
+    // Check Usage Limits
+    final canUse = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'scanner',
+      customTitle: 'Scanner Limit Reached',
+    );
+    if (!canUse) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    if (usageProvider.scanToPdfUsage >= usageProvider.scanToPdfLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Free plan limit reached. Upgrade to continue.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
 
     try {
       final List<String>? pictures = await CunningDocumentScanner.getPictures();
@@ -124,16 +124,15 @@ class _ScannerPageState extends State<ScannerPage> {
   }
 
   Future<void> _pickFromGallery() async {
+    // Check Usage Limits
+    final canUse = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'scanner',
+      customTitle: 'Scanner Limit Reached',
+    );
+    if (!canUse) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    if (usageProvider.scanToPdfUsage >= usageProvider.scanToPdfLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Free plan limit reached. Upgrade to continue.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
 
     final ImagePicker picker = ImagePicker();
     final List<XFile> images = await picker.pickMultiImage();

@@ -8,6 +8,8 @@ import '../../services/firestore_service.dart';
 import '../../models/order_model.dart';
 import 'certified_copy_token_page.dart';
 import 'dart:math';
+import 'package:provider/provider.dart';
+import '../home/providers/usage_provider.dart';
 
 class CertifiedCopyReviewPage extends StatefulWidget {
   final String district;
@@ -95,6 +97,12 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     // Increase daily limit count on success
     await _firestoreService.increaseLimitCount();
+
+    // Increase user usage count
+    if (mounted) {
+      Provider.of<UsageProvider>(context, listen: false)
+          .incrementCertifiedCopy();
+    }
 
     final token = _generateToken();
     final user = FirebaseAuth.instance.currentUser;

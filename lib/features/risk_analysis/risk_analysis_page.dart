@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../services/ad_service.dart';
+import '../../utils/usage_limit_helper.dart';
 
 class RiskAnalysisPage extends StatefulWidget {
   const RiskAnalysisPage({super.key});
@@ -142,16 +143,15 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
       return;
     }
 
+    // Check Usage Limits
+    final canUse = await UsageLimitHelper.checkAndShowLimit(
+      context,
+      'riskAnalysis',
+      customTitle: 'Risk Analysis Limit Reached',
+    );
+    if (!canUse) return;
+
     final usageProvider = Provider.of<UsageProvider>(context, listen: false);
-    if (usageProvider.riskAnalysisUsage >= usageProvider.riskAnalysisLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Free plan limit reached. Upgrade to continue.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
 
     setState(() {
       _isLoading = true;

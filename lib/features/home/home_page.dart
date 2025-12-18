@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _refreshData() async {
-    await Future.wait([
+    await Future.wait<void>([
       Provider.of<NewsProvider>(context, listen: false)
           .fetchNews(forceRefresh: true),
       Provider.of<UsageProvider>(context, listen: false).reload(),
