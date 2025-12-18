@@ -8,5 +8,13 @@
     },
     "storage": {
         "rules": "storage.rules"
+    },
+    "hosting": {
+        "public": "law_genie_web",
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+        ]
     }
 }

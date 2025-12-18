@@ -3,9 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
-/// Usage limits configuration
+/// Usage limits configuration (DEFAULTS)
+/// These are used if no dynamic limit is set in Firestore system/limits.
 class UsageLimits {
-  // Daily Limits (Free Users)
+  // Daily Limits (Free Users) - Defaults
   static const int dailyAiQueries = 10;
   static const int dailyCaseFinder = 5;
   static const int dailyRiskAnalysis = 3;
@@ -14,7 +15,7 @@ class UsageLimits {
   static const int dailyScanToPdf = 10;
   static const int dailyDocuments = 5;
 
-  // Monthly Limits (Free Users)
+  // Monthly Limits (Free Users) - Defaults
   static const int monthlyAiQueries = 100;
   static const int monthlyCaseFinder = 50;
   static const int monthlyRiskAnalysis = 30;
@@ -26,33 +27,11 @@ class UsageLimits {
   static const int monthlyAiVoice = 100;
   static const int monthlyBareActs = 1000;
   static const int monthlyChatHistory = 100;
-  // static const int monthlyCertifiedCopy = 20; // Removed - handled dynamically
+  // Certified Copy default is handled in provider (20)
   static const int monthlyDiary = 100;
 
-  // Premium Limits (50x of Free Limits)
-  // Daily
-  static const int premiumDailyAiQueries = dailyAiQueries * 50;
-  static const int premiumDailyCaseFinder = dailyCaseFinder * 50;
-  static const int premiumDailyRiskAnalysis = dailyRiskAnalysis * 50;
-  static const int premiumDailyTranslator = dailyTranslator * 50;
-  static const int premiumDailyCourtOrders = dailyCourtOrders * 50;
-  static const int premiumDailyScanToPdf = dailyScanToPdf * 50;
-  static const int premiumDailyDocuments = dailyDocuments * 50;
-
-  // Monthly
-  static const int premiumMonthlyAiQueries = monthlyAiQueries * 50;
-  static const int premiumMonthlyCaseFinder = monthlyCaseFinder * 50;
-  static const int premiumMonthlyRiskAnalysis = monthlyRiskAnalysis * 50;
-  static const int premiumMonthlyTranslator = monthlyTranslator * 50;
-  static const int premiumMonthlyCourtOrders = monthlyCourtOrders * 50;
-  static const int premiumMonthlyScanToPdf = monthlyScanToPdf * 50;
-  static const int premiumMonthlyDocuments = monthlyDocuments * 50;
-  static const int premiumMonthlyCases = monthlyCases * 50;
-  static const int premiumMonthlyAiVoice = monthlyAiVoice * 50;
-  static const int premiumMonthlyBareActs = monthlyBareActs * 50;
-  static const int premiumMonthlyChatHistory = monthlyChatHistory * 50;
-  // static const int premiumMonthlyCertifiedCopy = monthlyCertifiedCopy * 50; // Removed - handled dynamically
-  static const int premiumMonthlyDiary = monthlyDiary * 50;
+  // Premium Multiplier
+  static const int premiumMultiplier = 50;
 }
 
 class UsageProvider extends ChangeNotifier {
@@ -72,9 +51,33 @@ class UsageProvider extends ChangeNotifier {
   bool get isPremium => _isPremium;
   bool get isLoading => _isLoading;
 
-  // Dynamic Limits from System
-  int _certifiedCopySystemLimit = 20; // Default fallback
+  // --- Dynamic System Limits (Daily & Monthly) ---
 
+  // Daily
+  int _dailyAiQueriesSystem = UsageLimits.dailyAiQueries;
+  int _dailyCaseFinderSystem = UsageLimits.dailyCaseFinder;
+  int _dailyRiskAnalysisSystem = UsageLimits.dailyRiskAnalysis;
+  int _dailyTranslatorSystem = UsageLimits.dailyTranslator;
+  int _dailyCourtOrdersSystem = UsageLimits.dailyCourtOrders;
+  int _dailyScanToPdfSystem = UsageLimits.dailyScanToPdf;
+  int _dailyDocumentsSystem = UsageLimits.dailyDocuments;
+
+  // Monthly
+  int _monthlyAiQueriesSystem = UsageLimits.monthlyAiQueries;
+  int _monthlyCaseFinderSystem = UsageLimits.monthlyCaseFinder;
+  int _monthlyRiskAnalysisSystem = UsageLimits.monthlyRiskAnalysis;
+  int _monthlyTranslatorSystem = UsageLimits.monthlyTranslator;
+  int _monthlyCourtOrdersSystem = UsageLimits.monthlyCourtOrders;
+  int _monthlyScanToPdfSystem = UsageLimits.monthlyScanToPdf;
+  int _monthlyDocumentsSystem = UsageLimits.monthlyDocuments;
+  int _monthlyCasesSystem = UsageLimits.monthlyCases;
+  int _monthlyAiVoiceSystem = UsageLimits.monthlyAiVoice;
+  int _monthlyBareActsSystem = UsageLimits.monthlyBareActs;
+  int _monthlyChatHistorySystem = UsageLimits.monthlyChatHistory;
+  int _monthlyDiarySystem = UsageLimits.monthlyDiary;
+  int _certifiedCopySystemLimit = 20; // Default
+
+  // --- Usage Counts (User Specific) ---
   // Daily Counts
   int _dailyAiQueries = 0;
   int _dailyCaseFinder = 0;
@@ -99,7 +102,7 @@ class UsageProvider extends ChangeNotifier {
   int _monthlyCertifiedCopy = 0;
   int _monthlyDiary = 0;
 
-  // --- Getters ---
+  // --- Getters: Usage ---
 
   // Daily Usage
   int get dailyAiQueriesUsage => _dailyAiQueries;
@@ -125,69 +128,54 @@ class UsageProvider extends ChangeNotifier {
   int get certifiedCopyUsage => _monthlyCertifiedCopy;
   int get diaryUsage => _monthlyDiary;
 
-  // Limits (Dynamic based on Premium)
-  int get aiQueriesLimit => _isPremium
-      ? UsageLimits.premiumMonthlyAiQueries
-      : UsageLimits.monthlyAiQueries;
-  int get caseFinderLimit => _isPremium
-      ? UsageLimits.premiumMonthlyCaseFinder
-      : UsageLimits.monthlyCaseFinder;
-  int get riskAnalysisLimit => _isPremium
-      ? UsageLimits.premiumMonthlyRiskAnalysis
-      : UsageLimits.monthlyRiskAnalysis;
-  int get translatorLimit => _isPremium
-      ? UsageLimits.premiumMonthlyTranslator
-      : UsageLimits.monthlyTranslator;
-  int get courtOrdersLimit => _isPremium
-      ? UsageLimits.premiumMonthlyCourtOrders
-      : UsageLimits.monthlyCourtOrders;
-  int get scanToPdfLimit => _isPremium
-      ? UsageLimits.premiumMonthlyScanToPdf
-      : UsageLimits.monthlyScanToPdf;
-  int get documentsLimit => _isPremium
-      ? UsageLimits.premiumMonthlyDocuments
-      : UsageLimits.monthlyDocuments;
-  int get casesLimit =>
-      _isPremium ? UsageLimits.premiumMonthlyCases : UsageLimits.monthlyCases;
-  int get aiVoiceLimit => _isPremium
-      ? UsageLimits.premiumMonthlyAiVoice
-      : UsageLimits.monthlyAiVoice;
-  int get bareActsLimit => _isPremium
-      ? UsageLimits.premiumMonthlyBareActs
-      : UsageLimits.monthlyBareActs;
-  int get chatHistoryLimit => _isPremium
-      ? UsageLimits.premiumMonthlyChatHistory
-      : UsageLimits.monthlyChatHistory;
-
-  // DYNAMIC LIMIT FOR CERTIFIED COPY (System -> Limits)
-  int get certifiedCopyLimit =>
-      _isPremium ? _certifiedCopySystemLimit * 50 : _certifiedCopySystemLimit;
-
-  int get diaryLimit =>
-      _isPremium ? UsageLimits.premiumMonthlyDiary : UsageLimits.monthlyDiary;
+  // --- Getters: Dynamic Limits ---
+  // If Premium, multiply System Limit by 50.
 
   // Daily Limits
-  int get dailyAiQueriesLimit => _isPremium
-      ? UsageLimits.premiumDailyAiQueries
-      : UsageLimits.dailyAiQueries;
-  int get dailyCaseFinderLimit => _isPremium
-      ? UsageLimits.premiumDailyCaseFinder
-      : UsageLimits.dailyCaseFinder;
-  int get dailyRiskAnalysisLimit => _isPremium
-      ? UsageLimits.premiumDailyRiskAnalysis
-      : UsageLimits.dailyRiskAnalysis;
-  int get dailyTranslatorLimit => _isPremium
-      ? UsageLimits.premiumDailyTranslator
-      : UsageLimits.dailyTranslator;
-  int get dailyCourtOrdersLimit => _isPremium
-      ? UsageLimits.premiumDailyCourtOrders
-      : UsageLimits.dailyCourtOrders;
-  int get dailyScanToPdfLimit => _isPremium
-      ? UsageLimits.premiumDailyScanToPdf
-      : UsageLimits.dailyScanToPdf;
-  int get dailyDocumentsLimit => _isPremium
-      ? UsageLimits.premiumDailyDocuments
-      : UsageLimits.dailyDocuments;
+  int get dailyAiQueriesLimit =>
+      _isPremium ? _dailyAiQueriesSystem * 50 : _dailyAiQueriesSystem;
+  int get dailyCaseFinderLimit =>
+      _isPremium ? _dailyCaseFinderSystem * 50 : _dailyCaseFinderSystem;
+  int get dailyRiskAnalysisLimit =>
+      _isPremium ? _dailyRiskAnalysisSystem * 50 : _dailyRiskAnalysisSystem;
+  int get dailyTranslatorLimit =>
+      _isPremium ? _dailyTranslatorSystem * 50 : _dailyTranslatorSystem;
+  int get dailyCourtOrdersLimit =>
+      _isPremium ? _dailyCourtOrdersSystem * 50 : _dailyCourtOrdersSystem;
+  int get dailyScanToPdfLimit =>
+      _isPremium ? _dailyScanToPdfSystem * 50 : _dailyScanToPdfSystem;
+  int get dailyDocumentsLimit =>
+      _isPremium ? _dailyDocumentsSystem * 50 : _dailyDocumentsSystem;
+
+  // Monthly Limits
+  int get aiQueriesLimit =>
+      _isPremium ? _monthlyAiQueriesSystem * 50 : _monthlyAiQueriesSystem;
+  int get caseFinderLimit =>
+      _isPremium ? _monthlyCaseFinderSystem * 50 : _monthlyCaseFinderSystem;
+  int get riskAnalysisLimit =>
+      _isPremium ? _monthlyRiskAnalysisSystem * 50 : _monthlyRiskAnalysisSystem;
+  int get translatorLimit =>
+      _isPremium ? _monthlyTranslatorSystem * 50 : _monthlyTranslatorSystem;
+  int get courtOrdersLimit =>
+      _isPremium ? _monthlyCourtOrdersSystem * 50 : _monthlyCourtOrdersSystem;
+  int get scanToPdfLimit =>
+      _isPremium ? _monthlyScanToPdfSystem * 50 : _monthlyScanToPdfSystem;
+  int get documentsLimit =>
+      _isPremium ? _monthlyDocumentsSystem * 50 : _monthlyDocumentsSystem;
+  int get casesLimit =>
+      _isPremium ? _monthlyCasesSystem * 50 : _monthlyCasesSystem;
+  int get aiVoiceLimit =>
+      _isPremium ? _monthlyAiVoiceSystem * 50 : _monthlyAiVoiceSystem;
+  int get bareActsLimit =>
+      _isPremium ? _monthlyBareActsSystem * 50 : _monthlyBareActsSystem;
+  int get chatHistoryLimit =>
+      _isPremium ? _monthlyChatHistorySystem * 50 : _monthlyChatHistorySystem;
+  int get diaryLimit =>
+      _isPremium ? _monthlyDiarySystem * 50 : _monthlyDiarySystem;
+
+  // Special Certified Copy Logic (System -> Limits)
+  int get certifiedCopyLimit =>
+      _isPremium ? _certifiedCopySystemLimit * 50 : _certifiedCopySystemLimit;
 
   UsageProvider() {
     _init();
@@ -225,9 +213,9 @@ class UsageProvider extends ChangeNotifier {
   void _cancelSubscription() {
     _usageSubscription?.cancel();
     _usageSubscription = null;
-    // Note: We keep _systemLimitsSubscription alive as it's global
   }
 
+  // Fetches GLOBAL dynamic limits from system/limits
   void _subscribeToSystemLimits() {
     _systemLimitsSubscription?.cancel();
     _systemLimitsSubscription = _firestore
@@ -235,37 +223,77 @@ class UsageProvider extends ChangeNotifier {
         .doc('limits')
         .snapshots()
         .listen((snapshot) {
-      debugPrint(
-          'UsageProvider: System Limits Snapshot received. Exists: ${snapshot.exists}');
       if (snapshot.exists) {
         final data = snapshot.data();
         if (data != null) {
-          debugPrint('UsageProvider: System Limit Data: $data');
-          // Look for 'Count' or 'Limit' (from screenshot) or 'certifiedCopy'
-          final val = (data['Count'] as num?)?.toInt() ??
-              (data['Limit'] as num?)?.toInt() ??
-              (data['certifiedCopy'] as num?)?.toInt();
+          debugPrint('UsageProvider: Updating System Limits from Firestore...');
 
-          if (val != null) {
-            _certifiedCopySystemLimit = val;
-            debugPrint(
-                'UsageProvider: Updated Certified Copy Limit from System: $_certifiedCopySystemLimit');
-            notifyListeners();
-          } else {
-            debugPrint(
-                'UsageProvider: "Count" or "Limit" field missing in system/limits');
+          // Helper
+          int _parse(String key, int defaultVal) {
+            final val = data[key];
+            if (val is num) return val.toInt();
+            return defaultVal;
           }
+
+          // Daily Limits Parsing
+          _dailyAiQueriesSystem =
+              _parse('dailyAiQueries', UsageLimits.dailyAiQueries);
+          _dailyCaseFinderSystem =
+              _parse('dailyCaseFinder', UsageLimits.dailyCaseFinder);
+          _dailyRiskAnalysisSystem =
+              _parse('dailyRiskAnalysis', UsageLimits.dailyRiskAnalysis);
+          _dailyTranslatorSystem =
+              _parse('dailyTranslator', UsageLimits.dailyTranslator);
+          _dailyCourtOrdersSystem =
+              _parse('dailyCourtOrders', UsageLimits.dailyCourtOrders);
+          _dailyScanToPdfSystem =
+              _parse('dailyScanToPdf', UsageLimits.dailyScanToPdf);
+          _dailyDocumentsSystem =
+              _parse('dailyDocuments', UsageLimits.dailyDocuments);
+
+          // Monthly Limits Parsing
+          _monthlyAiQueriesSystem =
+              _parse('monthlyAiQueries', UsageLimits.monthlyAiQueries);
+          _monthlyCaseFinderSystem =
+              _parse('monthlyCaseFinder', UsageLimits.monthlyCaseFinder);
+          _monthlyRiskAnalysisSystem =
+              _parse('monthlyRiskAnalysis', UsageLimits.monthlyRiskAnalysis);
+          _monthlyTranslatorSystem =
+              _parse('monthlyTranslator', UsageLimits.monthlyTranslator);
+          _monthlyCourtOrdersSystem =
+              _parse('monthlyCourtOrders', UsageLimits.monthlyCourtOrders);
+          _monthlyScanToPdfSystem =
+              _parse('monthlyScanToPdf', UsageLimits.monthlyScanToPdf);
+          _monthlyDocumentsSystem =
+              _parse('monthlyDocuments', UsageLimits.monthlyDocuments);
+          _monthlyCasesSystem =
+              _parse('monthlyCases', UsageLimits.monthlyCases);
+          _monthlyAiVoiceSystem =
+              _parse('monthlyAiVoice', UsageLimits.monthlyAiVoice);
+          _monthlyBareActsSystem =
+              _parse('monthlyBareActs', UsageLimits.monthlyBareActs);
+          _monthlyChatHistorySystem =
+              _parse('monthlyChatHistory', UsageLimits.monthlyChatHistory);
+          _monthlyDiarySystem =
+              _parse('monthlyDiary', UsageLimits.monthlyDiary);
+
+          // Certified Copy (Supports 'Count', 'Limit', or 'certifiedCopy')
+          _certifiedCopySystemLimit = (data['Count'] as num?)?.toInt() ??
+              (data['Limit'] as num?)?.toInt() ??
+              (data['certifiedCopy'] as num?)?.toInt() ??
+              20;
+
+          debugPrint(
+              'UsageProvider: System Limits Updated. CertifiedCopy: $_certifiedCopySystemLimit');
+          notifyListeners();
         }
-      } else {
-        debugPrint('UsageProvider: system/limits document does not exist.');
       }
     }, onError: (e) {
       debugPrint('UsageProvider: Error fetching system limits: $e');
     });
   }
 
-  // --- Real-time Firestore Subscription & Fetch ---
-  // This is the SINGLE SOURCE OF TRUTH.
+  // --- Real-time Usage Update (No changes to logic, just variables) ---
   void _subscribeToFirestore() {
     if (!_isAuthenticated) return;
 
@@ -279,29 +307,18 @@ class UsageProvider extends ChangeNotifier {
         .snapshots()
         .listen(
       (snapshot) async {
-        debugPrint(
-          'UsageProvider: Stream received update for User: $_userId',
-        );
-
         if (!snapshot.exists) {
-          debugPrint(
-            'UsageProvider: No usage doc found. Creating new one directly in Firestore.',
-          );
           await _initializeFirestoreDoc();
           return;
         }
 
         final data = snapshot.data();
-        debugPrint('UsageProvider: Data payload: $data');
-
         if (data == null) return;
-
         _isLoading = false;
 
-        // --- 1. Check for DATE-BASED RESETS (Lazy Reset Logic) ---
+        // Date-Based Reset Logic
         final serverMonth = data['month'] as String?;
         final serverDailyDate = data['lastDailyReset'] as String?;
-
         final today = DateTime.now().toIso8601String().split('T')[0];
         final currentMonth =
             '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}';
@@ -310,18 +327,12 @@ class UsageProvider extends ChangeNotifier {
         Map<String, dynamic> resetUpdateData = {};
 
         if (serverDailyDate != today) {
-          debugPrint(
-            'UsageProvider: New Day Detected ($today). Resetting Daily Counts on Server.',
-          );
           resetUpdateData['daily'] = _getInitialDailyMap();
           resetUpdateData['lastDailyReset'] = today;
           needsResetUpdate = true;
         }
 
         if (serverMonth != currentMonth) {
-          debugPrint(
-            'UsageProvider: New Month Detected ($currentMonth). Resetting Monthly Counts on Server.',
-          );
           resetUpdateData['monthly'] = _getInitialMonthlyMap();
           resetUpdateData['month'] = currentMonth;
           needsResetUpdate = true;
@@ -334,14 +345,11 @@ class UsageProvider extends ChangeNotifier {
               .collection('usage')
               .doc('stats')
               .set(resetUpdateData, SetOptions(merge: true));
-          return; // Wait for next update
+          return;
         }
 
-        // --- 2. Update Local State from Firestore Data ---
-        // Fix: Check for 'dot-notation' keys first (legacy/current bug data), then nested map
+        // Parse Usage data
         final daily = data['daily'] as Map<String, dynamic>? ?? {};
-
-        // Helper to get value from flat key OR nested map
         int getDaily(String key) {
           final flat = data['daily.$key'];
           if (flat is num) return flat.toInt();
@@ -377,9 +385,6 @@ class UsageProvider extends ChangeNotifier {
         _monthlyCertifiedCopy = getMonthly('certifiedCopy');
         _monthlyDiary = getMonthly('diary');
 
-        debugPrint(
-          'UsageProvider: Local state updated. DailyAI: $_dailyAiQueries. CertifiedCopy: $_monthlyCertifiedCopy',
-        );
         notifyListeners();
       },
       onError: (e) {
@@ -388,7 +393,7 @@ class UsageProvider extends ChangeNotifier {
     );
   }
 
-  // --- Actions ---
+  // --- Check Logic (Uses Dynamic Getters) ---
 
   String? canUseFeature(String featureName) {
     if (featureName == 'aiQueries' && _dailyAiQueries >= dailyAiQueriesLimit)
@@ -440,6 +445,8 @@ class UsageProvider extends ChangeNotifier {
     return null;
   }
 
+  // --- Incrementers ---
+
   Future<void> incrementAiQueries() async =>
       await _incrementFirestore('aiQueries', daily: true);
   Future<void> incrementCaseFinder() async =>
@@ -468,23 +475,14 @@ class UsageProvider extends ChangeNotifier {
   Future<void> incrementDiary() async =>
       await _incrementFirestore('diary', daily: false);
 
-  Future<void> _incrementFirestore(
-    String featureKey, {
-    required bool daily,
-  }) async {
+  Future<void> _incrementFirestore(String featureKey,
+      {required bool daily}) async {
     if (!_isAuthenticated) return;
-
-    debugPrint(
-      'UsageProvider: Incrementing $featureKey directly in Firestore...',
-    );
-
     try {
       final today = DateTime.now().toIso8601String().split('T')[0];
       final currentMonth =
           '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}';
 
-      // Use nested maps for updates to ensure they merge into the 'daily'/'monthly' objects
-      // instead of creating top-level keys like 'daily.aiQueries'.
       Map<String, dynamic> updates = {
         'lastUpdated': FieldValue.serverTimestamp(),
         'month': currentMonth,
@@ -503,7 +501,7 @@ class UsageProvider extends ChangeNotifier {
           .doc('stats')
           .set(updates, SetOptions(merge: true));
     } catch (e) {
-      debugPrint('UsageProvider: Error incrementing usage in Firestore: $e');
+      debugPrint('UsageProvider: Error incrementing usage: $e');
     }
   }
 
@@ -511,7 +509,6 @@ class UsageProvider extends ChangeNotifier {
     final today = DateTime.now().toIso8601String().split('T')[0];
     final currentMonth =
         '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}';
-
     try {
       await _firestore
           .collection('users')
@@ -525,7 +522,6 @@ class UsageProvider extends ChangeNotifier {
         'monthly': _getInitialMonthlyMap(),
         'lastUpdated': FieldValue.serverTimestamp(),
       });
-      debugPrint('UsageProvider: Created new usage document.');
     } catch (e) {
       debugPrint('UsageProvider: Failed to create usage doc: $e');
     }
@@ -556,7 +552,7 @@ class UsageProvider extends ChangeNotifier {
           .set({'isPremium': true}, SetOptions(merge: true));
       await _syncPremiumStatus();
     } catch (e) {
-      debugPrint('Error upgrading to premium: $e');
+      debugPrint('Error upgrading: $e');
     }
   }
 
@@ -568,7 +564,6 @@ class UsageProvider extends ChangeNotifier {
     _dailyCourtOrders = 0;
     _dailyScanToPdf = 0;
     _dailyDocuments = 0;
-
     _monthlyAiQueries = 0;
     _monthlyCaseFinder = 0;
     _monthlyRiskAnalysis = 0;
