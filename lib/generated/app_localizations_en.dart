@@ -221,4 +221,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get termsAndConditionsContent =>
       'Please read these terms and conditions carefully before using the Law Genie application. Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service.';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get termsOfService => 'Terms of Service';
+
+  @override
+  String get refundPolicy => 'Refund Policy';
+
+  @override
+  String get disclaimer => 'Legal Disclaimer';
+
+  @override
+  String get legalAndPolicies => 'Legal & Policies';
 }

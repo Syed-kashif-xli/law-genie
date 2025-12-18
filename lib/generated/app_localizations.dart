@@ -499,6 +499,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please read these terms and conditions carefully before using the Law Genie application. Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service.'**
   String get termsAndConditionsContent;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfService;
+
+  /// No description provided for @refundPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund Policy'**
+  String get refundPolicy;
+
+  /// No description provided for @disclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Disclaimer'**
+  String get disclaimer;
+
+  /// No description provided for @legalAndPolicies.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & Policies'**
+  String get legalAndPolicies;
 }
 
 class _AppLocalizationsDelegate

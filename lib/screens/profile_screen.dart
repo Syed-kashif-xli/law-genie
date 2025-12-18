@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:myapp/providers/ui_provider.dart';
 import 'package:myapp/screens/order_history_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:myapp/screens/legal_detail_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -431,12 +432,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: _signOut,
               showArrow: false,
             ),
+            const SizedBox(height: 20),
+            // -- LEGAL SECTION
+            _buildSectionHeader(l10n.legalAndPolicies),
+            ProfileMenuOption(
+              title: l10n.privacyPolicy,
+              icon: Icons.privacy_tip_outlined,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LegalDetailScreen(
+                    title: l10n.privacyPolicy,
+                    assetPath: 'assets/legal/privacy_policy.md',
+                  ),
+                ),
+              ),
+            ),
+            ProfileMenuOption(
+              title: l10n.termsOfService,
+              icon: Icons.description_outlined,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LegalDetailScreen(
+                    title: l10n.termsOfService,
+                    assetPath: 'assets/legal/terms_of_service.md',
+                  ),
+                ),
+              ),
+            ),
+            ProfileMenuOption(
+              title: l10n.refundPolicy,
+              icon: Icons.assignment_return_outlined,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LegalDetailScreen(
+                    title: l10n.refundPolicy,
+                    assetPath: 'assets/legal/refund_policy.md',
+                  ),
+                ),
+              ),
+            ),
+            ProfileMenuOption(
+              title: l10n.disclaimer,
+              icon: Icons.gavel_outlined,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LegalDetailScreen(
+                    title: l10n.disclaimer,
+                    assetPath: 'assets/legal/disclaimer.md',
+                  ),
+                ),
+              ),
+            ),
             ProfileMenuOption(
               title: l10n.helpCenter,
               icon: Icons.support_agent_outlined,
               onTap: _showHelpCenter,
               showArrow: true,
             ),
+            const SizedBox(height: 30),
             const SizedBox(height: 20),
             // Instagram Quick Link
             Center(
@@ -483,6 +540,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 40),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8, top: 16),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title.toUpperCase(),
+          style: const TextStyle(
+            color: Color(0xFF02F1C3),
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
         ),
       ),
     );

@@ -224,4 +224,19 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get termsAndConditionsContent =>
       'लॉ जिनी एप्लिकेशन का उपयोग करने से पहले कृपया इन नियमों और शर्तों को ध्यान से पढ़ें। सेवा तक आपकी पहुंच और उपयोग इन शर्तों की आपकी स्वीकृति और अनुपालन पर सशर्त है। ये शर्तें उन सभी आगंतुकों, उपयोगकर्ताओं और अन्य लोगों पर लागू होती हैं जो सेवा तक पहुंचते हैं या उसका उपयोग करते हैं।';
+
+  @override
+  String get privacyPolicy => 'गोपनीयता नीति';
+
+  @override
+  String get termsOfService => 'सेवा की शर्तें';
+
+  @override
+  String get refundPolicy => 'धनवापसी नीति';
+
+  @override
+  String get disclaimer => 'कानूनी अस्वीकरण';
+
+  @override
+  String get legalAndPolicies => 'कानूनी और नीतियां';
 }

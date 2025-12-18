@@ -87,10 +87,10 @@ class FeatureUsageSection extends StatelessWidget {
               builder: (context) {
                 final cards = [
                   FeatureUsageCard(
-                    title: 'AI Chat',
+                    title: 'Legal AI Chat',
                     count: usageProvider.aiQueriesUsage,
                     limit: usageProvider.aiQueriesLimit,
-                    icon: Iconsax.messages_2,
+                    icon: Iconsax.magic_star,
                     color: const Color(0xFF02F1C3),
                     isPremium: isPremium,
                     onTap: () {
@@ -102,10 +102,10 @@ class FeatureUsageSection extends StatelessWidget {
                     },
                   ),
                   FeatureUsageCard(
-                    title: 'Cases',
+                    title: 'My Cases',
                     count: usageProvider.casesUsage,
                     limit: usageProvider.casesLimit,
-                    icon: Iconsax.briefcase,
+                    icon: Iconsax.folder_favorite,
                     color: const Color(0xFF2C55A9),
                     isPremium: isPremium,
                     onTap: () {
@@ -117,10 +117,10 @@ class FeatureUsageSection extends StatelessWidget {
                     },
                   ),
                   FeatureUsageCard(
-                    title: 'Scan to PDF',
+                    title: 'Doc Scanner',
                     count: usageProvider.scanToPdfUsage,
                     limit: usageProvider.scanToPdfLimit,
-                    icon: Iconsax.scan,
+                    icon: Iconsax.scanner,
                     color: const Color(0xFFE040FB),
                     isPremium: isPremium,
                     onTap: () {
@@ -132,10 +132,10 @@ class FeatureUsageSection extends StatelessWidget {
                     },
                   ),
                   FeatureUsageCard(
-                    title: 'Documents',
+                    title: 'Document Generator',
                     count: usageProvider.documentsUsage,
                     limit: usageProvider.documentsLimit,
-                    icon: Iconsax.document_text,
+                    icon: Iconsax.document_favorite,
                     color: const Color(0xFFFF5722),
                     isPremium: isPremium,
                     onTap: () {
@@ -143,10 +143,10 @@ class FeatureUsageSection extends StatelessWidget {
                     },
                   ),
                   FeatureUsageCard(
-                    title: 'Risk Analysis',
+                    title: 'Risk Analyzer',
                     count: usageProvider.riskAnalysisUsage,
                     limit: usageProvider.riskAnalysisLimit,
-                    icon: Iconsax.chart_square,
+                    icon: Iconsax.security_safe,
                     color: const Color(0xFFFFD700),
                     isPremium: isPremium,
                     onTap: () {
@@ -158,10 +158,10 @@ class FeatureUsageSection extends StatelessWidget {
                     },
                   ),
                   FeatureUsageCard(
-                    title: 'Case Finder',
+                    title: 'Search Cases',
                     count: usageProvider.caseFinderUsage,
                     limit: usageProvider.caseFinderLimit,
-                    icon: Iconsax.search_favorite,
+                    icon: Iconsax.search_status,
                     color: const Color(0xFF9C27B0),
                     isPremium: isPremium,
                     onTap: () {
@@ -176,7 +176,7 @@ class FeatureUsageSection extends StatelessWidget {
                     title: 'Court Orders',
                     count: usageProvider.courtOrdersUsage,
                     limit: usageProvider.courtOrdersLimit,
-                    icon: Iconsax.document_text_1,
+                    icon: Iconsax.judge,
                     color: const Color(0xFF00BCD4),
                     isPremium: isPremium,
                     onTap: () {
@@ -187,7 +187,7 @@ class FeatureUsageSection extends StatelessWidget {
                     title: 'Translator',
                     count: usageProvider.translatorUsage,
                     limit: usageProvider.translatorLimit,
-                    icon: Iconsax.translate,
+                    icon: Iconsax.language_square,
                     color: const Color(0xFF4CAF50),
                     isPremium: isPremium,
                     onTap: () {
@@ -202,7 +202,7 @@ class FeatureUsageSection extends StatelessWidget {
                     title: 'Bare Acts',
                     count: usageProvider.bareActsUsage,
                     limit: usageProvider.bareActsLimit,
-                    icon: Iconsax.book_1,
+                    icon: Iconsax.teacher,
                     color: const Color(0xFFFF9800),
                     isPremium: isPremium,
                     onTap: () {
@@ -217,7 +217,7 @@ class FeatureUsageSection extends StatelessWidget {
                     title: 'Chat History',
                     count: usageProvider.chatHistoryUsage,
                     limit: usageProvider.chatHistoryLimit,
-                    icon: Iconsax.archive_book,
+                    icon: Iconsax.receipt_item,
                     color: const Color(0xFF607D8B),
                     isPremium: isPremium,
                     onTap: () {
@@ -228,7 +228,7 @@ class FeatureUsageSection extends StatelessWidget {
                     title: 'Certified Copy',
                     count: usageProvider.certifiedCopyUsage,
                     limit: usageProvider.certifiedCopyLimit,
-                    icon: Iconsax.document_copy,
+                    icon: Iconsax.verify,
                     color: const Color(0xFFE91E63),
                     isPremium: isPremium,
                     onTap: () {
@@ -241,10 +241,10 @@ class FeatureUsageSection extends StatelessWidget {
                     },
                   ),
                   FeatureUsageCard(
-                    title: 'AI Legal Diary',
+                    title: 'Legal Diary',
                     count: usageProvider.diaryUsage,
                     limit: usageProvider.diaryLimit,
-                    icon: Iconsax.note_1,
+                    icon: Iconsax.personalcard,
                     color: const Color(0xFF00E5FF), // Cyan/Blue
                     isPremium: isPremium,
                     onTap: () {

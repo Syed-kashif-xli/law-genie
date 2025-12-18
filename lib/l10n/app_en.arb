@@ -1,4 +1,3 @@
-
 {
     "@@locale": "en",
     "editProfile": "Edit Profile",
@@ -88,5 +87,10 @@
     "next": "Next",
     "agreeToTermsToContinue": "Please agree to the terms and conditions to continue.",
     "acceptAndContinue": "Accept & Continue",
-    "termsAndConditionsContent": "Please read these terms and conditions carefully before using the Law Genie application. Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service."
+    "termsAndConditionsContent": "Please read these terms and conditions carefully before using the Law Genie application. Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "refundPolicy": "Refund Policy",
+    "disclaimer": "Legal Disclaimer",
+    "legalAndPolicies": "Legal & Policies"
 }
