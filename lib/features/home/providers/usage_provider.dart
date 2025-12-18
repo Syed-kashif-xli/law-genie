@@ -354,6 +354,25 @@ class UsageProvider extends ChangeNotifier {
         'premiumExpiry':
             Timestamp.fromDate(DateTime.now().add(const Duration(days: 30))),
       }, SetOptions(merge: true));
+
+      // Create a subscription record in order history
+      String token =
+          'SUB-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+      await _firestore.collection('orders').add({
+        'token': token,
+        'userId': _userId,
+        'status': 'completed',
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'details': {
+          'type': 'subscription',
+          'plan': 'premium',
+          'amount': 499,
+          'duration': '30 days',
+        },
+      });
+
+      debugPrint('UsageProvider: Premium upgrade and order record created.');
     } catch (e) {
       debugPrint('Error upgrading user: $e');
     }

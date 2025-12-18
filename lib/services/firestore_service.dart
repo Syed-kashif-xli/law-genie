@@ -57,6 +57,13 @@ class FirestoreService {
       }
       // Also set lastLoginAt for new users
       userData['lastLoginAt'] = FieldValue.serverTimestamp();
+
+      // Set a professional default name for new users (like phone logins)
+      if (userData['displayName'] == null ||
+          userData['displayName'].toString().isEmpty) {
+        userData['displayName'] = 'Genie Legal Pro';
+      }
+
       await userRef.set(userData);
     }
   }

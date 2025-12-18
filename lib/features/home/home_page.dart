@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Added
@@ -155,66 +154,108 @@ class _HomePageState extends State<HomePage> {
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF0F0C29), Color(0xFF302B63), Color(0xFF24243E)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              colors: [Color(0xFF0A032A), Color(0xFF19173A), Color(0xFF000000)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
-          child: SafeArea(
-            child: RefreshIndicator(
-              onRefresh: _refreshData,
-              color: const Color(0xFF2C55A9),
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 10),
-                          const _HomeHeader(),
-                          const SizedBox(height: 24),
-                          const _StatsSection(),
-                          const SizedBox(height: 24),
-                          const _QuickActionsSection(),
-                          const SizedBox(height: 24),
-                          const FeatureUsageSection(),
-                          const SizedBox(height: 30),
-                          const _LegalNewsHeader(), // Extracted Header
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    ),
+          child: Stack(
+            children: [
+              // Ambient Background Glows
+              Positioned(
+                top: -100,
+                right: -100,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
+                        blurRadius: 100,
+                        spreadRadius: 50,
+                      )
+                    ],
                   ),
-                  const _NewsListSliver(), // Lazy loaded list
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Column(
-                        children: [
-                          if (_isAdLoaded && _bannerAd != null) ...[
-                            const SizedBox(height: 24),
-                            Center(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: SizedBox(
-                                  width: _bannerAd!.size.width.toDouble(),
-                                  height: _bannerAd!.size.height.toDouble(),
-                                  child: AdWidget(ad: _bannerAd!),
-                                ),
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: 80),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              Positioned(
+                bottom: 100,
+                left: -100,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF7B1FA2).withValues(alpha: 0.1),
+                        blurRadius: 100,
+                        spreadRadius: 50,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+
+              SafeArea(
+                child: RefreshIndicator(
+                  onRefresh: _refreshData,
+                  color: const Color(0xFF02F1C3),
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 10),
+                              const _HomeHeader(),
+                              const SizedBox(height: 24),
+                              const _StatsSection(),
+                              const SizedBox(height: 24),
+                              const _QuickActionsSection(),
+                              const SizedBox(height: 24),
+                              const FeatureUsageSection(),
+                              const SizedBox(height: 30),
+                              const _LegalNewsHeader(), // Extracted Header
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const _NewsListSliver(), // Lazy loaded list
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Column(
+                            children: [
+                              if (_isAdLoaded && _bannerAd != null) ...[
+                                const SizedBox(height: 24),
+                                Center(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SizedBox(
+                                      width: _bannerAd!.size.width.toDouble(),
+                                      height: _bannerAd!.size.height.toDouble(),
+                                      child: AdWidget(ad: _bannerAd!),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 80),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -268,17 +309,17 @@ class _StatsSection extends StatelessWidget {
     required Color color,
   }) {
     return Container(
-      width: 130,
+      width: 140,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF19173A),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            color: color.withValues(alpha: 0.05),
+            blurRadius: 15,
+            spreadRadius: -2,
           ),
         ],
       ),
@@ -289,23 +330,32 @@ class _StatsSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, color: color, size: 20),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 18),
+              ),
               Text(
                 value,
                 style: GoogleFonts.poppins(
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
+                  letterSpacing: -0.5,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             label,
             style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.white70,
+              fontSize: 11,
+              color: Colors.white60,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -421,6 +471,9 @@ class _HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final name = user?.displayName?.split(' ').first ?? 'Friend';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -431,28 +484,49 @@ class _HomeHeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnimatedTextKit(
-                    animatedTexts: [
-                      TypewriterAnimatedText(
-                        'Welcome back,',
-                        textStyle: GoogleFonts.poppins(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          height: 1.2,
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Hello, ',
+                          style: GoogleFonts.poppins(
+                            fontSize: 24,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                        speed: const Duration(milliseconds: 100),
+                        TextSpan(
+                          text: name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 28,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF02F1C3),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'AI Legal Partner is Active',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: const Color(0xFF02F1C3).withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
-                    totalRepeatCount: 1,
-                  ),
-                  Text(
-                    'Your Personal AI Legal Assistant',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.white70,
-                      fontWeight: FontWeight.w500,
-                    ),
                   ),
                 ],
               ),

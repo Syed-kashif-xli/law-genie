@@ -55,122 +55,236 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showHelpCenter() {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF19173A),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color(0xFF19173A),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
         ),
-        title: const Row(
-          children: [
-            Icon(Icons.support_agent, color: Color(0xFF02F1C3), size: 28),
-            SizedBox(width: 12),
-            Text(
-              'Help Center',
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ],
-        ),
-        content: Column(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Need help? Contact us at:',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0A032A),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF02F1C3).withValues(alpha: 0.3),
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              child: Row(
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF02F1C3).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.support_agent,
+                      color: Color(0xFF02F1C3), size: 28),
+                ),
+                const SizedBox(width: 16),
+                const Text(
+                  'How can we help?',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Our support team is always here to assist you with any questions or technical issues.',
+              style:
+                  TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
+            ),
+            const SizedBox(height: 24),
+            _buildSupportAction(
+              icon: Icons.email_outlined,
+              title: 'Email Support',
+              subtitle: 'support@lawgenie.co.in',
+              color: Colors.blueAccent,
+              onTap: () {
+                Clipboard.setData(
+                    const ClipboardData(text: 'support@lawgenie.co.in'));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Support email copied!'),
+                    backgroundColor: Colors.blueAccent,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildSupportAction(
+              icon: Icons.camera_alt_outlined,
+              title: 'Instagram Support',
+              subtitle: '@lawgenie.in',
+              color: const Color(0xFFE4405F),
+              onTap: () async {
+                final Uri url =
+                    Uri.parse('https://www.instagram.com/lawgenie.in');
+                if (!await launchUrl(url,
+                    mode: LaunchMode.externalApplication)) {
+                  debugPrint('Could not launch $url');
+                }
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildSupportAction(
+              icon: Icons.qr_code_2_outlined,
+              title: 'Scan QR Code',
+              subtitle: 'Follow our legal journey',
+              color: const Color(0xFF02F1C3),
+              onTap: () {
+                Navigator.pop(context);
+                _showInstagramQR();
+              },
+            ),
+            const SizedBox(height: 32),
+            const Center(
+              child: Text(
+                'Available Mon-Sat, 10 AM - 7 PM',
+                style: TextStyle(color: Colors.white38, fontSize: 12),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSupportAction({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.email, color: Color(0xFF02F1C3), size: 20),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SelectableText(
-                        'lawgenieoffical@gmail.com',
-                        style: TextStyle(
-                          color: Color(0xFF02F1C3),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.copy,
-                        color: Color(0xFF02F1C3), size: 18),
-                    onPressed: () {
-                      Clipboard.setData(const ClipboardData(
-                          text: 'lawgenieoffical@gmail.com'));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Email copied to clipboard!'),
-                          backgroundColor: Color(0xFF02F1C3),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: color.withValues(alpha: 0.8),
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'We\'ll get back to you as soon as possible!',
-              style: TextStyle(
-                color: Colors.white60,
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
+            const Icon(Icons.arrow_forward_ios,
+                color: Colors.white24, size: 14),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showInstagramQR() {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF19173A),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: const Color(0xFFE4405F), width: 2),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Image.asset(
+                  'assets/images/insta_qr.png',
+                  width: 250,
+                  height: 250,
+                  fit: BoxFit.contain,
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  final Uri url =
-                      Uri.parse('https://www.instagram.com/lawgenie.in');
-                  if (!await launchUrl(url,
-                      mode: LaunchMode.externalApplication)) {
-                    debugPrint('Could not launch $url');
-                  }
-                },
-                icon: const Icon(Icons.camera_alt, color: Colors.white),
-                label: const Text('Follow us on Instagram'),
+              const SizedBox(height: 24),
+              const Text(
+                'Follow us on Instagram',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '@lawgenie.in',
+                style: TextStyle(
+                  color: Color(0xFFE4405F),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFC13584), // Instagram Color
+                  backgroundColor: const Color(0xFFE4405F),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
+                child: const Text('Close'),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Close',
-              style: TextStyle(color: Color(0xFF02F1C3)),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -319,10 +433,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ProfileMenuOption(
               title: l10n.helpCenter,
-              icon: Icons.help_outline,
+              icon: Icons.support_agent_outlined,
               onTap: _showHelpCenter,
-              showArrow: false,
+              showArrow: true,
             ),
+            const SizedBox(height: 20),
+            // Instagram Quick Link
+            Center(
+              child: InkWell(
+                onTap: _showInstagramQR,
+                borderRadius: BorderRadius.circular(50),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF833AB4),
+                        Color(0xFFFD1D1D),
+                        Color(0xFFFCB045),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFD1D1D).withValues(alpha: 0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.camera_alt, color: Colors.white, size: 18),
+                      SizedBox(width: 10),
+                      Text(
+                        'Follow Us @lawgenie.in',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
           ],
         ),
       ),

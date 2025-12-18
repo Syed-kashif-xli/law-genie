@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter/services.dart';
@@ -85,12 +86,14 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       'name': 'Free',
       'price': '₹0',
       'period': '/month',
-      'description': 'Essential tools for every citizen',
-      'color': const Color(0xFF4CAF50),
+      'description': 'Essential tools for basic legal assistance.',
+      'color': const Color(0xFFB0BEC5), // Slate Grey for Free
       'features': [
-        'Basic Case Search (Limited)',
-        'Limited AI Queries',
-        'Standard Support',
+        'Limited AI Legal Assistant (5/day)',
+        'Basic Case Search (3/day)',
+        'Limited Risk Analysis (2/day)',
+        'Standard Document Viewer',
+        'In-App Ads',
       ],
       'isPopular': false,
       'isBestValue': false,
@@ -99,18 +102,37 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       'name': 'Premium',
       'price': '₹499',
       'period': '/month',
-      'description': 'Unlimited access to all features',
-      'color': const Color(0xFFFFD700),
+      'description': 'Total legal power without any limits.',
+      'color': const Color(0xFFFFD700), // Gold for Premium
       'features': [
-        'Unlimited AI Queries',
-        'Unlimited Case Search',
-        'Document Generator',
-        'Bare Acts Access',
-        'Priority Support',
-        'Ad-Free Experience',
+        'Unlimited AI Chat & Legal Advice',
+        'Unlimited Case Finder Search',
+        'Advanced Risk Analysis with Docs',
+        'Full Bare Acts & Legal Database',
+        'Priority Draft Generation',
+        'Ad-Free Premium Experience',
+        '24/7 Priority Support',
       ],
       'isPopular': true,
       'isBestValue': true,
+    },
+    {
+      'name': 'Lawyer Pro',
+      'price': 'Custom',
+      'period': '',
+      'description': 'Tailored for legal professionals and firms.',
+      'color': const Color(0xFF02F1C3), // Neon Mint
+      'features': [
+        'Everything in Premium Plan',
+        'Advanced Case Management Dashboard',
+        'Bulk Document Summarization',
+        'Exportable Case Timelines',
+        'Custom Legal Draft Templates',
+        'Exclusive Webinar Access',
+      ],
+      'isPopular': false,
+      'isBestValue': false,
+      'isContact': true,
     },
   ];
 
@@ -282,7 +304,11 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                       animation: _shimmerController,
                       // Pass the static child to avoid rebuilding it
                       child: Text(
-                        _currentIndex == 0 ? 'Get Started' : 'Upgrade Now',
+                        _currentIndex == 0
+                            ? 'Active Plan'
+                            : (_plans[_currentIndex]['isContact'] == true
+                                ? 'Contact Us'
+                                : 'Upgrade Now'),
                         style: GoogleFonts.poppins(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -335,6 +361,18 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                               final user = FirebaseAuth.instance.currentUser;
                               final email = user?.email ?? 'user@example.com';
                               final phone = user?.phoneNumber ?? '9876543210';
+
+                              if (_currentIndex == 2) {
+                                // Lawyer Pro Plan - Contact Us
+                                final Uri emailUri = Uri(
+                                  scheme: 'mailto',
+                                  path: 'support@lawgenie.co.in',
+                                  query:
+                                      'subject=Inquiry for Lawyer Pro Plan&body=Hello Law Genie Team, I am interested in the Lawyer Pro plan. Please provide more details.',
+                                );
+                                launchUrl(emailUri);
+                                return;
+                              }
 
                               // Amount calculation
                               double amount = 0.0;
