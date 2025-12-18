@@ -28,7 +28,8 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
       ..addJavaScriptChannel(
         'AppChannel',
         onMessageReceived: (JavaScriptMessage message) {
-          if (message.message == 'hide') {
+          if (message.message == 'hide' ||
+              message.message == 'search_triggered') {
             _handleSearchAction();
           } else if (message.message == 'captcha_error') {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -51,19 +52,31 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            setState(() {
-              _loadingProgress = progress;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _loadingProgress = progress;
+                });
+              }
             });
           },
           onPageStarted: (String url) {
-            setState(() {
-              _isLoading = true;
-              _isReady = false;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _isLoading = true;
+                  _isReady = false;
+                });
+              }
             });
           },
           onPageFinished: (String url) {
-            setState(() {
-              _isLoading = false;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
             });
             _controller.runJavaScript('''
               (function() {
@@ -211,6 +224,18 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
                           }
                       }
                   }
+                  
+                  // Setup search button listener
+                  var searchBtn = document.getElementById('search_button') || 
+                                  document.getElementById('submit') ||
+                                  document.querySelector('input[type="submit"]') ||
+                                  document.querySelector('button[id*="search"]');
+                  if (searchBtn && !searchBtn.dataset.listener) {
+                    searchBtn.dataset.listener = "true";
+                    searchBtn.addEventListener('click', function() {
+                      AppChannel.postMessage('search_triggered');
+                    });
+                  }
                 }
                 cleanUI();
                 var observer = new MutationObserver(function(mutations) {
@@ -234,8 +259,12 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
             ''');
             Future.delayed(const Duration(milliseconds: 800), () {
               if (mounted) {
-                setState(() {
-                  _isReady = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    setState(() {
+                      _isReady = true;
+                    });
+                  }
                 });
               }
             });
@@ -263,9 +292,13 @@ class _CaseFinderPageState extends State<CaseFinderPage> {
     if (!mounted) return;
 
     if (canProceed) {
-      setState(() {
-        _isReady = false;
-        _isLoading = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _isReady = false;
+            _isLoading = true;
+          });
+        }
       });
 
       final usageProvider = Provider.of<UsageProvider>(context, listen: false);

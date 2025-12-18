@@ -8,32 +8,18 @@ class GeminiService {
 
   GeminiService()
       : _model = FirebaseAI.googleAI().generativeModel(
-          model: 'gemini-2.5-flash',
+          model: 'gemini-1.5-flash',
           systemInstruction: Content.system(
             'You are a helpful, friendly, and intelligent AI assistant. '
-            'You are talking to the user via voice. '
+            'You are expert in legal matters. '
             'Keep your responses concise, natural, and conversational. '
-            'Avoid long paragraphs, bullet points, or robotic phrasing like "I am an AI". '
-            'Act like a real human having a chat. '
-            'If the user asks for legal advice, give a brief summary and suggest checking the detailed documents, but keep the tone light and helpful.',
+            'Avoid robotic phrasing like "I am an AI". '
+            'If the user asks for legal advice, give a brief summary and suggest checking the detailed documents.',
           ),
         );
 
   void startChat() {
     _chatSession = _model.startChat();
-  }
-
-  Future<Stream<GenerateContentResponse>> sendMessageStream(
-      String message) async {
-    try {
-      if (_chatSession == null) {
-        startChat();
-      }
-      return _chatSession!.sendMessageStream(Content.text(message));
-    } catch (e) {
-      debugPrint('Error generating stream: $e');
-      rethrow;
-    }
   }
 
   Future<String> sendMessage(String message) async {
@@ -49,8 +35,20 @@ class GeminiService {
     }
   }
 
-  // Keep for backward compatibility if needed, or remove if unused elsewhere
-  Future<String> generateText(String prompt) async {
-    return sendMessage(prompt);
+  Future<String> sendMultiPartMessage(
+      String message, List<InlineDataPart> attachments) async {
+    try {
+      final parts = <Part>[TextPart(message)];
+      parts.addAll(attachments);
+
+      final response = await _model.generateContent([Content.multi(parts)]);
+      return response.text ?? '';
+    } catch (e) {
+      debugPrint('Error generating multi-part response: $e');
+      return 'Error: $e';
+    }
   }
+
+  // Keep for backward compatibility
+  Future<String> generateText(String prompt) async => sendMessage(prompt);
 }

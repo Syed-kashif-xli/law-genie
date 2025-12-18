@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/services/gemini_service.dart';
@@ -29,6 +32,7 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
   final List<String> _parties = [];
   final List<String> _keyFacts = [];
   final List<String> _attachedFileNames = [];
+  final List<File> _attachedFiles = [];
   final List<String> _evidenceTypes = [];
 
   final List<String> _caseTypes = [
@@ -85,7 +89,6 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
     _partiesController.dispose();
     _descriptionController.dispose();
     _keyFactController.dispose();
-    _keyFactController.dispose();
     _inputAnimationController.dispose();
     _bannerAd?.dispose();
     super.dispose();
@@ -119,7 +122,12 @@ class _RiskAnalysisPageState extends State<RiskAnalysisPage>
 
       if (result != null) {
         setState(() {
-          _attachedFileNames.addAll(result.files.map((e) => e.name).toList());
+          for (var file in result.files) {
+            if (file.path != null) {
+              _attachedFiles.add(File(file.path!));
+              _attachedFileNames.add(file.name);
+            }
+          }
         });
       }
     } catch (e) {
@@ -182,7 +190,11 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
       
       $caseDetails
 
-      Provide a JSON response strictly in this format (no markdown, just raw JSON):
+      Instructions:
+      1. Analyze the text provided.
+      2. If attachments (images/PDFs) are provided, analyze their content as well.
+      3. For images, look for evidence, signatures, or specific details mentioned in the case.
+      4. Provide a JSON response strictly in this format (no markdown, just raw JSON):
       {
         "win_probability": 75,
         "risk_level": "Medium",
@@ -199,7 +211,27 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
       }
       """;
 
-      final response = await _geminiService.sendMessage(prompt);
+      String response;
+      if (_attachedFiles.isNotEmpty) {
+        final attachments = <InlineDataPart>[];
+        for (var file in _attachedFiles) {
+          final mimeType =
+              lookupMimeType(file.path) ?? 'application/octet-stream';
+          // Gemini 1.5 Flash supports images and PDFs directly
+          if (mimeType.startsWith('image/') || mimeType == 'application/pdf') {
+            attachments.add(InlineDataPart(mimeType, await file.readAsBytes()));
+          }
+        }
+
+        if (attachments.isNotEmpty) {
+          response =
+              await _geminiService.sendMultiPartMessage(prompt, attachments);
+        } else {
+          response = await _geminiService.sendMessage(prompt);
+        }
+      } else {
+        response = await _geminiService.sendMessage(prompt);
+      }
 
       // Robust JSON extraction
       int startIndex = response.indexOf('{');
@@ -647,7 +679,12 @@ Attached Documents: ${_attachedFileNames.isEmpty ? 'None' : _attachedFileNames.j
                                       size: 16, color: Colors.black54),
                                   onDeleted: () {
                                     setState(() {
-                                      _attachedFileNames.remove(fileName);
+                                      int idx =
+                                          _attachedFileNames.indexOf(fileName);
+                                      if (idx != -1) {
+                                        _attachedFileNames.removeAt(idx);
+                                        _attachedFiles.removeAt(idx);
+                                      }
                                     });
                                   },
                                   side: BorderSide.none,
