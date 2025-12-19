@@ -282,8 +282,7 @@ class UsageProvider extends ChangeNotifier {
   int get diaryLimit => getLimit('diary', isMonthly: true);
   int get chatHistoryUsage => getUsageCount('chatHistory', isMonthly: true);
   int get chatHistoryLimit => getLimit('chatHistory', isMonthly: true);
-  int get certifiedCopyUsage => getUsageCount('certifiedCopy', isMonthly: true);
-  int get certifiedCopyLimit => getLimit('certifiedCopy', isMonthly: true);
+
   int get casesUsage => getUsageCount('myCases', isMonthly: true);
   int get casesLimit => getLimit('myCases', isMonthly: true);
 
@@ -343,8 +342,6 @@ class UsageProvider extends ChangeNotifier {
   Future<void> incrementDiary() async => incrementUsage('diary', daily: false);
   Future<void> incrementChatHistory() async =>
       incrementUsage('chatHistory', daily: false);
-  Future<void> incrementCertifiedCopy() async =>
-      incrementUsage('certifiedCopy', daily: false);
 
   // Upgrade Plan
   Future<void> upgradeToPremium() async {
@@ -407,7 +404,6 @@ class UsageProvider extends ChangeNotifier {
           'myCases': 0,
           'bareActs': 0,
           'diary': 0,
-          'certifiedCopy': 0,
           'chatHistory': 0
         },
         'lastUpdated': FieldValue.serverTimestamp(),

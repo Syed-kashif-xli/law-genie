@@ -3,10 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
 import 'certified_copy_review_page.dart';
 import '../../services/translation_service.dart';
-import '../home/providers/usage_provider.dart';
+import '../../services/firestore_service.dart';
 import '../../utils/usage_limit_helper.dart';
 
 class CertifiedRegistryCopyPage extends StatefulWidget {
@@ -402,11 +401,30 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
             ),
             centerTitle: true,
             actions: [
-              // Usage Counter
-              Consumer<UsageProvider>(
-                builder: (context, usage, _) {
-                  final used = usage.certifiedCopyUsage;
-                  final limit = usage.certifiedCopyLimit;
+              // Usage Counter (Live System Stream)
+              StreamBuilder<Map<String, dynamic>?>(
+                stream: FirestoreService().getCertifiedCopyLimitStream(),
+                builder: (context, snapshot) {
+                  int used = 0;
+                  int limit = 20;
+
+                  if (snapshot.hasData && snapshot.data != null) {
+                    final data = snapshot.data!;
+                    used = data['count'] as int? ?? 0;
+                    limit = data['limit'] as int? ?? 20;
+                    // Check date validity if needed, but for display we show current stats
+                    final todayStr =
+                        DateTime.now().toIso8601String().split('T')[0];
+                    if (data['date'] != todayStr) {
+                      // UI anticipation: if date is old, count is effectively 0 for today until first use
+                      // But we show what's in DB. The DB updates on use.
+                      // For better UX we could show 0 here if date is old, but let's stick to DB state
+                      // effectively "Limit will reset on next use".
+                      // Note: showing 0 might be better UX.
+                      if (data['date'] != null) used = 0;
+                    }
+                  }
+
                   final remaining = limit - used;
                   final isLimitReached = remaining <= 0;
 
@@ -448,7 +466,7 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '$remaining/$limit',
+                          '$used/$limit',
                           style: GoogleFonts.poppins(
                             color: isLimitReached
                                 ? Colors.red

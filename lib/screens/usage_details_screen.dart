@@ -156,13 +156,7 @@ class UsageDetailsScreen extends StatelessWidget {
                 Iconsax.language_square,
                 const Color(0xFF4CAF50),
                 isPremium),
-            _buildUsageCard(
-                'Certified Copy',
-                usageProvider.certifiedCopyUsage,
-                usageProvider.certifiedCopyLimit,
-                Iconsax.verify,
-                const Color(0xFFE91E63),
-                isPremium),
+
             _buildUsageCard(
                 'Legal Diary',
                 usageProvider.diaryUsage,

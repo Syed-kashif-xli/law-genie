@@ -67,7 +67,7 @@ service cloud.firestore {
     // 6. System Configuration (For Global Limits)
     match /system/{docId} {
        allow read: if isAuthenticated();
-       allow write: if false;
+       allow write: if isAuthenticated(); // Allow users to update limit count
     }
     
     // Default: Deny everything else

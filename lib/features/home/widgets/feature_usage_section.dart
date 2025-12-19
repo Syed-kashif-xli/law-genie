@@ -15,6 +15,7 @@ import 'package:myapp/features/bare_acts/bare_acts_page.dart';
 import 'package:myapp/features/certified_copy/certified_copy_state_selection_page.dart';
 
 import 'package:myapp/features/diary/diary_page.dart';
+import 'package:myapp/services/firestore_service.dart';
 
 class FeatureUsageSection extends StatelessWidget {
   const FeatureUsageSection({super.key});
@@ -224,22 +225,44 @@ class FeatureUsageSection extends StatelessWidget {
                       Navigator.pushNamed(context, '/chatHistory');
                     },
                   ),
-                  FeatureUsageCard(
-                    title: 'Certified Copy',
-                    count: usageProvider.certifiedCopyUsage,
-                    limit: usageProvider.certifiedCopyLimit,
-                    icon: Iconsax.verify,
-                    color: const Color(0xFFE91E63),
-                    isPremium: isPremium,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const CertifiedCopyStateSelectionPage()),
+                  // Certified Copy Card with Live Stream
+                  StreamBuilder<Map<String, dynamic>?>(
+                    stream: FirestoreService().getCertifiedCopyLimitStream(),
+                    builder: (context, snapshot) {
+                      int used = 0;
+                      int limit = 20;
+
+                      if (snapshot.hasData && snapshot.data != null) {
+                        final data = snapshot.data!;
+                        used = data['count'] as int? ?? 0;
+                        limit = data['limit'] as int? ?? 20;
+
+                        final todayStr =
+                            DateTime.now().toIso8601String().split('T')[0];
+                        if (data['date'] != todayStr && data['date'] != null) {
+                          used = 0; // Anticipate reset visually
+                        }
+                      }
+
+                      return FeatureUsageCard(
+                        title: 'Certified Copy',
+                        count: used,
+                        limit: limit,
+                        icon: Iconsax.verify,
+                        color: const Color(0xFFE91E63),
+                        isPremium: isPremium,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const CertifiedCopyStateSelectionPage()),
+                          );
+                        },
                       );
                     },
                   ),
+
                   FeatureUsageCard(
                     title: 'Legal Diary',
                     count: usageProvider.diaryUsage,

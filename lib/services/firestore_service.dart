@@ -153,7 +153,23 @@ class FirestoreService {
     }
   }
 
-  // --- Daily Limit Methods ---
+  // --- Daily Limit Methods (Certified Copy Separate System) ---
+
+  // Stream for live limit updates
+  Stream<Map<String, dynamic>?> getCertifiedCopyLimitStream() {
+    return _db.collection('system').doc('limits').snapshots().map((snapshot) {
+      if (snapshot.exists && snapshot.data() != null) {
+        final data = snapshot.data()!;
+        if (data.containsKey('count limits')) {
+          final limitsMap = data['count limits'] as Map<String, dynamic>;
+          if (limitsMap.containsKey('certifiedCopy')) {
+            return limitsMap['certifiedCopy'] as Map<String, dynamic>;
+          }
+        }
+      }
+      return null;
+    });
+  }
 
   // Check if daily limit is reached
   Future<bool> checkDailyLimit() async {
@@ -161,19 +177,27 @@ class FirestoreService {
       final docRef = _db.collection('system').doc('limits');
       final doc = await docRef.get();
 
-      if (!doc.exists) return true;
+      if (!doc.exists) return true; // Default to allow if config missing
 
       final data = doc.data()!;
+      if (!data.containsKey('count limits')) return true;
+
+      final limitsMap = data['count limits'] as Map<String, dynamic>;
+      final ccMap = limitsMap['certifiedCopy'] as Map<String, dynamic>?;
+
+      if (ccMap == null) return true;
+
       final todayStr = DateTime.now().toIso8601String().split('T')[0];
-      final storedDate = data['TodayDate'] as String?;
-      final count = data['Count'] as int? ?? 0;
-      final limit = data['Limit'] as int? ?? 20; // Read limit, default 20
+      final storedDate = ccMap['date'] as String?;
+      final count = ccMap['count'] as int? ?? 0;
+      final limit = ccMap['limit'] as int? ?? 20;
 
       if (storedDate == todayStr) {
         if (count >= limit) {
           return false;
         }
       }
+      // If date is old, we assume it will reset on next increment, so allow.
       return true;
     } catch (e) {
       debugPrint('Error checking daily limit: $e');
@@ -190,32 +214,42 @@ class FirestoreService {
       await _db.runTransaction((transaction) async {
         final doc = await transaction.get(docRef);
 
-        if (!doc.exists) {
-          transaction.set(docRef, {
-            'TodayDate': todayStr,
-            'Count': 1,
-            'Limit': 20,
-          });
-        } else {
+        // Default structure
+        Map<String, dynamic> newCcMap = {
+          'date': todayStr,
+          'count': 1,
+          'limit': 20
+        };
+
+        if (doc.exists) {
           final data = doc.data()!;
-          final storedDate = data['TodayDate'] as String?;
-          int currentCount = data['Count'] as int? ?? 0;
-          // Preserve existing limit, or default to 20 if missing
-          int currentLimit = data['Limit'] as int? ?? 20;
+          final limitsMap =
+              Map<String, dynamic>.from(data['count limits'] ?? {});
+          final ccMap =
+              Map<String, dynamic>.from(limitsMap['certifiedCopy'] ?? {});
+
+          final storedDate = ccMap['date'] as String?;
+          int currentCount = ccMap['count'] as int? ?? 0;
+          int currentLimit = ccMap['limit'] as int? ?? 20;
 
           if (storedDate == todayStr) {
-            transaction.update(docRef, {
-              'Count': currentCount + 1,
-              'Limit': currentLimit, // Keep existing limit
-            });
+            newCcMap = {
+              'date': todayStr,
+              'count': currentCount + 1,
+              'limit': currentLimit
+            };
           } else {
-            // New day, reset count to 1 but keep limit
-            transaction.set(docRef, {
-              'TodayDate': todayStr,
-              'Count': 1,
-              'Limit': currentLimit, // Keep existing limit
-            });
+            // Reset for new day
+            newCcMap = {'date': todayStr, 'count': 1, 'limit': currentLimit};
           }
+
+          limitsMap['certifiedCopy'] = newCcMap;
+          transaction.update(docRef, {'count limits': limitsMap});
+        } else {
+          // Create doc if missing
+          transaction.set(docRef, {
+            'count limits': {'certifiedCopy': newCcMap}
+          });
         }
       });
     } catch (e) {
