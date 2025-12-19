@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -111,6 +112,8 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
   final TextEditingController _motherNameHindiController =
       TextEditingController();
   final TextEditingController _mobileNumberController = TextEditingController();
+  final TextEditingController _whatsappNumberController =
+      TextEditingController();
 
   // 6. Property Details
   String? _propertyType;
@@ -134,6 +137,7 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
   bool _isTransliteratingFatherName = false;
   bool _isTransliteratingMotherName = false;
   bool _isTransliteratingAddress = false;
+  String _deliveryMode = 'WhatsApp';
 
   @override
   void initState() {
@@ -150,6 +154,7 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user?.phoneNumber != null && user!.phoneNumber!.isNotEmpty) {
       _mobileNumberController.text = user.phoneNumber!;
+      _whatsappNumberController.text = user.phoneNumber!;
     }
   }
 
@@ -346,6 +351,10 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
             isDigitalCopy: widget.isDigitalCopy,
             areaType: _areaType,
             tehsilName: _tehsilNameController.text,
+            deliveryMode: _deliveryMode,
+            deliveryContact: _deliveryMode == 'WhatsApp'
+                ? _whatsappNumberController.text
+                : (FirebaseAuth.instance.currentUser?.email ?? ''),
           ),
         ),
       );
@@ -620,11 +629,181 @@ class _CertifiedRegistryCopyPageState extends State<CertifiedRegistryCopyPage> {
                       child: _buildPartyDetailsForm(),
                     ),
                     const SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     _buildSectionContainer(
                       title: 'Property Details',
                       icon: Iconsax.building,
                       child: _buildPropertyDetailsForm(),
                     ),
+                    const SizedBox(height: 24),
+
+                    // Delivery Preference Section
+                    _buildSectionContainer(
+                      title: 'Receive Copy Via',
+                      icon: Iconsax.receive_square,
+                      child: Column(
+                        children: [
+                          // WhatsApp Option
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: _deliveryMode == 'WhatsApp'
+                                    ? const Color(0xFF25D366) // WhatsApp Green
+                                    : Colors.white.withValues(alpha: 0.1),
+                              ),
+                            ),
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                unselectedWidgetColor: Colors.white54,
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () =>
+                                    setState(() => _deliveryMode = 'WhatsApp'),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 12),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        _deliveryMode == 'WhatsApp'
+                                            ? Icons.radio_button_checked
+                                            : Icons.radio_button_unchecked,
+                                        color: _deliveryMode == 'WhatsApp'
+                                            ? const Color(0xFF25D366)
+                                            : Colors.white54,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      const FaIcon(FontAwesomeIcons.whatsapp,
+                                          color: Color(0xFF25D366), size: 24),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'WhatsApp',
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white, fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // WhatsApp Input Field (Visible only if WhatsApp selected)
+                          if (_deliveryMode == 'WhatsApp')
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 12, right: 12, bottom: 20),
+                              child: TextFormField(
+                                controller:
+                                    _whatsappNumberController, // Separate controller for WhatsApp
+                                style: GoogleFonts.poppins(color: Colors.white),
+                                keyboardType: TextInputType.phone,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter WhatsApp Number',
+                                  hintStyle: GoogleFonts.poppins(
+                                      color: Colors.white30),
+                                  prefixIcon: const Icon(Icons.phone,
+                                      color: Colors.white54, size: 20),
+                                  filled: true,
+                                  fillColor:
+                                      Colors.white.withValues(alpha: 0.05),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide.none),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 14),
+                                ),
+                              ),
+                            ),
+
+                          // Email Option
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: _deliveryMode == 'Email'
+                                    ? const Color(0xFF4285F4) // Google Blue
+                                    : Colors.white.withValues(alpha: 0.1),
+                              ),
+                            ),
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                unselectedWidgetColor: Colors.white54,
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () =>
+                                    setState(() => _deliveryMode = 'Email'),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 12),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        _deliveryMode == 'Email'
+                                            ? Icons.radio_button_checked
+                                            : Icons.radio_button_unchecked,
+                                        color: _deliveryMode == 'Email'
+                                            ? const Color(0xFF4285F4)
+                                            : Colors.white54,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      const Icon(Icons.email,
+                                          color: Color(0xFF4285F4), size: 24),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Email',
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white, fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Email Input Field (Visible only if Email selected)
+                          if (_deliveryMode == 'Email')
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 12, right: 12, bottom: 8),
+                              child: TextFormField(
+                                initialValue:
+                                    FirebaseAuth.instance.currentUser?.email,
+                                style: GoogleFonts.poppins(color: Colors.white),
+                                keyboardType: TextInputType.emailAddress,
+                                readOnly:
+                                    true, // Auto-filled from Auth, read-only for now
+                                decoration: InputDecoration(
+                                  hintText: 'Enter Email Address',
+                                  hintStyle: GoogleFonts.poppins(
+                                      color: Colors.white30),
+                                  prefixIcon: const Icon(Icons.alternate_email,
+                                      color: Colors.white54, size: 20),
+                                  filled: true,
+                                  fillColor:
+                                      Colors.white.withValues(alpha: 0.05),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide.none),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 14),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
                     const SizedBox(height: 40),
                     Container(
                       width: double.infinity,

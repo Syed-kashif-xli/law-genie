@@ -59,7 +59,12 @@ class CertifiedCopyReviewPage extends StatefulWidget {
     this.propertyAddressHindi,
     this.propertyId,
     this.isDigitalCopy = false,
+    required this.deliveryMode,
+    required this.deliveryContact,
   });
+
+  final String deliveryMode;
+  final String deliveryContact;
 
   @override
   State<CertifiedCopyReviewPage> createState() =>
@@ -125,9 +130,10 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
           'motherNameEng': widget.motherNameEng,
           'motherNameHindi': widget.motherNameHindi,
           'mobileNumber': widget.mobileNumber,
-          'userPhoneNumber':
-              user.phoneNumber, // Save verified auth phone number
-          'email': user.email, // Save email explicitly
+          'deliveryMode': widget.deliveryMode, // Save Delivery Mode
+          'deliveryContact': widget.deliveryContact,
+          'userPhoneNumber': user.phoneNumber,
+          'email': user.email,
           'searchByProperty': widget.searchByProperty,
           'propertyType': widget.propertyType,
           'propertyAddress': widget.propertyAddressEng,
@@ -273,6 +279,8 @@ class _CertifiedCopyReviewPageState extends State<CertifiedCopyReviewPage> {
               'Date Range', '${widget.fromDate} to ${widget.toDate}'),
           if (widget.deedType != null)
             _buildDetailRow('Deed Type', widget.deedType!),
+          _buildDetailRow('Delivery Via', widget.deliveryMode),
+          _buildDetailRow('Contact', widget.deliveryContact),
           const Divider(color: Colors.white10, height: 32),
           if (widget.searchByParty) ...[
             Text(

@@ -181,6 +181,73 @@ class CertifiedCopyTokenPage extends StatelessWidget {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 24),
+                      // Order Details Card
+                      _buildGlassCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Iconsax.document_text,
+                                  color: Color(0xFF02F1C3),
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Application Details',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(color: Colors.white12, height: 24),
+                            _buildDetailRow(
+                                'District', order.details['district'] ?? '-'),
+                            _buildDetailRow(
+                                'Tehsil', order.details['tehsilName'] ?? '-'),
+                            _buildDetailRow('Date Range',
+                                '${order.details['fromDate']} to ${order.details['toDate']}'),
+                            if (order.details['deedType'] != null)
+                              _buildDetailRow(
+                                  'Deed Type', order.details['deedType']),
+                            if (order.details['searchByParty'] == true) ...[
+                              const SizedBox(height: 12),
+                              Text('Party Details',
+                                  style: GoogleFonts.poppins(
+                                      color: const Color(0xFF02F1C3),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 4),
+                              if (order.details['partyName'] != null)
+                                _buildDetailRow(
+                                    'Name', order.details['partyName']),
+                              if (order.details['partyFatherNameEng'] != null)
+                                _buildDetailRow('Father Name',
+                                    order.details['partyFatherNameEng']),
+                            ],
+                            if (order.details['searchByProperty'] == true) ...[
+                              const SizedBox(height: 12),
+                              Text('Property Details',
+                                  style: GoogleFonts.poppins(
+                                      color: const Color(0xFF02F1C3),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 4),
+                              if (order.details['propertyAddress'] != null)
+                                _buildDetailRow('Address',
+                                    order.details['propertyAddress']),
+                            ],
+                            const SizedBox(height: 8),
+                            _buildDetailRow('Applied On',
+                                "${order.createdAt.year}-${order.createdAt.month.toString().padLeft(2, '0')}-${order.createdAt.day.toString().padLeft(2, '0')}"),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 32),
                       // Timeline
                       Container(
@@ -457,6 +524,37 @@ class CertifiedCopyTokenPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(
+                color: Colors.white54,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
