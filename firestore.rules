@@ -63,6 +63,17 @@ service cloud.firestore {
       allow read: if true; // Publicly readable
       allow write: if false; // Only manageable via Admin Console
     }
+    
+    // 6. Usage Limits (Needed for bootstrapping)
+    match /usage_limits/{planId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // 7. Global Usage Collection (if not inside users)
+    match /usage/{userId} {
+       allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
 
     // 6. System Configuration (For Global Limits)
     match /system/{docId} {

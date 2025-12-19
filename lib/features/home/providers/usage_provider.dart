@@ -122,7 +122,6 @@ class UsageProvider extends ChangeNotifier {
           'myCases': {'monthly': 1000},
           'bareActs': {'monthly': 1000},
           'diary': {'monthly': 300},
-          'certifiedCopy': {'monthly': 20},
           'chatHistory': {'monthly': 50},
         });
       }
@@ -142,7 +141,6 @@ class UsageProvider extends ChangeNotifier {
           'myCases': {'monthly': 5000},
           'bareActs': {'monthly': 20000},
           'diary': {'monthly': 15000},
-          'certifiedCopy': {'monthly': 1000},
           'chatHistory': {'monthly': 1000},
         });
       }
