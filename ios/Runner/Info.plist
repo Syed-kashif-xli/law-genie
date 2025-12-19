@@ -55,5 +55,16 @@
 	<string>This app uses speech recognition to convert your voice into text for chat messages.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs access to your microphone to enable voice input for chat messages.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.89322291997-gits7uhcft2s2n4jl956p1krnmp7p27f</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

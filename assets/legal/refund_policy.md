@@ -9,9 +9,8 @@ Thank you for choosing Law Genie. We value your trust and aim to provide a trans
 - Upon cancellation, you will continue to have access to the premium features until the end of your current billing period.
 
 ## 2. Refund Eligibility
-- Refunds are generally not provided for partially used subscription periods.
-- In exceptional cases, such as technical failures that prevent access to the service for more than 48 hours, a pro-rata refund may be considered.
-- Refund requests must be submitted within 7 days of the transaction.
+- All purchases are final. We do not provide refunds for any subscription or service.
+- Please ensure you review the features and plans carefully before making a purchase.
 
 ## 3. Refund Process
 - To request a refund, please email support@lawgenie.co.in with your transaction ID and the reason for the request.

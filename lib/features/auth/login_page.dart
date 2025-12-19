@@ -433,8 +433,41 @@ class _LoginPageState extends State<LoginPage> {
       // ignore: avoid_print
       debugPrint("Google Sign-In Error: $e");
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.googleSignInFailed)));
+
+      String errorMessage = l10n.googleSignInFailed;
+      if (e is FirebaseAuthException) {
+        errorMessage = "Firebase Auth Error: ${e.message}";
+      } else if (e is PlatformException) {
+        errorMessage = "Platform Error: ${e.message} (Code: ${e.code})";
+        if (e.code == '10') {
+          errorMessage =
+              "Developer Error (10): This usually means SHA-1 is missing in Firebase or package name mismatch.";
+        }
+      } else {
+        errorMessage = "Error: ${e.toString()}";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(errorMessage),
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Details',
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("Sign-in Error"),
+                content: SingleChildScrollView(child: Text(e.toString())),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("OK"))
+                ],
+              ),
+            );
+          },
+        ),
+      ));
     }
   }
 
