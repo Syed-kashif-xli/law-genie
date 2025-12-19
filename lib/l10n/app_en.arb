@@ -92,5 +92,9 @@
     "termsOfService": "Terms of Service",
     "refundPolicy": "Refund Policy",
     "disclaimer": "Legal Disclaimer",
-    "legalAndPolicies": "Legal & Policies"
+    "legalAndPolicies": "Legal & Policies",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.",
+    "cancel": "Cancel",
+    "delete": "Delete"
 }

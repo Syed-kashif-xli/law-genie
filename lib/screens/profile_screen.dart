@@ -12,6 +12,7 @@ import 'package:myapp/providers/ui_provider.dart';
 import 'package:myapp/screens/order_history_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:myapp/screens/legal_detail_screen.dart';
+import 'package:myapp/services/firestore_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -51,6 +52,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error signing out: $e')),
         );
+      }
+    }
+  }
+
+  Future<void> _deleteAccount() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final l10n = AppLocalizations.of(context)!;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF19173A),
+        title: Text(l10n.deleteAccount,
+            style: const TextStyle(color: Colors.white)),
+        content: Text(
+          l10n.deleteAccountConfirmation,
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      try {
+        // Delete Firestore data first (while we still have the UID and permissions)
+        await FirestoreService().deleteUserData(user.uid);
+
+        // Delete Auth Account
+        await user.delete();
+
+        // Navigate to Auth Wrapper
+        if (mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const AuthWrapper()),
+            (route) => false,
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        if (mounted) {
+          if (e.code == 'requires-recent-login') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    'Security check: Please log out and log in again to delete your account.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error deleting account: ${e.message}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }
@@ -432,6 +510,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: _signOut,
               showArrow: false,
             ),
+            ProfileMenuOption(
+              title: l10n.deleteAccount,
+              icon: Icons.delete_forever,
+              onTap: _deleteAccount,
+              showArrow: false,
+              textColor: Colors.red,
+              iconColor: Colors.red,
+            ),
             const SizedBox(height: 20),
             // -- LEGAL SECTION
             _buildSectionHeader(l10n.legalAndPolicies),
@@ -571,12 +657,16 @@ class ProfileMenuOption extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.showArrow = true,
+    this.textColor,
+    this.iconColor,
   });
 
   final String title;
   final IconData icon;
   final VoidCallback onTap;
   final bool showArrow;
+  final Color? textColor;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -603,16 +693,16 @@ class ProfileMenuOption extends StatelessWidget {
               Icon(
                 icon,
                 size: 24,
-                color: Colors.white, // White icon
+                color: iconColor ?? Colors.white, // White icon or custom
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white, // White text for visibility
+                    color: textColor ?? Colors.white, // White text or custom
                   ),
                 ),
               ),

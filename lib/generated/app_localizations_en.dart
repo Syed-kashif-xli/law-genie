@@ -236,4 +236,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get legalAndPolicies => 'Legal & Policies';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmation =>
+      'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
 }

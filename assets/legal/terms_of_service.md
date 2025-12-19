@@ -19,9 +19,12 @@ By accessing or using the Service, you agree to be bound by these Terms. If you 
 When you create an account with us, you must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms. You are responsible for safeguarding the password that you use to access the Service.
 
 ## 4. Subscriptions and Payments
-- Some parts of the Service are billed on a subscription basis.
-- Payments are processed through Razorpay.
-- You agree to provide current, complete, and accurate purchase and account information for all purchases made via the App.
+- **Payment Processing:** Payments are processed securely through Razorpay.
+- **Accuracy:** You agree to provide current, complete, and accurate purchase and account information for all purchases made via the App.
+- **No Refunds & No Cancellations:**
+  - **All sales are final.** By creating a subscription, you acknowledge that Law Genie **does not offer refunds** under any circumstances.
+  - **No Cancellations:** Subscription plans cannot be cancelled mid-term. The service will remain active until the billing period ends.
+  - Please review our [Refund Policy] for detailed information.
 
 ## 5. Prohibited Use
 You may not use the Service:

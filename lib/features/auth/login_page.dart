@@ -13,6 +13,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:myapp/services/firestore_service.dart';
 import 'package:myapp/models/user_model.dart';
 import 'package:myapp/generated/app_localizations.dart';
+import 'package:myapp/screens/legal_detail_screen.dart';
 
 class LoginPage extends StatefulWidget {
   final bool agreedToTerms;
@@ -663,6 +664,29 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24),
                       _buildGlowingButton(),
+                      if (_isSignUp) ...[
+                        const SizedBox(height: 12),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LegalDetailScreen(
+                                  title: l10n.termsOfService,
+                                  assetPath: 'assets/legal/terms_of_service.md',
+                                ),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'By signing up, you agree to our Terms of Service',
+                            style: const TextStyle(
+                                color: Colors.white60,
+                                fontSize: 12,
+                                decoration: TextDecoration.underline),
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 32),
                       Text(l10n.orContinueWith,
                           style: const TextStyle(color: Colors.white70)),

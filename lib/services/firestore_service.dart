@@ -84,6 +84,17 @@ class FirestoreService {
     return null;
   }
 
+  // Delete User Data
+  Future<void> deleteUserData(String uid) async {
+    try {
+      await _db.collection('users').doc(uid).delete();
+      debugPrint('User data deleted for uid: $uid');
+    } catch (e) {
+      debugPrint('Error deleting user data: $e');
+      rethrow;
+    }
+  }
+
   // --- Order Methods ---
 
   // Create Registry Order
