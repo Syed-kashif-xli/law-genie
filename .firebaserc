@@ -1,0 +1,13 @@
+{
+  "projects": {},
+  "targets": {
+    "law-genie-56982041-cd466": {
+      "hosting": {
+        "main": [
+          "law-genie-56982041-cd466"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

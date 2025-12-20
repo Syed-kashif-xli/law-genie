@@ -4,194 +4,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Features - Law Genie | 20+ AI-Powered Legal Tools</title>
+    <title>Features - Law Genie | AI Legal Ecosystem</title>
     <meta name="description"
-        content="Explore the full suite of Law Genie features. From Jurist AI to Certified Registry Copies, we have everything a legal professional needs.">
+        content="Explore Law Genie's next-gen AI features: AI Jurist, Case Finder, and Smart OCR for Indian Law.">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
         rel="stylesheet">
+
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Style -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
 </head>
 
-<body class="subpage">
-    <div class="cursor-blur"></div>
+<body>
+    <div class="noise-overlay"></div>
+    <canvas id="webgl-bg"></canvas>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
 
     <nav class="navbar">
         <div class="container">
-            <div class="logo">
-                <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
-                    <img src="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png"
-                        alt="Law Genie Logo" class="logo-img">
-                    <span class="logo-text" style="color: white;">Law Genie</span>
-                </a>
-            </div>
+            <a href="index.html" class="logo">
+                <img src="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png"
+                    alt="Law Genie Logo" class="logo-img">
+                <span class="logo-text">LAW GENIE</span>
+            </a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="features.html" class="active">Features</a></li>
                 <li><a href="pricing.html">Pricing</a></li>
                 <li><a href="contact.html">Contact</a></li>
-                <li><a href="#" class="btn btn-primary" style="padding: 10px 24px;">Launching Soon</a></li>
+                <li><a href="#" class="btn btn-primary" style="padding: 0.8rem 1.5rem; font-size: 0.7rem;">LAUNCH
+                        APP</a></li>
             </ul>
-            <div class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
         </div>
     </nav>
 
-    <header class="subpage-header">
+    <header class="hero" style="min-height: 60vh; padding-top: 150px;">
         <div class="container">
-            <span class="detail-badge">App Ecosystem</span>
-            <h1>Complete <span class="gradient-text">Feature Detail</span></h1>
-            <p>Master your legal workflow with 20+ professional tools built integrated with cutting-edge AI.</p>
+            <span class="section-tag reveal">PRODUCT ECOSYSTEM</span>
+            <h1 class="reveal">LIMITLESS <br><span class="gradient-text">CAPABILITIES.</span></h1>
+            <p class="hero-subtitle reveal">Every tool we build is designed to handle the unique complexities of Indian
+                law, from constitutional research to trial-court summaries.</p>
         </div>
     </header>
 
-    <section class="features-detailed-list">
+    <section class="features" style="padding-top: 50px;">
         <div class="container">
-            <!-- Category: AI Core -->
-            <div class="feature-category">
-                <h2 class="category-title"><i class="fas fa-microchip"></i> Core AI Intelligence</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon purple"><i class="fas fa-robot"></i></div>
-                        <h3>Jurist AI Chat</h3>
-                        <p>Powered by Google Gemini. Get citations, legal reasoning, and formatted responses with Voice
-                            support (STT/TTS).</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon red"><i class="fas fa-shield-virus"></i></div>
-                        <h3>Risk Analysis</h3>
-                        <p>AI-powered risk assessment for cases. Get a percentage-based risk score and strategic
-                            recommendations.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon violet"><i class="fas fa-file-signature"></i></div>
-                        <h3>Court Order Reader</h3>
-                        <p>Scan court orders using OCR and get AI-generated summaries and key point extractions
-                            instantly.</p>
-                    </div>
+            <div class="features-grid">
+                <!-- AI Jurist Extended -->
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                    <h3>AI Jurist Pro</h3>
+                    <p>Not just text—reasoning. Ask for a legal strategy based on a specific set of facts, and get an
+                        answer backed by the latest SC/HC precedents.</p>
+                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><i class="fas fa-check"
+                                style="color: var(--primary); margin-right: 0.5rem;"></i> Deep Legal Reasoning</li>
+                        <li style="margin-bottom: 0.5rem;"><i class="fas fa-check"
+                                style="color: var(--primary); margin-right: 0.5rem;"></i> Precise Citation Links</li>
+                    </ul>
                 </div>
-            </div>
 
-            <!-- Category: Research & Data -->
-            <div class="feature-category">
-                <h2 class="category-title"><i class="fas fa-university"></i> Research & Law Library</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon blue"><i class="fas fa-search"></i></div>
-                        <h3>Case Finder</h3>
-                        <p>Professional search across millions of Indian court cases with advanced filters (Year, Court,
-                            Name).</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon pink"><i class="fas fa-gavel"></i></div>
-                        <h3>Bare Acts Library</h3>
-                        <p>Complete Access to IPC, CrPC, Constitution of India and more. Search within acts and bookmark
-                            sections.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon green"><i class="fas fa-newspaper"></i></div>
-                        <h3>Legal News Feed</h3>
-                        <p>Live RSS integration with top legal news sources. Articles, images, and bookmarks to keep you
-                            updated.</p>
-                    </div>
+                <!-- Case Finder Extended -->
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fas fa-search-plus"></i></div>
+                    <h3>Case Finder Elite</h3>
+                    <p>Search 10 million+ case records using intelligent search. Filter by Bench, Judge, Year, and
+                        specific Legal Principle effortlessly.</p>
+                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><i class="fas fa-check"
+                                style="color: var(--primary); margin-right: 0.5rem;"></i> Multi-Court Indexing</li>
+                        <li style="margin-bottom: 0.5rem;"><i class="fas fa-check"
+                                style="color: var(--primary); margin-right: 0.5rem;"></i> Smart Fact Matching</li>
+                    </ul>
                 </div>
-            </div>
 
-            <!-- Category: Productivity -->
-            <div class="feature-category">
-                <h2 class="category-title"><i class="fas fa-briefcase"></i> Legal Productivity</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon orange"><i class="fas fa-file-word"></i></div>
-                        <h3>Doc Generator</h3>
-                        <h3>Document Generator</h3>
-                        <p>Template-based legal drafting (NDAs, Notices) with AI content generation and PDF export.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon cyan"><i class="fas fa-language"></i></div>
-                        <h3>Legal Translator</h3>
-                        <p>Translate documents in 10+ major Indian languages including Hindi, Marathi, Tamil, and
-                            Bengali.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon indigo"><i class="fas fa-print"></i></div>
-                        <h3>Document Scanner</h3>
-                        <p>Professional edge-detection scanner. Multi-page support, image enhancement, and direct PDF
-                            generation.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Category: Management -->
-            <div class="feature-category">
-                <h2 class="category-title"><i class="fas fa-tasks"></i> Case & Office Management</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon amber"><i class="fas fa-stream"></i></div>
-                        <h3>Case Timeline</h3>
-                        <p>Visual interactive timeline for case progress. Manage events from Filing to Judgment with
-                            notes.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon yellow"><i class="fas fa-book-open"></i></div>
-                        <h3>Digital Legal Diary</h3>
-                        <p>Secure, cloud-synced daily legal notes with rich text editing and meeting reminders.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon blue"><i class="fas fa-bell"></i></div>
-                        <h3>Notification System</h3>
-                        <p>Never miss a hearing. Push notifications for case updates, orders, and legal alerts.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Category: Special Services -->
-            <div class="feature-category">
-                <h2 class="category-title"><i class="fas fa-star"></i> Specialized Services</h2>
-                <div class="features-grid">
-                    <div class="feature-card premium-border">
-                        <div class="feature-icon gold"><i class="fas fa-certificate"></i></div>
-                        <h3>Certified Copy (MP)</h3>
-                        <p>Exclusive domain: Order property registry copies for Madhya Pradesh districts directly via
-                            app.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon teal"><i class="fas fa-calculator"></i></div>
-                        <h3>Legal Calculator</h3>
-                        <p>Court fees, stamp duty, and limitation period calculations for all jurisdictions.</p>
-                    </div>
+                <!-- Docu-Smart Extended -->
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>Docu-Smart AI</h3>
+                    <p>Upload a 500-page charge sheet or complex civil petition. Get a summary, key timelines, and a
+                        list of contradictions in seconds.</p>
+                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.5rem;"><i class="fas fa-check"
+                                style="color: var(--primary); margin-right: 0.5rem;"></i> Bulk OCR Processing</li>
+                        <li style="margin-bottom: 0.5rem;"><i class="fas fa-check"
+                                style="color: var(--primary); margin-right: 0.5rem;"></i> Risk Flagging</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="footer">
-        <div class="container footer-grid">
-            <div class="footer-brand">
-                <div class="logo">
-                    <span class="logo-text">Law Genie</span>
+    <footer class="footer reveal">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <span class="logo-text">LAW GENIE</span>
+                    <p style="color: var(--text-muted); margin-top: 1.5rem; max-width: 350px;">The definitive AI legal
+                        suite for India.</p>
                 </div>
-                <p>Empowering Indians with AI-driven legal intelligence.</p>
+                <!-- Simplified Footer Items -->
+                <div class="footer-links">
+                    <h5>RESOURCES</h5>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="contact.html">Support</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="contact.html">Contact Us</a></li>
-                    <li><a href="privacy.html">Privacy Policy</a></li>
-                    <li><a href="terms.html">Terms of Service</a></li>
-                    <li><a href="refund-policy.html">Refund Policy</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="container">
-                <p>&copy; 2025 Law Genie. All rights reserved.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Law Genie AI.</p>
             </div>
         </div>
     </footer>

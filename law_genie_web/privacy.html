@@ -4,207 +4,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - Law Genie</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Privacy Policy - Law Genie | Your Data Security</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
         rel="stylesheet">
-    <style>
-        .page-header {
-            padding: 180px 0 60px;
-            text-align: center;
-        }
 
-        .legal-content {
-            padding-bottom: 100px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        .legal-content h1 {
-            margin-bottom: 2rem;
-            font-size: 2.5rem;
-        }
+    <!-- Style -->
+    <link rel="stylesheet" href="style.css">
 
-        .legal-content h2 {
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-            color: var(--primary-light);
-        }
-
-        .legal-content h3 {
-            margin-top: 1.5rem;
-            margin-bottom: 0.8rem;
-            font-size: 1.2rem;
-            color: var(--text-main);
-        }
-
-        .legal-content p {
-            margin-bottom: 1rem;
-            color: var(--text-muted);
-        }
-
-        .legal-content ul {
-            margin-bottom: 1.5rem;
-            padding-left: 1.5rem;
-            color: var(--text-muted);
-        }
-
-        .legal-content li {
-            margin-bottom: 0.5rem;
-        }
-
-        .legal-card {
-            background: var(--bg-card);
-            border: 1px solid var(--glass-border);
-            padding: 3rem;
-            border-radius: 24px;
-            backdrop-filter: blur(12px);
-        }
-    </style>
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
 </head>
 
 <body>
-    <div class="cursor-blur"></div>
-    <div class="lens-flare flare-1"></div>
+    <div class="noise-overlay"></div>
+    <canvas id="webgl-bg"></canvas>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
 
     <nav class="navbar">
         <div class="container">
-            <div class="logo">
+            <a href="index.html" class="logo">
                 <img src="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png"
                     alt="Law Genie Logo" class="logo-img">
-                <span class="logo-text">Law Genie</span>
-            </div>
+                <span class="logo-text">LAW GENIE</span>
+            </a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="features.html">Features</a></li>
                 <li><a href="pricing.html">Pricing</a></li>
                 <li><a href="contact.html">Contact</a></li>
-                <li><a href="#" class="btn btn-primary">Launching Soon</a></li>
+                <li><a href="#" class="btn btn-primary" style="padding: 0.8rem 1.5rem; font-size: 0.7rem;">LAUNCH
+                        APP</a></li>
             </ul>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="page-header">
-            <span class="badge">Legal</span>
-            <h1>Privacy <span class="gradient-text">Policy</span></h1>
+    <header class="hero" style="min-height: 40vh; padding-top: 150px;">
+        <div class="container">
+            <span class="section-tag reveal">LEGAL COMPLIANCE</span>
+            <h1 class="reveal">PRIVACY <br><span class="gradient-text">POLICY.</span></h1>
         </div>
+    </header>
 
-        <div class="legal-content">
-            <div class="legal-card">
-                <p><strong>Last Updated: December 19, 2025</strong></p>
-                <p>Welcome to Law Genie ("we," "our," or "us"). We are committed to protecting your privacy. This
-                    Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use
-                    our mobile application (the "App").</p>
+    <section class="features" style="padding-top: 0;">
+        <div class="container">
+            <div class="feature-card reveal" style="padding: 5rem; max-width: 900px; margin: 0 auto; text-align: left;">
+                <h3 style="margin-bottom: 2rem;">Introduction</h3>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">At Law Genie, your privacy is our top
+                    priority. We utilize state-of-the-art encryption to ensure your legal documents and queries remain
+                    100% confidential. This policy explains how we handle your data.</p>
 
-                <h2>1. Information We Collect</h2>
+                <h3 style="margin-bottom: 2rem; margin-top: 4rem;">Data Collection</h3>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">We collect information that you contribute
+                    directly to the platform, such as uploaded legal files and search queries. This data is used solely
+                    to provide legal AI services and is never sold to third parties.</p>
 
-                <h3>1.1 Personal Data</h3>
-                <p>While using our App, we may ask you to provide us with certain personally identifiable information
-                    that can be used to contact or identify you, including:</p>
-                <ul>
-                    <li>Email address</li>
-                    <li>Phone number</li>
-                    <li>First name and last name</li>
-                    <li>Profile picture</li>
-                </ul>
-
-                <h3>1.2 Usage and Technical Data</h3>
-                <p>We collect information that your device sends whenever you use our App:</p>
-                <ul>
-                    <li>Device information (Model, OS version, Unique device identifiers)</li>
-                    <li>IP address</li>
-                    <li>App usage statistics and crash reports</li>
-                </ul>
-
-                <h3>1.3 Case and Document Data</h3>
-                <p>To provide our core services, we process:</p>
-                <ul>
-                    <li>Legal documents you upload for analysis</li>
-                    <li>Case details you enter for tracking</li>
-                    <li>AI chat history</li>
-                    <li>Scanned documents from your camera</li>
-                </ul>
-
-                <h2>2. How We Use Your Information</h2>
-                <p>We use the collected data for various purposes:</p>
-                <ul>
-                    <li>To provide and maintain our Service</li>
-                    <li>To notify you about changes to our Service</li>
-                    <li>To allow you to participate in interactive features</li>
-                    <li>To provide AI-powered legal insights and document analysis</li>
-                    <li>To process payments via Razorpay</li>
-                    <li>To provide customer support</li>
-                    <li>To monitor the usage of our Service</li>
-                </ul>
-
-                <h2>3. Data Storage and Security</h2>
-                <p>Your data is stored securely using Google Firebase. We implement industry-standard security measures
-                    to protect your information. However, no method of transmission over the internet or electronic
-                    storage is 100% secure.</p>
-
-                <h2>4. Third-Party Services</h2>
-                <p>We may employ third-party companies and individuals:</p>
-                <ul>
-                    <li><strong>Google Firebase:</strong> For authentication, database, and storage.</li>
-                    <li><strong>Google AI (Gemini):</strong> For processing legal queries and document analysis.</li>
-                    <li><strong>Razorpay:</strong> For processing subscription payments.</li>
-                    <li><strong>Google Drive:</strong> If you choose to integrate your documents.</li>
-                </ul>
-
-                <h2>5. Your Data Rights</h2>
-                <p>You have the right to:</p>
-                <ul>
-                    <li>Access the personal data we hold about you.</li>
-                    <li>Request the correction of inaccurate data.</li>
-                    <li>Request the deletion of your data.</li>
-                    <li>Withdraw consent for data processing.</li>
-                </ul>
-
-                <h2>6. Retention of Data</h2>
-                <p>We will retain your Personal Data only for as long as is necessary for the purposes set out in this
-                    Privacy Policy.</p>
-
-                <h2>7. Changes to This Policy</h2>
-                <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the
-                    new Privacy Policy on this page and updating the "Last Updated" date.</p>
-
-                <h2>8. Contact Us</h2>
-                <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-                <p><strong>Email:</strong> support@lawgenie.co.in</p>
+                <h3 style="margin-bottom: 2rem; margin-top: 4rem;">Security Standards</h3>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">All communications are over HTTPS. Data at
+                    rest is encrypted using AES-256 standards, matching the security used by global financial
+                    institutions.</p>
             </div>
         </div>
-    </div>
+    </section>
 
-    <footer class="footer">
-        <div class="container footer-grid">
-            <div class="footer-brand">
-                <div class="logo">
-                    <img src="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png"
-                        alt="Law Genie Logo" class="logo-img">
-                    <span class="logo-text">Law Genie</span>
-                </div>
-                <p>Empowering Indians with AI-driven legal intelligence.</p>
-            </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="contact.html">Contact Us</a></li>
-                    <li><a href="privacy.html">Privacy Policy</a></li>
-                    <li><a href="terms.html">Terms of Service</a></li>
-                    <li><a href="refund-policy.html">Refund Policy</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="container">
-                <p>&copy; 2025 Law Genie. All rights reserved.</p>
+    <footer class="footer reveal">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Law Genie AI.</p>
             </div>
         </div>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 
 </html>

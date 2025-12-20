@@ -4,123 +4,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Law Genie</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Contact Us - Law Genie | Get Expert AI Support</title>
+    <meta name="description"
+        content="Reach out to the Law Genie team for inquiries, support, or feedback on our AI legal suite.">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
         rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
 </head>
 
 <body>
-    <div class="cursor-blur"></div>
-    <div class="lens-flare flare-1"></div>
-    <div class="lens-flare flare-2"></div>
+    <div class="noise-overlay"></div>
+    <canvas id="webgl-bg"></canvas>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
 
     <nav class="navbar">
         <div class="container">
-            <div class="logo">
+            <a href="index.html" class="logo">
                 <img src="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png"
                     alt="Law Genie Logo" class="logo-img">
-                <span class="logo-text">Law Genie</span>
-            </div>
+                <span class="logo-text">LAW GENIE</span>
+            </a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="features.html">Features</a></li>
                 <li><a href="pricing.html">Pricing</a></li>
                 <li><a href="contact.html" class="active">Contact</a></li>
+                <li><a href="#" class="btn btn-primary" style="padding: 0.8rem 1.5rem; font-size: 0.7rem;">LAUNCH
+                        APP</a></li>
             </ul>
         </div>
     </nav>
 
-    <div class="container hero" style="padding-bottom: 2rem;">
-        <div class="section-header" style="text-align: center;">
-            <span class="badge">Support</span>
-            <h1>Get in <span class="gradient-text">Touch</span></h1>
-            <p>We are here to help you with any questions or support.</p>
+    <header class="hero" style="min-height: 60vh; padding-top: 150px;">
+        <div class="container">
+            <span class="section-tag reveal">GET IN TOUCH</span>
+            <h1 class="reveal">CONNECT WITH <br><span class="gradient-text">THE FUTURE.</span></h1>
+            <p class="hero-subtitle reveal">Have questions about our AI or need a custom solution? Our legal tech
+                experts are ready to help you evolve.</p>
         </div>
-    </div>
+    </header>
 
-    <div class="container contact-section">
-        <div class="contact-box animate-up">
-            <div class="contact-info">
-                <h2>Let's Talk</h2>
-                <p style="color: var(--text-muted); margin-bottom: 2rem;">
-                    Have a question about our AI features, pricing, or need technical support?
-                    Fill out the form or reach out to us directly.
-                </p>
-
-                <div style="margin-bottom: 2rem;">
-                    <h4 style="margin-bottom: 0.5rem; color: #fff;">Email Us</h4>
-                    <p style="font-size: 1.1rem; color: #818cf8;"><i class="fas fa-envelope"></i> support@lawgenie.co.in
-                    </p>
+    <section class="features" style="padding-top: 0;">
+        <div class="container">
+            <div class="feature-card reveal" style="padding: 6rem; max-width: 1000px; margin: 0 auto;">
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 6rem;">
+                    <div>
+                        <h3 style="margin-bottom: 2rem;">Contact Details</h3>
+                        <div style="margin-bottom: 3rem;">
+                            <h5
+                                style="color: var(--primary); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem;">
+                                Direct Email</h5>
+                            <p style="font-weight: 700;">support@lawgenie.co.in</p>
+                        </div>
+                        <div style="margin-bottom: 3rem;">
+                            <h5
+                                style="color: var(--primary); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem;">
+                                Visit Our Office</h5>
+                            <p style="color: var(--text-muted);">Innov8, New Delhi, India</p>
+                        </div>
+                        <div style="display: flex; gap: 1.5rem;">
+                            <a href="https://instagram.com/lawgenie.in" class="feature-icon"
+                                style="width: 50px; height: 50px; margin-bottom: 0;"><i
+                                    class="fab fa-instagram"></i></a>
+                            <a href="#" class="feature-icon" style="width: 50px; height: 50px; margin-bottom: 0;"><i
+                                    class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                    <div>
+                        <form style="display: grid; gap: 2rem;">
+                            <div>
+                                <input type="text" placeholder="FULL NAME"
+                                    style="width: 100%; padding: 1.5rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 15px; color: #fff; font-family: 'Outfit'; font-weight: 700; letter-spacing: 1px;">
+                            </div>
+                            <div>
+                                <input type="email" placeholder="EMAIL ADDRESS"
+                                    style="width: 100%; padding: 1.5rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 15px; color: #fff; font-family: 'Outfit'; font-weight: 700; letter-spacing: 1px;">
+                            </div>
+                            <div>
+                                <textarea placeholder="YOUR MESSAGE" rows="5"
+                                    style="width: 100%; padding: 1.5rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 15px; color: #fff; font-family: 'Outfit'; font-weight: 700; letter-spacing: 1px; resize: none;"></textarea>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%; justify-content: center;">SEND
+                                MESSAGE</button>
+                        </form>
+                    </div>
                 </div>
-
-                <div style="margin-bottom: 2rem;">
-                    <h4 style="margin-bottom: 0.5rem; color: #fff;">Location</h4>
-                    <p style="color: var(--text-muted);"><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
-                </div>
-
-                <div>
-                    <h4 style="margin-bottom: 0.5rem; color: #fff;">Social Media</h4>
-                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Follow us for legal updates and tips.</p>
-                    <a href="https://instagram.com/lawgenie.in" target="_blank" class="social-btn">
-                        <i class="fab fa-instagram"></i> Follow on Instagram
-                    </a>
-                </div>
-            </div>
-
-            <form class="contact-form">
-                <div class="form-group">
-                    <label style="display:block; margin-bottom:0.5rem; color:#fff;">Your Name</label>
-                    <input type="text" placeholder="John Doe" required>
-                </div>
-                <div class="form-group">
-                    <label style="display:block; margin-bottom:0.5rem; color:#fff;">Email Address</label>
-                    <input type="email" placeholder="john@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label style="display:block; margin-bottom:0.5rem; color:#fff;">Subject</label>
-                    <input type="text" placeholder="General Inquiry" required>
-                </div>
-                <div class="form-group">
-                    <label style="display:block; margin-bottom:0.5rem; color:#fff;">Message</label>
-                    <textarea rows="5" placeholder="How can we help you?" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
-            </form>
-        </div>
-    </div>
-
-    <footer class="footer">
-        <div class="container footer-grid">
-            <div class="footer-brand">
-                <div class="logo">
-                    <span class="logo-text">Law Genie</span>
-                </div>
-                <p>Empowering Indians with AI-driven legal intelligence.</p>
-            </div>
-            <div class="footer-links">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="features.html">Features</a></li>
-                    <li><a href="pricing.html">Pricing</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="contact.html">Contact Us</a></li>
-                    <li><a href="privacy.html">Privacy Policy</a></li>
-                    <li><a href="terms.html">Terms of Service</a></li>
-                    <li><a href="refund-policy.html">Refund Policy</a></li>
-                </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <div class="container">
-                <p>&copy; 2025 Law Genie. All rights reserved.</p>
+    </section>
+
+    <footer class="footer reveal">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Law Genie AI.</p>
             </div>
         </div>
     </footer>

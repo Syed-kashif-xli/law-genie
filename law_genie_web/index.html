@@ -4,56 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Law Genie - #1 AI-Powered Legal Assistant in India | AI Jurist & Case Tracker</title>
+
+    <!-- SEO Meta Tags -->
+    <title>Law Genie | #1 AI-Powered Legal Assistant for Indian Law</title>
     <meta name="description"
-        content="Law Genie is India's most advanced AI-powered legal assistant. Features include AI Jurist, Case Timeline, Document Scanner, and Bare Acts. Join the future of Indian Law.">
+        content="Law Genie is India's most advanced AI-powered legal suite. Get instant legal citations, case intelligence, and smart document analysis tailored for the Indian legal system.">
     <meta name="keywords"
-        content="Law Genie, AI Lawyer India, Jurist AI, Indian Law Search, Case Finder, Bare Acts Online, Legal Assistant App, Legal Tech India">
+        content="Law Genie, AI Lawyer India, Indian Legal AI, Case Finder India, Legal Research AI, Supreme Court Case Search, High Court Legal Research, AI Jurist">
     <meta name="author" content="Law Genie Team">
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://lawgenie.co.in/">
-    <meta property="og:title" content="Law Genie - Your AI-Powered Legal Assistant">
+    <meta property="og:url" content="https://lawgenie.in/">
+    <meta property="og:title" content="Law Genie | Redefining Indian Law with AI">
     <meta property="og:description"
-        content="AI-powered insights into Indian Law. 12+ premium features for lawyers and students.">
-    <meta property="og:image"
-        content="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png">
+        content="Empowering Indian citizens and legal professionals with next-gen AI legal intelligence.">
+    <meta property="og:image" content="https://lawgenie.in/favicon.png">
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://lawgenie.co.in/">
-    <meta property="twitter:title" content="Law Genie - AI Legal Assistant">
-    <meta property="twitter:description" content="Master Indian Law with AI. Get Jurist AI, Case Tracker, and more.">
-    <meta property="twitter:image"
-        content="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png">
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-    <!-- Structured Data (Schema.org) for Google -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Law Genie",
-      "operatingSystem": "Android, iOS",
-      "applicationCategory": "LegalApplication",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "INR"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "ratingCount": "1250"
-      }
-    }
-    </script>
-
-    <!-- Fonts -->
+    <!-- Professional Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
         rel="stylesheet">
 
     <!-- Icons -->
@@ -62,391 +38,880 @@
     <!-- Custom Style -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png"
-        href="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png">
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
 </head>
 
 <body>
-    <div class="cursor-blur"></div>
-    <div class="lens-flare flare-1"></div>
-    <div class="lens-flare flare-2"></div>
-    <div class="sphere sphere-1"></div>
-    <div class="sphere sphere-2"></div>
-    <div class="sphere sphere-3"></div>
-    <div class="sphere sphere-4"></div>
+    <!-- Premium Overlays -->
+    <div class="noise-overlay"></div>
+    <canvas id="webgl-bg"></canvas>
+
+    <!-- Liquid Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
 
     <nav class="navbar">
         <div class="container">
-            <div class="logo">
+            <a href="index.html" class="logo">
                 <img src="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png"
                     alt="Law Genie Logo" class="logo-img">
-                <span class="logo-text">Law Genie</span>
-            </div>
+                <span class="logo-text">LAW GENIE</span>
+            </a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="features.html">Features</a></li>
                 <li><a href="pricing.html">Pricing</a></li>
                 <li><a href="contact.html">Contact</a></li>
-                <li><a href="#" class="btn btn-primary">Launching Soon</a></li>
+                <li><a href="#" class="btn btn-primary" style="padding: 0.8rem 1.5rem; font-size: 0.7rem;">LAUNCH
+                        APP</a></li>
             </ul>
-            <div class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
         </div>
     </nav>
 
+    <!-- HERO SECTION -->
     <header class="hero">
         <div class="container">
             <div class="hero-grid">
                 <div class="hero-content">
-                    <span class="badge">🇮🇳 AI-Powered Legal Intelligence</span>
-                    <h1>India's #1 <span class="gradient-text">Legal AI</span></h1>
-                    <p class="hero-subtitle">Master Indian Law with 20+ AI-Powered Tools. From Jurist AI to Case
-                        Management - Everything You Need.</p>
-                    <div class="hero-buttons">
-                        <a href="features.html" class="btn btn-primary">Explore Features</a>
-                        <a href="https://instagram.com/lawgenie.in" target="_blank" class="btn btn-outline">
-                            <i class="fab fa-instagram"></i> Follow Us
-                        </a>
-                    </div>
-                    <div class="coming-soon-box">
-                        <p><i class="fas fa-rocket"></i> Launching Very Soon on Play Store</p>
+                    <span class="section-tag reveal">INDIA'S LEGAL AI EVOLUTION</span>
+                    <h1 class="reveal"
+                        style="font-size: 7rem; font-weight: 800; line-height: 0.9; letter-spacing: -4px; margin-bottom: 2.5rem;">
+                        YOUR <span class="gradient-text">SMARTER</span><br>LEGAL COMPANION.</h1>
+                    <p class="hero-subtitle reveal"
+                        style="font-size: 1.25rem; color: var(--text-muted); max-width: 600px; margin-bottom: 4rem;">
+                        Built specifically for the Indian legal landscape. Join 10,000+ legal professionals using AI to
+                        research cases, organize files, and win arguments.</p>
+                    <div class="hero-buttons reveal">
+                        <a href="#" class="btn btn-primary">START FREE TRIAL <i class="fas fa-arrow-right"></i></a>
+                        <a href="#features" class="btn btn-glass">EXPLORE SUITE</a>
                     </div>
                 </div>
-                <div class="hero-image">
-                    <div class="phone-mockup">
-                        <img src="assets/premium_mockup.png" alt="Law Genie App" class="mockup-img">
+                <div class="hero-visual reveal">
+                    <div style="display: flex; justify-content: flex-end;">
+                        <div class="phone-frame-v2" style="width: 320px; height: 600px; border-width: 14px;">
+                            <div class="app-screen" style="padding: 25px 20px;">
+                                <!-- Status bar -->
+                                <div class="app-status-bar" style="margin-bottom: 30px;">
+                                    <div class="app-status-left" style="font-weight: 800; font-size: 14px;">11:07</div>
+                                    <div class="app-status-right">
+                                        <div class="app-status-icon"><i class="fas fa-signal"></i></div>
+                                        <div class="app-status-icon"><i class="fas fa-battery-full"
+                                                style="color: var(--secondary);"></i></div>
+                                    </div>
+                                </div>
+                                <!-- Welcome -->
+                                <div class="app-user-section">
+                                    <div class="app-hello" style="font-size: 28px;">Hello, <span
+                                            class="gradient-text">Rahul</span></div>
+                                    <div class="app-partner-status"><i class="fas fa-circle"
+                                            style="font-size: 6px;"></i> AI Partner is Active</div>
+                                </div>
+                                <!-- Quick Actions -->
+                                <div class="app-quick-actions" style="margin-top: 40px;">
+                                    <div class="action-box">
+                                        <div class="action-orb-v2"
+                                            style="color: #10b981; width: 60px; height: 60px; font-size: 20px;"><i
+                                                class="fas fa-comment-medical"></i></div>
+                                        <div class="action-label-v2">New Chat</div>
+                                    </div>
+                                    <div class="action-box">
+                                        <div class="action-orb-v2"
+                                            style="color: #fbbf24; width: 60px; height: 60px; font-size: 20px;"><i
+                                                class="fas fa-expand"></i></div>
+                                        <div class="action-label-v2">Scan</div>
+                                    </div>
+                                    <div class="action-box">
+                                        <div class="action-orb-v2"
+                                            style="color: #ec4899; width: 60px; height: 60px; font-size: 20px;"><i
+                                                class="fas fa-gavel"></i></div>
+                                        <div class="action-label-v2">Lawyer</div>
+                                    </div>
+                                </div>
+                                <!-- Usage meters -->
+                                <div style="margin-top: 50px;">
+                                    <h4 style="font-size: 14px; margin-bottom: 20px;">AI Feature Usage</h4>
+                                    <div class="meter-card">
+                                        <div class="meter-header">
+                                            <div class="meter-info"><i class="fas fa-brain" style="color: #10b981;"></i>
+                                                <div class="meter-name">Legal AI Chat</div>
+                                            </div>
+                                            <div style="text-align: right;">
+                                                <div class="meter-count">42</div><span class="meter-limit">of 100</span>
+                                            </div>
+                                        </div>
+                                        <div class="meter-track">
+                                            <div class="meter-fill" style="width: 42%; background: #10b981;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="meter-card" style="margin-top: 15px;">
+                                        <div class="meter-header">
+                                            <div class="meter-info"><i class="fas fa-folder-open"
+                                                    style="color: #3b82f6;"></i>
+                                                <div class="meter-name">Case Vault</div>
+                                            </div>
+                                            <div style="text-align: right;">
+                                                <div class="meter-count">12</div><span class="meter-limit">of 500</span>
+                                            </div>
+                                        </div>
+                                        <div class="meter-track">
+                                            <div class="meter-fill" style="width: 24%; background: #3b82f6;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    style="margin-top: auto; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-size: 10px; font-weight: 800; color: var(--secondary);"><i
+                                            class="fas fa-shield-alt"></i> BANK-GRADE SECURITY ACTIVE</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <section id="features" class="features">
+    <!-- TRUSTED BY SECTION -->
+    <div class="logo-scroller">
+        <div class="logo-track">
+            <span class="logo-item">SUPREME COURT ADVOCATES</span>
+            <span class="logo-item">LEGALLEX GLOBAL</span>
+            <span class="logo-item">BOMBAY LAW CHAMBERS</span>
+            <span class="logo-item">DELHI BAR ASSOCIATION</span>
+            <span class="logo-item">VERITAS LEGAL</span>
+            <!-- Repeat for seamless scroll -->
+            <span class="logo-item">SUPREME COURT ADVOCATES</span>
+            <span class="logo-item">LEGALLEX GLOBAL</span>
+            <span class="logo-item">BOMBAY LAW CHAMBERS</span>
+            <span class="logo-item">DELHI BAR ASSOCIATION</span>
+            <span class="logo-item">VERITAS LEGAL</span>
+        </div>
+    </div>
+
+    <!-- NEXT-GEN APP EXPERIENCE (TRIPLE PHONE SHOWCASE) -->
+    <section class="app-experience reveal"
+        style="padding: 150px 0; background: radial-gradient(circle at center, rgba(99,102,241,0.08) 0%, transparent 70%); overflow: hidden;">
         <div class="container">
-            <div class="section-header">
-                <h2>Powerful <span class="gradient-text">Features</span></h2>
-                <p>Designed for Lawyers, Law Students, and Citizens alike.</p>
+            <div class="section-header" style="text-align: center;">
+                <span class="section-tag" style="background: rgba(16,185,129,0.1); color: var(--secondary);">ECOSYSTEM
+                    PREVIEW</span>
+                <h2>FULL POWER AT YOUR <span class="gradient-text">FINGERTIPS.</span></h2>
+                <p style="color: var(--text-muted); max-width: 650px; margin: 2rem auto;">Why settle for one feature?
+                    Law Genie integrates every legal essential into a single, cohesive experience. Faster, smarter, and
+                    always with you.</p>
             </div>
 
-            <div class="features-grid">
-                <div class="feature-card animate-up">
-                    <div class="feature-icon purple">
-                        <i class="fas fa-comments"></i>
+            <div class="hero-phones-container">
+
+                <!-- Left Phone: AI Chat -->
+                <div class="phone-showcase-item side left">
+                    <div class="phone-frame-v2">
+                        <div class="app-screen">
+                            <div class="app-status-bar"><span>11:06</span>
+                                <div class="ui-status-icons"><i class="fas fa-wifi"></i><i
+                                        class="fas fa-battery-three-quarters"></i></div>
+                            </div>
+                            <div class="app-ui" style="display: flex; flex-direction: column; height: 100%;">
+                                <div class="app-title">AI JURIST</div>
+                                <div style="flex: 1; padding: 10px;">
+                                    <div class="chat-bubble ai"
+                                        style="opacity:1; width: 85%; font-size: 7px; padding: 10px; border-radius: 12px 12px 12px 0; margin-bottom: 30px;">
+                                        Analyzing Section 302 IPC...</div>
+                                    <div class="chat-bubble user"
+                                        style="opacity:1; width: 70%; font-size: 7px; padding: 10px; border-radius: 12px 12px 0 12px; margin-left: auto;">
+                                        What are the exceptions?</div>
+                                </div>
+                                <div class="app-chat-bar" style="margin-top: auto;">
+                                    <div class="app-input-mock">Ask Law Genie...</div>
+                                    <div class="app-send-btn"><i class="fas fa-paper-plane"></i></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h3>Jurist AI Chat</h3>
-                    <p>Instant insights into Indian law using Google's advanced Gemini AI.</p>
                 </div>
 
-                <div class="feature-card animate-up" style="animation-delay: 0.1s;">
-                    <div class="feature-icon blue">
-                        <i class="fas fa-search"></i>
+                <!-- Center Phone: Dashboard -->
+                <div class="phone-showcase-item center">
+                    <div class="phone-frame-v2" style="width: 280px; height: 580px; border-width: 12px;">
+                        <div class="app-screen">
+                            <div class="app-status-bar" style="padding: 10px 20px;"><span>11:07</span>
+                                <div class="ui-status-icons"><i class="fas fa-signal"></i><i class="fas fa-battery-full"
+                                        style="color: var(--secondary);"></i></div>
+                            </div>
+                            <div class="app-screen" style="padding: 20px 15px;">
+                                <div class="app-user-section">
+                                    <div class="app-hello">Hello, <span class="gradient-text">Friend</span></div>
+                                    <div class="app-partner-status"><i class="fas fa-circle"
+                                            style="font-size: 6px;"></i> AI Partner is Active</div>
+                                </div>
+                                <div class="app-quick-actions">
+                                    <div class="action-box">
+                                        <div class="action-orb-v2" style="color: #10b981;"><i class="fas fa-plus"></i>
+                                        </div>
+                                        <div class="action-label-v2">New Chat</div>
+                                    </div>
+                                    <div class="action-box">
+                                        <div class="action-orb-v2" style="color: #fbbf24;"><i class="fas fa-expand"></i>
+                                        </div>
+                                        <div class="action-label-v2">Scan</div>
+                                    </div>
+                                    <div class="action-box">
+                                        <div class="action-orb-v2" style="color: #ec4899;"><i class="fas fa-gavel"></i>
+                                        </div>
+                                        <div class="action-label-v2">Lawyer</div>
+                                    </div>
+                                </div>
+                                <h4 style="font-size: 14px; margin: 25px 0 15px;">AI Feature Usage</h4>
+                                <div class="meter-card">
+                                    <div class="meter-header">
+                                        <div class="meter-info"><i class="fas fa-brain" style="color: #10b981;"></i>
+                                            <div class="meter-name" style="font-size: 10px;">Legal AI Chat</div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div class="meter-count">42</div><span class="meter-limit">of 100</span>
+                                        </div>
+                                    </div>
+                                    <div class="meter-track">
+                                        <div class="meter-fill" style="width: 42%; background: #10b981;"></div>
+                                    </div>
+                                </div>
+                                <div class="meter-card">
+                                    <div class="meter-header">
+                                        <div class="meter-info"><i class="fas fa-folder-open"
+                                                style="color: #3b82f6;"></i>
+                                            <div class="meter-name" style="font-size: 10px;">My Cases</div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div class="meter-count">12</div><span class="meter-limit">of 500</span>
+                                        </div>
+                                    </div>
+                                    <div class="meter-track">
+                                        <div class="meter-fill" style="width: 24%; background: #3b82f6;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h3>Case Finder</h3>
-                    <p>Professional search across millions of precedents and court rulings.</p>
                 </div>
 
-                <div class="feature-card animate-up" style="animation-delay: 0.2s;">
-                    <div class="feature-icon indigo">
-                        <i class="fas fa-file-invoice"></i>
+                <!-- Right Phone: Global Updates -->
+                <div class="phone-showcase-item side right">
+                    <div class="phone-frame-v2">
+                        <div class="app-screen">
+                            <div class="app-status-bar"><span>11:08</span>
+                                <div class="ui-status-icons"><i class="fas fa-wifi"></i><i
+                                        class="fas fa-battery-half"></i></div>
+                            </div>
+                            <div class="app-ui">
+                                <div class="app-title">GLOBAL UPDATES</div>
+                                <div class="news-list-mock" style="padding: 10px;">
+                                    <div class="news-card-mock">
+                                        <div class="news-thumb"></div>
+                                        <div class="news-txt">
+                                            <div class="news-tag-mock">Supreme Court</div>
+                                            <div class="news-head">New Guidelines for Digital Evidence...</div>
+                                        </div>
+                                    </div>
+                                    <div class="news-card-mock" style="margin-top: 10px;">
+                                        <div class="news-thumb"></div>
+                                        <div class="news-txt">
+                                            <div class="news-tag-mock">Legislative</div>
+                                            <div class="news-head">Bharatiya Nyaya Sanhita Updates...</div>
+                                        </div>
+                                    </div>
+                                    <div class="news-card-mock" style="margin-top: 10px;">
+                                        <div class="news-thumb"></div>
+                                        <div class="news-txt">
+                                            <div class="news-tag-mock">High Court</div>
+                                            <div class="news-head">Delhi HC on Trademark Infringement...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h3>Doc Scanner</h3>
-                    <p>High-precision OCR to transform paper documents into searchable digital assets.</p>
-                </div>
-
-                <div class="feature-card animate-up" style="animation-delay: 0.3s;">
-                    <div class="feature-icon pink">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h3>Bare Acts</h3>
-                    <p>Unlimited access to the latest Indian Bare Acts with intelligent search.</p>
-                </div>
-
-                <div class="feature-card animate-up" style="animation-delay: 0.4s;">
-                    <div class="feature-icon amber">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <h3>Smart Case Diary</h3>
-                    <p>Never miss a hearing. Digital tracking and automated date reminders.</p>
-                </div>
-
-                <div class="feature-card animate-up" style="animation-delay: 0.5s;">
-                    <div class="feature-icon cyan">
-                        <i class="fas fa-language"></i>
-                    </div>
-                    <h3>Legal Translator</h3>
-                    <p>Translate complex legal text across 10+ major Indian regional languages.</p>
-                </div>
-
-                <div class="feature-card animate-up" style="animation-delay: 0.1s;">
-                    <div class="feature-icon orange">
-                        <i class="fas fa-calculator"></i>
-                    </div>
-                    <h3>Legal Calculator</h3>
-                    <p>Accurate court fee and stamp duty calculations for all jurisdictions.</p>
-                </div>
-
-                <div class="feature-card animate-up" style="animation-delay: 0.2s;">
-                    <div class="feature-icon teal">
-                        <i class="fas fa-file-contract"></i>
-                    </div>
-                    <h3>Drafting Library</h3>
-                    <p>Ready-to-use professional legal forms, notices, and contract templates.</p>
-                </div>
-
-                <div class="feature-card animate-up" style="animation-delay: 0.3s;">
-                    <div class="feature-icon red">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Risk Analyzer</h3>
-                    <p>Predictive AI logic to analyze case vulnerabilities and legal risks.</p>
-                </div>
-
-                <div class="feature-card animate-up" style="animation-delay: 0.4s;">
-                    <div class="feature-icon green">
-                        <i class="fas fa-newspaper"></i>
-                    </div>
-                    <h3>Legal News</h3>
-                    <p>Real-time updates on latest landmark judgments and legal amendments.</p>
-                </div>
-
-                <div class="feature-card animate-up" style="animation-delay: 0.5s;">
-                    <div class="feature-icon violet">
-                        <i class="fas fa-align-left"></i>
-                    </div>
-                    <h3>Judgment Summarizer</h3>
-                    <p>Get the TL;DR of lengthy 100+ page judgments in seconds.</p>
-                </div>
-
-                <div class="feature-card animate-up" style="animation-delay: 0.6s;">
-                    <div class="feature-icon yellow">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <h3>Lawyer Connect</h3>
-                    <p>Instantly find and consult with verified legal experts across India.</p>
                 </div>
             </div>
+
+        </div>
         </div>
     </section>
 
-    <section id="why-choose" class="why-choose">
+    <!-- STATS SECTION -->
+    <section class="stats reveal">
         <div class="container">
-            <div class="section-header">
-                <span class="detail-badge">Excellence</span>
-                <h2>Why Professionals <span class="gradient-text">Trust Law Genie</span></h2>
-                <p>We combine cutting-edge AI with reliable legal data.</p>
-            </div>
             <div class="stats-grid">
                 <div class="stat-item">
+                    <h3 class="gradient-text">1M+</h3>
+                    <p>CASES ANALYZED</p>
+                </div>
+                <div class="stat-item">
                     <h3 class="gradient-text">99%</h3>
-                    <p>Accuracy in AI Search</p>
+                    <p>CITATION ACCURACY</p>
                 </div>
                 <div class="stat-item">
-                    <h3 class="gradient-text">10k+</h3>
-                    <p>Active Legal Users</p>
+                    <h3 class="gradient-text">500+</h3>
+                    <p>LAW FIRMS TRUST US</p>
                 </div>
                 <div class="stat-item">
-                    <h3 class="gradient-text">12+</h3>
-                    <p>Premium Features</p>
-                </div>
-                <div class="stat-item">
-                    <h3 class="gradient-text">24/7</h3>
-                    <p>AI Availability</p>
+                    <h3 class="gradient-text">10X</h3>
+                    <p>FASTER RESEARCH</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="features-detail" class="features-detail">
+    <!-- CORE 12 FEATURE SHOWCASE -->
+    <section id="features" class="product-features" style="padding-top: 100px;">
         <div class="container">
-            <div class="detail-row">
-                <div class="detail-text">
-                    <span class="detail-badge">Intelligence</span>
-                    <h3>Jurist AI: Your Professional Personal Lawyer</h3>
-                    <p class="lang-en">Law Genie's AI Chat is powered by Google Gemini, providing you with instant,
-                        accurate insights into Indian law. Whether you're a student or a professional, get citations and
-                        legal reasoning in seconds. Experience law without boundaries.</p>
-                    <ul class="detail-list">
-                        <li><i class="fas fa-check-circle"></i> Instant legal queries resolution</li>
-                        <li><i class="fas fa-check-circle"></i> Precise legal citations & references</li>
-                        <li><i class="fas fa-check-circle"></i> Complex law simplification for everyone</li>
-                    </ul>
-                </div>
-                <div class="detail-visual">
-                    <img src="assets/features_3d.png" alt="AI Law Chat Showcase">
-                </div>
+            <div class="section-header" style="text-align: center;">
+                <span class="section-tag">FULL APPLICATION SUITE</span>
+                <h2>12 POWERFUL <span class="gradient-text">CAPABILITIES.</span></h2>
+                <p style="color: var(--text-muted); max-width: 700px; margin: 2rem auto;">Explore every corner of Law
+                    Genie. Built to handle every legal complexity with AI precision.</p>
             </div>
 
-            <div class="detail-row reverse">
-                <div class="detail-text">
-                    <span class="detail-badge">Management</span>
-                    <h3>Case Timeline & Diary: Every Case Tracked</h3>
-                    <p class="lang-en">Never miss a date again. Law Genie helps you track case milestones, set
-                        reminders, and manage your legal diary with a futuristic timeline view. Designed specifically
-                        for
-                        the Indian legal landscape.</p>
-                    <ul class="detail-list">
-                        <li><i class="fas fa-check-circle"></i> Visual Interactive Case Progress</li>
-                        <li><i class="fas fa-check-circle"></i> Automated Hearing Date Reminders</li>
-                        <li><i class="fas fa-check-circle"></i> Centralized Multi-User Case Diary</li>
-                    </ul>
+            <div class="alternating-features">
+
+                <!-- 1. AI JURIST -->
+                <div class="feat-row reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><span>11:06</span><i class="fas fa-battery-full"
+                                        style="color: var(--secondary);"></i></div>
+                                <div class="app-chat-main">
+                                    <div class="chat-bubble ai" style="opacity:1; width: 85%; font-size: 8px;">Analyzing
+                                        the Charge Sheet...</div>
+                                    <div class="chat-bubble user"
+                                        style="opacity:1; width: 70%; font-size: 8px; margin-left: auto;">Any bail
+                                        grounds?</div>
+                                </div>
+                                <div class="app-chat-bar">
+                                    <div class="app-input-mock">Type here...</div>
+                                    <div class="app-send-btn"><i class="fas fa-paper-plane"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">01 / 12</span>
+                        <h3>AI JURIST</h3>
+                        <p>Experience contextual legal reasoning powered by advanced neural models. Law Genie analyzes
+                            complex FIRs and charge sheets to provide winning strategies with automatic citations.</p>
+                    </div>
                 </div>
-                <div class="detail-visual">
-                    <img src="assets/hero_3d.png" alt="Case Diary Feature">
+
+                <!-- 2. CASE FINDER -->
+                <div class="feat-row reverse reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><i class="fas fa-search"></i></div>
+                                <div style="padding: 10px;">
+                                    <div style="font-size: 12px; font-weight: 800; margin-bottom: 20px;">70+ Years of
+                                        Law</div>
+                                    <div class="news-card-mock">
+                                        <div class="news-head">Bachhan Singh v. Punjab</div>
+                                    </div>
+                                    <div class="news-card-mock" style="margin-top: 10px;">
+                                        <div class="news-head">S.R. Bommai v. Union</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">02 / 12</span>
+                        <h3>CASE FINDER</h3>
+                        <p>Search through millions of Indian precedents in seconds. Our neural search engine understands
+                            intent, finding the exact judgment you need even without keyword matches.</p>
+                    </div>
                 </div>
+
+                <!-- 3. DOCU-SMART -->
+                <div class="feat-row reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><span>Scanning...</span></div>
+                                <div style="padding: 20px 10px;">
+                                    <div class="meter-card" style="border-color: #ef4444;">
+                                        <div class="meter-info"><i class="fas fa-exclamation-triangle"
+                                                style="color: #ef4444;"></i>
+                                            <div class="meter-name">Risk Extraction</div>
+                                        </div>
+                                        <div class="meter-track" style="margin-top: 10px;">
+                                            <div class="meter-fill" style="width: 82%; background: #ef4444;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="doc-mock" style="margin-top: 30px; opacity: 0.3;">
+                                        <div class="doc-line" style="width: 100%;"></div>
+                                        <div class="doc-line" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">03 / 12</span>
+                        <h3>DOCU-SMART</h3>
+                        <p>Instantly extract risks, liabilities, and key dates from any legal document. Docu-Smart turns
+                            hundreds of pages into a clear, actionable summary in seconds.</p>
+                    </div>
+                </div>
+
+                <!-- 4. VOCAL LAW -->
+                <div class="feat-row reverse reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen" style="justify-content: center;">
+                                <div
+                                    style="display: flex; gap: 8px; justify-content: center; height: 60px; align-items: center;">
+                                    <div class="wave-bar" style="height: 15px;"></div>
+                                    <div class="wave-bar" style="height: 45px; animation-delay: 0.1s;"></div>
+                                    <div class="wave-bar" style="height: 25px; animation-delay: 0.2s;"></div>
+                                    <div class="wave-bar" style="height: 50px; animation-delay: 0.3s;"></div>
+                                </div>
+                                <div
+                                    style="text-align: center; font-size: 8px; margin-top: 20px; font-weight: 800; color: var(--secondary);">
+                                    TRANSCRIPTING...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">04 / 12</span>
+                        <h3>VOCAL LAW</h3>
+                        <p>Simply speak your facts. Law Genie’s voice-to-draft engine understands complex legal
+                            narratives and converts them into professional petitions and legal notices.</p>
+                    </div>
+                </div>
+
+                <!-- 5. SMART DRAFTS -->
+                <div class="feat-row reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><span>Draft Editor</span></div>
+                                <div style="padding: 10px;">
+                                    <div class="ui-draft"
+                                        style="padding: 15px; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;">
+                                        <div class="draft-line" style="width: 100%;"></div>
+                                        <div class="draft-line" style="width: 100%;"></div>
+                                        <div class="draft-line" style="width: 70%;"></div>
+                                        <div class="draft-line" style="width: 90%;"></div>
+                                        <div style="margin-top: 20px; display: flex; gap: 5px;">
+                                            <div
+                                                style="width: 15px; height: 15px; border-radius: 4px; border: 1px solid var(--primary);">
+                                            </div>
+                                            <div
+                                                style="width: 15px; height: 15px; border-radius: 4px; border: 1px solid var(--secondary);">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">05 / 12</span>
+                        <h3>SMART DRAFTS</h3>
+                        <p>Auto-generate hundreds of legal agreements, notices, and pleadings. Our templates are vetted
+                            by SC advocates to ensure 100% compliance and quality.</p>
+                    </div>
+                </div>
+
+                <!-- 6. MY CASES -->
+                <div class="feat-row reverse reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><span>Dashboard</span></div>
+                                <div style="padding: 15px 10px;">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                        <div
+                                            style="background: rgba(255,255,255,0.02); height: 60px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                                            <i class="fas fa-handcuffs"></i>
+                                        </div>
+                                        <div
+                                            style="background: rgba(255,255,255,0.02); height: 60px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                                            <i class="fas fa-gavel"></i>
+                                        </div>
+                                    </div>
+                                    <div class="news-card-mock" style="margin-top: 15px; opacity: 0.5;">
+                                        <div class="news-head">Case #402: Pending</div>
+                                    </div>
+                                </div>
+                                <div class="app-fab" style="width: 45px; height: 45px; bottom: 25px; right: 20px;"><i
+                                        class="fas fa-plus"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">06 / 12</span>
+                        <h3>MY CASES</h3>
+                        <p>Keep your entire legal portfolio in your pocket. Track hearings, manage evidence, and receive
+                            real-time notifications on case progress across all Indian courts.</p>
+                    </div>
+                </div>
+
+                <!-- 7. LAW VAULT -->
+                <div class="feat-row reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><i class="fas fa-shield-alt"></i></div>
+                                <div style="padding: 10px;">
+                                    <div style="text-align: center; margin: 20px 0;">
+                                        <div
+                                            style="width: 60px; height: 60px; border: 2px solid var(--primary); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; color: var(--primary);">
+                                            <i class="fas fa-fingerprint"></i>
+                                        </div>
+                                    </div>
+                                    <div class="folder-rect" style="height: 40px;"><i class="fas fa-lock"
+                                            style="margin-right: 12px; font-size: 10px;"></i> WITNESS_STATEMENTS</div>
+                                    <div class="folder-rect" style="height: 40px; margin-top: 10px;"><i
+                                            class="fas fa-lock" style="margin-right: 12px; font-size: 10px;"></i>
+                                        EVIDENCE_AUDIO</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">07 / 12</span>
+                        <h3>LAW VAULT</h3>
+                        <p>Bank-grade encryption for your most sensitive legal files. Law Vault uses AES-256 encryption
+                            and biometric locking to ensure your data stays private and secure.</p>
+                    </div>
+                </div>
+
+                <!-- 8. REMINDERS -->
+                <div class="feat-row reverse reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen" style="justify-content: center; align-items: center;">
+                                <div
+                                    style="width: 70px; height: 70px; background: rgba(239,68,68,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 25px;">
+                                    <i class="fas fa-bell" style="color: #ef4444; font-size: 24px;"></i>
+                                </div>
+                                <div class="meter-card" style="width: 80%; border-color: #ef4444; text-align: center;">
+                                    <div style="font-size: 10px; font-weight: 800;">Hearing Date Updated</div>
+                                    <div style="font-size: 14px; font-weight: 900; margin-top: 10px; color: #ef4444;">
+                                        TOMORROW, 10:30 AM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">08 / 12</span>
+                        <h3>REMINDERS</h3>
+                        <p>Never miss a filing deadline or hearing again. Law Genie syncs with court calendars to
+                            provide automated reminders and agenda management for legal professionals.</p>
+                    </div>
+                </div>
+
+                <!-- 9. INSIGHTS -->
+                <div class="feat-row reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><span>Statistics</span></div>
+                                <div style="padding: 10px;">
+                                    <div
+                                        style="display: flex; align-items: flex-end; gap: 10px; height: 100px; padding: 20px;">
+                                        <div
+                                            style="flex: 1; background: var(--secondary); height: 40%; border-radius: 6px;">
+                                        </div>
+                                        <div
+                                            style="flex: 1; background: var(--secondary); height: 80%; border-radius: 6px;">
+                                        </div>
+                                        <div
+                                            style="flex: 1; background: var(--secondary); height: 60%; border-radius: 6px;">
+                                        </div>
+                                        <div
+                                            style="flex: 1; background: var(--secondary); height: 100%; border-radius: 6px;">
+                                        </div>
+                                    </div>
+                                    <div class="meter-card" style="margin-top: 20px;">
+                                        <div style="font-size: 14px; font-weight: 900; color: var(--secondary);">89.2%
+                                            WIN RATE</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">09 / 12</span>
+                        <h3>PRACTICE INSIGHTS</h3>
+                        <p>Data-driven decisions for your practice. Monitor win-rates, case durations, and court
+                            behavior to optimize your legal strategy and resource allocation.</p>
+                    </div>
+                </div>
+
+                <!-- 10. DIRECTORY -->
+                <div class="feat-row reverse reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><span>Network</span></div>
+                                <div style="padding: 10px;">
+                                    <div class="news-card-mock"
+                                        style="padding: 15px; display: flex; align-items: center;">
+                                        <div
+                                            style="width: 30px; height: 30px; border-radius: 50%; background: var(--primary); margin-right: 15px;">
+                                        </div>
+                                        <div class="news-head">Adv. Priya Sharma (SC)</div>
+                                    </div>
+                                    <div class="news-card-mock"
+                                        style="padding: 15px; display: flex; align-items: center; margin-top: 10px;">
+                                        <div
+                                            style="width: 30px; height: 30px; border-radius: 50%; background: var(--secondary); margin-right: 15px;">
+                                        </div>
+                                        <div class="news-head">Senior Adv. Malik (HC)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">10 / 12</span>
+                        <h3>LEGAL DIRECTORY</h3>
+                        <p>Connect with a nationwide network of specialists. From Supreme Court seniors to local
+                            associates, find the right expertise for every jurisdiction in India.</p>
+                    </div>
+                </div>
+
+                <!-- 11. CERTIFIED COPY -->
+                <div class="feat-row reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><i class="fas fa-file-invoice"></i></div>
+                                <div class="empty-state" style="padding-top: 50px;">
+                                    <div style="font-size: 14px; font-weight: 800; margin-bottom: 30px;">Certified Order
+                                    </div>
+                                    <div
+                                        style="width: 80px; height: 80px; border: 2px dashed rgba(255,255,255,0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-stamp" style="font-size: 32px; opacity: 0.2;"></i>
+                                    </div>
+                                </div>
+                                <div class="app-fab" style="width: 45px; height: 45px; bottom: 25px; right: 20px;"><i
+                                        class="fas fa-shopping-cart"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">11 / 12</span>
+                        <h3>CERTIFIED COPIES</h3>
+                        <p>Order official, court-stamped documents directly through the app. Skip the queues and manual
+                            processing—receive certified copies at your doorstep or inbox.</p>
+                    </div>
+                </div>
+
+                <!-- 12. COMPLIANCE -->
+                <div class="feat-row reverse reveal">
+                    <div class="feat-visual">
+                        <div class="phone-frame-v2">
+                            <div class="app-screen">
+                                <div class="app-status-bar"><span>Live Feed</span></div>
+                                <div style="padding: 10px;">
+                                    <div class="news-card-mock" style="padding: 15px;">
+                                        <div class="news-tag-mock"
+                                            style="background: rgba(239,68,68,0.1); color: #ef4444;">Legal Alert</div>
+                                        <div class="news-head" style="margin-top: 10px;">BNS Section 103 Now in Force...
+                                        </div>
+                                    </div>
+                                    <div class="news-card-mock" style="padding: 15px; margin-top: 10px;">
+                                        <div class="news-tag-mock"
+                                            style="background: rgba(59,130,246,0.1); color: #3b82f6;">Notification</div>
+                                        <div class="news-head" style="margin-top: 10px;">New E-Filing Rules for
+                                            District...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feat-content">
+                        <span class="feat-num">12 / 12</span>
+                        <h3>COMPLIANCE FEED</h3>
+                        <p>Stay ahead of the law. Real-time notifications on statutory changes, new court rules, and
+                            landmark judgments that affect your ongoing litigation.</p>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <section id="testimonials" class="testimonials">
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works reveal">
         <div class="container">
             <div class="section-header">
-                <h2>Loved by <span class="gradient-text">The Legal Community</span></h2>
+                <span class="section-tag">SIMPLICITY BY DESIGN</span>
+                <h2>WORK IN <span class="gradient-text">MINUTES</span>,<br>NOT HOURS.</h2>
             </div>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <p>"Law Genie has completely changed how I research precedents. The AI summarizer is a lifesaver."
-                    </p>
-                    <div class="user-info">
-                        <strong>Adv. Rahul Sharma</strong>
-                        <span>High Court Advocate</span>
+            <div class="step-grid">
+                <div class="step-item">
+                    <div class="step-number">01</div>
+                    <h3>QUERY</h3>
+                    <p>Ask a complex legal question or type the facts of your current case into the AI interface.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">02</div>
+                    <h3>ANALYZE</h3>
+                    <p>Our engine cross-references 70+ years of Indian case law and statutory records in real-time.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">03</div>
+                    <h3>ACT</h3>
+                    <p>Receive a comprehensive report with citations ready to be used in your petition or argument.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials reveal" style="padding: 150px 0;">
+        <div class="container">
+            <div class="section-header" style="text-align: center;">
+                <span class="section-tag">TRUSTED BY EXPERTS</span>
+                <h2>WHAT THE <span class="gradient-text">BAR</span> SAYS.</h2>
+            </div>
+            <div class="features-grid" style="margin-top: 80px;">
+                <div class="feature-card">
+                    <p
+                        style="font-style: italic; font-size: 1.1rem; border-left: 2px solid var(--primary); padding-left: 1.5rem;">
+                        "Law Genie has reduced my research time by 80%. The citation accuracy is unmatched in the Indian
+                        market."</p>
+                    <div style="margin-top: 2rem; display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-glow);">
+                        </div>
+                        <div>
+                            <h5 style="font-weight: 700;">Adv. Rahul Sharma</h5>
+                            <p style="font-size: 0.7rem; color: var(--text-muted);">Supreme Court of India</p>
+                        </div>
                     </div>
                 </div>
-                <div class="testimonial-card">
-                    <p>"As a law student, having Bare Acts and Case Finder in one app is incredibly helpful for my
-                        exams."</p>
-                    <div class="user-info">
-                        <strong>Priya Verma</strong>
-                        <span>Law Student, DU</span>
+                <div class="feature-card">
+                    <p
+                        style="font-style: italic; font-size: 1.1rem; border-left: 2px solid var(--primary); padding-left: 1.5rem;">
+                        "The Docu-Smart feature is a lifesaver for summarizing long charge sheets and identifying
+                        contradictions."</p>
+                    <div style="margin-top: 2rem; display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-glow);">
+                        </div>
+                        <div>
+                            <h5 style="font-weight: 700;">Meera Kapur</h5>
+                            <p style="font-size: 0.7rem; color: var(--text-muted);">Senior Partner, LegalLex</p>
+                        </div>
                     </div>
                 </div>
-                <div class="testimonial-card">
-                    <p>"The best legal tech app in India. The interface is futuristic and very easy to use."</p>
-                    <div class="user-info">
-                        <strong>Karan Singh</strong>
-                        <span>Legal Consultant</span>
+                <div class="feature-card">
+                    <p
+                        style="font-style: italic; font-size: 1.1rem; border-left: 2px solid var(--primary); padding-left: 1.5rem;">
+                        "Finally an AI that actually understands Indian acts and statutes instead of just hallucinating
+                        US law."</p>
+                    <div style="margin-top: 2rem; display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-glow);">
+                        </div>
+                        <div>
+                            <h5 style="font-weight: 700;">Vikram Singh</h5>
+                            <p style="font-size: 0.7rem; color: var(--text-muted);">Independent Litigator</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="faq" class="faq">
+    <!-- FAQ SECTION -->
+    <section class="faq reveal" style="padding: 150px 0; border-top: 1px solid var(--glass-border);">
         <div class="container">
             <div class="section-header">
-                <h2>Frequently Asked <span class="gradient-text">Questions</span></h2>
+                <span class="section-tag">COMMON QUERIES</span>
+                <h2>FREQUENTLY <span class="gradient-text">ASKED.</span></h2>
             </div>
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question">What makes Law Genie different from other legal apps? <i
-                            class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Law Genie uses advanced AI (Gemini) specifically tuned for Indian Law,
-                        providing not just information but intelligent insights and citations.</div>
+            <div style="max-width: 800px; margin: 80px auto 0;">
+                <div class="feature-card" style="padding: 2.5rem; border-radius: 20px; margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem; color: var(--text-main);">Is the AI data trained on Indian laws
+                        specifically?</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Yes, Law Genie is specifically fine-tuned on
+                        the Constitution of India, 1000+ Central Acts, and 70+ years of Supreme Court and High Court
+                        precedents.</p>
                 </div>
-                <div class="faq-item">
-                    <div class="faq-question">Is Law Genie free to use? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Yes, we offer a generous free tier for basic searches and AI queries.
-                        Premium features are available for power users.</div>
+                <div class="feature-card" style="padding: 2.5rem; border-radius: 20px; margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem; color: var(--text-main);">Can I upload private case files safely?
+                    </h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Absolutely. We use enterprise-grade AES-256
+                        encryption. Your documents are never used to train our public models and remain 100% private to
+                        your account.</p>
                 </div>
-                <div class="faq-item">
-                    <div class="faq-question">Can I use the app offline? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-answer">Bare Acts and certain case details are available offline once you download
-                        them within the app.</div>
+                <div class="feature-card" style="padding: 2.5rem; border-radius: 20px; margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem; color: var(--text-main);">Does it support High Courts and District
+                        Courts?</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">We have full coverage for the Supreme Court
+                        and all 25 High Courts. District Court integration is currently in beta for selected states.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="contact" class="contact">
+    <!-- CTA SECTION -->
+    <section class="cta reveal">
         <div class="container">
-            <div class="contact-card">
-                <div class="contact-text">
-                    <h2>Get in <span class="gradient-text">Touch</span></h2>
-                    <p>Have questions or suggestions? We'd love to hear from you.</p>
-                    <div class="contact-info">
-                        <p><i class="fas fa-envelope"></i> support@lawgenie.co.in</p>
-                        <p><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
-                    </div>
+            <div class="cta-box">
+                <h2>READY TO BE <span class="gradient-text">UNSTOPPABLE?</span></h2>
+                <div style="display: flex; gap: 2rem; justify-content: center;">
+                    <a href="#" class="btn btn-primary" style="padding: 1.5rem 4rem;">JOIN THE WAITLIST</a>
                 </div>
-                <form class="contact-form">
-                    <input type="text" placeholder="Your Name" required>
-                    <input type="email" placeholder="Your Email" required>
-                    <textarea placeholder="Your Message" rows="4" required></textarea>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
             </div>
         </div>
     </section>
 
-    <section class="cta-section" id="notify">
+    <!-- FOOTER -->
+    <footer class="footer reveal">
         <div class="container">
-            <div class="cta-card">
-                <div class="cta-content">
-                    <h2>Be the first to know when we launch!</h2>
-                    <p>Join our waitlist to get exclusive early access and special launch offers.</p>
-                    <div class="hero-buttons">
-                        <a href="#footer" class="btn btn-primary inverted">Join Waitlist</a>
-                    </div>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <span class="logo-text">LAW GENIE</span>
+                    <p style="color: var(--text-muted); margin-top: 1.5rem; max-width: 350px;">The definitive AI legal
+                        suite for India. Empowering the next generation of lawyers with technology.</p>
                 </div>
-                <div class="cta-visual-badge">
-                    <i class="fas fa-rocket" style="font-size: 5rem; color: white; opacity: 0.8;"></i>
-                    <p style="margin-top: 1rem; font-weight: 700;">Coming Soon</p>
+                <div class="footer-links">
+                    <h5>PLATFORM</h5>
+                    <ul>
+                        <li><a href="#">AI Jurist</a></li>
+                        <li><a href="#">Case Finder</a></li>
+                        <li><a href="#">Docu-Smart</a></li>
+                    </ul>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container footer-grid">
-            <div class="footer-brand">
-                <div class="logo">
-                    <img src="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png"
-                        alt="Law Genie Logo" class="logo-img">
-                    <span class="logo-text">Law Genie</span>
+                <div class="footer-links">
+                    <h5>COMPANY</h5>
+                    <ul>
+                        <li><a href="features.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                    </ul>
                 </div>
-                <p>Empowering Indians with AI-driven legal intelligence.</p>
-                <div class="social-links">
-                    <a href="https://instagram.com/lawgenie.in" target="_blank" class="social-ig">
-                        <i class="fab fa-instagram"></i>
-                        <span>@lawgenie.in</span>
-                    </a>
-                    <a href="https://linkedin.com/company/lawgenie" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://twitter.com/lawgenie_india" target="_blank"><i class="fab fa-twitter"></i></a>
+                <div class="footer-links">
+                    <h5>LEGAL</h5>
+                    <ul>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="contact.html">Support</a></li>
+                    </ul>
                 </div>
             </div>
-
-            <div class="footer-links">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="features.html">App Features</a></li>
-                    <li><a href="pricing.html">Pricing Plans</a></li>
-                    <li><a href="index.html#testimonials">Success Stories</a></li>
-                    <li><a href="index.html#faq">Help Center</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="contact.html">Contact Us</a></li>
-                    <li><a href="privacy.html">Privacy Policy</a></li>
-                    <li><a href="terms.html">Terms of Service</a></li>
-                    <li><a href="refund-policy.html">Refund Policy</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-newsletter">
-                <h4>Stay Updated</h4>
-                <p>Subscribe to get the latest legal tech news.</p>
-                <form class="newsletter-form">
-                    <input type="email" placeholder="Enter your email">
-                    <button type="submit" class="btn btn-primary">Join</button>
-                </form>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="container">
-                <p>&copy; 2025 Law Genie. All rights reserved.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Law Genie AI. All rights reserved.</p>
+                <div style="display: flex; gap: 2rem;">
+                    <a href="#" style="color: var(--text-muted);"><i class="fab fa-twitter"></i></a>
+                    <a href="https://instagram.com/lawgenie.in" style="color: var(--text-muted);"><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="#" style="color: var(--text-muted);"><i class="fab fa-linkedin"></i></a>
+                </div>
             </div>
         </div>
     </footer>
