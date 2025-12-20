@@ -205,17 +205,49 @@ class UsageProvider extends ChangeNotifier {
       final dailyMap = data['daily'] as Map? ?? {};
       final monthlyMap = data['monthly'] as Map? ?? {};
 
-      // Smart Reset Check
+      // Granular Reset Check
       final String dReset =
           (dailyMap['lastReset'] ?? dailyMap['LastReset'] ?? "").toString();
       final String mReset =
           (monthlyMap['lastReset'] ?? monthlyMap['LastReset'] ?? "").toString();
 
-      if (dReset != today || mReset != currentMonth) {
-        debugPrint(
-            'UsageProvider: Resetting counts for new period (Today: $today)');
-        await _initializeUsageDoc();
-        return;
+      Map<String, dynamic> resetUpdates = {};
+
+      if (dReset != today) {
+        debugPrint('UsageProvider: Resetting DAILY counts for $today');
+        resetUpdates['daily'] = {
+          'lastReset': today,
+          'aiChat': 0,
+          'caseFinder': 0,
+          'translator': 0,
+          'riskAnalysis': 0,
+          'scanner': 0,
+          'documents': 0,
+          'courtOrders': 0
+        };
+      }
+
+      if (mReset != currentMonth) {
+        debugPrint('UsageProvider: Resetting MONTHLY counts for $currentMonth');
+        resetUpdates['monthly'] = {
+          'lastReset': currentMonth,
+          'aiChat': 0,
+          'caseFinder': 0,
+          'translator': 0,
+          'riskAnalysis': 0,
+          'scanner': 0,
+          'documents': 0,
+          'myCases': 0,
+          'bareActs': 0,
+          'diary': 0,
+          'chatHistory': 0
+        };
+      }
+
+      if (resetUpdates.isNotEmpty) {
+        resetUpdates['lastUpdated'] = FieldValue.serverTimestamp();
+        await _firestore.collection('usage').doc(_userId).update(resetUpdates);
+        return; // Stream will trigger again with new data
       }
 
       _dailyUsage = Map<String, int>.from(dailyMap
