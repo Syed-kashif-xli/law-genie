@@ -48,11 +48,14 @@ class AppDrawer extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(25, 60, 20, 20),
       child: Row(
         children: [
-          Image.asset(
-            'assets/images/logo.png',
-            height: 48,
-            width: 48,
-            fit: BoxFit.contain,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              'assets/images/logo.png',
+              height: 48,
+              width: 48,
+              fit: BoxFit.contain,
+            ),
           ),
           const SizedBox(width: 15),
           Column(
