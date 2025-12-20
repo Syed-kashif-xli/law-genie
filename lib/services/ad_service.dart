@@ -30,9 +30,9 @@ class AdService {
 
   static String get interstitialAdUnitId {
     if (Platform.isAndroid) {
-      // Production ID
-      return 'ca-app-pub-9032147226605088/1364815800';
-      // Test ID: 'ca-app-pub-3940256099942544/1033173712'
+      // Test ID
+      return 'ca-app-pub-3940256099942544/1033173712';
+      // Real ID: 'ca-app-pub-9032147226605088/1364815800'
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/4411468910'; // Test ID
     } else {

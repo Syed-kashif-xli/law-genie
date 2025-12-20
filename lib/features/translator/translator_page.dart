@@ -6,10 +6,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:myapp/services/translation_service.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/features/home/providers/usage_provider.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/ad_service.dart';
 import '../../utils/usage_limit_helper.dart';
+import '../home/widgets/inline_banner_ad_widget.dart';
 
 class TranslatorPage extends StatefulWidget {
   const TranslatorPage({super.key});
@@ -23,9 +22,7 @@ class _TranslatorPageState extends State<TranslatorPage>
   late TabController _tabController;
   late TranslationService _translationService;
 
-  // Ad State
-  BannerAd? _bannerAd;
-  bool _isAdLoaded = false;
+  // Ads are now managed by InlineBannerAdWidget
 
   // Text Translation State
   final TextEditingController _textController = TextEditingController();
@@ -45,25 +42,12 @@ class _TranslatorPageState extends State<TranslatorPage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _translationService = TranslationService();
-    _loadBannerAd();
-  }
-
-  void _loadBannerAd() {
-    _bannerAd = AdService.createBannerAd(
-      onAdLoaded: (ad) {
-        setState(() {
-          _isAdLoaded = true;
-        });
-      },
-    );
-    _bannerAd?.load();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     _textController.dispose();
-    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -124,23 +108,7 @@ class _TranslatorPageState extends State<TranslatorPage>
 
   Future<void> _checkDocumentUsageAndTranslate() async {
     if (_selectedFilePath == null) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    int documentTranslations = prefs.getInt('document_translations_count') ?? 0;
-
-    // "jab document ho toh eik do ka baad watch wla add da dena"
-    // Logic: Allow 2 free translations, then show ad for every subsequent one.
-    // Or: Show ad after every 2 translations?
-    // Let's go with: 2 free per day (or total?), then ad for each.
-    // Simpler interpretation: After 2 uses, show ad.
-
-    if (documentTranslations >= 2) {
-      _showAdDialog();
-    } else {
-      await _translateDocument();
-      await prefs.setInt(
-          'document_translations_count', documentTranslations + 1);
-    }
+    _showAdDialog();
   }
 
   void _showAdDialog() {
@@ -286,26 +254,11 @@ class _TranslatorPageState extends State<TranslatorPage>
             colors: [Color(0xFF0A032A), Color(0xFF151038)],
           ),
         ),
-        child: Column(
+        child: TabBarView(
+          controller: _tabController,
           children: [
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildTextTab(),
-                  _buildDocumentTab(),
-                ],
-              ),
-            ),
-            if (_isAdLoaded && _bannerAd != null) ...[
-              const SizedBox(height: 10),
-              SizedBox(
-                height: _bannerAd!.size.height.toDouble(),
-                width: _bannerAd!.size.width.toDouble(),
-                child: AdWidget(ad: _bannerAd!),
-              ),
-              const SizedBox(height: 10),
-            ],
+            _buildTextTab(),
+            _buildDocumentTab(),
           ],
         ),
       ),
@@ -324,6 +277,8 @@ class _TranslatorPageState extends State<TranslatorPage>
           _buildTranslateButton(_isTranslating, _translateText),
           const SizedBox(height: 24),
           if (_translatedText.isNotEmpty) _buildOutputArea(_translatedText),
+          const SizedBox(height: 24),
+          const InlineBannerAdWidget(),
         ],
       ),
     );
@@ -346,6 +301,8 @@ class _TranslatorPageState extends State<TranslatorPage>
           if (_translatedDocumentText.isNotEmpty)
             _buildOutputArea(_translatedDocumentText,
                 title: 'Translated Document'),
+          const SizedBox(height: 24),
+          const InlineBannerAdWidget(),
         ],
       ),
     );

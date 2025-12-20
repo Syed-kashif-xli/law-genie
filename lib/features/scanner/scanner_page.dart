@@ -893,24 +893,6 @@ class _ScannerPageState extends State<ScannerPage> {
                   ),
                 ),
 
-                // Banner Ad
-                if (_isBannerAdLoaded && _bannerAd != null)
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: AdWidget(ad: _bannerAd!),
-                    ),
-                  ),
-
                 // Content Section
                 Expanded(
                   child: _recentScans.isEmpty
@@ -1106,6 +1088,24 @@ class _ScannerPageState extends State<ScannerPage> {
                           },
                         ),
                 ),
+
+                // Banner Ad at bottom
+                if (_isBannerAdLoaded && _bannerAd != null)
+                  Container(
+                    margin: const EdgeInsets.all(20),
+                    height: 50,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Center(child: AdWidget(ad: _bannerAd!)),
+                    ),
+                  ),
               ],
             ),
           ),
