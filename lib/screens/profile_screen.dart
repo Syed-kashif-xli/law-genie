@@ -13,6 +13,7 @@ import 'package:myapp/screens/order_history_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:myapp/screens/legal_detail_screen.dart';
 import 'package:myapp/services/firestore_service.dart';
+import 'package:myapp/screens/usage_details_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -480,6 +481,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => const OrderHistoryScreen()),
+                );
+              },
+            ),
+            ProfileMenuOption(
+              title: 'Usage Stats',
+              icon: Icons.analytics_outlined,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const UsageDetailsScreen()),
                 );
               },
             ),

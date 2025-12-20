@@ -48,24 +48,11 @@ class AppDrawer extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(25, 60, 20, 20),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF2575FC).withValues(alpha: 0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
-              ],
-            ),
-            child: const Icon(Iconsax.judge, color: Colors.white, size: 28),
+          Image.asset(
+            'assets/images/logo.png',
+            height: 48,
+            width: 48,
+            fit: BoxFit.contain,
           ),
           const SizedBox(width: 15),
           Column(
