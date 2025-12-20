@@ -34,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _codeSent = false;
   String? _verificationId;
   int? _resendToken;
+  bool _isForgotPassword = false;
   bool _isSignUp = false;
 
   // Timer for Resend OTP
@@ -79,6 +80,10 @@ class _LoginPageState extends State<LoginPage> {
   // ... existing code ...
 
   Future<void> _handleAuthAction() async {
+    if (_isForgotPassword) {
+      await _sendPasswordResetEmail();
+      return;
+    }
     if (_isEmailLogin) {
       if (_isSignUp) {
         _signUpWithEmailAndPassword();
@@ -168,90 +173,42 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _sendPasswordResetEmail() async {
-    final TextEditingController resetEmailController = TextEditingController();
-    // Pre-fill if the user has typed something in the main email field
-    if (_isEmailLogin && _emailController.text.isNotEmpty) {
-      resetEmailController.text = _emailController.text;
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter an email address')),
+      );
+      return;
     }
 
-    await showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: const Color(0xFF1A0B2E),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Reset Password',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Enter your email address to receive a password reset link.',
-              style: TextStyle(color: Colors.white70),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: resetEmailController,
-              keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: 'Email',
-                labelStyle: const TextStyle(color: Colors.white70),
-                filled: true,
-                fillColor: Colors.white.withAlpha(26),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child:
-                const Text('Cancel', style: TextStyle(color: Colors.white54)),
+    setState(() => _isLoading = true);
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Password reset link sent to $email'),
+            backgroundColor: Colors.green,
           ),
-          ElevatedButton(
-            onPressed: () async {
-              final email = resetEmailController.text.trim();
-              if (email.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Please enter an email address')),
-                );
-                return;
-              }
-              Navigator.pop(dialogContext); // Close dialog
-
-              try {
-                await FirebaseAuth.instance
-                    .sendPasswordResetEmail(email: email);
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Password reset link sent to $email'),
-                        backgroundColor: Colors.green),
-                  );
-                }
-              } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Error: ${e.toString()}'),
-                        backgroundColor: Colors.red),
-                  );
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Send Link'),
+        );
+        setState(() {
+          _isForgotPassword = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
           ),
-        ],
-      ),
-    );
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Future<void> _verifyPhoneNumber({bool isResend = false}) async {
@@ -539,127 +496,171 @@ class _LoginPageState extends State<LoginPage> {
                                   fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       Text(
-                          _isSignUp
-                              ? l10n.createNewAccount
-                              : l10n.signInToAccount,
+                          _isForgotPassword
+                              ? 'Enter your email to reset password'
+                              : (_isSignUp
+                                  ? l10n.createNewAccount
+                                  : l10n.signInToAccount),
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge
                               ?.copyWith(color: Colors.white70)),
                       const SizedBox(height: 32),
                       _buildGlassCard(
-                        child: Column(
-                          children: [
-                            _buildLoginTypeToggle(),
-                            const SizedBox(height: 24),
-                            if (_isEmailLogin) ...[
-                              _buildTextField(l10n.email, Iconsax.sms,
-                                  controller: _emailController, isEmail: true),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 400),
+                          transitionBuilder:
+                              (Widget child, Animation<double> animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0, 0.1),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Column(
+                            key: ValueKey<bool>(_isForgotPassword),
+                            children: [
+                              if (!_isForgotPassword) ...[
+                                _buildLoginTypeToggle(),
+                                const SizedBox(height: 24),
+                              ],
+                              if (_isForgotPassword) ...[
+                                _buildTextField(l10n.email, Iconsax.sms,
+                                    controller: _emailController,
+                                    isEmail: true),
+                              ] else if (_isEmailLogin) ...[
+                                _buildTextField(l10n.email, Iconsax.sms,
+                                    controller: _emailController,
+                                    isEmail: true),
+                                const SizedBox(height: 16),
+                                _buildTextField(l10n.password, Iconsax.lock_1,
+                                    controller: _passwordController,
+                                    isPassword: true),
+                              ] else if (_codeSent) ...[
+                                Pinput(
+                                  length: 6,
+                                  controller: _otpController,
+                                  onCompleted: (pin) => _signInWithOTP(),
+                                  // Android will auto-detect OTP from SMS
+                                  autofillHints: const [
+                                    AutofillHints.oneTimeCode
+                                  ],
+                                  defaultPinTheme: PinTheme(
+                                    width: 45,
+                                    height: 55,
+                                    textStyle: const TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withAlpha(26),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: Colors.white.withAlpha(51)),
+                                    ),
+                                  ),
+                                  focusedPinTheme: PinTheme(
+                                    width: 45,
+                                    height: 55,
+                                    textStyle: const TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withAlpha(40),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border:
+                                          Border.all(color: Colors.blueAccent),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.blueAccent
+                                              .withValues(alpha: 0.3),
+                                          blurRadius: 8,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                      onPressed: _canResendOtp
+                                          ? () {
+                                              _verifyPhoneNumber(
+                                                  isResend: true);
+                                            }
+                                          : null,
+                                      child: Text(
+                                        _canResendOtp
+                                            ? 'Resend OTP'
+                                            : 'Resend in ${_start}s',
+                                        style: TextStyle(
+                                          color: _canResendOtp
+                                              ? Colors.blueAccent
+                                              : Colors.white54,
+                                        ),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => setState(() {
+                                        _codeSent = false;
+                                        _otpController.clear();
+                                        _verificationId = null;
+                                        _timer?.cancel();
+                                      }),
+                                      child: Text(l10n.changeNumber,
+                                          style: const TextStyle(
+                                              color: Colors.white70)),
+                                    ),
+                                  ],
+                                )
+                              ] else ...[
+                                _buildPhoneField(),
+                              ],
                               const SizedBox(height: 16),
-                              _buildTextField(l10n.password, Iconsax.lock_1,
-                                  controller: _passwordController,
-                                  isPassword: true),
-                            ] else if (_codeSent) ...[
-                              Pinput(
-                                length: 6,
-                                controller: _otpController,
-                                onCompleted: (pin) => _signInWithOTP(),
-                                // Android will auto-detect OTP from SMS
-                                autofillHints: const [
-                                  AutofillHints.oneTimeCode
-                                ],
-                                defaultPinTheme: PinTheme(
-                                  width: 45,
-                                  height: 55,
-                                  textStyle: const TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withAlpha(26),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                        color: Colors.white.withAlpha(51)),
-                                  ),
-                                ),
-                                focusedPinTheme: PinTheme(
-                                  width: 45,
-                                  height: 55,
-                                  textStyle: const TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withAlpha(40),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border:
-                                        Border.all(color: Colors.blueAccent),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.blueAccent
-                                            .withValues(alpha: 0.3),
-                                        blurRadius: 8,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextButton(
-                                    onPressed: _canResendOtp
-                                        ? () {
-                                            _verifyPhoneNumber(isResend: true);
-                                          }
-                                        : null,
-                                    child: Text(
-                                      _canResendOtp
-                                          ? 'Resend OTP'
-                                          : 'Resend in ${_start}s',
+                              if (_isForgotPassword)
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: GestureDetector(
+                                    onTap: () => setState(
+                                        () => _isForgotPassword = false),
+                                    child: const Text(
+                                      'Back to Login',
                                       style: TextStyle(
-                                        color: _canResendOtp
-                                            ? Colors.blueAccent
-                                            : Colors.white54,
+                                        color: Colors.white70,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline,
                                       ),
                                     ),
                                   ),
-                                  TextButton(
-                                    onPressed: () => setState(() {
-                                      _codeSent = false;
-                                      _otpController.clear();
-                                      _verificationId = null;
-                                      _timer?.cancel();
-                                    }),
-                                    child: Text(l10n.changeNumber,
-                                        style: const TextStyle(
-                                            color: Colors.white70)),
-                                  ),
-                                ],
-                              )
-                            ] else ...[
-                              _buildPhoneField(),
-                            ],
-                            const SizedBox(height: 16),
-                            if (_isEmailLogin)
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                  onTap: _sendPasswordResetEmail,
-                                  child: Text(
-                                    l10n.forgotPassword,
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      decoration: TextDecoration.underline,
+                                )
+                              else if (_isEmailLogin && !_isSignUp)
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                    onTap: () => setState(
+                                        () => _isForgotPassword = true),
+                                    child: Text(
+                                      l10n.forgotPassword,
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        decoration: TextDecoration.underline,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -902,9 +903,11 @@ class _LoginPageState extends State<LoginPage> {
           child: _isLoading
               ? const CircularProgressIndicator(color: Colors.white)
               : Text(
-                  _isEmailLogin
-                      ? (_isSignUp ? l10n.signUp : l10n.continue_)
-                      : (_codeSent ? l10n.verifyOtp : l10n.sendOtp),
+                  _isForgotPassword
+                      ? 'Send Reset Link'
+                      : (_isEmailLogin
+                          ? (_isSignUp ? l10n.signUp : l10n.continue_)
+                          : (_codeSent ? l10n.verifyOtp : l10n.sendOtp)),
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
