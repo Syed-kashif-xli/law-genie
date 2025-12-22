@@ -23,6 +23,8 @@ class UsageProvider extends ChangeNotifier {
   bool get isPremium => _isPremium;
   bool get isLoading => _isLoading;
   String get planName => _isPremium ? 'Premium Plan' : 'Free Plan';
+  DateTime? _premiumExpiry;
+  DateTime? get premiumExpiry => _premiumExpiry;
 
   // --- Limits Storage ---
   Map<String, dynamic> _freeLimits = {};
@@ -97,11 +99,43 @@ class UsageProvider extends ChangeNotifier {
           _currentPlan =
               data['plan'] ?? (data['isPremium'] == true ? 'premium' : 'free');
           _isPremium = (_currentPlan == "premium");
+
+          // Handle Expiry
+          final expiry = data['premiumExpiry'];
+          if (expiry is Timestamp) {
+            _premiumExpiry = expiry.toDate();
+            // Check if expired
+            if (_isPremium && _premiumExpiry != null) {
+              if (DateTime.now().isAfter(_premiumExpiry!)) {
+                debugPrint('UsageProvider: Premium EXPIRED. Downgrading...');
+                _downgradeToFree();
+              }
+            }
+          } else {
+            _premiumExpiry = null;
+          }
+
           debugPrint('UsageProvider: Real-time Plan Update -> $_currentPlan');
           notifyListeners();
         }
       }
     });
+  }
+
+  Future<void> _downgradeToFree() async {
+    if (!_isAuthenticated) return;
+    try {
+      await _firestore.collection('users').doc(_userId).update({
+        'plan': 'free',
+        'isPremium': false,
+        // We keep premiumExpiry in records but change status
+      });
+      _isPremium = false;
+      _currentPlan = 'free';
+      notifyListeners();
+    } catch (e) {
+      debugPrint('UsageProvider: Error downgrading user: $e');
+    }
   }
 
   // --- 2. USAGE LIMITS CONFIGURATION ---
@@ -377,27 +411,47 @@ class UsageProvider extends ChangeNotifier {
   Future<void> upgradeToPremium() async {
     if (!_isAuthenticated) return;
     try {
+      DateTime newExpiry;
+      final now = DateTime.now();
+
+      // Smart Extension Logic
+      if (_isPremium &&
+          _premiumExpiry != null &&
+          _premiumExpiry!.isAfter(now)) {
+        // Add 30 days to existing expiry
+        newExpiry = _premiumExpiry!.add(const Duration(days: 30));
+        debugPrint(
+            'UsageProvider: Smart Extension! Adding 30 days to current expiry.');
+      } else {
+        // Start 30 days from now
+        newExpiry = now.add(const Duration(days: 30));
+        debugPrint('UsageProvider: New Premium starting from today.');
+      }
+
       await _firestore.collection('users').doc(_userId).set({
         'plan': 'premium',
         'isPremium': true,
-        'premiumExpiry':
-            Timestamp.fromDate(DateTime.now().add(const Duration(days: 30))),
+        'premiumExpiry': Timestamp.fromDate(newExpiry),
       }, SetOptions(merge: true));
 
-      // Create a subscription record in order history
+      // Create a record in subscriptions history
       String token =
           'SUB-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
-      await _firestore.collection('orders').add({
+      await _firestore.collection('subscriptions').add({
         'token': token,
         'userId': _userId,
         'status': 'completed',
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
         'details': {
-          'type': 'subscription',
+          'type': 'premium_subscription',
           'plan': 'premium',
           'amount': 499,
           'duration': '30 days',
+          'previousExpiry': _premiumExpiry != null
+              ? Timestamp.fromDate(_premiumExpiry!)
+              : null,
+          'newExpiry': Timestamp.fromDate(newExpiry),
         },
       });
 

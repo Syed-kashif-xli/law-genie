@@ -303,17 +303,43 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                     child: AnimatedBuilder(
                       animation: _shimmerController,
                       // Pass the static child to avoid rebuilding it
-                      child: Text(
-                        _currentIndex == 0
-                            ? 'Active Plan'
-                            : (_plans[_currentIndex]['isContact'] == true
+                      child: Consumer<UsageProvider>(
+                        builder: (context, usageProvider, _) {
+                          final isUserPremium = usageProvider.isPremium;
+                          final planName = _plans[_currentIndex]['name'];
+
+                          if (planName == 'Free' && !isUserPremium) {
+                            return const Text('Active Plan');
+                          }
+                          if (planName == 'Premium' && isUserPremium) {
+                            final expiry = usageProvider.premiumExpiry;
+                            if (expiry != null) {
+                              final daysLeft =
+                                  expiry.difference(DateTime.now()).inDays;
+                              return Text(
+                                daysLeft > 0
+                                    ? 'Extend Plan ($daysLeft Days Left)'
+                                    : 'Renew Plan',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            }
+                            return const Text('Active Plan');
+                          }
+
+                          return Text(
+                            _plans[_currentIndex]['isContact'] == true
                                 ? 'Contact Us'
-                                : 'Upgrade Now'),
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        ),
+                                : 'Upgrade Now',
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          );
+                        },
                       ),
                       builder: (context, child) {
                         return Container(
@@ -348,13 +374,25 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             onPressed: () {
                               HapticFeedback.mediumImpact();
 
+                              final usageProvider = Provider.of<UsageProvider>(
+                                  context,
+                                  listen: false);
+
                               if (_currentIndex == 0) {
                                 // Free plan logic
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'You are already on the Free Plan')),
-                                );
+                                if (!usageProvider.isPremium) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'You are already on the Free Plan')),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Your Premium Plan is active. Higher limits apply.')),
+                                  );
+                                }
                                 return;
                               }
 

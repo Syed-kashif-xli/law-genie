@@ -79,13 +79,25 @@ class UsageDetailsScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        isPremium ? 'Active Subscription' : 'Upgrade to Unlock',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 14,
+                      if (isPremium && usageProvider.premiumExpiry != null)
+                        Text(
+                          'Expires: ${usageProvider.premiumExpiry!.day}/${usageProvider.premiumExpiry!.month}/${usageProvider.premiumExpiry!.year} (${usageProvider.premiumExpiry!.difference(DateTime.now()).inDays} days left)',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
+                      else
+                        Text(
+                          isPremium
+                              ? 'Active Subscription'
+                              : 'Upgrade to Unlock',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ],

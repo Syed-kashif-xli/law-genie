@@ -52,30 +52,36 @@ service cloud.firestore {
       allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
-    // 4. Bare Acts (Read Only for everyone, Admin write)
+    // 4. Subscriptions History (Smart Extension & Premium):
+    match /subscriptions/{subId} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // 5. Bare Acts (Read Only for everyone, Admin write)
     match /bare_acts/{actId} {
       allow read: if true; // Publicly readable
       allow write: if false; // Only manageable via Admin Console
     }
 
-    // 5. News (Read Only for everyone, Admin write)
+    // 6. News (Read Only for everyone, Admin write)
     match /news/{newsId} {
       allow read: if true; // Publicly readable
       allow write: if false; // Only manageable via Admin Console
     }
     
-    // 6. Usage Limits (Needed for bootstrapping)
+    // 7. Usage Limits (Needed for bootstrapping)
     match /usage_limits/{planId} {
       allow read: if true;
       allow write: if isAuthenticated();
     }
     
-    // 7. Global Usage Collection (if not inside users)
+    // 8. Global Usage Collection (if not inside users)
     match /usage/{userId} {
        allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
 
-    // 6. System Configuration (For Global Limits)
+    // 9. System Configuration (For Global Limits)
     match /system/{docId} {
        allow read: if isAuthenticated();
        allow write: if isAuthenticated(); // Allow users to update limit count
