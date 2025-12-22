@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:file_picker/file_picker.dart';
@@ -108,7 +108,7 @@ class _AIChatPageState extends State<AIChatPage> {
   }
 
   Future<void> _initGenerativeModel() async {
-    _model = FirebaseVertexAI.instance.generativeModel(
+    _model = FirebaseAI.vertexAI().generativeModel(
       model: 'gemini-2.5-flash',
       systemInstruction: Content.system(
           'You are Law Genie, a friendly, intelligent, and empathetic Indian Legal AI Assistant. '

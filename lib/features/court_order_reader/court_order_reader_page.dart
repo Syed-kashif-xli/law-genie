@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/features/court_order_reader/summary_display_page.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +28,7 @@ class _CourtOrderReaderPageState extends State<CourtOrderReaderPage> {
   @override
   void initState() {
     super.initState();
-    _model = FirebaseVertexAI.instance.generativeModel(
+    _model = FirebaseAI.vertexAI().generativeModel(
       model: 'gemini-2.5-flash',
       systemInstruction: Content.system(
           'You are an expert at analyzing Indian Court Orders and Judgments. '

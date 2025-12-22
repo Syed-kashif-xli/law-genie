@@ -1,4 +1,4 @@
-import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:io';
 
@@ -6,7 +6,7 @@ class TranslationService {
   final GenerativeModel _model;
 
   TranslationService()
-      : _model = FirebaseVertexAI.instance.generativeModel(
+      : _model = FirebaseAI.vertexAI().generativeModel(
           model: 'gemini-2.5-flash',
           systemInstruction: Content.system(
               'You are an expert legal translator specializing in Indian languages (Hindi, Marathi, Tamil, Telugu, etc.). '

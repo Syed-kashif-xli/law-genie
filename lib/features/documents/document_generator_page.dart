@@ -2,7 +2,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:iconsax/iconsax.dart';
 import 'document_fields.dart'; // Import the new file
 import 'document_viewer_page.dart';
@@ -49,7 +49,7 @@ class _DocumentGeneratorPageState extends State<DocumentGeneratorPage> {
   }
 
   Future<void> _initGenerativeModel() async {
-    _model = FirebaseVertexAI.instance.generativeModel(
+    _model = FirebaseAI.vertexAI().generativeModel(
       model: 'gemini-2.5-flash',
       systemInstruction: Content.system(
           'You are an expert legal drafter specializing in Indian legal documents. '

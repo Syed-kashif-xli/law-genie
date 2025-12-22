@@ -75,7 +75,7 @@ dependencies:
   connectivity_plus: ^7.0.0
   pinput: ^6.0.1
   flutter_dotenv: ^6.0.0
-  firebase_vertexai: ^2.2.0
+  firebase_ai: ^3.6.0
 
 dev_dependencies:
   flutter_test:
