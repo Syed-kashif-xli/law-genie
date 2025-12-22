@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:myapp/services/gemini_service.dart';

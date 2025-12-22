@@ -603,7 +603,7 @@ try {
 
 ## **Generative AI with Firebase**
 
-When a user requests features involving generative AI (text, image, or multimodal), the AI will use the Firebase AI SDK for Dart (`firebase_ai`). This provides a secure and integrated way to access Google's Gemini and Imagen models.
+When a user requests features involving generative AI (text, image, or multimodal), the AI will use the Firebase AI SDK for Dart (`firebase_vertexai`). This provides a secure and integrated way to access Google's Gemini and Imagen models.
 
 ### **Setup and Configuration**
 
@@ -613,7 +613,7 @@ If generative AI is requested for the first time, the AI will perform the follow
 2. **Add Dependencies**: The AI will add the necessary packages to `pubspec.yaml`.
 
 ```shell
-flutter pub add firebase_core firebase_ai
+flutter pub add firebase_core firebase_vertexai
 ```
 
 3. **Initialize Firebase**: The AI will ensure Firebase is initialized in `lib/main.dart`.
@@ -631,7 +631,7 @@ void main() async {
 }
 ```
 
-4. **API Key Security**: The AI will **never** hardcode the API key in the source code. The `firebase_ai` package handles this securely by communicating with Google's backend services, protected by Firebase App Check.
+4. **API Key Security**: The AI will **never** hardcode the API key in the source code. The `firebase_vertexai` package handles this securely by communicating with Google's backend services, protected by Firebase App Check.
 
 ### **Text Generation (Gemini)**
 
@@ -641,7 +641,7 @@ For text generation, summarization, or chat features, the AI will use a Gemini m
 * **Implementation**:
 
 ```
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 Future<String> generateText(String promptText) async {
   try {
@@ -667,12 +667,12 @@ For features that require understanding images (e.g., "what's in this picture?")
 
 ```
 import 'dart:typed_data';
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 Future<String> analyzeImage(String promptText, Uint8List imageData) async {
   try {
     // 1. Get the generative model
-    final model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-2.5-pro');
+    final model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-2.5-flash');
 
     // 2. Create the multimodal content
     final content = Content.multi([
@@ -698,7 +698,7 @@ For generating high-quality images from text prompts, the AI will use the Imagen
 * **Implementation**:
 
 ```
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 Future<List<ImageData>> generateImage(String prompt) async {
   try {
@@ -729,7 +729,7 @@ For features requiring semantic search, classification, or clustering, the AI wi
 * **Implementation**:
 
 ```
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 Future<List<double>?> generateEmbedding(String text) async {
   try {

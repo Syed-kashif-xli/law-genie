@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
@@ -358,7 +358,7 @@ class _DiaryEditorPageState extends State<DiaryEditorPage> {
     });
 
     try {
-      final model = FirebaseAI.googleAI().generativeModel(
+      final model = FirebaseVertexAI.instance.generativeModel(
         model: 'gemini-2.5-flash',
         systemInstruction: Content.system(
             'You are a legal assistant analyzing a user\'s diary note. '

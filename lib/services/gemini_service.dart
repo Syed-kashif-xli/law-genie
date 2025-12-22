@@ -1,4 +1,4 @@
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/foundation.dart';
 
 class GeminiService {
@@ -7,8 +7,8 @@ class GeminiService {
   ChatSession? _chatSession;
 
   GeminiService()
-      : _model = FirebaseAI.googleAI().generativeModel(
-          model: 'gemini-1.5-flash',
+      : _model = FirebaseVertexAI.instance.generativeModel(
+          model: 'gemini-2.5-flash',
           systemInstruction: Content.system(
             'You are a helpful, friendly, and intelligent AI assistant. '
             'You are expert in legal matters. '
