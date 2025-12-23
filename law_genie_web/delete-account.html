@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Account - Law Genie</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+</head>
+
+<body>
+    <div class="noise-overlay"></div>
+    <canvas id="webgl-bg"></canvas>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="https://raw.githubusercontent.com/Syed-kashif-xli/law-genie/main/assets/images/logo.png"
+                    alt="Law Genie Logo" class="logo-img">
+                <span class="logo-text">LAW GENIE</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="features.html">Features</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="#" class="btn btn-primary" style="padding: 0.8rem 1.5rem; font-size: 0.7rem;">LAUNCH
+                        APP</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero" style="min-height: 40vh; padding-top: 150px;">
+        <div class="container">
+            <span class="section-tag reveal">ACCOUNT MANAGEMENT</span>
+            <h1 class="reveal">DELETE <br><span class="gradient-text">ACCOUNT.</span></h1>
+        </div>
+    </header>
+
+    <section class="features" style="padding-top: 0;">
+        <div class="container">
+            <div class="feature-card reveal" style="padding: 5rem; max-width: 900px; margin: 0 auto; text-align: left;">
+                <h3 style="margin-bottom: 2rem;">Request Account Deletion</h3>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">If you wish to delete your Law Genie account
+                    and permanently remove your data, you can do so by contacting our support team or using the in-app
+                    settings. Please note that this action is irreversible.</p>
+
+                <h3 style="margin-bottom: 2rem; margin-top: 4rem;">Method 1: In-App Deletion</h3>
+                <ol style="color: var(--text-muted); margin-bottom: 2rem; margin-left: 1.5rem;">
+                    <li style="margin-bottom: 10px;">Open the Law Genie App.</li>
+                    <li style="margin-bottom: 10px;">Go to <strong>Settings</strong> > <strong>Profile</strong>.</li>
+                    <li style="margin-bottom: 10px;">Scroll down and tap on <strong>Delete Account</strong>.</li>
+                    <li>Confirm the action to permanently delete your data.</li>
+                </ol>
+
+                <h3 style="margin-bottom: 2rem; margin-top: 4rem;">Method 2: Email Request</h3>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">You can also request account deletion by
+                    sending an email to our support team:</p>
+                <ul style="color: var(--text-muted); margin-bottom: 2rem; list-style: none;">
+                    <li style="margin-bottom: 10px;"><strong style="color: var(--text-main);">Email:</strong> <a
+                            href="mailto:support@lawgenie.co.in"
+                            style="color: var(--primary);">support@lawgenie.co.in</a>
+                    </li>
+                    <li style="margin-bottom: 10px;"><strong style="color: var(--text-main);">Subject:</strong> Request
+                        to Delete Account</li>
+                    <li>Please include your registered email address or phone number in the email body for verification.
+                    </li>
+                </ul>
+
+                <h3 style="margin-bottom: 2rem; margin-top: 4rem;">What Information will be Deleted?</h3>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Upon deletion, the following data will be
+                    permanently removed from our servers:</p>
+                <ul style="color: var(--text-muted); margin-bottom: 2rem; margin-left: 1.5rem;">
+                    <li>Personal profile information (Name, Email, Phone).</li>
+                    <li>Authentication credentials.</li>
+                    <li>All chat history and saved legal queries.</li>
+                    <li>Uploaded documents and case files.</li>
+                </ul>
+                <p style="color: var(--text-muted);"><em>Note: Payment transaction logs may be retained for accounting
+                        and legal compliance purposes as required by law.</em></p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer reveal">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <span class="logo-text">LAW GENIE</span>
+                    <p style="color: var(--text-muted); margin-top: 1.5rem; max-width: 350px;">The definitive AI legal
+                        suite for India. Empowering the next generation of lawyers with technology.</p>
+                </div>
+                <div class="footer-links">
+                    <h5>PLATFORM</h5>
+                    <ul>
+                        <li><a href="#">AI Jurist</a></li>
+                        <li><a href="#">Case Finder</a></li>
+                        <li><a href="#">Docu-Smart</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h5>COMPANY</h5>
+                    <ul>
+                        <li><a href="features.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h5>LEGAL</h5>
+                    <ul>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="delete-account.html">Delete Account</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Law Genie AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

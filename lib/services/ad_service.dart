@@ -6,9 +6,8 @@ class AdService {
   // Test Ad Unit IDs
   static String get bannerAdUnitId {
     if (Platform.isAndroid) {
-      // Test ID
-      return 'ca-app-pub-3940256099942544/6300978111';
-      // Real ID: 'ca-app-pub-9032147226605088/9483490380'
+      // Real ID
+      return 'ca-app-pub-9032147226605088/9483490380';
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/2934735716'; // Test ID
     } else {
@@ -18,9 +17,8 @@ class AdService {
 
   static String get rewardedAdUnitId {
     if (Platform.isAndroid) {
-      // Test ID
-      return 'ca-app-pub-3940256099942544/5224354917';
-      // Real ID: 'ca-app-pub-9032147226605088/4762085089'
+      // Real ID
+      return 'ca-app-pub-9032147226605088/4762085089';
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/1712485313'; // Test ID
     } else {
@@ -30,9 +28,8 @@ class AdService {
 
   static String get interstitialAdUnitId {
     if (Platform.isAndroid) {
-      // Test ID
-      return 'ca-app-pub-3940256099942544/1033173712';
-      // Real ID: 'ca-app-pub-9032147226605088/1364815800'
+      // Real ID
+      return 'ca-app-pub-9032147226605088/1364815800';
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/4411468910'; // Test ID
     } else {

@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'models/bare_act.dart';
+import '../../services/ad_service.dart';
 
 class BareActViewerPage extends StatefulWidget {
   final BareAct bareAct;
@@ -36,9 +37,7 @@ class _BareActViewerPageState extends State<BareActViewerPage> {
     });
 
     RewardedAd.load(
-      adUnitId: Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/5224354917' // Test ID for Android
-          : 'ca-app-pub-3940256099942544/1712485313', // Test ID for iOS
+      adUnitId: AdService.rewardedAdUnitId,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
