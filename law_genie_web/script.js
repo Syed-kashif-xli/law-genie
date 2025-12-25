@@ -40,7 +40,7 @@ function initWebGL() {
 
     // Neural Grid Particles
     const particlesCount = window.innerWidth < 768 ? 800 : 2500;
-    const posArray = new THREE.Float32Array(particlesCount * 3);
+    const posArray = new Float32Array(particlesCount * 3);
 
     for (let i = 0; i < particlesCount * 3; i++) {
         posArray[i] = (Math.random() - 0.5) * 15;
@@ -100,6 +100,9 @@ function initCursor() {
 
     let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
 
+    // Hide default cursor only if custom cursor is active
+    document.body.style.cursor = 'none';
+
     if (window.gsap) {
         gsap.to({}, {
             duration: 0.016,
@@ -125,8 +128,8 @@ function initCursor() {
             el.addEventListener('mouseenter', () => {
                 gsap.to(outline, {
                     scale: 2.2,
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    borderColor: 'rgba(99, 102, 241, 0.4)',
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    borderColor: 'rgba(168, 85, 247, 0.4)',
                     duration: 0.3
                 });
                 gsap.to(dot, { scale: 1.5, duration: 0.3 });
@@ -134,10 +137,11 @@ function initCursor() {
             el.addEventListener('mouseleave', () => {
                 gsap.to(outline, {
                     scale: 1,
-                    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    backgroundColor: 'rgba(168, 85, 247, 0.05)',
+                    borderColor: 'rgba(168, 85, 247, 0.5)',
                     duration: 0.3
                 });
+
                 gsap.to(dot, { scale: 1, duration: 0.3 });
             });
         });

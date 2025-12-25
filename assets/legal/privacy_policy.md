@@ -2,6 +2,15 @@
 
 **Last Updated: December 19, 2025**
 
+**⚠️ IMPORTANT DISCLAIMER: Law Genie is a private AI tool and acts as a facilitator. It is NOT affiliated with, endorsed by, or representing any government entity, court, or financial institution.**
+
+**Sources of Information:**
+The legal information, acts, and codes provided in this app are sourced from publicly available government records. For Certified Copy services, the app facilitates access to registry records. Sources include:
+1.  **MPIGP Sampada**: https://sampada.mpigr.gov.in/
+2.  **India Code**: https://www.indiacode.nic.in/
+3.  **eCourts Judgments (NJDG)**: https://judgments.ecourts.gov.in/pdfsearch/index.php
+4.  **eCourts Services**: https://services.ecourts.gov.in/
+
 Welcome to Law Genie ("we," "our," or "us"). We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application (the "App").
 
 ## 1. Information We Collect

@@ -29,16 +29,10 @@
     font-family: 'Inter', sans-serif;
 }
 
-/* Custom Cursor Hide */
-@media (pointer: fine) {
-    * {
-        cursor: none !important;
-    }
-
-    .cursor-dot,
-    .cursor-outline {
-        pointer-events: none;
-    }
+/* Custom Cursor Styling */
+.cursor-dot,
+.cursor-outline {
+    pointer-events: none;
 }
 
 html {
@@ -115,26 +109,26 @@ body {
     top: 0;
     left: 0;
     border-radius: 50%;
-    z-index: 100000;
+    z-index: 999999;
     opacity: 1;
     /* Force visible */
     transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease;
 }
 
 .cursor-dot {
-    width: 10px;
-    height: 10px;
-    background-color: var(--primary);
-    box-shadow: 0 0 20px var(--primary);
+    width: 12px;
+    height: 12px;
+    background-color: #a855f7;
+    box-shadow: 0 0 20px #a855f7;
 }
 
 .cursor-outline {
     width: 44px;
     height: 44px;
-    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    border: 1.5px solid rgba(168, 85, 247, 0.5);
     margin-left: -22px;
     margin-top: -22px;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(168, 85, 247, 0.05);
 }
 
 /* --- Navbar --- */

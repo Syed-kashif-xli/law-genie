@@ -1,5 +1,15 @@
 # Legal Disclaimer
 
+**⚠️ GOVERNMENT AFFILIATION DISCLAIMER**
+**Law Genie is a private AI tool and acts as a facilitator. It is NOT affiliated with, endorsed by, or representing any government entity, court, or financial institution.**
+
+**Sources of Information:**
+The legal information, acts, and codes provided in this app are sourced from publicly available government records. For Certified Copy services, the app facilitates access to registry records. Sources include:
+1.  **MPIGP Sampada**: https://sampada.mpigr.gov.in/
+2.  **India Code**: https://www.indiacode.nic.in/
+3.  **eCourts Judgments (NJDG)**: https://judgments.ecourts.gov.in/pdfsearch/index.php
+4.  **eCourts Services**: https://services.ecourts.gov.in/
+
 **IMPORTANT: PLEASE READ CAREFULLY**
 
 The Information and services provided by Law Genie are for **informational and educational purposes only** and do not constitute legal advice or an attorney-client relationship.

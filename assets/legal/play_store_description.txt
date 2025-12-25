@@ -2,21 +2,29 @@ Short Description (Max 80 characters):
 India's Smartest Legal AI: Research, Drafting, Case Laws & Certified Copies.
 
 Full Description:
+**⚠️ Disclaimer: Law Genie is a private AI tool and acts as a facilitator. It is NOT affiliated with, endorsed by, or representing any government entity, court, or financial institution.**
+
+**Sources of Information:**
+The legal information, acts, and codes provided in this app are sourced from publicly available government records. For Certified Copy services, the app facilitates access to registry records. Sources include:
+1.  **MPIGP Sampada (Inspector General of Registration)**: https://sampada.mpigr.gov.in/
+2.  **India Code (Legislative Department)**: https://www.indiacode.nic.in/
+3.  **eCourts Judgments (NJDG)**: https://judgments.ecourts.gov.in/pdfsearch/index.php
+4.  **eCourts Services**: https://services.ecourts.gov.in/
+
 Unlock the power of Artificial Intelligence for your legal practice with Law Genie – India’s advanced AI Legal Assistant. Designed for advocates, law students, and legal professionals, Law Genie simplifies complex legal tasks, saving you countless hours of research and drafting.
 
 Your Pocket Legal Expert
 Whether you need to find a specific case law, draft a complex legal notice, or understand the latest Bharatiya Nyaya Sanhita (BNS) provisions, Law Genie is ready to help 24/7.
 
 Key Features:
-
 🤖 AI Legal Research
 Ask complex legal questions in plain language. Get instant, accurate answers based on the IPC, CrPC, CPC, Evidence Act, and the new BNS, BNSS, and BSA laws.
 
-📝 Smart Legal Drafting
+✍️ Smart Legal Drafting
 Generate professional legal documents in seconds. Create affidavits, rental agreements, legal notices, and court applications with customizable AI templates.
 
-📄 Certified Copy Services
-Seamlessly apply for and track Certified Copies of judgments and orders directly through the app. Specialized tracking ensures you never lose sight of your important documents.
+📜 Certified Copy Services
+Seamlessly apply for and track Certified Copies of registry documents and property records directly through the app. Specialized tracking ensures you never lose sight of your important documents.
 
 📚 Comprehensive Case Law Database
 Access a vast library of Supreme Court and High Court judgments. Search by citation, party name, or topic.
@@ -28,8 +36,8 @@ Stay ahead with the latest legal news, Supreme Court updates, and important amen
 Instantly translate legal terms and understand complex jargon with our built-in legal dictionary.
 
 Why Choose Law Genie?
-•	Trusted by Professionals: Built with accuracy and reliability for the Indian legal system.
-•	Time-Saving: Reduce research time from hours to minutes.
-•	Secure & Private: Your data and search history are fully encrypted and private.
+• Trusted by Professionals: Built with accuracy and reliability for the Indian legal system.
+• Time-Saving: Reduce research time from hours to minutes.
+• Secure & Private: Your data and search history are fully encrypted and private.
 
 Download Law Genie today and transform the way you practice law.
