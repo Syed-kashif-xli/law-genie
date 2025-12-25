@@ -58,3 +58,12 @@
 
 # Keep deferred components
 -keep class io.flutter.embedding.engine.deferredcomponents.** { *; }
+
+# Razorpay Proguard Rules
+-keep class com.razorpay.** {*;}
+-dontwarn com.razorpay.**
+-keep class com.google.android.gms.wallet.** {*;}
+-keep class com.google.android.gms.auth.api.phone.** {*;}
+-keep class com.google.android.gms.safetynet.** {*;}
+-keep class com.google.android.apps.nbu.paisa.** {*;}
+
