@@ -1,30 +1,11 @@
 /* 
-   LUXURY INTERACTION ENGINE 
-   Author: Law Genie Design Team
+   LAW GENIE - INTERACTION ENGINE
+   Aesthetic Particles & Custom Cursor
 */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Force show scrollbar immediately
-    document.body.style.overflow = 'auto';
-    document.body.classList.remove('loading');
-
-    // 1. WebGL Background (Luxury Neural Particles)
-    try { initWebGL(); } catch (e) { console.error("WebGL Init Failed", e); }
-
-    // 2. Custom Cursor (Sleek Liquid Transition)
-    try { initCursor(); } catch (e) { console.error("Cursor Init Failed", e); }
-
-    // 3. Navbar Interaction
-    try { initNavbar(); } catch (e) { console.error("Navbar Init Failed", e); }
-
-    // 4. Scroll Reveal System (GSAP Powered)
-    try { initScrollReveal(); } catch (e) { console.error("Reveal Init Failed", e); }
-
-    // 5. Magnetic Hover Effects
-    try { initMagneticInteractions(); } catch (e) { console.error("Magnetic Init Failed", e); }
-
-    // 6. Mockup Animations
-    try { initMockupAnimations(); } catch (e) { console.error("Mockup Anim Failed", e); }
+    initWebGL();
+    initCursor();
 });
 
 function initWebGL() {
@@ -33,47 +14,36 @@ function initWebGL() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Neural Grid Particles
-    const particlesCount = window.innerWidth < 768 ? 800 : 2500;
+    const particlesCount = 2000;
     const posArray = new Float32Array(particlesCount * 3);
 
     for (let i = 0; i < particlesCount * 3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 15;
+        posArray[i] = (Math.random() - 0.5) * 10;
     }
 
-    const particlesGeometry = new THREE.BufferGeometry();
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
-    const particlesMaterial = new THREE.PointsMaterial({
-        size: 0.006,
+    const material = new THREE.PointsMaterial({
+        size: 0.005,
         color: '#6366f1',
         transparent: true,
-        opacity: 0.4,
-        blending: THREE.AdditiveBlending
+        opacity: 0.5
     });
 
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
+    const mesh = new THREE.Points(geometry, material);
+    scene.add(mesh);
 
-    camera.position.z = 5;
-
-    let mouseX = 0, mouseY = 0;
-    document.addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX - window.innerWidth / 2) * 0.0001;
-        mouseY = (e.clientY - window.innerHeight / 2) * 0.0001;
-    });
+    camera.position.z = 3;
 
     function animate() {
         requestAnimationFrame(animate);
-        particlesMesh.rotation.y += 0.0005;
-        particlesMesh.rotation.x += 0.0002;
-        particlesMesh.position.x += (mouseX - particlesMesh.position.x) * 0.03;
-        particlesMesh.position.y += (-mouseY - particlesMesh.position.y) * 0.03;
+        mesh.rotation.y += 0.001;
         renderer.render(scene, camera);
     }
     animate();
@@ -83,6 +53,91 @@ function initWebGL() {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
+    // --- AI CHAT LOGIC (GOOGLE GEMINI PRO) ---
+    const chatDisplay = document.getElementById('chat-display');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    if (chatDisplay && userInput && sendBtn) {
+        const DEEPSEEK_API_KEY = 'sk-155095e52fc647f39bc1dabf35821b51';
+        const SYSTEM_PROMPT = "You are Law Genie AI, a specialized legal assistant for Indian Law. Answer questions accurately based on Indian statutes (like BNS, BNSS, BSA, IPC, CrPC) and case law precedents. Provide citations if possible. Keep answers concise and professional.";
+
+        const appendMessage = (content, isUser = false) => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${isUser ? 'user-msg' : 'ai-msg'}`;
+            msgDiv.textContent = content;
+            chatDisplay.appendChild(msgDiv);
+            chatDisplay.scrollTop = chatDisplay.scrollHeight;
+        };
+
+        const showTyping = () => {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.textContent = 'Law Genie AI is analyzing...';
+            chatDisplay.appendChild(typingDiv);
+            chatDisplay.scrollTop = chatDisplay.scrollHeight;
+        };
+
+        const hideTyping = () => {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        };
+
+        const handleSend = async () => {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, true);
+            userInput.value = '';
+            showTyping();
+
+            try {
+                const response = await fetch('https://api.deepseek.com/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [
+                            { role: "system", content: SYSTEM_PROMPT },
+                            { role: "user", content: text }
+                        ],
+                        stream: false
+                    })
+                });
+
+                if (response.status === 429) {
+                    hideTyping();
+                    appendMessage("The AI is currently under heavy load (Rate Limit reached). Please wait a moment and try again.");
+                    return;
+                }
+
+                const data = await response.json();
+                hideTyping();
+
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    const aiResponse = data.choices[0].message.content;
+                    appendMessage(aiResponse);
+                } else {
+                    appendMessage("I'm sorry, I encountered a legal processing error. This might be due to safety filters or a temporary outage.");
+                    console.error("DeepSeek Error Context:", data);
+                }
+            } catch (error) {
+                hideTyping();
+                appendMessage("An error occurred. Please check your network connection.");
+                console.error("Fetch Error:", error);
+            }
+        };
+
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    }
 }
 
 function initCursor() {
@@ -90,198 +145,18 @@ function initCursor() {
     const outline = document.querySelector('.cursor-outline');
     if (!dot || !outline) return;
 
-    // Mobile check: Disable on touch
-    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-        dot.style.display = 'none';
-        outline.style.display = 'none';
-        document.body.style.cursor = 'auto';
-        return;
-    }
-
-    let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
-
-    // Hide default cursor only if custom cursor is active
-    document.body.style.cursor = 'none';
-
-    if (window.gsap) {
-        gsap.to({}, {
-            duration: 0.016,
-            repeat: -1,
-            onRepeat: () => {
-                posX += (mouseX - posX) / 10;
-                posY += (mouseY - posY) / 10;
-                gsap.set(dot, { css: { left: mouseX, top: mouseY } });
-                gsap.set(outline, { css: { left: posX, top: posY } });
-            }
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            // Ensure visibility
-            dot.style.opacity = '1';
-            outline.style.opacity = '1';
-        });
-
-        const targets = document.querySelectorAll('a, button, .btn, .feature-card, .pricing-card, input, textarea, .action-box');
-        targets.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                gsap.to(outline, {
-                    scale: 2.2,
-                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-                    borderColor: 'rgba(168, 85, 247, 0.4)',
-                    duration: 0.3
-                });
-                gsap.to(dot, { scale: 1.5, duration: 0.3 });
-            });
-            el.addEventListener('mouseleave', () => {
-                gsap.to(outline, {
-                    scale: 1,
-                    backgroundColor: 'rgba(168, 85, 247, 0.05)',
-                    borderColor: 'rgba(168, 85, 247, 0.5)',
-                    duration: 0.3
-                });
-
-                gsap.to(dot, { scale: 1, duration: 0.3 });
-            });
-        });
-    }
-}
-
-function initNavbar() {
-    const navbar = document.querySelector('.navbar');
-    const menuBtn = document.querySelector('.menu-btn');
-    const navLinks = document.querySelector('.nav-links');
-    if (!navbar) return;
-
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 100) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
+    document.addEventListener('mousemove', (e) => {
+        gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+        gsap.to(outline, { x: e.clientX - 15, y: e.clientY - 15, duration: 0.3 });
     });
 
-    if (menuBtn && navLinks) {
-        menuBtn.addEventListener('click', () => {
-            navbar.classList.toggle('mobile-active');
-            const icon = menuBtn.querySelector('i');
-            if (navbar.classList.contains('mobile-active')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
+    const hoverables = document.querySelectorAll('a, button, .feat-card');
+    hoverables.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            gsap.to(outline, { scale: 2, borderColor: '#6366f1', duration: 0.3 });
         });
-
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                navbar.classList.remove('mobile-active');
-                const icon = menuBtn.querySelector('i');
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            });
+        el.addEventListener('mouseleave', () => {
+            gsap.to(outline, { scale: 1, borderColor: 'rgba(255,255,255,0.3)', duration: 0.3 });
         });
-    }
-}
-
-function initScrollReveal() {
-    const observerOptions = {
-        threshold: 0.15,
-        rootMargin: "0px 0px -50px 0px"
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-
-                // Staggered child animations
-                const children = entry.target.querySelectorAll('.feature-card, .stat-item, .step-item');
-                if (children.length > 0 && window.gsap) {
-                    gsap.from(children, {
-                        y: 40,
-                        opacity: 0,
-                        duration: 1,
-                        stagger: 0.15,
-                        ease: "power3.out"
-                    });
-                }
-            }
-        });
-    }, observerOptions);
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-}
-
-function initMagneticInteractions() {
-    const items = document.querySelectorAll('.logo, .btn, .nav-links a, .feature-icon');
-
-    items.forEach(item => {
-        item.addEventListener('mousemove', (e) => {
-            const bounds = item.getBoundingClientRect();
-            const x = (e.clientX - bounds.left - bounds.width / 2) * 0.4;
-            const y = (e.clientY - bounds.top - bounds.height / 2) * 0.4;
-
-            if (window.gsap) {
-                gsap.to(item, {
-                    x: x,
-                    y: y,
-                    duration: 0.6,
-                    ease: "power2.out"
-                });
-            }
-        });
-
-        item.addEventListener('mouseleave', () => {
-            if (window.gsap) {
-                gsap.to(item, {
-                    x: 0,
-                    y: 0,
-                    duration: 1,
-                    ease: "elastic.out(1, 0.3)"
-                });
-            }
-        });
-    });
-}
-
-function initMockupAnimations() {
-    if (!window.gsap) return;
-
-    // Set initial states
-    gsap.set('.mini-phone', { opacity: 0, scale: 0.9 });
-
-    const mockupObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const target = entry.target;
-
-                // Animate entry of the mini phone
-                gsap.to(target, {
-                    opacity: 1,
-                    scale: 1,
-                    duration: 1,
-                    ease: "power3.out"
-                });
-
-                // Trigger specific internals if any
-                const waveBars = target.querySelectorAll('.wave-bar');
-                if (waveBars.length > 0) {
-                    gsap.to(waveBars, {
-                        height: 30,
-                        duration: 0.5,
-                        repeat: -1,
-                        yoyo: true,
-                        stagger: 0.1
-                    });
-                }
-            }
-        });
-    }, { threshold: 0.3 });
-
-    document.querySelectorAll('.mini-phone').forEach(el => {
-        mockupObserver.observe(el);
     });
 }
