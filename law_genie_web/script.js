@@ -150,6 +150,8 @@ function initCursor() {
 
 function initNavbar() {
     const navbar = document.querySelector('.navbar');
+    const menuBtn = document.querySelector('.menu-btn');
+    const navLinks = document.querySelector('.nav-links');
     if (!navbar) return;
 
     window.addEventListener('scroll', () => {
@@ -159,6 +161,29 @@ function initNavbar() {
             navbar.classList.remove('scrolled');
         }
     });
+
+    if (menuBtn && navLinks) {
+        menuBtn.addEventListener('click', () => {
+            navbar.classList.toggle('mobile-active');
+            const icon = menuBtn.querySelector('i');
+            if (navbar.classList.contains('mobile-active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navbar.classList.remove('mobile-active');
+                const icon = menuBtn.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+        });
+    }
 }
 
 function initScrollReveal() {
