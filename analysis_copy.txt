@@ -1,0 +1,20 @@
+﻿Analyzing law-genie...                                          
+
+   info - Don't use 'BuildContext's across async gaps - lib\features\bare_acts\bare_acts_page.dart:95:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\features\certified_copy\certified_copy_page.dart:322:9 - use_build_context_synchronously
+warning - Duplicate import - lib\features\chat\chat_page.dart:26:8 - duplicate_import
+warning - Duplicate import - lib\features\chat\chat_page.dart:28:8 - duplicate_import
+   info - Don't use 'BuildContext's across async gaps - lib\features\chat\chat_page.dart:404:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\features\court_order_reader\court_order_reader_page.dart:81:54 - use_build_context_synchronously
+warning - Unused import: 'package:cloud_firestore/cloud_firestore.dart' - lib\features\home\home_page.dart:7:8 - unused_import
+   info - The import of 'package:flutter/foundation.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\features\home\home_page.dart:8:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block - lib\features\home\providers\usage_provider.dart:295:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\features\home\providers\usage_provider.dart:297:7 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps - lib\features\risk_analysis\risk_analysis_page.dart:154:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\features\scanner\scanner_page.dart:107:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\features\scanner\scanner_page.dart:135:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\features\translator\translator_page.dart:89:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\features\translator\translator_page.dart:210:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\case_list_screen.dart:334:58 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\case_list_screen.dart:366:43 - use_build_context_synchronously
+

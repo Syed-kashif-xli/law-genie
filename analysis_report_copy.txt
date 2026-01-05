@@ -1,0 +1,27 @@
+﻿Analyzing law-genie...                                          
+
+warning - Unused import: 'package:cloud_firestore/cloud_firestore.dart' - lib\features\home\home_page.dart:7:8 - unused_import
+   info - The import of 'package:flutter/foundation.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\features\home\home_page.dart:8:8 - unnecessary_import
+   info - The private field _freeLimits could be 'final' - lib\features\home\providers\usage_provider.dart:28:24 - prefer_final_fields
+   info - The private field _premiumLimits could be 'final' - lib\features\home\providers\usage_provider.dart:29:24 - prefer_final_fields
+  error - The method '_subscribeToLimitsConfig' isn't defined for the type 'UsageProvider' - lib\features\home\providers\usage_provider.dart:47:5 - undefined_method
+   info - Statements in an if should be enclosed in a block - lib\features\home\providers\usage_provider.dart:269:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\features\home\providers\usage_provider.dart:271:7 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps - lib\screens\case_list_screen.dart:334:58 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\screens\case_list_screen.dart:366:43 - use_build_context_synchronously
+
+flutter : 9 issues found. 
+(ran in 38.2s)
+At line:1 char:1
++ flutter analyze --no-pub 
+> analysis_report.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (9 iss  
+  ues found. (ran in 38.2   
+ s):String) [], RemoteEx    
+ception
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
