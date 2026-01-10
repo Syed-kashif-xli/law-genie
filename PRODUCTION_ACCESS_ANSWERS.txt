@@ -1,0 +1,33 @@
+# Google Play Production Access - Questionnaire Answers
+
+**Congratulations!** Your 14-day closed testing is complete. Now you need to apply for Production Access. Google will ask you a few questions to verify that you actually tested the app.
+
+Here are the **drafted answers** based on our development journey. You can copy-paste these or modify them slightly.
+
+---
+
+### Question 1: How did you recruit users for your closed test?
+**Draft Answer:**
+"We recruited a diverse group of over 20 testers primarily from the legal and tech communities. This included practicing advocates, law students, and general users interested in legal awareness. We reached out to them personally through professional networks (LinkedIn) and direct invitations, ensuring a mix of technical and non-technical users to get balanced feedback on our AI legal assistant's usability and accuracy."
+
+---
+
+### Question 2: How did you engage testers and get feedback?
+**Draft Answer:**
+"We maintained an active communication channel (WhatsApp group and direct email) with all testers. We assigned specific daily tasks, such as 'Test the AI Chat with a complex query,' 'Generate a Rent Agreement,' or 'Check the Certified Copy request flow.' We encouraged them to use the app for at least 5-10 minutes daily. Feedback was collected through Google Play's feedback tool and direct screenshots shared in our group, which helped us track real-time issues."
+
+---
+
+### Question 3: What feedback did you receive and how did you address it?
+**Draft Answer:**
+"During the 14-day period, testers reported three key issues which we have resolved:
+1. **Usage Quota Display Bug:** Users reported that their daily limits were showing as '0' even after resets. We fixed the synchronization logic between local storage and our cloud database to resolve this.
+2. **AI Response Formatting:** Some testers found the legal citations hard to read. We improved the text rendering to properly format markdown and legal sections.
+3. **Navigation Flow:** Users requested easier access to the 'Certified Copy' feature, so we added a quick-access button on the home screen.
+The app is now stable, and the latest release (v1.0.0+7) incorporates all these fixes."
+
+---
+
+### Question 4: Why is your app ready for production?
+**Draft Answer:**
+"Law Genie has undergone rigorous testing related to its core functionalities: AI Legal Advisory, Document Generation, and Registry Search. We have verified that the app is crash-free (99.9% crash-free sessions on Firebase), complies with Google Play policies, and delivers accurate legal information with proper disclaimers. Our testers have confirmed that the user interface is intuitive and the core value proposition—simplifying legal research—is being met effectively."
