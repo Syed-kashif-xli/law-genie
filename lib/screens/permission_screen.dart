@@ -53,9 +53,6 @@ class _PermissionScreenState extends State<PermissionScreen> {
       Permission.microphone,
       Permission.storage,
       Permission.notification,
-      Permission.photos,
-      Permission.videos,
-      Permission.audio,
     ].request();
 
     // We don't strictly block the user if they deny, but we could show a dialog.
