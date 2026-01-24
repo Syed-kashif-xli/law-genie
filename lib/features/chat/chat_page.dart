@@ -205,7 +205,7 @@ class _AIChatPageState extends State<AIChatPage> {
       title: widget.chatSession?.title ?? 'Chat Export',
     );
 
-    await PdfService().generateChatPdf(session);
+    await PdfService.generateChatPdf(session);
   }
 
   Future<void> _saveChatSession() async {

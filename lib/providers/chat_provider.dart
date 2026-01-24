@@ -7,7 +7,6 @@ import 'package:myapp/services/pdf_service.dart';
 
 class ChatProvider with ChangeNotifier {
   final ChatStorageService _chatStorageService = ChatStorageService();
-  final PdfService _pdfService = PdfService();
   List<ChatSession> _chatSessions = [];
   StreamSubscription<List<ChatSession>>? _chatSubscription;
 
@@ -66,7 +65,7 @@ class ChatProvider with ChangeNotifier {
   }
 
   Future<void> downloadChatSession(ChatSession session) async {
-    await _pdfService.generateChatPdf(session);
+    await PdfService.generateChatPdf(session);
   }
 
   Future<void> clearChatHistory() async {

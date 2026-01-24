@@ -21,6 +21,7 @@ import 'package:myapp/services/ad_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/scanner/scanner_page.dart';
+import 'package:myapp/features/judgments/judgment_category_page.dart';
 
 import 'widgets/inline_banner_ad_widget.dart';
 import '../../services/notification_service.dart';
@@ -411,13 +412,13 @@ class _QuickActionsSection extends StatelessWidget {
             _buildActionButton(
               context,
               icon: Iconsax.judge,
-              label: 'Lawyer',
+              label: 'Judgments',
               color: const Color(0xFFFF6B6B),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Lawyer directory coming soon!'),
-                      backgroundColor: Color(0xFF19173A)),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const JudgmentCategoryPage()),
                 );
               },
             ),

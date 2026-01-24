@@ -201,6 +201,7 @@ class AppDrawer extends StatelessWidget {
               context, Iconsax.archive_book, 'Chat History', '/chatHistory'),
           _buildMenuItem(
               context, Iconsax.calendar_1, 'Case Timeline', '/caseList'),
+          _buildMenuItem(context, Iconsax.judge, 'Judgments', '/judgments'),
           _buildMenuItem(context, Iconsax.user, 'Profile', '/profile'),
         ],
       ),

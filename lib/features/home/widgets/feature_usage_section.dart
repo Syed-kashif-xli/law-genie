@@ -11,6 +11,7 @@ import 'package:myapp/features/scanner/scanner_page.dart';
 import '../providers/usage_provider.dart';
 import 'package:myapp/features/translator/translator_page.dart';
 import 'package:myapp/features/bare_acts/bare_acts_page.dart';
+import 'package:myapp/features/judgments/judgment_category_page.dart';
 
 import 'package:myapp/features/certified_copy/certified_copy_state_selection_page.dart';
 
@@ -275,6 +276,21 @@ class FeatureUsageSection extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const DiaryPage()),
+                      );
+                    },
+                  ),
+                  FeatureUsageCard(
+                    title: 'Judgments',
+                    count: usageProvider.judgmentsUsage,
+                    limit: usageProvider.judgmentsLimit,
+                    icon: Iconsax.judge,
+                    color: const Color(0xFF7B1FA2),
+                    isPremium: isPremium,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const JudgmentCategoryPage()),
                       );
                     },
                   ),

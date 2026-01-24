@@ -257,7 +257,8 @@ class UsageProvider extends ChangeNotifier {
           'riskAnalysis': 0,
           'scanner': 0,
           'documents': 0,
-          'courtOrders': 0
+          'courtOrders': 0,
+          'judgments': 0,
         };
       }
 
@@ -274,7 +275,8 @@ class UsageProvider extends ChangeNotifier {
           'myCases': 0,
           'bareActs': 0,
           'diary': 0,
-          'chatHistory': 0
+          'chatHistory': 0,
+          'judgments': 0,
         };
       }
 
@@ -346,6 +348,10 @@ class UsageProvider extends ChangeNotifier {
   int get diaryLimit => getLimit('diary', isMonthly: true);
   int get chatHistoryUsage => getUsageCount('chatHistory', isMonthly: true);
   int get chatHistoryLimit => getLimit('chatHistory', isMonthly: true);
+  int get judgmentsUsage => getUsageCount('judgments', isMonthly: true);
+  int get judgmentsLimit => getLimit('judgments', isMonthly: true);
+  int get dailyJudgmentsUsage => getUsageCount('judgments', isMonthly: false);
+  int get dailyJudgmentsLimit => getLimit('judgments', isMonthly: false);
 
   int get casesUsage => getUsageCount('myCases', isMonthly: true);
   int get casesLimit => getLimit('myCases', isMonthly: true);
@@ -406,6 +412,8 @@ class UsageProvider extends ChangeNotifier {
   Future<void> incrementDiary() async => incrementUsage('diary', daily: false);
   Future<void> incrementChatHistory() async =>
       incrementUsage('chatHistory', daily: false);
+  Future<void> incrementJudgments() async =>
+      incrementUsage('judgments', daily: true);
 
   // Upgrade Plan
   Future<void> upgradeToPremium() async {
@@ -475,7 +483,8 @@ class UsageProvider extends ChangeNotifier {
           'riskAnalysis': 0,
           'scanner': 0,
           'documents': 0,
-          'courtOrders': 0
+          'courtOrders': 0,
+          'judgments': 0,
         },
         'monthly': {
           'lastReset': currentMonth,
@@ -488,7 +497,8 @@ class UsageProvider extends ChangeNotifier {
           'myCases': 0,
           'bareActs': 0,
           'diary': 0,
-          'chatHistory': 0
+          'chatHistory': 0,
+          'judgments': 0,
         },
         'lastUpdated': FieldValue.serverTimestamp(),
       });
