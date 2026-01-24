@@ -156,6 +156,16 @@ class MyApp extends StatelessWidget {
         surface: backgroundColor,
       ),
       textTheme: appTextTheme,
+      canvasColor: backgroundColor,
+      dialogTheme: const DialogThemeData(
+        backgroundColor: Colors.white,
+      ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -206,6 +216,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'Law Genie',
           theme: newTheme,
+          color: primaryColor,
           locale: provider.locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
