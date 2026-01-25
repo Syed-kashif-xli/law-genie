@@ -1,0 +1,70 @@
+<body>
+    <div class="container text-left" style="margin-top:85px;">
+        <div id="menubarClose">
+            <span class="text-black text-center page-title-main">
+                <h2 class="d-inline">Case Status</h2> : <h3 class="d-inline">Search by Party Name</h3>
+            </span>
+            <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+            <h4 id = "benchName" class="text-black text-center" style="font-weight:bold;"></h4>
+        <form class="form-horizontal">
+            <fieldset>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label  font-weight-bold   " for="party_name">Petitioner/Respondent</label>
+                        <div class="col-md-5">
+                            <input id="party_name" name="party_name" type="text" placeholder="Enter Party Name" class="form-control input-md">
+                            <span class="party_name_err_msg" style="color:red;"></span>
+                        </div>
+                </div>
+                <!-- Text input-->
+                <div class="form-group required">
+                    <label class="col-md-4 control-label  font-weight-bold   " for="year">Registration Year</label>
+                        <div class="col-md-5">
+                            <input id="rgyear" name="year" type="number" placeholder="Enter year" class="form-control input-md">
+                            <span class="year" style="color:red;"></span>
+                        </div>
+                </div>
+                <!-- Multiple Radios (inline) -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label d-none" for="radOpt1"></label>
+                        <div class="col-md-4">
+                            <label class="radio-inline   " for="radOpt-0">
+                                <input type="radio" name="radOpt1" id="radOpt-0" value="Pending" checked="checked">
+                                    Pending
+                            </label>
+                            <label class="radio-inline   " for="radOpt-1">
+                                <input type="radio" name="radOpt1" id="radOpt-1" value="Disposed">
+                                    Disposed
+                            </label>
+                            <label class="radio-inline   " for="radOpt-2">
+                                <input type="radio" name="radOpt1" id="radOpt-2" value="Both">
+                                    Both
+                            </label>
+                        </div>
+                </div>
+                <!-- Button (Double) -->
+                <div class="form-group text-center">
+                    <label class="col-md-4 control-label d-none" for="button1id"></label>
+                        <div class="col-md-8">                            
+                            <button type="button" id="goButton" class="btn btn-primary btn-lg twobtn" >Go</button>
+                            <button id="resetButton" name="button2id" class="btn btn-black btn-lg   twobtn">Reset</button>
+                        </div>
+                </div>
+                <div id="headers">
+                </div>
+            </fieldset>
+        </form>        
+        <div class="panel-group" id="accordion_search"></div>
+        <div id="footer"></div>
+        </div>
+    </div>
+
+
+    
+    <script>
+            document.addEventListener("deviceready", onDeviceReadyPartySearchHC, false);
+            function onDeviceReadyPartySearchHC() {
+                               
+                $.getScript("js/search_by_party_name_hc.js");
+            }
+        </script>
+</body>

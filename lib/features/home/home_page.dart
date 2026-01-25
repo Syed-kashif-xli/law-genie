@@ -22,6 +22,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:myapp/features/chat/chat_page.dart';
 import 'package:myapp/features/scanner/scanner_page.dart';
 import 'package:myapp/features/judgments/judgment_category_page.dart';
+import 'package:myapp/features/case_status/case_status_page.dart';
 
 import 'widgets/inline_banner_ad_widget.dart';
 import '../../services/notification_service.dart';
@@ -419,6 +420,19 @@ class _QuickActionsSection extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => const JudgmentCategoryPage()),
+                );
+              },
+            ),
+            _buildActionButton(
+              context,
+              icon: Iconsax.status,
+              label: 'Case Status',
+              color: const Color(0xFF6C63FF),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CaseStatusPage()),
                 );
               },
             ),

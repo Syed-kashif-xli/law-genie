@@ -1,0 +1,91 @@
+
+<style>
+    #doublescroll { overflow: hidden; width:150px }
+    #doublescroll p { margin: 0; padding: 1em; white-space: nowrap; }
+    .Container
+    {
+        width: auto;
+        overflow-y: auto;
+    }
+    .Content
+    {
+        width: 100%;
+    }
+    .Flipped, .Flipped .Content
+    {
+        transform:rotateX(180deg);    
+    }
+    #ui-datepicker-div {
+        z-index: 1050 !important;
+    }
+</style>
+<html>
+    <body>
+        <div class="container" style="margin-top:0px;padding: 1rem 0;">
+            <span class="text-black text-center page-title-main" id="causelist_heading1_label">Cause list</span>
+            /
+            <span class="text-black text-center page-title-main" id="causelist_heading2_label">Daily Board </span>
+        <form class="form-horizontal text-left">
+            <fieldset>
+                <div class="form-group required ">
+                    <div class="col-md-5">
+                        <label class="col-md-4 control-label container1 font-weight-bold" for="court_code" id="court_complex_label">Select Court Complex</label>
+                        <select id="court_codec" name="court_code" class="form-control">
+                            <option value="" id="selectCourtCompleLabel">Select Court Complex</option>
+                        </select>
+                    </div>                       
+                </div>
+                <div class="form-group required">
+                    <div class="col-md-5">
+                        <label class="col-md-4 control-label container1  font-weight-bold" for="court_name" id="court_name_label"> Court Name</label>
+                        <select id="court_name1" name="court_name" class="form-control">
+                            <option value="">Select Court Name</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- <div class="form-group required" id="caseListDateId">
+                    <div class="col-md-4" id="testDIV">
+                        <label class="col-md-4 control-label container1  font-weight-bold" for="pickyDate" id="causelist_date_label">Causelist Date:</label>
+                            <input type="text" id="pickyDate" class="form-control" placeholder="Cause List Date"/> 
+                    </div> 
+                </div> -->
+                <div class="form-group required" id="caseListDateId">
+                    <div class="col-md-4" id="testDIV">
+                        <label class="col-md-4 control-label container1  font-weight-bold" for="pickyDate" id="causelist_date_label">Causelist Date:</label>
+                        <input type="date" id="pickyDate" min="2018-01-01" max="2018-12-31" class="form-control">
+                    </div> 
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label d-none" for="button1id"></label>
+                        <div class="col-md-8 text-center">
+                            <button id="civilButton" name="civilButton" onClick="onButtonClick(this.id); return false;" class="btn btn-primary btn-lg twobtn" style="font-size:15px !important;">Civil</button>&nbsp;
+                            <button id="criminalButton" name="criminalButton" onClick="onButtonClick(this.id); return false;" class="btn btn-primary btn-lg twobtn" style="font-size:15px !important;">Criminal</button>
+                        </div>
+                </div>
+                <div class="input-group" id = "searchInCauseListDivId" >
+                    <input style="z-index: 0;padding:5px 15px;height: 38px;" class="form-control" placeholder="Enter text to search" name="srch-term" id="searchInCauseList" type="text">
+                        <div class="input-group-append">
+                            <button id="searchInCauseListBtnId" class="btn btn-default btn-md mybtn" ><i class="fa fa-search" aria-hidden="true"></i><span class="sr-only">Click to search</span></button>      
+                            <button id="clearCauseListSearchResult" class="btn btn-default btn-md mybtn" ><i class="fa fa-undo" aria-hidden="true"></i><span class="sr-only">Click to clear search textbox</span></button>
+                        </div>
+                </div>                        
+                <div class="Container Flipped">
+                    <div id="cases" class="Content"></div>
+                </div>
+                <div>
+                    <div id="casesnotfound" class="Content"></div>
+                </div>
+            </fieldset>
+        </form>
+        </div>
+        <!--<script type="text/javascript" src="js/cause_list.js"></script>-->
+        
+        <script>
+                document.addEventListener("deviceready", onDeviceReadyCauselist, false);
+                function onDeviceReadyCauselist() {
+                   
+                    $.getScript("js/cause_list.js");
+                }
+            </script>
+    </body>
+</html>

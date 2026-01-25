@@ -1,0 +1,116 @@
+<body>
+
+<div class="container text-left" style="margin-top:85px;padding-top: env(safe-area-inset-top, 43px);">
+    <div id="menubarClose">
+        <span class="text-black text-center page-title-main">
+            <h2 id="casestatus_heading1_label" class="d-inline">Case Status</h2>
+            :
+            <h3 id="search_by_advocate_name_label" class="d-inline">Search by Advocate Name</h3>
+        </span>
+        <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+        <form class="form-horizontal" name="parentForm" id="myForm">
+            <fieldset>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label font-weight-bold " for="court_code" id="court_complex_label">Select Court Complex</label>
+                        <div class="col-md-5">
+                            <select id="court_code" name="court_code" class="form-control">
+                                <option value="''">Select Court Complex</option>
+                            </select>
+                        </div>                        
+                </div>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label  font-weight-bold" for="radOpt" id="search_by_label">Search By</label>
+                        <div class="col-md-4" id="searchByFormId">
+                            <fieldset>
+                            <label class="radio-inline  " for="radOpt-1">
+                                <input type="radio" name="radOpt" id="radOpt-1" value="1" checked="checked">
+                                <span id="advoname">Advocate Name</span>
+                            </label>
+                            <br>
+                            <label class="radio-inline  " for="radOpt-2">
+                                <input type="radio" name="radOpt" id="radOpt-2" value="2">
+                                <span id="bar_code">Bar Code</span>
+                            </label>
+                            <br>
+                            <label class="radio-inline  " for="radOpt-3">
+                                <input type="radio" name="radOpt" id="radOpt-3" value="3">
+                                <span id="datecaselist">Date Case List</span>
+                            </label>
+                        </fieldset>
+                        </div>
+                </div>
+                <div class="form-group required" id="advocateBarCodeId">
+                    <label class="col-md-4 control-label  font-weight-bold" for="advocateBarCode" id="advocate_bar_code_label"> 
+                        <span id="advocate_bar_code_label1">Advocate</span>
+                        <span id="advocate_bar_code_label2">Bar Code:</span>
+                    </label>
+                    <br>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                        <input class="form-control" id="statecode" type="text" name="statecode" maxlength="3" size="10" placeholder="Enter Statecode">
+                        <input class="form-control" id="barcode" type="number" name="barcode" maxlength="8" size="5" placeholder="Enter Barcode">
+                        <input class="form-control" id="year" type="number" name="year" maxlength="4" size="5" placeholder="Enter Year">
+                        </div>
+                        <span class="statecode d-block" style="color:red;"></span>
+                        <span class="barcode d-block" style="color:red;"></span>
+                        <span class="year d-block" style="color:red;"></span>
+                    </div>
+                </div>
+                <div class="form-group required" id="caseListDateId">
+                    <label class="col-md-4 control-label  font-weight-bold" for="pickyDate" id="case_list_date_label">Case List Date:</label>
+                        <div class="col-md-4" id="testDIV">
+                            <input class='form-control'  type="text" id="pickyDate" placeholder="Enter Case List Date"/> 
+                        </div> 
+                </div>
+                <!-- Text input-->
+                <div class="form-group required" id="enterAdvocateNameId">
+                    <label class="col-md-4 control-label  font-weight-bold" for="advocate" id="advocate_label">Advocate</label>
+                        <div class="col-md-5">
+                            <input id="advocate" name="advocate" type="text" placeholder="Enter Advocate" class="form-control input-md">
+                        </div>
+                </div>
+                <!-- Multiple Radios (inline) -->
+                <div class="form-group" id="pendingDisposedId">
+                    <label class="col-md-4 control-label d-none" for="radOpt1"></label>
+                        <div class="col-md-4">
+                            <fieldset>
+                            <label class="radio-inline  " for="radOpt-4">
+                                <input type="radio" name="radOpt1" id="radOpt-4" value="Pending" checked="checked">
+                                <span id="rad1">Pending</span>
+                            </label>
+                            <label class="radio-inline  " for="radOpt-5">
+                                <input type="radio" name="radOpt1" id="radOpt-5" value="Disposed">
+                                <span id="rad2">Disposed</span>
+                            </label>
+                            <label class="radio-inline  " for="radOpt-6">
+                                <input type="radio" name="radOpt1" id="radOpt-6" value="Both">
+                                <span id="rad3">Both</span>
+                            </label>
+                            </fieldset>
+                        </div>
+                </div>
+                <!-- Button (Double) -->
+                <div class="form-group text-center">
+                    <label class="col-md-4 control-label d-none" for="button1id"></label>
+                        <div class="col-md-8">
+                            <button type="button" id="goButton" class="btn btn-primary btn-lg twobtn">Go</button>
+                            <button id="resetButton" name="button2id" class="btn btn-black btn-lg   twobtn">Reset</button>
+                        </div>
+                </div>
+                <div id="advocateHeaders"  ></div>
+            </fieldset>
+        </form>
+        <div class="panel-group" id="accordion_search"></div>
+        <div id="footer"></div>
+    </div>
+</div>
+<script>
+    document.addEventListener("deviceready", onDeviceReadySearchAdv, false);
+    function onDeviceReadySearchAdv() {
+        
+        $.getScript("js/search_by_advocate_name.js");
+    }
+</script>
+
+
+</body>

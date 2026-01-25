@@ -1,0 +1,562 @@
+<div style="clear:both;"></div>
+  <div class="page-header-title row container" id="header_simple_sidebar">
+    <div id="mySidenav" class="sidenav" style="z-index:1001;">
+      <div class="sidemenu-header">
+        <h4 id="header_label">eCourts Services</h4>
+          <h6 id="subheader" style="font-size: 0.8rem;">DISTRICT AND TALUKA COURTS OF INDIA </h6>
+      </div>
+        <a id="homeLink" href="#"  >Home</a>
+      <script>
+        if(localStorage.getItem("SELECTED_COURT")==="DC")
+        {
+          document.getElementById("homeLink").href="index.html";
+          document.getElementById("subheader").innerHTML="DISTRICT AND TALUKA COURTS OF INDIA";
+        }else if(localStorage.getItem("SELECTED_COURT")==="HC"){
+          document.getElementById("homeLink").href="index_hc.html";
+          document.getElementById("subheader").innerHTML="HIGH COURTS OF INDIA";
+        }
+        
+      </script> 
+          <a href="http://services.ecourts.gov.in/App/appaboutus.html" style = "color:#03A8D8;text-decoration:underline;" id="about_us" >About Us</a>
+          <a class="active" href="#home" id="cnr_top" aria-controls="home" role="tab" data-toggle="tab">CNR</a>
+          <a href="#profile" id="Case_status_top" aria-controls="profile" role="tab" data-toggle="tab">Case Status</a>
+          <a href="#Tab3" aria-controls="Tab3" id="causelist_top" role="tab" data-toggle="tab">Causelist</a>
+          <a href="#Tab4" aria-controls="Tab4" role="tab" id="my_cases_top" data-toggle="tab">My Cases</a>        
+          <a href="" id="importLink" data-toggle="modal" data-target="#share_with_modal">Import</a>
+          <a href="" id="exportLink" data-toggle="modal" data-target="#share_with_modal">Export</a>
+          <a href="#configure_modal" data-backdrop="static" data-keyboard="false" data-toggle="modal"><i class="fa fa-cog" style="color:#00BEFC" aria-hidden="true"></i>&nbsp; <span id="settingslabel">Settings</span></a>
+          <a href="#personalize_modal" data-backdrop="static" data-keyboard="false" data-toggle="modal"><i class="fa fa-adjust" style="color:#00BEFC" aria-hidden="true"></i>&nbsp; <span id="personalizeLabel">&nbsp; Personalize</span></a>
+          <!-- <a href="#configure_modal" data-backdrop="static" data-keyboard="false" data-toggle="modal" id="configure_top">Configure</a> -->
+          <!-- <a href="#language_modal" data-backdrop="static" data-keyboard="false" data-toggle="modal" id="lang_top"><i class="fa fa-language" style="color:#00BEFC" ></i>&nbsp; Language</a>         -->
+          <a id='map_marker' onclick="mapMarkerClicked();return false;"><i class="fa fa-map-marker" style="color:#00BEFC" aria-hidden="true"></i>&nbsp; <span id="mapOption">&nbsp; Court Complex Locator</span></a>
+          <a id = "epay" href="https://pay.ecourts.gov.in/epay/" style = "color:#03A8D8;text-decoration:underline;">ePay</a>        
+          <a id = "njdg" href="https://njdg.ecourts.gov.in/njdg_public/index.php" style = "color:#03A8D8;text-decoration:underline;"> NJDG</a>        
+          <a id = "efiling" href="https://efiling.ecourts.gov.in/" style = "color:#03A8D8;text-decoration:underline;"> e-Filing </a>        
+          <a id = "indiaCode" href="https://indiacode.nic.in/" style = "color:#03A8D8;text-decoration:underline;"> India Code </a>
+          <a id = "formsForAdvocates" href="https://ecourts.gov.in/ecourts_home/static/informationletter.php" style = "color:#03A8D8;text-decoration:underline;"> Forms for Advocates </a>
+          <a id = "virtualCourts" href="https://vcourts.gov.in/virtualcourt/" style = "color:#03A8D8;text-decoration:underline;"> Virtual Courts </a>
+          <a id = "eCommittee" href="https://ecommitteesci.gov.in/" style = "color:#03A8D8;text-decoration:underline;"> eCommittee </a>
+          <a id = "Judgement" href="https://judgments.ecourts.gov.in/pdfsearch/index.php" style = "color:#03A8D8;text-decoration:underline;"> Judgments Search </a>
+          <a href="https://app.ecourts.gov.in/App/apphelp.html" style = "color:#03A8D8;text-decoration:underline;" id="help_top" >Help</a>
+          <a href="https://app.ecourts.gov.in/App/appprivacypolicy.html" style = "color:#03A8D8;text-decoration:underline;" id="privacy_policy_top" >Privacy Policy</a>
+          <a href="https://app.ecourts.gov.in/App/appdisclaimer.html" style = "color:#03A8D8;text-decoration:underline;" id="disclaimer_top" >Disclaimer</a>
+          <a href="https://app.ecourts.gov.in/App/appcontactus.html" style = "color:#03A8D8;text-decoration:underline;" id="contact_us_top">Contact Us</a>
+      <script>//app.ecourts.gov.in
+        $("#header_simple_sidebar").unbind("languageChanged").bind("languageChanged", function () {
+          var labelsarr = JSON.parse(window.sessionStorage.GLOBAL_LABELS); 
+            $("#dc_btn_id").html(labelsarr[169]);
+            $("#hc_btn_id").html(labelsarr[646]);
+            $("#dist_court_label").html(labelsarr[169]);
+            $("#high_court_label").html(labelsarr[646]);
+            $("#both_court_label").html(labelsarr[7]);
+
+            $("#header_label").html(labelsarr[109]);
+            $("#homeLink").html(labelsarr[108]);
+            $("#about_us").html(labelsarr[496]);
+            $("#cnr_top").html(labelsarr[144]);
+            $("#Case_status_top").html(labelsarr[11]);
+            $("#causelist_top").html(labelsarr[190]);                   
+            $("#njdg").html(labelsarr[103]);
+            $("#privacy_policy_top").html(labelsarr[502]);
+            $("#disclaimer_top").html(labelsarr[110]);
+            $("#contact_us_top").html(labelsarr[15]);
+            $("#my_cases_top").html(labelsarr[635]);
+            $("#importLink").html(labelsarr[653]);
+            $("#exportLink").html(labelsarr[654]);
+            $("#settingslabel").html(labelsarr[804]);
+            //$("#lang_top").html(labelsarr[629]);
+            $("#personalizeLabel").html(labelsarr[805]);
+            $("#mapOption").html(labelsarr[739]);
+            $("#help_top").html(labelsarr[652]);
+            $("#configureLabel").html(labelsarr[628]); 
+            $("#epay").html(labelsarr[753]);   
+            $("#efiling").html(labelsarr[754]); 
+            $("#indiaCode").html(labelsarr[814]); 
+            $("#virtualCourts").html(labelsarr[815]);
+            $("#closelabel").html(labelsarr[775]); 
+            $("#court_selected_ok").html(labelsarr[774]); 
+            $("#lang_ok_btn").html(labelsarr[774]);
+            $("#ok").html(labelsarr[774]);
+            $("#close").html(labelsarr[775]);
+            $("#lang_close_btn").html(labelsarr[775]);
+            $("#court_selected_close").html(labelsarr[775]);
+            $("#importdrivelabel").html(labelsarr[776]); 
+            $("#importdevicelabel").html(labelsarr[777]); 
+            $("#emailabel").html(labelsarr[778]);
+            $("#savetodrivelabel").html(labelsarr[779]);
+            $("#savetodevicelabel").html(labelsarr[780]);
+            $("#cancelabel").html(labelsarr[781]);
+            $("#sharewithlabel").html(labelsarr[782]);
+            $("#subheader").html(labelsarr[783]);
+            $("#ImportFromLabel").html(labelsarr[812]);
+            $("#selanglabel").html(labelsarr[816]);
+            // $("#HC_label").html(labelsarr[785]);
+            // $("#DC_label").html(labelsarr[786]);
+            
+          });
+      </script>            
+        <div class="text-right">
+          <p style="color:#A93226;margin-right:5px;margin-bottom: 2px;font-size: 0.9rem;" id="versions"></p>
+        </div>
+        <div class="text-right">
+            <p style="color:#A93226;margin-right:5px;margin-bottom: 2px;font-size: 0.9rem;" id="newVersionAvailabel"></p>
+        </div>        
+    </div>
+    <div class="row page-header-title justify-content-between" style="position:fixed;top:0;left:0;right:0;z-index:999;padding-top: env(safe-area-inset-top, 39px);">
+      <div class="col-2 text-center">
+          <span style="font-size:25px;cursor:pointer"  id="open_close"><i class="fa fa-bars" aria-hidden="true"></i><span class="sr-only">Toggle Menu button</span></span>
+      </div>
+      <div class="col-auto p-0 text-nowrap">
+        <button class="dc-btn dh-btn-active" id="dc_btn_id" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">District Court</button>
+        <button class="hc-btn " id="hc_btn_id" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">High Court</button>
+      </div>
+      <div class="col-auto p-0 pr-1 clearfix" id="socialMedia">
+
+        <div class="dropdown float-left">
+          <button class="btn btn-link dropdown-toggle show-social-links text-white p-0 pr-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="icon-social-link" aria-hidden="true">
+                    <span class="fa fa-facebook"></span>
+                    <span class="fa fa-twitter"></span>
+                    <span class="fa fa-youtube"></span>
+                  </span>
+                  <span class="sr-only">Social Media Links</span>
+          </button>
+          <div class="dropdown-menu p-1" aria-labelledby="dropdownMenuButton">
+            <!-- <a class="dropdown-item" href="#" target="_blank" aria-label="Facebook | External site that opens in a new window" onclick="return confirm('You are being redirected to an external website.');" title="https://www.facebook.com - External site that opens in a new window"><i class="fa fa-facebook-square" style="color:#3b5998;font-size:1.5rem" aria-hidden="true"></i></a> -->
+            <a class="dropdown-item p-0" href="https://www.youtube.com/channel/UCPMHFB1lou-P_YtErFFYjgw" aria-label="Youtube | External site that opens in a new window" title="https://www.youtube.com External site that opens in a new window"><i class="fa fa-youtube-play" style="color:#e52d27;font-size:1.5rem" aria-hidden="true"></i></a>
+          </div>
+        </div>
+
+          <ul class="topiconlist">
+<!-- <button onclick="window.plugins.socialsharing.share('Message only')">message only</button> -->
+        <li>
+          <span class="mt-1 mr-0 px-2 float-left">
+          <a href="#" onclick="shareClicked();" class="mr-2" id="" aria-label="click to share app"><svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-share-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-labelledby="icon1Title icon1Desc" role="img">
+          <title id="icon1Title">Share button</title>
+          <desc id="icon1Desc">Click to share eCourt Services India app</desc>
+          <path fill-rule="evenodd" d="M12.024 3.797L4.499 7.56l-.448-.895 7.525-3.762.448.894zm-.448 9.3L4.051 9.335 4.5 8.44l7.525 3.763-.448.894z"/>
+          <path fill-rule="evenodd" d="M13.5 5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm0 11a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm-11-5.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+          </svg></a>
+          </span>
+        </li>
+        <li>
+          <span class="mt-1 mr-1 float-left">
+        <a href="#language_modal" data-backdrop="static" data-keyboard="false" data-toggle="modal" class=" mr-2" style="color:#333;padding: .125rem .125rem;" id="lang_icon" aria-label="click to change language">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid meet" viewBox="0 0 64 64" width="32" height="32" aria-labelledby="icon1Title icon1Desc" role="img"><title id="icon2Title">Language button</title>
+            <desc id="icon2Desc">Click to change language of app</desc><defs><path d="M43.31 14.6C45.52 14.6 47.31 16.39 47.31 18.6C47.31 24.76 47.31 39.24 47.31 45.4C47.31 47.61 45.52 49.4 43.31 49.4C37.58 49.4 24.42 49.4 18.69 49.4C16.48 49.4 14.69 47.61 14.69 45.4C14.69 39.24 14.69 24.76 14.69 18.6C14.69 16.39 16.48 14.6 18.69 14.6C24.42 14.6 37.58 14.6 43.31 14.6Z" id="b44L0GRQD"></path><path d="M55.39 30.28C56.19 30.28 56.84 30.93 56.84 31.73C56.84 36.93 56.84 51.07 56.84 56.27C56.84 57.07 56.19 57.72 55.39 57.72C50.19 57.72 36.05 57.72 30.86 57.72C30.05 57.72 29.4 57.07 29.4 56.27C29.4 51.07 29.4 36.93 29.4 31.73C29.4 30.93 30.05 30.28 30.86 30.28C36.05 30.28 50.19 30.28 55.39 30.28Z" id="b22PrHjzfo"></path><text id="aiq5KAY6t" x="115.41" y="99.4" font-size="18" font-family="Open Sans" font-weight="normal" font-style="normal" letter-spacing="0" alignment-baseline="before-edge" transform="matrix(1 0 0 1 -80.19636112660342 -68.208266222171)" style="line-height:100%" xml:space="preserve" dominant-baseline="text-before-edge"><tspan x="115.41" dy="0em" alignment-baseline="before-edge" dominant-baseline="text-before-edge" text-anchor="start">अ</tspan></text><style id="opensansnormalnormal">
+          </style><path d="M32.14 7.28C32.95 7.28 33.6 7.93 33.6 8.73C33.6 13.93 33.6 28.07 33.6 33.27C33.6 34.07 32.95 34.72 32.14 34.72C26.95 34.72 12.81 34.72 7.61 34.72C6.81 34.72 6.16 34.07 6.16 33.27C6.16 28.07 6.16 13.93 6.16 8.73C6.16 7.93 6.81 7.28 7.61 7.28C12.81 7.28 26.95 7.28 32.14 7.28Z" id="a1O1JSRQKj"></path><text id="k1g8W6Upeh" x="115.41" y="99.4" font-size="18" font-family="Open Sans" font-weight="normal" font-style="normal" letter-spacing="0" alignment-baseline="before-edge" transform="matrix(1 0 0 1 -101.45929743900953 -91.21176612278614)" style="line-height:100%" xml:space="preserve" dominant-baseline="text-before-edge"><tspan x="115.41" dy="0em" alignment-baseline="before-edge" dominant-baseline="text-before-edge" text-anchor="start">A</tspan></text></defs><g><g><g><use xlink:href="#b44L0GRQD" opacity="1" fill="#ffffff" fill-opacity="0"></use><g><use xlink:href="#b44L0GRQD" opacity="1" fill-opacity="0" stroke="#dbdbdb" stroke-width="1" stroke-opacity="1"></use></g></g><g><g><filter id="shadow12170278" x="21.4" y="22.28" width="43.44" height="44.44" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse"><feFlood></feFlood><feComposite in2="SourceAlpha" operator="in"></feComposite><feGaussianBlur stdDeviation="1"></feGaussianBlur><feOffset dx="0" dy="1" result="afterOffset"></feOffset><feFlood flood-color="#8c8c8c" flood-opacity="0.5"></feFlood><feComposite in2="afterOffset" operator="in"></feComposite><feMorphology operator="dilate" radius="0"></feMorphology><feComposite in2="SourceAlpha" operator="out"></feComposite></filter><path d="M55.39 30.28C56.19 30.28 56.84 30.93 56.84 31.73C56.84 36.93 56.84 51.07 56.84 56.27C56.84 57.07 56.19 57.72 55.39 57.72C50.19 57.72 36.05 57.72 30.86 57.72C30.05 57.72 29.4 57.07 29.4 56.27C29.4 51.07 29.4 36.93 29.4 31.73C29.4 30.93 30.05 30.28 30.86 30.28C36.05 30.28 50.19 30.28 55.39 30.28Z" id="f4dbCOZQll" fill="white" fill-opacity="1" filter="url(#shadow12170278)"></path></g><use xlink:href="#b22PrHjzfo" opacity="1" fill="#3e3e3e" fill-opacity="1"></use></g><g id="a3qvKvnAXx"><use xlink:href="#aiq5KAY6t" opacity="1" fill="#ffffff" fill-opacity="1"></use></g><g><g><filter id="shadow14759672" x="-1.84" y="-0.72" width="43.44" height="44.44" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse"><feFlood></feFlood><feComposite in2="SourceAlpha" operator="in"></feComposite><feGaussianBlur stdDeviation="1"></feGaussianBlur><feOffset dx="0" dy="1" result="afterOffset"></feOffset><feFlood flood-color="#bababa" flood-opacity="0.5"></feFlood><feComposite in2="afterOffset" operator="in"></feComposite><feMorphology operator="dilate" radius="0"></feMorphology><feComposite in2="SourceAlpha" operator="out"></feComposite></filter><path d="M32.14 7.28C32.95 7.28 33.6 7.93 33.6 8.73C33.6 13.93 33.6 28.07 33.6 33.27C33.6 34.07 32.95 34.72 32.14 34.72C26.95 34.72 12.81 34.72 7.61 34.72C6.81 34.72 6.16 34.07 6.16 33.27C6.16 28.07 6.16 13.93 6.16 8.73C6.16 7.93 6.81 7.28 7.61 7.28C12.81 7.28 26.95 7.28 32.14 7.28Z" id="azH8tGsEV" fill="white" fill-opacity="1" filter="url(#shadow14759672)"></path></g><use xlink:href="#a1O1JSRQKj" opacity="1" fill="#ffffff" fill-opacity="1"></use></g><g id="h1mLL2ePm"><use xlink:href="#k1g8W6Upeh" opacity="1" fill="#353535" fill-opacity="1"></use></g></g></g></svg>
+        </a></span>
+        </li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal" id="configure_modal" style="padding-top: 30%;width: 90%;left: 5%;" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background:#fff;color:#555;">
+          <div class="modal-header" style="text-align:center;">
+            <strong id="configureLabel">Configure</strong>
+              </div>
+                <div class="modal-body modal-body1">          
+                  <div class="radio" id="court_selected">
+                    <label class="HC_label">
+                      <input type="radio" id="HC" name="court" value="one" ><span id="high_court_label">High Court</span>
+                    </label >
+                    <label class="DC_label">
+                      <input type="radio" id="DC" name="court" value="two" ><span id="dist_court_label">District Court</span>
+                    </label>
+                    <label class="both_label">
+                      <input type="radio" id="both" name="court" value="three" ><span id="both_court_label">Both</span>
+                    </label>
+                  </div>
+                </div>        
+          <div class="modal-footer" >
+            <button type="button" class="btn btn-primary modal_btn twobtn " data-dismiss="modal" id="court_selected_ok">Ok</button>
+            <button type="button" class="btn btn-secondary modal_btn_dark btn-black twobtn " data-dismiss="modal" id="court_selected_close">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>  
+    <div class="modal" id="share_with_modal" style="padding-top: 30%;width: 90%;left: 5%;" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background:#fff;color:#555;">
+          <div class="modal-body modal-body1">
+            <div id="share_info" style="display:none;">
+              <div class="modal-header" style="text-align:center;">
+                <strong class="exportandimport" id="sharewithlabel">Share with<span class="sr-only">any one of following options</span></strong>
+              </div>
+                <table class="share_tbl" width="100%" cellpadding="10" cellspacing="10" border="0">
+                  <tr>
+                    <td width="25%"><a href="" data-dismiss="modal" onclick="backupContent('email');"><img src="images/email.png" alt="eMail"></a></td>
+                    <td width="25%"><a href="" data-dismiss="modal" onclick="backupContent('drive');"><img src="images/drive-logo.png" alt="Save to Drive"></a></td>
+                    <td width="25%"><a href="" data-dismiss="modal" onclick="backupContent('device');"><img src="images/folder.png" alt="This Device"></a></td>
+                  </tr>
+                  <tr>
+                    <td width="25%"><a href="" aria-hidden="true"><span id="emailabel">eMail</span></a></td>
+                    <td width="25%"><a href="" aria-hidden="true"><span id="savetodrivelabel">Save to Drive</span></a></td>
+                    <td width="25%"><a href="" aria-hidden="true"><span id="savetodevicelabel">This Device</span></a></td>
+                  </tr>
+                </table>
+            </div>
+            <div id="share_info_import" style="display:none;">
+              <div class="modal-header" style="text-align:center;">
+                <strong class="exportandimport" id="ImportFromLabel">Import From<span class="sr-only">any one of following options</span></strong>
+              </div>
+                <table class="share_tbl" width="100%" cellpadding="10" cellspacing="10" border="0">
+                  <tr>
+                    <td width="50%"><a href="" data-dismiss="modal" onclick="importFileFrom('drive');"><img src="images/drive-logo.png" alt="Import From Drive"></a></td>
+                    <td width="50%"><a href="" data-dismiss="modal" onclick="importFileFrom('device');"><img src="images/folder.png" alt="Import From This Device"></a></td>
+                  </tr>
+                  <tr>
+                    <td width="50%"><a href="" aria-hidden="true"><span id="importdrivelabel">Import From Drive</span></a></td>
+                    <td width="50%"><a href="" aria-hidden="true"><span id="importdevicelabel">Import From This Device</span></a></td>
+                  </tr>
+                </table>
+            </div>
+            <div class="modal-footer" >
+              <div class="Cancel_div">
+                <button class='btn btn-primary' data-dismiss="modal" id="cancelabel">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="language_modal" style="padding-top: 30%;width: 90%;left: 5%;" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background:#fff;color:#555;">
+          <div class="modal-header" style="text-align:center;">
+            <strong id=selanglabel>Select Language</strong>
+              </div>
+                <div class="modal-body modal-body1">
+                  <div class="radio" id="lang_selected">                    
+                  </div>
+                </div>        
+                <div class="modal-footer" >
+                  <button type="button" class="btn btn-primary modal_btn twobtn " data-dismiss="modal" id="lang_ok_btn">Ok</button>
+                  <button type="button" class="btn btn-secondary modal_btn_dark btn-black twobtn " data-dismiss="modal" id="lang_close_btn">Close</button>
+                </div>
+        </div>
+      </div>
+    </div>   
+    <!-- Modal -->
+    <div class="modal" id="importCasesDialog" data-backdrop="static" style="padding-top: 50%;width: 90%;left: 5%;" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background:#fff;color:#555;">
+          <div class="modal-header" style="text-align:center;display:inline-block;">            
+            <strong class="modal-title">Import MyCases</strong>
+          </div>
+          <div class="modal-body modal-body1">
+            <span style="text-align:center;font-size:medium;display:inline-block;text-transform: none;padding: 10px;">No cases saved. Would you like to import previous data?</span>
+          </div>
+          <div class="modal-footer">
+            <button id="btnYes" type="button" class="btn btn-primary modal_btn twobtn " data-dismiss="modal">Yes</button>
+            <button id="btnCancle" type="button" class="btn btn-secondary modal_btn_dark btn-black twobtn " data-dismiss="modal">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="personalize_modal" style="padding-top: 30%;width: 90%;left: 5%;" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background:#fff;color:#555;">
+          <div class="modal-header" style="text-align:center;">
+            <strong id="personalizeLabel">Personalize<span class="sr-only">app by selecting any theme below</span></strong>
+              </div>
+                <div class="modal-body modal-body1 p-3 m-2">
+                  <form action="">
+                    <div class="custom-control custom-radio bg-light border rounded p-2 text-black mb-2" style="padding-left:2rem!important;">
+                      <input type="radio" class="custom-control-input" id="customRadio1" name="example1" checked>
+                      <label class="custom-control-label d-block" for="customRadio1">Classic</label>
+                    </div>
+                    
+                    <div class="custom-control custom-radio bg-secondary border rounded p-2 text-white mb-2" style="padding-left:2rem!important;">
+                      <input type="radio" class="custom-control-input" id="customRadio2" name="example1">
+                      <label class="custom-control-label d-block" for="customRadio2">Dark</label>
+                    </div>
+                    
+                    <div class="custom-control custom-radio bg-dark border rounded p-2 text-white mb-2" style="padding-left:2rem!important;">
+                      <input type="radio" class="custom-control-input" id="customRadio3" name="example1">
+                      <label class="custom-control-label d-block" for="customRadio3">Contrast</label>
+                    </div>
+                    
+                    <div class="custom-control custom-radio bg-light border rounded p-2 text-black mb-2" style="padding-left:2rem!important;background-color: #c5e1a5!important;">
+                      <input type="radio" class="custom-control-input" id="customRadio4" name="example1">
+                      <label class="custom-control-label d-block" for="customRadio4">Green</label>
+                    </div>
+                    
+                    <div class="custom-control custom-radio bg-light border rounded p-2 text-black mb-2" style="padding-left:2rem!important;background-color: #ffcdd2!important;">
+                      <input type="radio" class="custom-control-input" id="customRadio5" name="example1">
+                      <label class="custom-control-label d-block" for="customRadio5">Red</label>
+                    </div>
+                  </form>
+                </div>        
+          <div class="modal-footer" >
+            <button type="button" class="btn btn-primary modal_btn twobtn " data-dismiss="modal" id="ok">Ok</button>
+            <button type="button" class="btn btn-secondary modal_btn_dark btn-black twobtn " data-dismiss="modal" id="close">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+    if(localStorage.LANGUAGE_FLAG == null){
+        localStorage.setItem("LANGUAGE_FLAG", "english");        
+      }
+    //importLanguageFile();
+    var headerSelected= localStorage.getItem("SELECTED_COURT");
+      if(headerSelected==="DC")
+      {
+        $(".dc-btn").addClass("dh-btn-active"); 
+        $(".hc-btn").removeClass("dh-btn-active");
+        
+      }
+      else
+      {
+        localStorage.setItem("LANGUAGE_FLAG", "english");     
+        $(".hc-btn").addClass("dh-btn-active");
+        $(".dc-btn").removeClass("dh-btn-active");
+        
+      }
+        $("#cnr_top").on("click", function (e) {
+          cnr_numbers_onclick();
+          // $('.nav.nav-tabs li:nth-child(1) a').tab('show');
+          // // $(".sidenav a").css({"background-color": "transparent", "color": "#555"});
+          // $(".nav-tabs li").removeClass("active");
+          // $(".nav-tabs li:nth-child(1)").addClass("active");
+          // //$(".sidenav a:nth-child(5)").css({"background-color": "white", "color": "#F05539"});
+          // $('#state_dist_componant').hide();
+          closeNav()
+        });
+        $("#Case_status_top").on("click", function (e) {
+        //   $('.nav.nav-tabs li:nth-child(2) a').tab('show');
+        //   // $(".sidenav a").css({"background-color": "transparent", "color": "#555"});
+        //   $(".nav-tabs li").removeClass("active");
+        //   $(".nav-tabs li:nth-child(2)").addClass("active");
+        //  // $(".sidenav a:nth-child(6)").css({"background-color": "white", "color": "#F05539"});
+        //   $('#state_dist_componant').show();
+        case_status_onclick();
+          closeNav()
+        });
+        $("#causelist_top").on("click", function (e) {
+          // $('.nav.nav-tabs li:nth-child(3) a').tab('show');
+          // // $(".sidenav a").css({"background-color": "transparent", "color": "#555"});
+          // $(".nav-tabs li").removeClass("active");
+          // $(".nav-tabs li:nth-child(3)").addClass("active");
+          // //$(".sidenav a:nth-child(7)").css({"background-color": "white", "color": "#F05539"});
+          // $('#state_dist_componant').show();
+          cause_list_onclick();
+          closeNav()
+        });    
+        $("#my_cases_top").on("click", function (e) {   
+        //   $('.nav.nav-tabs li:nth-child(4) a').tab('show');     
+        //   // $(".sidenav a").css({"background-color": "transparent", "color": "#555"});
+        //   $(".nav-tabs li").removeClass("active");
+        //   $(".nav-tabs li:nth-child(4)").addClass("active");
+        //  // $(".sidenav a:nth-child(8)").css({"background-color": "white", "color": "#F05539"});
+        //   $('#state_dist_componant').hide();
+        my_cases_onclick();
+            if(localStorage.getItem("CNR Numbers")!=null)
+            {
+                var cnrFromLocalStorageLenght= JSON.parse(localStorage.getItem("CNR Numbers")).length;
+                if(cnrFromLocalStorageLenght>0)
+                {
+                    resetDatePicker();
+                    clearSearchText();
+                    $("#searchCasesButton").click(); 
+                }
+            }
+          closeNav()
+        });
+      $("#exportLink").on("click", function (e) {  
+        closeNav()
+          $("#share_info").show();
+          $("#share_info_import").hide();
+      });
+      $("#importLink").on("click", function (e) {        
+        closeNav()
+          $("#share_info_import").show();
+            $("#share_info").hide();
+      });
+    function openNav() {
+      document.getElementById("mySidenav").style.display = "block";        
+    }
+    function closeNav() {
+      document.getElementById("mySidenav").style.display = "none";       
+    }
+      $(".dc-btn").click(function(){            
+        if(localStorage.CONFIGURE === "both"){
+          localStorage.setItem("SELECTED_COURT", "DC");
+          clearSessionStorage();
+          hostIP = "https://app.ecourts.gov.in/";
+          window.location = "index.html";
+        }
+      });
+      $(".hc-btn").click(function(){         
+          if(localStorage.CONFIGURE === "both"){
+              localStorage.setItem("SELECTED_COURT", "HC");
+              clearSessionStorage();
+              hostIP = "https://app.ecourts.gov.in/ecourt_mobile_encrypted_HC/";
+              window.location = "index_hc.html";
+          }
+      });  
+      $("#open_close").click(function ()
+      { 
+        if ($("#mySidenav").is(':visible'))
+        {
+          closeNav();
+        } else
+        {
+          openNav();
+        }
+      });
+      $("#court_selected_ok").click(function(){
+        var id = $('input[type=radio][name=court]:checked').attr('id');
+        var value = $("#"+id).parent('label').text();
+        var prevLocalStorageConfig = localStorage.CONFIGURE;        
+        localStorage.setItem("CONFIGURE",id);
+        launchIndex(id);    
+      });
+      $("#lang_ok_btn").click(function(){
+        var id = $('input[type=radio][name=lang]:checked').attr('id');
+        localStorage.setItem("LANGUAGE_FLAG",id);
+        sessionStorage.setItem("SESSION_LANGUAGE_FLAG_CHANGED","true");
+        window.location = "index.html";  
+        localStorage.removeItem('state_code');
+        localStorage.removeItem('district_code');     
+      });    
+      $("#DC").change(function(){
+        $(".DC_label").addClass("active_court_label");
+        $(".HC_label").removeClass("active_court_label");
+        $(".both_label").removeClass("active_court_label"); 
+      });
+      $("#HC").change(function(){
+        $(".DC_label").removeClass("active_court_label");
+        $(".HC_label").addClass("active_court_label");
+        $(".both_label").removeClass("active_court_label"); 
+      });
+      $("#both").change(function(){
+        $(".DC_label").removeClass("active_court_label");
+        $(".HC_label").removeClass("active_court_label");
+        $(".both_label").addClass("active_court_label"); 
+      });    
+    function launchIndex(selected_id){        
+        if(selected_id === "HC"){           
+          clearSessionStorage();
+          window.localStorage.setItem("SELECTED_COURT", "HC");
+          hostIP = "https://app.ecourts.gov.in/ecourt_mobile_encrypted_HC/";
+          window.location = "index_hc.html";
+        }else if(selected_id === "DC"){   
+          clearSessionStorage();
+          window.localStorage.setItem("SELECTED_COURT", "DC");
+          hostIP = "https://app.ecourts.gov.in/ecourt_mobile_encrypted_DC/";
+          window.location = "index.html";
+        }else if(selected_id === "both"){
+          clearSessionStorage();
+          if(localStorage.SELECTED_COURT == "HC"){
+          hostIP = "https://app.ecourts.gov.in/ecourt_mobile_encrypted_HC/";
+          window.location = "index_hc.html";    
+          }else if(localStorage.SELECTED_COURT == "DC"){
+            hostIP = "https://app.ecourts.gov.in/ecourt_mobile_encrypted_DC/";
+            window.location = "index.html";
+          }            
+        }
+      }    
+      if(localStorage.SELECTED_COURT == "HC"){
+        localStorage.LANGUAGE_FLAG = "english";
+        $("#map_marker").hide();
+        $("#mapOption").hide();
+        $("#lang_top").hide();
+      }else{
+        $("#lang_top").show();
+      }    
+    function clearSessionStorage(){
+      window.localStorage.removeItem("state_code");
+      window.localStorage.removeItem("district_code");
+      window.localStorage.removeItem("district_name");
+      window.localStorage.removeItem("state_name");
+      window.localStorage.removeItem("SESSION_COURT_CODE");
+      window.sessionStorage.removeItem("DATEWISE");        
+      window.sessionStorage.removeItem("SESSION_INPUT_1_CAUSE_LIST");
+      window.sessionStorage.removeItem("SESSION_INPUT_2_CAUSE_LIST");
+      window.localStorage.removeItem("SESSION_SELECTED_COMPLEX_CODE");
+      window.sessionStorage.removeItem("SESSION_SELECT_2_CAUSE_LIST");
+    }
+
+    function swapStyleSheet(sheet1,sheet2){      
+      document.getElementById('pagestyle1').setAttribute('href', sheet1);
+      document.getElementById('pagestyle2').setAttribute('href', sheet2);
+    }
+
+    $(document).ready(function () 
+ { 
+   var savedTheme = localStorage.getItem("theme");
+   if(!savedTheme){
+    savedTheme = "default";
+   }
+
+   switch(savedTheme){
+     case "default":
+       swapStyleSheet('css/main.css','css/index.css');
+       $("#customRadio1").prop("checked", true);
+       break;
+
+     case "dark":
+       swapStyleSheet('css/dark_main.css','css/dark_index.css');
+       $("#customRadio2").prop("checked", true);
+       break;
+
+     case "contrast":
+       swapStyleSheet('css/contrast_main.css','css/contrast_index.css');
+       $("#customRadio3").prop("checked", true);
+       break;
+
+     case "green":
+       swapStyleSheet('css/green_main.css','css/green_index.css');
+       $("#customRadio4").prop("checked", true);
+       break;
+
+     case "red":
+       swapStyleSheet('css/red_main.css','css/red_index.css');
+       $("#customRadio5").prop("checked", true);
+       break;
+   }
+
+
+  $("#customRadio1").click(function()
+  {
+    localStorage.setItem("theme", "default");
+    swapStyleSheet('css/main.css','css/index.css');
+   });
+   $("#customRadio2").click(function()
+  {
+    localStorage.setItem("theme", "dark");
+    swapStyleSheet('css/dark_main.css','css/dark_index.css');
+   });
+   $("#customRadio3").click(function()
+  {
+    localStorage.setItem("theme", "contrast");
+    swapStyleSheet('css/contrast_main.css','css/contrast_index.css');
+   });
+   $("#customRadio4").click(function()
+  {
+    localStorage.setItem("theme", "green");
+    swapStyleSheet('css/green_main.css','css/green_index.css');
+   });
+   $("#customRadio5").click(function()
+  {
+    localStorage.setItem("theme", "red");
+    swapStyleSheet('css/red_main.css','css/red_index.css');
+   });
+
+   $('#personalize_modal').on('shown.bs.modal', function () {
+      $('#personalizeLabel').trigger('focus')
+    });
+ });
+
+ function openYoutubeLink(){
+   window.open("https://www.youtube.com/channel/UCPMHFB1lou-P_YtErFFYjgw","_blank");
+ }
+  </script>
+
+
+

@@ -1,0 +1,879 @@
+
+
+body{
+    height: 100%;
+    width: 100%;
+    background:#151F2B;
+    font-family: 'Lato', sans-serif !important;
+    color: #fff;
+}
+
+div.headers {
+   font-family: 'Lato', sans-serif;
+}
+.table {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    border-color:#b4b4b4;
+    padding: 8px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+}
+tr {
+    background-color: #ffffff;
+}
+
+#ditrictsAccordion .table td, #ditrictsAccordion .table th , #accordion .table td, #accordion .table th{
+    padding: 0.35rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+    font-size: 0.8rem;
+}
+
+#ditrictsAccordion .table th , #accordion .table th{
+    vertical-align: middle !important;
+}
+/*.wrapper1, .wrapper2 {
+  width: auto;
+  overflow-x: scroll;
+  overflow-y:hidden;
+}
+
+.wrapper1 {height: 20px; }
+.wrapper2 {height: auto; }
+
+.div1 {
+  width:1000px;
+  height: 20px;
+}
+
+.div2 {
+  width:450px;
+  height: auto;
+  background-color: #ffffff ;
+  overflow: auto;
+}
+/*
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+*/
+.form-group.required .control-label:after { 
+   content:"*";
+   color:red;
+}
+.text-white {
+	color: #fff;
+	text-shadow:none;
+}
+.text-white1 {
+	color: #fff!important;
+    text-shadow: none;
+    font-weight: normal;
+    padding: 5px 10px;
+    width: auto;
+    display: inline-block;
+    font-size: 12px;
+    cursor: pointer;
+    background: #0c131b;
+    border: 1px solid #ababab;
+    border-radius: 5px;
+    color: #fff;
+    float: right;
+    margin-right: 10px;
+}
+a, a:hover, a:link, a:visited {
+	color: white;
+	text-decoration: none;
+}
+#benchName {
+    color: #fff !important;
+}
+
+.text-black {
+	color: #555;
+    font-size: 0.8rem;
+	text-shadow:none;
+    font-family: 'Lato', sans-serif !important;
+    width: 100%;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.text-white {
+	color: #fff;
+    font-size: 0.8rem;
+	text-shadow:none;
+    font-family: 'Lato', sans-serif !important;
+    width: 100%;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.page-header-title {
+    color: #fff;
+    background: #121623;
+}
+.circular-border {
+	border-color: #fff;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 50%;
+}
+
+.sidenav {
+		height: 100%;
+        width: auto;
+        position: fixed;
+        z-index:999;
+        top: 39px;
+        left: 0;
+        background-color: #F3F3F3;
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding-top: 0px;
+        display:none;
+		border-right:#ccc;
+		box-shadow:inset 0 0 2px rgba(0,0,0,0.3);
+}
+
+    .sidenav a {
+        padding: 8px 32px 8px 32px;
+        border-bottom: 1px solid #ccc;
+        text-decoration: none;
+        font-size:13px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+
+    .sidenav a:hover, .offcanvas a:focus{
+        color: #F05539;
+    }
+
+    .sidenav .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+    }
+
+    @media screen and (max-height: 450px) {
+        .sidenav {padding-top: 15px;}
+        .sidenav a {font-size: 18px;}
+    }
+
+.sidemenu-header{
+    padding: 10px;
+    color: #555;
+    border-bottom:1px solid #ccc;
+}
+.sidemenu-header h4 {
+    color: #F05539;
+}
+.tbl-result{
+    padding: 0 !important;
+    margin-bottom: 0px !important;
+}
+.tbl-result > thead > tr > th{
+    background: #121a23 !important;
+    color: #fff !important;
+    font-weight: normal !important;
+    border: 1px solid #B9B7B8;
+}
+
+.tbl-result > tbody > tr{
+    background: #fff;
+}
+.tbl-result > tbody > tr >td{
+    border:1px solid #DCDCDC;
+}
+.panel-heading{
+    background: #424242 !important;
+    border:none;
+    color:#fff;
+    text-align: left;
+    padding:0 !important;
+}
+.panel-body{
+    padding: 0 !important;
+    overflow-x: auto;
+}
+.panel-title-a{
+    color:#fff !important;
+    text-decoration: none !important;
+	text-transform:capitalize !important;
+    display:block;
+    height:100%;
+    width:100%;
+    line-height:100%;
+    padding:10px 10px;
+    font-size: 0.9rem;
+    text-align: left;
+}
+.page-title-main{
+    color:#00BEFC  !important;
+    font-size:1rem;
+    margin-top:5px;
+    display: inline-block;
+}
+
+.btn-black{
+    background: #0a0f15;
+    border-color: #040507;
+    color: #fff;
+}
+.btn-black:hover , .btn-black:active , .btn-black:focus {
+    background: #06080c;
+    border-color: #06080c;
+    color: #fff !important;
+}
+.twobtn{
+    width: 45%;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.fa-spin {
+    color:#fff ;
+    text-align: center;
+}
+.modal-content{
+     box-shadow: none !important;
+    border :none !important;
+    background: none;
+}
+#loading{
+     box-shadow: none !important;
+    border :none !important;
+    margin-top: -50%;
+}
+.modal{
+    text-transform: capitalize;
+}
+.list-group{
+    margin-top:20px; 
+}
+.list-group-item{
+    text-align: justify;
+    font-family: 'Lato', sans-serif;
+    font-size:13px;
+    line-height:18px;
+    background:#222d3b !important;
+    color:#fff;
+}
+.list-group-item1{
+    background: #0e1721!important;
+    color:#fff;
+    text-align: left;
+    padding:10px 0px;
+    
+}
+
+.howto{
+    font-family: 'Lato', sans-serif;
+    font-size: 0.8em;
+    font-weight: normal;
+}
+
+
+.dc-btn, .hc-btn{
+    background:none;
+    outline: none;
+    border:none; 
+    color:#00BEFC ;
+    width: auto;
+    margin:4px 0 6px 0;
+    padding: 6px 2px;
+    border-radius: 3px;
+    font-weight: normal;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    font-size: 12px;
+}
+.dh-btn-active{
+    background: #fff ;
+    border:none;
+    outline: none;
+    margin:4px 0 6px 0;
+    padding: 6px 2px;
+    border-radius: 3px;
+    width: auto;
+    color: #555 ;
+    font-weight: bold;
+    font-size: 12px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2), 0 2px 2px 0 rgba(0,0,0,0.19);
+    background-image: linear-gradient(to right, #f3f3f3 0%, #fff 51%, #e4e4e4 100%);
+}
+
+.singlebtn{
+    width: auto !important;
+    font-size: 0.9rem;   
+    padding: 0;
+    line-height: 26px;
+    text-align: left;
+    padding-left: 5%;
+    font-weight: bold;
+}
+
+
+@media screen and (max-width: 437px) and (min-width: 387px) {
+    .dc-btn, .hc-btn{
+        /* width: 74px; */
+        width: auto; 
+        font-size: 10px ;        
+    }
+    .dh-btn-active{
+        /* width: 74px; */
+        width: auto; 
+        font-size: 10px;
+    }
+    .singlebtn{
+        width: auto !important;
+        font-size: 0.9rem;   
+        padding: 0;
+        line-height: 26px;
+        text-align: left;
+        padding-left: 5%;      
+    } 
+} 
+
+@media screen and (max-width: 387px) and (min-width:311px){
+    .dc-btn, .hc-btn{
+        width: 69px;
+        font-size: 10px;
+    }
+    .dh-btn-active{
+        width: 69px;
+        font-size: 10px;
+    } 
+    .singlebtn{
+        width: 110px !important;
+        font-size: 0.9rem;   
+        padding: 0;
+        line-height: 26px;
+        text-align: left;
+        padding-left: 5%;      
+    }
+} 
+
+    @media screen and (max-width: 311px) and (min-width:285px){
+        .dc-btn, .hc-btn{
+            width: 64px !important;
+            font-size: 10px !important;
+        }
+        .dh-btn-active{
+            width: 64px;
+            font-size: 10px;
+        } 
+    }
+
+    @media screen and (max-width: 285px){
+        .dc-btn, .hc-btn{
+            width: 54px !important;
+            font-size: 10px !important;
+        }
+        .dh-btn-active{
+            width: 54px;
+            font-size: 10px;
+        } 
+    }
+
+.modal-body1 {
+    padding:0px !important;
+    font-size: 13px;    
+}
+.modal-body2{
+    padding: 0px !important;
+    font-size: 12px;
+    top: 5px !important;
+    bottom: auto !important;
+    margin: 0 5px;
+    height:auto !important;
+    position: relative !important;
+}
+
+.modal-footer1 {
+    position: relative !important;
+}
+.modal-body2 table{
+        width:100%;
+    
+}
+.modal-dialog1 {
+    top:0 !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+        -webkit-transition: -webkit-transform .3s ease-out;
+    -o-transition: -o-transform .3s ease-out;
+    transition: transform .3s ease-out;
+    -webkit-transform: translate(0,-25%);
+    -ms-transform: translate(0,-25%);
+    -o-transform: translate(0,-25%);
+    transform: translate(0,-25%);
+        height: auto;
+        transform: translate(0, -50%) !important;
+    -ms-transform: translate(0, -50%) !important;
+    -webkit-transform: translate(0, -50%) !important;
+}
+
+#court_selected label{
+    border: 1px solid #111923;
+    border-radius: 30px;
+    width: 90%;
+    display: block;
+    padding: 10px 50px;
+    margin: 5px auto;
+    background: #253242;
+}
+#court_selected label:hover{
+    background: #F2F3F4;
+}
+.active_court_label{
+    background: #00BEFC !important;
+    color: #000 !important;
+}
+
+.main_title_font{
+    font-size: 0.9rem;
+    /* width: 100%; */
+    padding: 0;
+    line-height: 26px;
+    text-align: left;
+    padding-left: 5%;
+}
+
+.cav_tbl td, .cav_tbl th{
+        border: 1px solid #ccc;
+    border-collapse: collapse;
+    
+}
+
+#lang_selected label{
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    width: 90%;
+    display: block;
+    padding: 10px 50px;
+    margin: 5px auto;
+    background: #fff;
+}
+#lang_selected label:hover{
+    background: #F2F3F4;
+}
+#pleaseWaitDialog{
+    /*opacity: 0.4 !important;*/
+    background: rgba(0,0,0,.4);
+}
+
+.btn-primary {
+    background: #00BEFC;
+    color: #000;
+    border-color: #182023;
+}
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle {
+    color: #fff;
+    background: #0097c9;
+    border-color: #11171a;
+}
+.btn-primary.focus, .btn-primary:focus {
+    color: #fff;
+    background: #0097c9;
+    border-color: #11171a;
+    box-shadow: 0 0 0 0.2rem rgba(0,0,0,.3);
+}
+.btn-primary:hover {
+    color: #fff;
+    background: #0097c9;
+    border-color: #11171a;
+}
+
+.panel-title{
+    margin-bottom: 0 ;
+}
+
+
+/*20-03-2020*/
+#causelist_heading1_label, #causelist_heading2_label{
+    display:inline;
+}
+.h3, h3 {
+    font-size: 1.2rem;;
+}
+.h4, h4 {
+    font-size: 1.1rem;
+}
+.h5, h5 {
+    font-size: 1.05rem;
+}
+.h6, h6 {
+    font-size: 0.9rem;
+}
+
+
+#searchInMyCasesBtnId, #clearSearchResult,#searchInCauseListBtnId,#clearCauseListSearchResult{
+    background: #4d4d4d;
+    border: 1px solid #2d2d2d;
+    color: #fff;
+}
+#headers,#accordion_search,#advocateHeaders, #searchInCauseListDivId, #cases{
+    padding: 0 10px;;
+}
+.card {
+    margin-top: 7px;
+    border: 0px solid rgba(0,0,0,.125);
+}
+
+/*23/03/2020*/
+#history_location_btn{
+padding: 3px 10px;
+}
+
+/*24/03/2020*/
+#viewBusinessContainerId{
+    font-size: 0.9rem;
+}
+#businessData{
+    padding:0 10px;
+}
+/*
+select:focus,select:active,
+button:focus,button:active,
+input:focus,input:active   {
+    outline: none !important;
+    box-shadow: none;
+ }
+*/
+input, textarea, button, select,a {
+    outline: none;
+    box-shadow:none !important;
+    }
+/*26/03/2020*/
+
+.form-group, .form-control {
+     font-size: 0.9rem;
+}
+
+.radio-inline{
+    font-weight: bold;
+}
+
+#casestatus table td{
+    word-break: break-word;
+}
+
+.cc_name{
+    text-overflow: ellipsis;
+    display: inline-block;
+    width: 90%;
+    overflow: hidden;
+    line-height: normal;
+    /* white-space: nowrap;*/
+}
+
+#showCaseDiv,#petitionerandadvocate, #respondentandadvocate, #historyContainer a, #headers, #table_heading, #advocateHeaders{
+    font-size: 0.9rem;
+}
+
+.newtable tr td:nth-child(1) ,.cav_tbl tr td:nth-child(1){
+    font-weight:normal;
+}
+#writInformationContainerId tr td:nth-child(1){
+    font-weight: normal;
+}
+
+#writInformationContainerId tr:nth-child(1) td:nth-child(1){
+    font-weight: normal;font-size: 0.9rem !important;
+}
+#petitionerandadvocate, #respondentandadvocate, #writInformationContainerId{
+    padding:0 5px;
+}
+#firDetails table td:nth-child(1),#subordinateCourtInfo table td:nth-child(1),#categoryCollapseId table td:nth-child(1){
+    font-weight: bold;
+}
+#socialMedia .show-social-links .icon-social-link {
+    overflow: hidden;
+    padding: 2px 0 1px;
+    display: inline-block;
+    position: relative;
+    top: 7px;
+}
+#socialMedia .show-social-links .icon-social-link span {
+    float: left;
+    width: 15px;
+    font-size: 10px;
+    text-align: center;
+}
+#socialMedia  span.fa.fa-youtube {
+    width: 100%;
+    float: none;
+    display: block;
+    clear: both;
+    padding: 1px 0 0;
+}
+#socialMedia .socialIcons {
+    position: absolute;
+    width: 40px;
+    z-index: 1000 !important;
+    left: 0;
+    overflow: hidden;
+    background: #fff;
+    visibility: hidden;
+    border: 1px solid #d8d8d8;
+    text-align: center;
+    /*border-top: 0px;
+    border-left: 0px;*/
+}
+#socialMedia a.show-social-links:focus + .socialIcons, #socialMedia a.show-social-links:hover a + .socialIcons {
+    visibility: visible !important;
+}
+
+#searchCNRId{
+    font-weight: normal !important;
+    color: #fff !important;
+}
+#td_OR,#txtDisclaimer{
+    color:#00BEFC !important;
+}
+#ditrictsAccordion .month_divider {
+    background: #00BEFC !important;
+    font-weight: normal !important;
+    color: #0f0f0f;
+}
+#showCaseDiv {
+    background: rgb(18, 27, 38)!important;
+}
+#historyContainer .btn-info:hover, #historyContainer .btn-info:focus {
+    background-color: #1c2938 !important;
+    background-position: 0 35px;
+    border: 1px solid #2f3f53 !important;
+}
+#showCaseDiv .btnsecondary {
+    background: #090e15 !important;
+    border: 1px solid #25313e !important;
+}
+#Case_Status_pannel .csmenu-btn img{
+    filter: brightness(1);
+    -webkit-filter: brightness(1);
+}
+#todaysCasesBtn .fa {
+    color:#fff;
+}
+#mySidenav .fa {
+    color: #00BEFC!important;
+}
+#about_us, #contact_us_top, #epay, #njdg, #efiling, #indiaCode, #formsForAdvocates, #virtualCourts,#eCommittee,#Judgement,#help_top,#privacy_policy_top,#disclaimer_top,#contact_us_top{
+    color:#00BEFC!important;
+}
+#versions,#newVersionAvailabel{
+    color: #fff !important;
+}
+#ID_tbl tr{
+    background: transparent;
+}
+#ID_tbl tr td.or_td{
+    color: #fff;
+    background: transparent;
+}
+#state_dist_componant {
+    background: #121b26 !important;
+    padding: 10px 0px;
+    margin-top: 0px;
+    border-bottom: 1px solid #222d3c !important;
+}
+PCal {
+    color: #fff !important;
+    text-shadow: 0 0px 0px rgba(0,0,0,0.4) !important;
+}
+#caseHistoryModal .modal-content ,#share_with_modal .modal-content, #configure_modal .modal-content,#personalize_modal .modal-content, #caseHistoryModal_hc .modal-content{
+    background: #151F2B !important;
+    color: #fff !important;
+    border: 1px solid #2f3c4c !important;
+}
+
+#historyContainer table.newtable tr {
+    background-color: transparent;
+}
+#historyContainer table.newtable tr td, #historyContainer table.newtable tr th ,#filingHistoryContainer table.newtable tr td, #filingHistoryContainer table.newtable tr th {
+    border: 1px solid #ffffff;
+    text-align: left;
+    border-color: #4f4f4f;
+    padding: 8px;
+}
+#historyContainer .btn-info ,#filingHistoryContainer .btn-info{
+    background-color: #0c131b;
+    background-position: 0 35px;
+    border: 1px solid #0e0e0e;
+}
+#respAndAdvId , #petitionerAndAdvId {
+    color: #fff !important;
+}
+.petAdvBlock {
+    border: 1px solid rgb(78 78 78) !important; 
+}
+#second_header3, #searchInMyCasesDivId ,#second_header1{
+    background: #090e15 !important;
+}
+#exportCasesWarning {
+    background: #090e15 !important;
+    color: #00befc !important;
+    font-weight: bold !important;
+}
+
+#ditrictsAccordion .card{
+    border: 0px solid rgb(14 14 14 / 50%);
+}
+.csmenu-btn .text-black{
+    color:#fff !important;
+}
+.ui-datepicker-calendar tbody {
+    background: #0c131c !important;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
+    color: #ffffff !important;
+}
+html body .ui-datepicker .ui-state-active {
+    background: #fff !important;
+}
+.ui-datepicker th {
+    background-color: #1d2837 ;
+    border-color: #c9c9c9;
+    color: #fff;
+}
+.ui-datepicker-calendar tbody td a, .ui-datepicker-calendar tbody td span {
+    min-height: 40px !important;
+}
+#court_selected input{
+    margin-right: 5px;
+}
+#accordion_search .tbl-result > tbody > tr,#act_table > tbody > tr,#case_details_container .tbl-result > tbody > tr, #historyCollapseId .tbl-result > tbody > tr{
+    background: #151F2B !important;
+    color: #fff !important;
+}
+.modal-backdrop.show {
+    opacity: .7 !important;
+}
+#addCaseButton img {
+    filter: invert(1);
+}
+#historyCollapseId a{
+    color: #00befc !important;
+}
+.share_tbl tr {
+    background: #151f2b;
+}
+#sortDropdownDiv ul{
+    background: #151f2b;
+    border: 1px solid #404e5e;
+}
+#datewise,#districtwise{
+    color:#fff !important;
+}
+.dropdown > .datdist {
+    color: #ffffff !important;
+}
+.btnsecondary.active {
+    color:  #fff !important;
+}
+.form-control {
+    color: #ffffff !important;
+    background-color: #273443 !important;
+    border: 1px solid #424c57 !important;
+}
+.form-control:focus {
+    color: #fff !important;
+    background-color: #2e445d !important;
+    border-color: #838383 !important;
+}
+.form-control:disabled, .form-control[readonly] {
+    background-color: #273443 !important;
+    opacity: 1;
+}
+.tbl-result .badge-success1 {
+    color: #28a745;
+    background-color: #fff;
+    border: 1px solid #28a745;
+  }
+  
+  .tbl-result .badge-danger1 {
+    color: #dc3545;
+    background-color: #fff;
+    border: 1px solid #dc3545;
+  }
+
+#dropdownMenuButton:after { content: none }
+#socialMedia .dropdown-menu {
+    margin-left: 0px;
+    min-width: auto;
+    font-size: 13px;
+}
+
+#dropdownMenuButton .dropdown-menu{
+    transform: translate3d(0px, 33px, 0px) !important;
+}
+
+#cases table,#firDetails table,#subordinateCourtInfo table,#processCollapseId table,#interimOrderCollapseId table, #caseTransferCollapseId table, #finalOrderCollapseId table,
+#writCollapseId table, #linkedDetailsCollapseId table, #iaDetailsCollapseId table, #submatterCollapseId table, #mainmatterCollapseId table, #casedetails table,
+#rejectionCollapseId table, #documentDetailsCollapseId table, #objectionCollapseId table, #categoryCollapseId table, #caseconversionCollapseId table, #actsCollapseId table
+{
+    color: #fff;
+}
+#cases table tr,#firDetails table tr,#subordinateCourtInfo table tr,#processCollapseId table tr, #interimOrderCollapseId table tr, #caseTransferCollapseId table tr, #finalOrderCollapseId table tr,
+#writCollapseId table tr, #writInformationContainerId table tr, #linkedDetailsCollapseId table tr, #iaDetailsCollapseId table tr, #submatterCollapseId table tr, #mainmatterCollapseId table tr, #casedetails table tr,
+#rejectionCollapseId table tr, #documentDetailsCollapseId table tr, #objectionCollapseId table tr, #categoryCollapseId table tr, #caseconversionCollapseId table tr, #actsCollapseId table tr
+{
+    background: transparent;
+}
+
+#writInformationContainerId td:nth-child(1) {
+    width: 40%;
+    background-color: #151F2B !important;
+}
+#second_header2,#second_header_4,#second_header_map {
+    background-color: #151F2B !important;
+    color: #fff !important;
+}
+
+#viewBusinessContainerId tr {
+    background-color: #151F2B !important;
+    color: #fff;
+}
+#viewBusinessContainerId td:nth-child(1) {
+    width: 40%;
+    background-color: #151F2B !important;
+}
+#writInformationContainerId textarea {
+    background: #151F2B;
+    border: none;
+    color: #fff;
+}
+#writCollapseId table.tbl-result a,#spanappView {
+    color: #00BEFC !important;
+}
+#my_cases_text {
+    background: #151F2B !important;
+    color: #fff !important;
+}
+#headers a {
+    color: #fff !important;
+}
+
+#notePopUp{
+    color: #0f0f0f !important;
+     
+}

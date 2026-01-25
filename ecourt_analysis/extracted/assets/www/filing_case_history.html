@@ -1,0 +1,231 @@
+<head>
+    <style type="text/css">
+        .demo-content{
+             padding: 15px;
+            font-size: 18px;
+            min-height: 20px;
+            background: #dbdfe5;
+            margin-bottom: 10px;
+        }
+        .demo-content.bg-alt{
+             background: #abb1b8;
+        }
+        #errorOpnening{
+            text-align: center;
+            width: 100%;
+        }
+        #errMsg{
+            font-weight:bold;
+            color:#A93226;
+        }
+        .btn-info {
+             background-color: #464646;
+            background-position: 0 35px;
+            border: 1px solid #242424;
+        }
+        .btn-info:hover, .btn-info:focus{
+            background-color: #5bc0de;
+            background-position: 0 35px;
+            border: 1px solid #368ba5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container"  style="margin-top:85px;padding-right:0px!important;padding-left:0px!important;padding-top: env(safe-area-inset-top, 43px);">
+        <div id="menubarClose">
+            <h5 class="text-center page-title-main" id="filing_case_history_label">
+                Filing Case History                
+            </h5>
+            <!-- <div id ="noteTextDisplayDiv" class="alert alert-warning" style="display:none;padding: 5px;margin-bottom: 5px;" data-toggle="modal" data-target="#addNoteModalForAddedCase" role="button"> -->
+            <div id ="noteTextDisplayDiv" class="alert alert-warning" style="display:none;padding: 5px;margin-bottom: 5px; word-break: break-word;" data-toggle="modal" data-target="#addNoteModalForAddedCase" role="button">
+                <span id="note_label_fil"><strong>Note : </strong></span><span id ="noteTextDisplay"></span>
+            </div>
+            <h6 class="text-center" id="court_name_title"> </h6>
+            <a href="#" class="btn btn-primary btn-sm addnotefil" id="Chevron_icon" data-toggle="modal" data-target="#addNoteModal" role="button">Add Note&nbsp;<i class="fa fa-sticky-note-o" aria-hidden="true"></i></a>            
+        <div id = "errorOpnening" style = "display:none"><span id = "errMsg"></span></div>
+            <div class="container" id = "filingHistoryContainer" style="padding-right:0px!important;padding-left:0px!important;">
+                <div>
+                    <a href="#casedetails" class="btn btn-info" data-toggle="collapse" id="case_details_label" style="width: 100%;">Case Details</a>
+                        <div id="casedetails" class="collapse in">
+                            <table class="newtable" id="case_details_container">                       
+                                <tbody>
+                                    <tr>
+                                        <td id="case_code_label">Case Code</td>
+                                        <td id='caseCodeId'></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="filing_number_label">Filing Number</td>
+                                        <td id='filingNumberId'></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="filing_date_label">Filing Date</td>
+                                        <td id='filingDateId'></td>
+                                    </tr>
+                                    <tr>                                    
+                                        <td id="CNR_no_label">CNR Number</td>
+                                        <td id='cnrnoId'></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+                <br>
+                <div id="qrcodeTabId">
+                    <a href="#qrcodeCollapseId" class="btn btn-info" data-toggle="collapse" id="QR_code_label" style="width: 100%;">QR Code</a>
+                        <div id="qrcodeCollapseId" class="collapse petAdvBlock" >                                
+                            <div id="qrcode" style="text-align: center;border: 1px solid black;color: black;padding-top: 6px;">
+                            </div>
+                        </div>
+                </div>
+                <br>
+                <a href="#petitionerandadvocate" class="btn btn-info" data-toggle="collapse" style="width: 100%;">
+                    <span id="pet_and_advoc1">Petitioner</span>
+                    <span id="pet_and_advoc2">and</span>
+                    <span id="pet_and_advoc3">Advocate</span>
+                </a>
+                <div id="petitionerandadvocate" class="collapse petAdvBlock" style="border: 1px solid black;">
+                    <label id="petitionerAndAdvId" style="color:black;">
+                    </label>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <a href="#respondentandadvocate" class="btn btn-info" data-toggle="collapse" style="width: 100%;">
+                        <span id="resp_and_advoc1">Respondent</span>
+                        <span id="resp_and_advoc2">and</span>
+                        <span id="resp_and_advoc3">Advocate</span>
+                    </a>
+                    <div id="respondentandadvocate" class="collapse petAdvBlock" style="border: 1px solid black;">
+                        <label id="respAndAdvId"  style="color:black;">
+                        </label>
+                    </div>
+                    </div>                                            
+                    
+                    <!--Objection table-->
+                    <br id="brObjection">
+                    <div id="objectionTableId">
+                        <a href="#objectionCollapseId" class="btn btn-info" data-toggle="collapse" id="objection_label" style="width: 100%;">Objection</a>
+                            <div id="objectionCollapseId" class="collapse">
+                            </div>
+                    </div>
+                    <!--Rejection table-->
+                    <br id="brRejection">
+                    <div id="rejectionTableId">
+                        <a href="#rejectionCollapseId" class="btn btn-info" data-toggle="collapse" id="rejection_label" style="width: 100%;">Rejection</a>
+                            <div id="rejectionCollapseId" class="collapse">
+                            </div>
+                    </div>
+                    <!--Acts table-->
+                    <br id="brActs">
+                    <div id="actsTableId">
+                        <a href="#actsCollapseId" class="btn btn-info" data-toggle="collapse" id="acts_label" style="width: 100%;">Acts</a>
+                            <div id="actsCollapseId" class="collapse">
+                            </div>
+                    </div>
+                    <!--FIR Details-->
+                    <br id="brFIR">
+                    <div  id="firTableId">
+                        <a href="#firDetails" class="btn btn-info" data-toggle="collapse" id="FIR_details_label" style="width: 100%;">FIR Details</a>
+                            <div id="firDetails" class="collapse petAdvBlock" >
+                                <table class="newtable" id="case_details_container">
+                                    <tbody>
+                                        <tr>
+                                            <td id="police_station_label">Police Station</td>
+                                            <td id='policeStationId'></td>
+                                        </tr>
+                                        <tr  id='firNorow'>
+                                            <td id="FIR_no_label">FIR No</td>
+                                            <td id='firNoId'></td>
+                                        </tr>
+                                        <tr id='firDetailsYearrow'>
+                                            <td id="year_label">Year</td>
+                                            <td id='firDetailsyearId'></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                    </div>
+                    <!--subordinate court info-->
+                    <br id="brSubordinate">
+                    <div id="subordinateCourtInfoId">
+                        <a href="#subordinateCourtInfo" class="btn btn-info" data-toggle="collapse" id="subord_court_info_label" style="width: 100%;">Subordinate Court Information</a>
+                            <div id="subordinateCourtInfo" class="collapse petAdvBlock" >
+                                <table class="newtable" id="case_details_container">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span id="court_no_and_name_label1">Court No</span>
+                                                <span id="court_no_and_name_label2">and</span>
+                                                <span id="court_no_and_name_label3">Name</span>
+                                            </td>
+                                            <td id='courtNoAndNameId'></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <span id="case_no_and_year_label1">Case No</span>
+                                                <span id="case_no_and_year_label2">and</span>
+                                                <span id="case_no_and_year_label3">Year</span>
+                                            </td>
+                                            <td id='caseNoAndYearId'></td>
+                                        </tr>
+                                        <tr>
+                                            <td id="case_decision_date_label">Case Decision Date</td>
+                                            <td id='caseDecisionAndDateId'></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="modal" id="addNoteModal" style="padding: 5% !important;padding-top: 30%;background: rgba(0,0,0,.3);" tabindex="-1" role="dialog">
+                <div class="modal-dialog m-2" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header" style="text-align:center;">
+                        <strong id="addNoteModal_label">Add Note</strong>
+                    </div>
+                    <div class="modal-body p-2">
+                       <textarea id="note" maxlength="255" class="form-control" placeholder="Enter text here"></textarea>
+                    </div>   
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary round_btn" style="float:left;" onclick="addNoteToDb();"><i class="fa fa-plus" aria-hidden="true"></i><span class="sr-only">Add Note</span></button>   
+                        <button type="button" class="btn btn-secondary round_btn" style="float:right;background:#555;" onclick="closeNoteModal();"><i class="fa fa-times" aria-hidden="true"></i><span class="sr-only">Cancel</span></button>
+                    </div>                 
+                  </div>
+                </div>
+              </div>
+            
+            <div class="modal" id="addNoteModalForAddedCase" style="padding: 5% !important;padding-top: 30%;background: rgba(0,0,0,.3);"  tabindex="-1" role="dialog">
+                <div class="modal-dialog m-2" role="document"> 
+                    <div class="modal-content">
+                        <div class="modal-header" style="text-align:center;">
+                            <strong id="addNoteModalForAddedCase_label">Add Note</strong>
+                        </div>
+                        <div class="modal-body p-2">
+                            <textarea id="noteForAddedCase" maxlength="255" class="form-control" placeholder="Enter text here"></textarea>                 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary round_btn" style="float:left;" onclick="updateNoteToAddedCase();"><i class="fa fa-plus" aria-hidden="true"></i><span class="sr-only">Add Note</span></button>
+                            <button type="button" class="btn btn-secondary round_btn" style="float:right;background:#555;" onclick="closeAddedNoteModal();"><i class="fa fa-times" aria-hidden="true"></i><span class="sr-only">Cancel</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+      
+    
+    <script>
+            document.addEventListener("deviceready", onDeviceReadyFilCaseHistory, false);
+            function onDeviceReadyFilCaseHistory() {
+                
+                $.getScript("js/vendor/jquery.qrcode.min.js").done(function( script, textStatus ) {
+                    $.getScript("js/filing_case_history.js");
+                });
+            }
+        </script>
+
+</body>

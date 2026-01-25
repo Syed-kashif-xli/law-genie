@@ -1,0 +1,78 @@
+.btn.collapsebutton {
+	background-color: #A88941;
+	background-image: linear-gradient(to bottom, #A88941, #A88941);
+}
+ .petAdvBlock {
+    /*width: 300px;*/
+    width: 100%;
+    font-weight: normal !important;
+    color: #555;
+    background-color: #f5f3f4;
+    border: 1px solid #555;
+    padding: 5px;
+    font-family: 'Lato';
+ }
+.btn-info {
+    width: 100%;
+}
+.addCaseButtonContainer {
+    text-align: right;
+
+}
+.newtable {
+                color: #555;
+                font: bold;
+                text-align: left;
+                border-spacing: 2px;
+                border: 1px solid #C0C0C0;
+                border: none;
+                width: 100%;
+                font-family: 'Lato';
+              }
+
+              
+/*              th {font-weight: bold;}
+              th:first-child, td:first-child {padding: 0 15px 0 20px;}*/
+
+              /*thead tr:last-child th {border-bottom: 3px solid #ddd;}*/
+
+              tbody tr:hover, tbody tr:active, tbody tr:focus {background-color: #dcdadb;}
+              tbody tr:last-child td {}
+              tbody td {font: bold;}
+              /*tbody td {border-bottom: 1px solid #ddd;}*/
+
+              td:first-child{
+                font-weight: 900;
+              }
+              tr {
+                background-color: #F5F3F4;
+            }
+              .button {
+                color: #ffffff;
+                padding-right: 5px;
+                cursor: pointer;
+              }
+              .btn-info{
+                  background:#424242;
+                  color:#fff;
+                  padding:10px 15px;
+                  border: 1px solid #424242;
+              }
+#historyCollapseId ,#writCollapseId{ 
+    overflow-x: auto;
+}
+a#spanappView{
+color: #337ab7;
+    text-decoration: underline;
+    }
+
+/*
+              .alterar:hover {
+                color: #0a79df;
+              }
+*/
+
+/*
+              .excluir:hover {
+                color: #dc2a2a;
+              }*/

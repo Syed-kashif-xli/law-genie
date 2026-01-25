@@ -1,0 +1,52 @@
+<body>
+    <div class="container text-left" style="margin-top:85px;">
+        <div id="menubarClose">
+            <span class="text-black text-center page-title-main">
+                <h2 class="d-inline">Case Status</h2> : <h3 class="d-inline">Search by Filing Number</h3>
+            </span>
+            <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+            <h4 id = "benchName" class="text-black text-center" style="font-weight:bold;"></h4> 
+        <form class="form-horizontal">
+            <fieldset>
+                 <!-- Text input-->
+                <div class="form-group required">
+                    <label class="col-md-4 control-label  font-weight-bold   " for="search_filing_no">Filing Number</label>
+                        <div class="col-md-5">
+                            <input id="search_filing_no" name="search_filing_no" type="number" placeholder="Enter Filing Number" class="form-control input-md">
+                            <span class="filing_number_val" style="color:red;"></span>
+                        </div>
+                </div>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label  font-weight-bold   " for="year">Year</label>
+                        <div class="col-md-5">
+                            <input id="year" name="year" type="number" placeholder="Enter Year" class="form-control input-md">
+                            <span class="year" style="color:red;"></span>
+                        </div>
+                </div>
+                <!-- Button (Double) -->
+                <div class="form-group text-center">
+                    <label class="col-md-4 control-label d-none" for="button1id"></label>
+                        <div class="col-md-8">
+                            <button type="button" id="goButton" class="btn btn-primary btn-lg twobtn">Go</button>
+                            <button id="resetButton" name="button2id" class="btn btn-black btn-lg   twobtn">Reset</button>
+                        </div>
+                </div>
+                <div id="headers"  ></div>
+
+            </fieldset>
+        </form>
+            <div class="panel-group" id="accordion_search"></div>
+            <div id="footer"></div>
+            </div>
+    </div>
+    
+
+    <script>
+            document.addEventListener("deviceready", onDeviceReadyFilingHC, false);
+            function onDeviceReadyFilingHC() {
+                
+                $.getScript("js/search_by_filing_number_hc.js");
+            }
+        </script>
+</body>
+

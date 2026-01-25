@@ -1,0 +1,44 @@
+.btn.case-status-button {
+	background:none;
+	border: none;
+    background-image: linear-gradient(to bottom, #FFFFFF, #FFFFFF);
+    background-position: 0;
+	padding: 10px 10px;
+	text-align: left;
+}
+.btn.case_number {
+	background-color: #A88941;
+	background-image: linear-gradient(to bottom, #A88941, #A88941);
+}
+.btn.fir_number {
+	background-color: #913840;
+	background-image: linear-gradient(to bottom, #913840, #913840);
+}
+.btn.party_name {
+	background-color: #915C3C;
+	background-image: linear-gradient(to bottom, #915C3C, #915C3C);
+}
+.btn.advocate_name {
+	background-color: #004663;
+	background-image: linear-gradient(to bottom, #004663, #004663);
+}
+.btn.filling_number {
+	background-color: #913840;
+	background-image: linear-gradient(to bottom, #913840, #913840);
+}
+.btn.act {
+	background-color: #A88941;
+	background-image: linear-gradient(to bottom, #A88941, #A88941);
+}
+.btn.case_type {
+	background-color: #004663;
+	background-image: linear-gradient(to bottom, #004663, #004663);
+}
+.btn.caveat {
+	background-color: #004663;
+	background-image: linear-gradient(to bottom, #004663, #004663);
+}
+/*a, a:hover, a:link, a:visited {
+	color: blue;
+	text-decoration: none;
+}*/

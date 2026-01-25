@@ -1,0 +1,67 @@
+<body>
+    
+<div class="container text-left" style="margin-top:85px;">
+    <div id="menubarClose">
+        <span class="text-black text-center page-title-main">
+            <h2 class="d-inline">Case Status</h2> : <h3 class="d-inline">Search by Case Type</h3>
+        </span>
+        <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+        <h4 id = "benchName" class="text-black text-center" style="font-weight:bold;"></h4>
+    <form class="form-horizontal">
+        <fieldset>
+            <div class="form-group required">
+                <label class="col-md-4 control-label  font-weight-bold " for="case_type"> Case Type</label>
+                    <div class="col-md-5">
+                        <select id="case_type" name="case_type" class="form-control">
+                            <option value="Select Case Type">Select Case Type</option>
+                        </select>
+                    </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group  required">
+                <label class="col-md-4 control-label font-weight-bold" > Year</label>
+                    <div class="col-md-5">
+                        <input id="rgyear" maxlength="4" name="year" type="number" placeholder="Enter year" class="form-control input-md"><span class="year_error" style="color:red;"></span>
+                    </div>
+            </div>
+            <!-- Multiple Radios (inline) -->
+            <div class="form-group">
+                <label class="col-md-4 control-label d-none" for="radOpt1"></label>
+                    <div class="col-md-4">
+                        <label class="radio-inline   " for="radOpt-0">
+                            <input type="radio" name="radOpt1" id="radOpt-0" value="Pending" checked="checked">
+                                 Pending
+                        </label>
+                         <label class="radio-inline   " for="radOpt-1">
+                            <input type="radio" name="radOpt1" id="radOpt-1" value="Disposed">
+                                Disposed
+                        </label>
+                    </div>
+            </div>
+            <div class="form-group text-center">
+                <label class="col-md-4 control-label d-none" for="button1id"></label>
+                    <div class="col-md-8">
+                        <button type="button" id="goButton" class="btn btn-primary btn-lg twobtn">Go</button>
+                        <button id="resetButton" name="button2id" class="btn btn-black btn-lg   twobtn">Reset</button>
+                    </div>
+            </div>
+            <div id="headers"></div>
+        </fieldset>
+    </form>
+    <div id="totalEstablishments"></div>
+    <div class="panel-group" id="accordion_search"></div>
+    <div id="footer"></div>
+    </div>
+</div>
+
+          
+          <script>
+                  document.addEventListener("deviceready", onDeviceReadySearchCaseTypeHC, false);
+                  function onDeviceReadySearchCaseTypeHC() {
+                                           
+                      $.getScript("js/search_by_case_type_hc.js");
+                  }
+              </script>
+
+</body>
+   

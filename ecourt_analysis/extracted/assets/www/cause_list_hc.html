@@ -1,0 +1,84 @@
+<style>
+    #doublescroll { overflow: hidden; width:150px }
+    #doublescroll p { margin: 0; padding: 1em; white-space: nowrap; }
+    .Container
+    {
+        width: auto;
+        overflow-y: auto;
+    }
+    .Content
+    {
+        width: 100%;
+    }
+    .Flipped, .Flipped .Content
+    {
+        transform:rotateX(180deg);    
+    }
+    #ui-datepicker-div {
+        z-index: 1050 !important;
+    }
+</style>
+<html>
+    <body>
+        <div class="container" style="margin-top:0px;padding: 1rem 0;">        
+            <h5 class="text-black text-center page-title-main">
+                Cause list / Daily Board                
+            </h5>
+            <form class="form-horizontal text-left">
+                <fieldset>
+                    <!-- <div class="form-group required" id="caseListDateId">
+                        <div class="col-md-4" id="testDIV">
+                            <label class="col-md-4 control-label container1 font-weight-bold" for="pickyDate">Causelist Date:</label>
+                            <input type="text" id="pickyDate" class="form-control" placeholder="Cause List Date"/>        
+                        </div> 
+                    </div> -->
+                    <div class="form-group required" id="caseListDateId">
+                        <div class="col-md-4" id="testDIV">
+                            <label class="col-md-4 control-label container1  font-weight-bold" for="pickyDate" id="causelist_date_label">Causelist Date:</label>
+                            <input type="date" id="pickyDate" min="2018-01-01" max="2018-12-31" class="form-control">
+                        </div> 
+                    </div>
+                    <div class="form-group required">
+                        <div class="col-md-5">
+                            <label class="col-md-4 control-label container1  font-weight-bold" for="court_name">Select Bench</label>
+                            <select id="cause_list_bench" name="cause_list_bench" class="form-control">
+                                    <option value=''>Select Bench</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="col-md-4 control-label d-none" for="button1id"></label>
+                        <div class="col-md-8" style="text-align: center;">
+                            <button id="goButton" name="goButton" onClick="onButtonClick(this.id); return false;" class="btn btn-primary btn-lg">Go</button>
+                        </div>
+                    </div>
+                    <div class="Container Flipped">
+                        <div id="cases" class="Content"></div>
+                    </div>
+                    <div>
+                        <div id="casesnotfound" class="Content"></div>
+                    </div>
+                    <div class="modal" id="loading2" data-backdrop="static" role="dialog">
+                        <div class="modal-dialog  modal-sm">
+                            <div class="modal-content">              
+                                <div class="modal-body text-center"  >
+                                    <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                                    <h3 style="color:#FFF;font-weight: bold;" >loading...</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+       <!-- <script src="js/cause_list_hc.js"></script>-->
+        
+        <script>
+                document.addEventListener("deviceready", onDeviceReadyCauselistHC, false);
+                function onDeviceReadyCauselistHC() {
+                    
+                    $.getScript("js/cause_list_hc.js");
+                }
+            </script>
+    </body>
+</html>

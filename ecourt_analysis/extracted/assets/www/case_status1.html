@@ -1,0 +1,127 @@
+<!doctype html>
+  <html class="no-js" lang="">
+      <head>
+
+<!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data:* gap://* tel:* 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'" />-->
+<!--<meta http-equiv="Content-Security-Policy" content="default-src 'unsafe-inline' 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">-->
+<meta http-equiv="Content-Security-Policy" content="style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+
+
+
+<style>
+    .modal.fade .modal-dialog {
+        -webkit-transform: scale(0.1);
+        -moz-transform: scale(0.1);
+        -ms-transform: scale(0.1);
+        transform: scale(0.1);
+        top: 300px;
+        opacity: 0;
+        -webkit-transition: all 0.3s;
+        -moz-transition: all 0.3s;
+        transition: all 0.3s;
+    }
+    
+    .modal.fade.in .modal-dialog {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        transform: scale(1);
+        -webkit-transform: translate3d(0, -300px, 0);
+        transform: translate3d(0, -300px, 0);
+        opacity: 1;
+    }
+    .modal-backdrop {
+        height: 100vh !important;
+    }
+</style>
+
+</head>
+<body>
+<div class="container csmargintop">
+    <div class="row case-status-menu row1">
+        <div class="col-6 text-centre case-status-menu">
+            <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn case_number">
+                <img src="images/case-status-icon1.png" width="60"/><br/>
+                <span class="text-black" id="case_number_span">Case Number</span>
+            </button>
+        </div>
+        <div class="col-6 text-centre case-status-menu">
+            <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn party_name">
+                <img src="images/case-status-icon2.png"  width="60"/><br/>
+                <span class="text-black" id="party_span">Party</span>
+            </button>
+        </div>
+    </div>
+    <div class="row case-status-menu">
+        <div class="col-6 text-centre case-status-menu">
+            <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn filling_number">
+                <img src="images/case-status-icon3.png"  width="60"/><br/>
+                <span class="text-black" id="filing_number_span">Filing Number</span>
+            </button>
+        </div>
+        <div class="col-6 text-centre case-status-menu">
+            <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn fir_number">
+                <img src="images/case-status-icon4.png"  width="60"/><br/>
+                <span class="text-black" id="fir_number_span">FIR Number</span>
+            </button>
+        </div>
+    </div>
+    <div class="row case-status-menu">
+        <div class="col-6 text-centre case-status-menu">
+            <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn advocate_name">
+                <img src="images/case-status-icon5.png"  width="60"/><br/>
+                <span class="text-black" id="advocate_span">Advocate</span>
+            </button>
+        </div>
+        <div class="col-6 text-centre case-status-menu">
+            <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn act">
+                <img src="images/case-status-icon6.png"  width="60"/><br/>
+                <span class="text-black" id="act_span">Act</span>
+            </button>
+        </div>
+    </div>
+    <div class="row case-status-menu">
+        <div class="col-6 text-centre case-status-menu">
+            <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn case_type">
+                <img src="images/case-status-icon7.png"  width="60"/><br/>
+                <span class="text-black" id="case_type_span">Case Type</span>
+            </button>
+        </div>
+        <div class="col-6 text-centre case-status-menu">
+            <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn caveat">
+                <img src="images/caveat-icon8.png"  width="60"/><br/>
+                <span class="text-black" id="caveat_span">Caveat</span>
+            </button>
+        </div>
+        <div class="col-6 text-centre"></div>
+    </div>
+    <div class="row case-status-menu">
+        <div class="col-6 text-centre case-status-menu">
+            <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn pre_trial_appl">
+                <img src="images/pre-trial-icon2.png"  width="60"/><br/>
+                <span class="text-black" id="pre_trial_span">Pre Trial Application</span>
+            </button>
+        </div>
+    </div>
+</div>
+    <div class="modal" id="searchPageModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body" style="height:100vh;overflow-y:auto;">
+                    <div id="header_srchpage"></div>
+                    <div id = "searchPageData"></div>
+                </div>
+            </div>
+        </div>
+    </div>        
+<!--<script type='text/javascript' src="js/case_status.js"></script>-->
+<script>
+    document.addEventListener("deviceready", onDeviceReadyCaseStatus1, false);
+        function onDeviceReadyCaseStatus1() {
+            
+            $.getScript("js/case_status.js");
+        }
+</script>
+
+</body>
+</html>

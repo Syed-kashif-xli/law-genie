@@ -1,0 +1,180 @@
+<body>
+    <div class="container text-left" style="margin-top:85px;padding-top: env(safe-area-inset-top, 43px);">
+        <div id="menubarClose">
+            <span class="text-black text-center page-title-main">
+                <h2 id="casestatus_heading1_label" class="d-inline">Case Status</h2>
+                :
+                <h3 id="search_by_caveat_label" class="d-inline">Search by Caveat</h3>
+            </span>
+            <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+            <form class="form-horizontal">
+                <fieldset>
+                    <!--Court Complex-->
+                    <div class="form-group required">
+                        <label class="col-md-4 control-label   " for="court_code" id="court_complex_label">Court Complex</label>
+                            <div class="col-md-5">
+                                <select id="court_code" name="court_code" class="form-control">
+                                    <option value="''">Select Court Complex</option>
+                                </select>
+                            </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="col-md-4 control-label   " for="select_search_type">
+<!--                            <span id="search_type_label1">Select</span>-->
+                            <span id="search_type_label2">Search Type</span>
+                        </label>
+                        <div class="col-md-5">
+                            <select id="select_search_type" name="select_search_type" class="form-control">
+                                <option value="Anywhere">Anywhere</option>
+                                <option value="StartingWith">Starting With</option>
+                                <option value="SubordinateCourt">Subordinate Court</option>
+                                <option value="CaveatNo.">Caveat No.</option>
+                            </select>
+                        </div>
+                    </div> 
+                    <!--anywhere-->
+                    <div class="" id="anywhere"> 
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label   " for="caveator_name" id="caveator_name_label">Caveator Name</label>
+                                <div class="col-md-5">
+                                    <input id="caveator_name" name="caveator_name" type="text" placeholder="Enter Caveator Name" class="form-control input-md">
+                                    <span class="caveator_name" style="color:red;"></span>
+                                </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label   " for="caveatee_name" id="caveatee_name_label">Caveatee Name</label>
+                                <div class="col-md-5">
+                                    <input id="caveatee_name" name="caveatee_name" type="text" placeholder="Enter Caveatee Name" class="form-control input-md">
+                                    <span class="caveatee_name" style="color:red;"></span>
+                                </div>
+                        </div>
+                    </div>
+                    <!--starting_with-->
+                    <div id="starting_with">
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label   " for="caveator_caveatee_name" id="caveator_caveatee_name_label">Caveator/Caveatee Name</label>
+                                <div class="col-md-5">
+                                    <input id="caveator_caveatee_name" name="caveator_caveatee_name" type="text" placeholder="Enter Caveator/Caveatee Name" class="form-control input-md">
+                                    <span class="caveator_caveatee_name" style="color:red;"></span>
+                                </div>
+                        </div>
+                        <div class="">
+                            <label class="radio-inline   " for="radOptCaveator">
+                                <input type="radio" name="radOpt2" id="radOptCaveator" value="Caveator" checked="checked">
+                                <span id="caveator">Caveator</span>
+                            </label>
+                            <label class="radio-inline   " for="radOptCaveatee">
+                                <input type="radio" name="radOpt2" id="radOptCaveatee" value="Caveatee">
+                                <span id="caveatee">Caveatee</span>
+                            </label>  
+                        </div>
+                    </div>
+                    <!--subordinate_court-->
+                    <div id="subordinate_court">
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label   " for="select_state" id="select_state_label">Select State</label>
+                                <div class="col-md-5">
+                                    <select id="select_state" name="select_state" class="form-control">
+                                        <option value="''">Select State</option>
+                                    </select>
+                                </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label   " for="select_district" id="select_district_label">Select District</label>
+                                <div class="col-md-5">
+                                    <select id="select_district" name="select_district" class="form-control">
+                                        <option value="''">Select District</option>
+                                    </select>
+                                </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label" for="subordinate_court_name" id="subordinate_court_name_label">Subordinate Court Name</label>
+                                <div class="col-md-5">
+                                    <select id="subordinate_court_name" name="subordinate_court_name" class="form-control">
+                                        <option value="''">Select Subordinate Court Name</option>
+                                    </select>
+                                </div>
+                        </div>
+                        <div class="">
+                            <label class="radio-inline   " for="case_no">
+                                <input type="radio" name="radOpt3" id="radOpt_case_no" value="2" checked="checked">
+                                <span id="caseno">Case No</span>
+                            </label>
+                            <label class="radio-inline   " for="filing_no">
+                                <input type="radio" name="radOpt3" id="radOpt_filing_no" value="1">
+                                <span id="filingno">Filing No</span>
+                            </label>  
+                        </div>
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label" for="case_type" id="case_type_label">Case Type</label>
+                                <div class="col-md-5">
+                                    <select id="case_type" name="case_type" class="form-control">
+                                        <option value="''">Select Case Type</option>
+                                    </select>
+                                </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label" id="case_filing_number" for="case_number">Case Number</label>
+                                <div class="col-md-5">
+                                    <input id="case_number" name="case_number" type="number" placeholder="Enter Case Number" class="form-control input-md">
+                                    <span class="case_number" style="color:red;"></span>
+                                </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label" for="case_year" id="year_label">Year</label>
+                                <div class="col-md-5">
+                                    <input id="case_year" name="case_year" type="number" onkeypress="return isNumber(event)" maxlength="4" placeholder="Enter year" class="form-control input-md">
+                                    <span class="case_year" style="color:red;"></span>
+                                </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="col-md-4 control-label" for="pickyDate" id="decision_date_label">Date of Decision</label>
+                                <div class="col-md-5">
+                                    <input type="text" id="pickyDate" class="form-control" placeholder="Date of Decision"/>  
+                                </div>
+                        </div>
+                    </div>   
+                    <!--caveat search-->
+                    <div id="caveat_no" class="form-group required">
+                        <div class="">
+                            <label class="col-md-4 control-label" id="caveat_number1" for="caveat_number">Caveat Number</label>
+                                <div class="col-md-5">
+                                    <input id="caveat_number" name="caveat_number" type="number" maxlength = "7" placeholder="Enter Caveat Number" class="form-control input-md" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
+                                    <span class="caveat_number" style="color:red;"></span>
+                                </div>
+                        </div>
+                        <div class="">
+                            <label class="col-md-4 control-label" for="caveat_year" id="caveat_year_label">Year</label>
+                                <div class="col-md-5">
+                                    <input id="caveat_year" name="caveat_year" type="number" onkeypress="return isNumber(event)" maxlength="4" placeholder="Enter Caveat Year" class="form-control input-md">
+                                    <span class="caveat_year" style="color:red;"></span>
+                                </div>
+                        </div>
+                    </div>
+                    <!-- Button (Double) -->
+                    <div class="form-group text-center">
+                        <label class="col-md-4 control-label" for="button1id"></label>
+                            <div class="col-md-8">                            
+                                <button type="button" id="goButton" class="btn btn-primary btn-lg twobtn" >Go</button>
+                                <button id="resetButton" name="button2id" class="btn btn-black btn-lg   twobtn">Reset</button>
+                            </div>
+                    </div>
+                    <div id="headers"></div>
+                </fieldset>
+            </form>
+            <div id="totalEstablishments"></div>
+            <div id="caveatSearch" style="overflow-x: auto;"></div>
+            <div class="panel-group" id="accordion_search"></div>
+        <div id="footer"></div>
+    </div>
+</div>
+    <script>
+        document.addEventListener("deviceready", onDeviceReadySearchCaveat, false);
+            function onDeviceReadySearchCaveat() {
+                
+                $.getScript("js/search_by_caveat.js");
+            }
+    </script>
+
+
+</body>

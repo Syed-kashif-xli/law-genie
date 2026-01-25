@@ -1,0 +1,41 @@
+<body>
+    <div class="container text-left" style="padding-left : 0px !important; padding-right : 0px !important; margin-top:85px;padding-top: env(safe-area-inset-top, 43px);">
+        <div id="menubarClose_map">
+            <h5 class="text-black text-center page-title-main">                    
+                <span id="courtComplexLocationLabel">Court complex location</span>
+            </h5>                        
+        <div class="row" id="state_dist_componant" style="background:#fff;margin-top:0px;border-bottom:1px solid #ccc;padding-bottom: 10px;">                   
+            <div class="col-6">
+                <select class="wide-control selectpicker form-control default" id="map_state_code">
+                    <option value="''" id="selectStateLabelMap">Select State</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <select class="wide-control selectpicker form-control default" id="map_dist_code">
+                    <option value="''" id="selectDistrictLabelMap">Select District</option>
+                </select>
+            </div>
+        </div>                        
+        <div class="form-group required">
+            <label class="col-md-4 control-label   " for="court_code" id = "courtComplexLabelId">Court Complex</label>
+                <div class="col-md-5">
+                    <select id="map_court_code" name="map_court_code" class="form-control">
+                        <option value="''" id="selectCourtCompleLabel">Select Court Complex</option>
+                    </select>
+                </div>
+        </div>                            
+                <div class="text-center"><button id="get_map_btn" onClick="getMap(event);" class="btn btn-primary loc_btn">Get Map</button></div>
+                <div id="totalEstablishments"></div>
+                <div class="panel-group" id="accordion"></div>
+                <div id="footer"></div>
+        </div>
+    </div> 
+    
+    <script>
+            document.addEventListener("deviceready", onDeviceReadyMap, false);
+            function onDeviceReadyMap() {                
+                $.getScript("js/map.js");
+            }
+        </script>
+
+</body>

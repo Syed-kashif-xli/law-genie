@@ -76,6 +76,7 @@ dependencies:
   pinput: ^6.0.1
   flutter_dotenv: ^6.0.0
   firebase_ai: ^3.6.0
+  encrypt: ^5.0.3
 
 dev_dependencies:
   flutter_test:

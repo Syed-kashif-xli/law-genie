@@ -1,0 +1,69 @@
+
+<body>
+
+<div class="container text-left" style="margin-top:85px;padding-top: env(safe-area-inset-top, 43px);">
+    <div id="menubarClose">
+        <span class="text-black text-center page-title-main">
+            <h2 id="casestatus_heading1_label" class="d-inline">Case Status</h2>
+            :
+            <h3 id="search_by_case_number_label" class="d-inline">Search by Case Number</h3>
+        </span>
+        <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+    <form class="form-horizontal">
+        <fieldset>
+            <!-- Select Basic -->
+            <div class="form-group required">
+                <label class="col-md-4 control-label text-left font-weight-bold" for="court_code" id="court_complex_label" style="text-align:left !important;">Court Complex</label>
+                    <div class="col-md-5">
+                        <select id="court_code" name="court_code" class="form-control">
+                            <option value="''" id="select_court_complex">Court Complex</option>
+                        </select>
+                    </div>                        
+            </div>
+            <div class="form-group required">
+                <label class="col-md-4 control-label font-weight-bold" for="case_type" id="case_type_label" style="text-align:left !important;">Case Type</label>
+                    <div class="col-md-5">
+                        <select id="case_type" name="case_type" class="form-control">
+                            <option value="''" id="select_case_type">Select Case Type</option>
+                        </select>
+                    </div>
+            </div>
+            <div class="form-group required">
+                <label class="col-md-4 control-label font-weight-bold" for="case_number" id="case_number_label" style="text-align:left !important;">Case Number</label>
+                    <div class="col-md-5">
+                        <input id="case_number" name="search_case_no" type="number"  max="7" min="1" placeholder="Enter Case Number" class="form-control input-md"><span class="case_number_val" style="color:red;"></span>
+                    </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group required">
+                <label class="col-md-4 control-label font-weight-bold" for="rgyear" id="year_label" style="text-align:left !important;">Year</label>
+                    <div class="col-md-5">
+                        <input id="rgyear" name="year" type="number" placeholder="Enter year" class="form-control input-md">
+                        <span class="year" style="color:red;"></span>
+                    </div>
+            </div>
+            <!-- Button (Double) -->
+            <div class="form-group text-center">
+                <label class="col-md-4 control-label d-none" for="button1id" style="text-align:left !important;"></label>
+                    <div class="col-md-8">
+                        <button type="button" id="goButton" class=" btn btn-primary btn-lg twobtn ">Go</button>
+                        <button id="resetButton" name="button2id" class="btn btn-black btn-lg   twobtn">Reset</button>
+                    </div>
+            </div>
+            <div id="headers"></div>
+        </fieldset>
+    </form>
+    <div class="" id="accordion_search"></div>
+    <div id="footer"></div>
+    </div>
+</div>
+<script>
+    document.addEventListener("deviceready", onDeviceReadySearchCaseNo, false);
+        function onDeviceReadySearchCaseNo() {
+           
+            $.getScript("js/search_by_case_number.js");
+        }
+</script>
+
+</body>
+   

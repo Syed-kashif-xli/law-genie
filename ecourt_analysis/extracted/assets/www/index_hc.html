@@ -1,0 +1,187 @@
+<!doctype html>
+    <html class="no-js" lang="">
+        <head>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+            <title>Ecourt Services India</title>
+            <meta name="description" content="">
+            <meta name="viewport" content="width=device-width, initial-scale=1 ,maximum-scale=1.0, user-scalable=no">
+            <meta name="viewport" content="user-scalable=no, initial-scale=1, width=device-width, viewport-fit=cover">
+            <link rel="apple-touch-icon" href="apple-touch-icon.png">
+            <link rel="stylesheet" href="css/bootstrap.min.css">
+            <!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css"> -->
+            <link rel="stylesheet" href="js/vendor/jquery-ui-1.12.1.custom/jquery-ui.min.css">
+            <script src="js/vendor/jwt-decode.js"></script>
+            <link rel="stylesheet" href="css/jquery.mobile.datepicker.theme.css" />
+            <link rel="stylesheet" href="css/jquery.mobile.datepicker.css" />
+            <link rel="stylesheet" href="css/main.css"  id="pagestyle1">
+            <link rel="stylesheet" href="css/index.css" id="pagestyle2">
+            <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>        
+            <script src="js/vendor/html5sql.js"></script>
+                <style>
+                    @-ms-viewport { width: 100vw ; min-zoom: 100% ; zoom: 100% ; }  @viewport { width: 100vw ; min-zoom: 100%; zoom: 100% ; }
+                    @-ms-viewport { user-zoom: fixed ; min-zoom: 100% ; }           @viewport { user-zoom: fixed ; min-zoom: 100% ; }            
+                </style>
+            <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+        </head>
+        <body>
+            <div class="container" style="padding:0 !important;overflow:hidden;">
+                <h1 class="sr-only">eCourts Services</h1>
+                <div id="header"></div>
+                    <div class="text-center" >
+                        <div role="tabpanel" id="tabpanel">
+                            <!-- Nav tabs -->
+                            <div class="mainMenuDiv">
+                                <ul class="nav nav-tabs" role="tablist" id="tablist">
+                                    <li role="presentation" class="active"><a href="#home" id="cnr" aria-controls="home" role="tab" data-toggle="tab"><i class="fa fa-info" aria-hidden="true"></i><br/>CNR</a></li>
+                                    <li role="presentation"><a href="#profile" id="Case_status" aria-controls="profile" role="tab" data-toggle="tab"><i class="fa fa-balance-scale" aria-hidden="true"></i><br/>Case Status</a></li>
+                                    <li role="presentation"><a href="#Tab3" aria-controls="Tab3" id="causelist" role="tab" data-toggle="tab"><i class="fa fa-file-text-o" aria-hidden="true"></i><br/>Causelist</a></li>                            
+                                    <li role="presentation"><a href="#Tab4" aria-controls="Tab4" role="tab" id="my_cases" data-toggle="tab"><span id="mycases_span_id"></span><br/>My Cases</a></li>                        </ul>
+                                <div class="row" id="state_dist_componant" style="background:#fff;padding:10px 0;margin-top:0px;border-bottom:1px solid #ccc;">                   
+                                    <div class="col-6">
+                                        <select class="wide-control selectpicker form-control default" id="state_code"></select>
+                                    </div>
+                                    <div class="col-6">
+                                        <select class="wide-control selectpicker form-control default" id="dist_code"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tab panes -->
+                            <div class="tab-content " style="margin-top:96px;">
+                                <div role="tabpanel" class="tab-pane active tab_panel" id="home" style="padding-top: env(safe-area-inset-top, 42px);">
+                                    <div class="pannel row">
+                                        <div class="col-md-3">
+                                            <form class="navbar-form" role="search">
+                                                <div class="input-group" style="padding:0px 15px;">
+                                                    <input style="z-index: 0;height:50px; font-size: 18px; font-weight: bold;" class="form-control" maxlength="16" minlength="16" placeholder="Search by CNR" name="srch-term" id="searchCNRId" type="text">
+                                                        <div class="input-group-append">
+                                                            <button id="searchBtnId" class="btn btn-default search-btn"  data-toggle="modal" data-target="#loading3" aria-label="Click to Search by CNR"><i class="fa fa-search" aria-hidden="true"></i><span class="sr-only">Click to Search by CNR</span></button>
+                                                        </div>
+                                                </div>
+                                                <div >
+                                                    <table border="0" width="100%" id="ID_tbl">
+                                                        <tr>
+                                                            <td width='40%' style="padding:0;border:none;"><hr style="margin:0;border-top: 1px solid #acacac;"></td>
+                                                            <td style='text-align:center;padding:0;border:none;color:#00BEFC' class="or_td">OR</td>
+                                                            <td width='40%' style="padding:0;border:none;"><hr style="margin:0;border-top: 1px solid #acacac;"></td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                                <div>                                               
+                                                    <button id="scan" class = "btn btn-default qrcodebtn" onclick="onScanButtonClick();return false;" aria-label="click to Scan QR Code"><i class="fa fa-qrcode" aria-hidden="true"></i>
+                                                    &nbsp;<span id='scan_txt'>Scan QR Code</span></button>
+                                                </div>                                            
+                                            </form>
+                                            <div style="border-bottom: 1px solid #ccc;">
+                                                <span class="howto"  tabindex="0">Services for High Courts and District Courts</span><br>
+                                                <span style="color: #A93226; font-weight: bold;display: none; padding: 2px; width: 100%;font-size: 0.8em;" id= "updateApp"  tabindex="0">Your app version is not compatible.Please update !</span>
+                                            </div>
+                                                <div class="container cnrhelpdiv">
+                                                    <ul class="list-group pull-left" style="padding-bottom: 25px;">
+                                                        <li class="list-group-item1">&nbsp;&nbsp;<i class="fa fa-question-circle" aria-hidden="true"></i>&nbsp;<span class="howto">How to</span></li>
+                                                        <li class="list-group-item">a. Use <span class="howto">Configure</span> option in side menu to manage your cases from majority of the <span class="howto">High Courts</span> or <span class="howto">District courts</span> or <span class="howto">Both</span>.</li>
+                                                        <li class="list-group-item">b. If you know the CNR Number of the Case, enter the 16 alphanumeric CNR Number without any – (hyphen) or space.</li>
+                                                        <li class="list-group-item">c. On Clicking the search button, the current status and entire history of the case will be shown.</li>
+                                                        <li class="list-group-item">d. If you don’t know the CNR number of the Case then it can be searched by other options like Case Registration Number, Party Name, Advocate Name etc. For this, click on the Case Status image</li>
+                                                        <li class="list-group-item">e. Click on Case Number to view current status, entire history and orders/judgments delivered in the case.</li>
+                                                        <li class="list-group-item">f. When you view the history of the case you have option to 'Save the Case' and can create your own portfolio of cases.</li>
+                                                        <li class="list-group-item">g. For Future reference,  your saved cases can be seen in My Cases</li>
+                                                    </ul>
+                                                </div>
+                                                    
+                                                    <div  class="text-center virDisc">
+ 														<a style="color:#A93226;margin-right:5px;font-size: 0.9rem;" id="newVersionAvailableId" href="#"></a> <br/>
+                                                        <a href="http://services.ecourts.gov.in/App/appdisclaimer.html" style = "color:#03A8D8;text-decoration:underline;font-size: 0.9rem;"  >Disclaimer</a>
+                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tab_panel" id="profile">
+                                    <div class="pannel"id="Case_Status_pannel">
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane tab_panel" id="Tab3">
+                                    <div class="pannel" id="Causelist_pannel" style="margin-top: 145px;padding-top: env(safe-area-inset-top, 42px);">
+                                    </div>
+                                </div>                                                     
+                                <div role="tabpanel" class="tab-pane tab_panel" id="Tab4">
+                                    <div class="pannel" id="My_Cases_pannel">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="footer"></div>
+                    </div>
+            </div>
+            <div class="modal" id="caseHistoryModal_hc" style="padding-right: 0px!important;text-align:center;"  tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">  
+                        <div class="modal-body" style="height:100vh;overflow-y: auto;padding:10px;">
+                            <div id="header_srchpage1_hc"></div>                        
+                                <div id = "historyData_hc">
+                                </div>
+                        </div>                    
+                    </div>
+                </div>
+            </div>
+            <div class="modal" id="viewBusinessModal"  tabindex="-1" role="dialog">
+                <div class="modal-dialog" style="margin:0px;background: rgba(255,255,255,1);" role="document">
+                    <div class="modal-content">    
+                        <div class="modal-body" style="min-height:100vh;">                          
+                            <div id="header_view_business"></div>
+                                <div id = "businessData">
+                                </div>
+                        </div>                    
+                    </div>
+                </div>
+            </div>
+            <div class="modal" id="writInfoModal"  tabindex="-1" role="dialog">
+                <div class="modal-dialog" style="margin:0px;background: rgba(255,255,255,1);" role="document">
+                    <div class="modal-content">  
+                        <div class="modal-body"  style="height:100vh;overflow-y: auto;">
+                            <div id="header_writ"></div>
+                                <div id = "writData">
+                                </div>
+                        </div>                    
+                    </div>
+                </div>
+            </div>
+                <script src="js/vendor/jquery-1.11.2.js"></script>
+                <script src="cordova.js"></script>
+                <script src="js/app.js"></script>
+                <script src="js/vendor/popper.min.js"></script>
+                <script src="js/vendor/bootstrap.min.js"></script>
+                <script src="js/vendor/jquery.mobile.custom.min.js"></script>
+                <script src="js/plugins.js"></script>
+                <script src="js/vendor/aes.js"></script>
+                <script src="js/vendor/pbkdf2.js"></script>
+                <script src="js/main_hc.js"></script>
+                <script src="js/index_hc.js"></script>
+                <script type="text/javascript" charset="utf-8"></script>
+                <script type="text/javascript" src="js/vendor/jquery.bootstrap-growl.min.js"></script>
+                <script src="js/vendor/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+                <script src="js/vendor/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>   
+                <script>
+                    $("#cnr").on("click", function (e) {
+                      $(".nav-tabs li").removeClass("active");
+                      $(".nav-tabs li:nth-child(1)").addClass("active");
+                      closeNav()
+                    });
+                    $("#Case_status").on("click", function (e) {
+                      $(".nav-tabs li").removeClass("active");
+                      $(".nav-tabs li:nth-child(2)").addClass("active");
+                      closeNav()
+                    });
+                    $("#causelist").on("click", function (e) {
+                      $(".nav-tabs li").removeClass("active");
+                      $(".nav-tabs li:nth-child(3)").addClass("active");
+                      closeNav()
+                    });    
+                    $("#my_cases").on("click", function (e) {        
+                      $(".nav-tabs li").removeClass("active");
+                      $(".nav-tabs li:nth-child(4)").addClass("active");
+                      closeNav()
+                    });
+                </script>
+        </body>
+    </html>

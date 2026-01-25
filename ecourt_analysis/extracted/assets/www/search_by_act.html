@@ -1,0 +1,85 @@
+<body>
+
+<div class="container text-left" style="margin-top:85px;padding-top: env(safe-area-inset-top, 43px);">
+    <div id="menubarClose">
+        <span class="text-black text-center page-title-main">
+            <h2 id="casestatus_heading1_label" class="d-inline">Case Status</h2>
+            :
+            <h3 id="search_by_act_label" class="d-inline">Search by Act Type</h3>
+        </span>
+        <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+        <form class="form-horizontal">
+            <fieldset>
+                <!-- Select Basic -->
+                <div class="form-group required">
+                    <label class="col-md-4 control-label font-weight-bold" for="court_code" id="court_complex_label">Select Court Complex</label>
+                        <div class="col-md-5">
+                            <select id="court_code" name="court_code" class="form-control">
+                                <option value="''">Select Court Complex</option>
+                            </select>
+                        </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label font-weight-bold" for="search_act" id="search_act_label">Search Act</label>
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <input id="search_act" name="search_act"  maxlength="100" type="text" placeholder="Search Act" class="form-control" ><span class="search_act" style="color:red;"></span>
+                                    <span class="input-group-btn">
+                                        <button id="searchButton" onclick="populateActTypes();return false;" class="btn btn-primary">Search</button>
+                                    </span>
+                            </div>
+                        </div>
+                </div>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label font-weight-bold" for="court_code" id="act_type_label"> Act Type</label>
+                        <div class="col-md-5">
+                            <select id="act_type" name=" act_type" class="form-control">
+                                <option value="''">Select Act Type</option>
+                            </select>
+                        </div>
+                </div>
+                <!-- Text input-->
+                <div class="form-group">
+                    <label class="col-md-4 control-label font-weight-bold" for="under_section" id="under_section_label">Under Section</label>
+                        <div class="col-md-5">
+                            <input id="under_section" name="under_section"  maxlength="15" type="text" placeholder="Under Section" class="form-control input-md"> <span class="under_section" style="color:red;"></span>
+                        </div>
+                </div>
+                <!-- Multiple Radios (inline) -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label d-none" for="radOpt1"></label>
+                        <div class="col-md-4">
+                            <label class="radio-inline " for="radOpt-0">
+                                <input type="radio" name="radOpt1" id="radOpt-0" value="Pending" checked="checked">
+                                <span id="rad1">Pending</span>
+                            </label>
+                            <label class="radio-inline" for="radOpt-1">
+                                <input type="radio" name="radOpt1" id="radOpt-1" value="Disposed">
+                                <span id="rad2">Disposed</span>
+                            </label>
+                        </div>
+                </div>
+                <div class="form-group text-center">
+                    <div class="col">
+                        <button type="button" id="goButton" class="btn btn-primary btn-lg twobtn">Go</button>
+                        <button id="resetButton" name="button2id" class="btn btn-black btn-lg twobtn">Reset</button>
+                    </div>
+                </div>
+                <div id="headers"  ></div>
+            </fieldset>
+        </form>
+        <div id="totalEstablishments"></div>
+        <div class="panel-group" id="accordion_search"></div>
+    </div>
+</div>
+<div id="footer"></div>
+<script>
+    document.addEventListener("deviceready", onDeviceReadSearchAct, false);
+    function onDeviceReadSearchAct() {
+        
+        $.getScript("js/search_by_act.js");
+    }
+</script>
+
+
+</body>

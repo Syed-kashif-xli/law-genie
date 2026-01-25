@@ -1,0 +1,98 @@
+<body>
+
+<div class="container text-left" style="margin-top:85px;padding-top: env(safe-area-inset-top, 43px);">
+    <div id="menubarClose">
+        <span class="text-black text-center page-title-main">
+            <h2 id="casestatus_heading1_label" class="d-inline">Case Status</h2>
+            :
+            <h3 id="search_by_application_label" class="d-inline">Search by Pre Trial Application</h3>
+        </span>
+        <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+        <form class="form-horizontal">
+            <fieldset>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label font-weight-bold" for="court_code" id="court_complex_label">Court Complex</label>
+                        <div class="col-md-5">
+                            <select id="court_code" name="court_code" class="form-control">
+                                <option value="''">Select Court Complex</option>
+                            </select>
+                        </div>
+                </div>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label font-weight-bold" for="police_station" id="police_station_label">Police Station</label>
+                        <div class="col-md-5">
+                            <select id="police_station" name=" police_station" class="form-control">
+                                <option value="''">Select Police Station</option>
+                            </select>
+                        </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-md-4 control-label  font-weight-bold " for="fir_type" id="fir_type_label">Fir Type</label>
+                        <div class="col-md-5">
+                            <select id="fir_type" name=" fir_type" class="form-control">
+                                <option value="">Select Fir Type</option>
+                                <option value="1">I</option>
+                                <option value="2">II</option>
+                                <option value="3">III</option>
+                            </select>
+                        </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label font-weight-bold  " for="fir_no" id="fir_no_label">FIR Number</label>
+                        <div class="col-md-5">
+                            <input id="fir_no" name="fir_no" maxlength="15" type="text" placeholder="Enter FIR Number" class="form-control input-md"><span class="fir_number_val" style="color:red;"></span>
+                        </div>
+                </div>
+                <!-- Text input-->
+                <div class="form-group">
+                    <label class="col-md-4 control-label font-weight-bold  " for="search_case_no" id="year_label">Year</label>
+                        <div class="col-md-5">
+                            <input id="rgyear" maxlength="4" name="search_case_no" type="number" placeholder="Enter year" class="form-control input-md"><span class="year_error" style="color:red;"></span>
+                        </div>
+                </div>
+                <!-- Multiple Radios (inline) -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label d-none" for="radOpt1"></label>
+                        <div class="col-md-4">
+                            <label class="radio-inline   " for="radOpt-0">
+                                <input type="radio" name="radOpt1" id="radOpt-0" value="R" checked="checked">
+                                <span id="remand">Remand</span>
+                            </label>
+                            <label class="radio-inline   " for="radOpt-1">
+                                <input type="radio" name="radOpt1" id="radOpt-1" value="B">
+                                <span id="bail">Bail</span>
+                            </label>
+                            <label class="radio-inline   " for="radOpt-2">
+                                <input type="radio" name="radOpt1" id="radOpt-2" value="A">
+                                <span id="applic">Application</span>
+                            </label>
+                        </div>
+                </div>
+                <!-- Button (Double) -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label d-none" for="button1id"></label>
+                        <div class="col-md-8">
+                            <button type="button" id="goButton" class="btn btn-primary btn-lg twobtn">Go</button>
+                            <button id="resetButton" name="button2id" class="btn btn-black btn-lg   twobtn">Reset</button>
+                        </div>
+                </div>
+                <div id="headers"  ></div>
+            </fieldset>
+        </form>
+        <div id="totalEstablishments"></div>
+        <div class="panel-group" id="accordion_search"></div>
+        <div class="panel-group" id="preTrialOrder"></div>
+        <div id="footer"></div>
+    </div>
+</div>
+<script>
+    document.addEventListener("deviceready", onDeviceReadySearchApplication, false);
+    function onDeviceReadySearchApplication() {
+        
+        $.getScript("js/search_by_application.js");
+    }
+</script>
+
+
+</body>
+    

@@ -1,0 +1,102 @@
+<body>
+    <div class="container text-left" style="margin-top:85px;">
+        <div id="menubarClose">
+            <span class="text-black text-center page-title-main">
+                <h2 class="d-inline">Case Status</h2> : <h3 class="d-inline">Search by Advocate Name</h3>
+            </span>
+            <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+            <h4 id = "benchName" class="text-black text-center" style="font-weight:bold;"></h4>
+        <form class="form-horizontal" name="parentForm" id="myForm">
+            <fieldset>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label font-weight-bold " for="radOpt">Search By</label>
+                        <div class="col-md-4" id="searchByFormId">
+                            <fieldset>
+                            <label class="radio-inline  " for="radOpt-1">
+                                <input type="radio" name="radOpt" id="radOpt-1" value="1" checked="checked">
+                                    Advocate Name
+                            </label>
+                            <br>
+                            <label class="radio-inline  " for="radOpt-2">
+                                <input type="radio" name="radOpt" id="radOpt-2" value="2">
+                                    Bar Code
+                            </label>
+                            <br>
+                            <label class="radio-inline  " for="radOpt-3">
+                                <input type="radio" name="radOpt" id="radOpt-3" value="3">
+                                    Date Case List
+                            </label>
+                        </fieldset>
+                        </div>
+                </div>
+                <div class="form-group required" id="advocateBarCodeId">
+                    <label class="col-md-4 control-label font-weight-bold " for="advocateBarCode">Advocate Bar Code:</label>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input class="form-control" id="statecode" type="text" name="statecode" maxlength="3" size="10" placeholder="Enter Statecode">
+                                <input class="form-control" id="barcode" type="number" name="barcode" maxlength="8" size="5" placeholder="Enter Barcode">
+                                <input class="form-control" id="year" type="number" name="year" maxlength="4" size="5" placeholder="Enter Year">
+                            </div>
+                            <span class="statecode d-block" style="color:red;"></span>
+                            <span class="barcode d-block" style="color:red;"></span>
+                            <span class="year d-block" style="color:red;"></span>
+                        </div>
+                </div>
+                <div class="form-group required" id="caseListDateId">
+                    <label class="col-md-4 control-label  font-weight-bold" for="pickyDate">Case List Date:</label>
+                        <div class="col-md-4" id="testDIV">
+                            <input class='form-control'  type="text" id="pickyDate" placeholder="Enter Case List Date"/> 
+                        </div> 
+                </div>
+                <!-- Text input-->
+                <div class="form-group required" id="enterAdvocateNameId">
+                    <label class="col-md-4 control-label font-weight-bold " for="advocate">Advocate</label>
+                        <div class="col-md-5">
+                            <input id="advocate" name="advocate" type="text" placeholder="Enter Advocate" class="form-control input-md">
+                        </div>
+                </div>
+                <!-- Multiple Radios (inline) -->
+                <div class="form-group" id="pendingDisposedId">
+                    <label class="col-md-4 control-label d-none" for="radOpt1"></label>
+                        <div class="col-md-4">
+                            <fieldset>
+                            <label class="radio-inline" for="radOpt-0">
+                                <input type="radio" name="radOpt1" id="radOpt-0" value="Pending" checked="checked">
+                                    Pending
+                            </label>
+                            <label class="radio-inline" for="radOpt-1">
+                                <input type="radio" name="radOpt1" id="radOpt-1" value="Disposed">
+                                    Disposed
+                            </label>
+                            <label class="radio-inline" for="radOpt-2">
+                                <input type="radio" name="radOpt1" id="radOpt-2" value="Both">
+                                    Both
+                            </label>
+                        </fieldset>
+                        </div>
+                </div>
+                <!-- Button (Double) -->
+                <div class="form-group text-center">
+                    <label class="col-md-4 control-label d-none" for="button1id"></label>
+                        <div class="col-md-8">
+                            <button type="button" id="goButton" class="btn btn-primary btn-lg twobtn">Go</button>
+                            <button id="resetButton" name="button2id" class="btn btn-black btn-lg   twobtn">Reset</button>
+                         </div>
+                </div>
+                <div id="advocateHeaders"  ></div>
+            </fieldset>
+        </form>
+        <div class="panel-group" id="accordion_search"></div>
+        <div id="footer"></div>
+        </div>
+    </div>
+        
+    <script>
+            document.addEventListener("deviceready", onDeviceReadySearchAdvHC, false);
+            function onDeviceReadySearchAdvHC() {
+                             
+                $.getScript("js/search_by_advocate_name_hc.js");
+            }
+        </script>
+</body>
+    

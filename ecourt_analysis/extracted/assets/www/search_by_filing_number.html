@@ -1,0 +1,61 @@
+<body>
+
+<div class="container text-left" style="margin-top:85px;padding-top: env(safe-area-inset-top, 43px);">
+    <div id="menubarClose">
+        <span class="text-black text-center page-title-main">
+            <h2 id="casestatus_heading1_label" class="d-inline">Case Status</h2>
+            :
+            <h3 id="search_by_filing_no_label" class="d-inline">Search by Filing Number</h3>
+        </span>
+        <span class='sr-only'>Fields marked with red color asterisk (*) are compulsory</span>
+        <form class="form-horizontal">
+            <fieldset>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label  font-weight-bold   " for="court_code" id="court_complex_label">Court Complex</label>
+                        <div class="col-md-5">
+                            <select id="court_code" name="court_code" class="form-control">
+                                <option value="''">Select Court Complex</option>
+                            </select>
+                        </div>
+                </div>
+                <!-- Text input-->
+                <div class="form-group required">
+                    <label class="col-md-4 control-label  font-weight-bold   " for="search_filing_no" id="filing_number_label">Filing Number</label>
+                        <div class="col-md-5">
+                            <input id="search_filing_no" name="search_filing_no" type="number" placeholder="Enter Filing Number" class="form-control input-md">
+                            <span class="filing_number_val" style="color:red;"></span>
+                        </div>
+                </div>
+                <div class="form-group required">
+                    <label class="col-md-4 control-label  font-weight-bold   " for="year" id="year_label">Year</label>
+                        <div class="col-md-5">
+                            <input id="year" name="year" type="number" placeholder="Enter Year" class="form-control input-md">
+                            <span class="year" style="color:red;"></span>
+                        </div>
+                </div>
+                <!-- Button (Double) -->
+                <div class="form-group text-center">
+                    <label class="col-md-4 control-label d-none" for="button1id"></label>
+                        <div class="col-md-8">
+                            <button type="button" id="goButton" class="btn btn-primary btn-lg twobtn">Go</button>
+                            <button id="resetButton" name="button2id" class="btn btn-black btn-lg   twobtn">Reset</button>
+                        </div>
+                </div>
+                <div id="headers"  ></div>
+            </fieldset>
+        </form>
+        <div class="panel-group" id="accordion_search"></div>
+        <div id="footer"></div>
+    </div>
+</div>
+<script>
+    
+    document.addEventListener("deviceready", onDeviceReadySearchFilingNo, false);
+    function onDeviceReadySearchFilingNo(){
+        
+        $.getScript("js/search_by_filing_number.js");
+    }
+    </script>
+
+
+</body>

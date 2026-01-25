@@ -1,0 +1,79 @@
+    <div class="container csmargintop">
+        <div class="row case-status-menu row1">
+            <div class="col-6 text-centre case-status-menu">
+                <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn case_number">
+                    <img src="images/case-status-icon1.png" width="60"/><br/>
+                    <span class="text-black">Case Number</span>			
+                </button>
+            </div>
+            <div class="col-6 text-centre case-status-menu">
+                <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn party_name">
+                    <img src="images/case-status-icon2.png"  width="60"/><br/>
+                    <span class="text-black">Party</span>			
+                </button>
+            </div>
+        </div>
+        <div class="row case-status-menu">
+            <div class="col-6 text-centre case-status-menu">
+                <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn filling_number">
+                    <img src="images/case-status-icon3.png"  width="60"/><br/>
+                    <span class="text-black">Filing Number</span>			
+                </button>
+            </div>
+            <div class="col-6 text-centre case-status-menu">
+                <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn fir_number">
+                    <img src="images/case-status-icon4.png"  width="60"/><br/>
+                    <span class="text-black">FIR Number</span>			
+                </button>
+            </div>
+        </div>
+        <div class="row case-status-menu">
+            <div class="col-6 text-centre case-status-menu">
+                <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn advocate_name">
+                    <img src="images/case-status-icon5.png"  width="60"/><br/>
+                    <span class="text-black">Advocate</span>			
+                </button>
+            </div>
+            <div class="col-6 text-centre case-status-menu">
+                <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn act">
+                    <img src="images/case-status-icon6.png"  width="60"/><br/>
+                    <span class="text-black">Act</span>			
+                </button>
+            </div>
+        </div>
+        <div class="row case-status-menu">
+            <div class="col-6 text-centre case-status-menu">
+                <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn case_type">
+                    <img src="images/case-status-icon7.png"  width="60"/><br/>
+                    <span class="text-black">Case Type</span>			
+                </button>
+            </div>
+            <div class="col-6 text-centre case-status-menu">
+                <button class="btn btn-transparent btn-lg text-center btn-block csmenu-btn caveat">
+                    <img src="images/caveat-icon8.png"  width="60"/><br/>
+                    <span class="text-black">Caveat</span>			
+                </button>
+            </div>
+            <div class="col-6 text-centre">
+            </div>
+        </div>
+    </div>
+    <div class="modal " id="searchPageModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body" style="height:100vh;overflow-y:auto;">
+                <div id="header_srchpage"></div>
+                <div id = "searchPageData">
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <script src="js/case_status_hc.js"></script> -->
+    <script>
+        document.addEventListener("deviceready", onDeviceReadyCaseStatusHC, false);
+            function onDeviceReadyCaseStatusHC() {
+               
+                $.getScript("js/case_status_hc.js");
+            }
+    </script>
