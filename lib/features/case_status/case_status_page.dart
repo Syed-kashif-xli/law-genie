@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 
 import '../../services/ecourts_service.dart';
 import '../case_finder/models/legal_case.dart';
+import '../shared/pdf_viewer_page.dart';
 
 class CaseStatusPage extends StatefulWidget {
   const CaseStatusPage({super.key});
@@ -190,6 +191,10 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
                             _buildDetailRow(
                                 'Advocate', _result?.respondentAdvocate),
                         ]),
+                        if (_result?.finalOrders != null &&
+                            _result!.finalOrders!.isNotEmpty)
+                          _buildOrdersSection(
+                              'FINAL ORDERS', _result!.finalOrders!),
                         if (_result?.hearingHistory != null &&
                             _result!.hearingHistory!.isNotEmpty)
                           _buildHistorySection(),
@@ -197,10 +202,6 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
                             _result!.interimOrders!.isNotEmpty)
                           _buildOrdersSection(
                               'INTERIM ORDERS', _result!.interimOrders!),
-                        if (_result?.finalOrders != null &&
-                            _result!.finalOrders!.isNotEmpty)
-                          _buildOrdersSection(
-                              'FINAL ORDERS', _result!.finalOrders!),
                         if (_result?.transfers != null &&
                             _result!.transfers!.isNotEmpty)
                           _buildTransfersSection(),
@@ -597,8 +598,16 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
                     icon: const Icon(Iconsax.document_download,
                         color: Color(0xFF00E5FF)),
                     onPressed: () {
-                      // Handled by user request for professional PDF experience later
-                      _showSnackBar('Opening Order PDF...');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PdfViewerPage(
+                            url: o.pdfUrl!,
+                            title: 'Order: ${o.orderDate}',
+                            headers: _ecourtsService.getStandardHeaders(),
+                          ),
+                        ),
+                      );
                     },
                   ),
               ],

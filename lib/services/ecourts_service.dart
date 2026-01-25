@@ -11,6 +11,22 @@ class EcourtsService {
   final String _pkgName = 'in.gov.ecourts.eCourtsServices';
   final String _defaultUid = '324456';
 
+  Map<String, String> getStandardHeaders() {
+    final headers = {
+      'User-Agent':
+          'Dalvik/2.1.0 (Linux; U; Android 11; Pixel 5 Build/RD2A.211001.002)',
+    };
+    if (_sessionCookie != null) {
+      headers['Cookie'] = _sessionCookie!;
+    }
+    if (_jwtToken != null) {
+      final encryptedAuthToken =
+          EcourtEncryptionService.encryptRequest(_jwtToken);
+      headers['Authorization'] = 'Bearer $encryptedAuthToken';
+    }
+    return headers;
+  }
+
   Future<bool> _ensureAuthenticated() async {
     if (_jwtToken != null) return true;
 

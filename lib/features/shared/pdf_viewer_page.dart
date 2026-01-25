@@ -2,15 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:open_file/open_file.dart';
 
 class PdfViewerPage extends StatefulWidget {
   final String url;
   final String title;
+  final Map<String, String>? headers;
 
   const PdfViewerPage({
     super.key,
     required this.url,
     required this.title,
+    this.headers,
   });
 
   @override
@@ -32,6 +38,11 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.download_rounded),
+            onPressed: () => _downloadPdf(context),
+            tooltip: 'Download PDF',
+          ),
+          IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
               // ignore: deprecated_member_use
@@ -47,6 +58,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         pageFling: false,
       ).cachedFromUrl(
         widget.url,
+        headers: widget.headers,
         placeholder: (progress) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -71,5 +83,47 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _downloadPdf(BuildContext context) async {
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Downloading PDF...'),
+            duration: Duration(seconds: 2)),
+      );
+
+      final response = await http.get(
+        Uri.parse(widget.url),
+        headers: widget.headers,
+      );
+
+      if (response.statusCode == 200) {
+        final dir = await getApplicationDocumentsDirectory();
+        final fileName = 'Order_${DateTime.now().millisecondsSinceEpoch}.pdf';
+        final file = File('${dir.path}/$fileName');
+        await file.writeAsBytes(response.bodyBytes);
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Download complete!'),
+            action: SnackBarAction(
+              label: 'OPEN',
+              onPressed: () => OpenFile.open(file.path),
+            ),
+          ),
+        );
+      } else {
+        throw Exception('Failed to download PDF: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Error downloading PDF: $e'),
+            backgroundColor: Colors.red),
+      );
+    }
   }
 }
