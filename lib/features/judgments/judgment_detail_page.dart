@@ -70,9 +70,10 @@ class _JudgmentDetailPageState extends State<JudgmentDetailPage> {
             },
           ),
           IconButton(
-            icon: const Icon(Iconsax.export, color: Colors.white),
+            icon: const Icon(Icons.share),
             onPressed: () {
               if (widget.judgment.url != null) {
+                // ignore: deprecated_member_use
                 Share.share(
                     'Read this judgment on Law Genie: ${widget.judgment.title}\n\n${widget.judgment.url!}');
               }

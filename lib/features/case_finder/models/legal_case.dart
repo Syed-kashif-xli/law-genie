@@ -35,6 +35,15 @@ class LegalCase {
   final List<OrderRecord>? finalOrders;
   final List<TransferRecord>? transfers;
 
+  // Additional fields requested
+  final String? filingDate;
+  final String? filingNumber;
+  final String? natureOfDisposal;
+  final String? courtNumber;
+  final String? judgeDesignation;
+  final String? processes;
+  final String? subordinateCourtInfo;
+
   LegalCase({
     required this.id,
     required this.title,
@@ -64,6 +73,13 @@ class LegalCase {
     this.interimOrders,
     this.finalOrders,
     this.transfers,
+    this.filingDate,
+    this.filingNumber,
+    this.natureOfDisposal,
+    this.courtNumber,
+    this.judgeDesignation,
+    this.processes,
+    this.subordinateCourtInfo,
   });
 
   factory LegalCase.fromJson(Map<String, dynamic> json) {
@@ -116,6 +132,13 @@ class LegalCase {
               .map((e) => TransferRecord.fromJson(e))
               .toList()
           : null,
+      filingDate: json['filingDate'],
+      filingNumber: json['filingNumber'],
+      natureOfDisposal: json['natureOfDisposal'],
+      courtNumber: json['courtNumber'],
+      judgeDesignation: json['judgeDesignation'],
+      processes: json['processes'],
+      subordinateCourtInfo: json['subordinateCourtInfo'],
     );
   }
 
@@ -149,6 +172,13 @@ class LegalCase {
       'interimOrders': interimOrders?.map((e) => e.toJson()).toList(),
       'finalOrders': finalOrders?.map((e) => e.toJson()).toList(),
       'transfers': transfers?.map((e) => e.toJson()).toList(),
+      'filingDate': filingDate,
+      'filingNumber': filingNumber,
+      'natureOfDisposal': natureOfDisposal,
+      'courtNumber': courtNumber,
+      'judgeDesignation': judgeDesignation,
+      'processes': processes,
+      'subordinateCourtInfo': subordinateCourtInfo,
     };
   }
 
@@ -171,12 +201,14 @@ class HearingRecord {
   final String businessOnDate;
   final String hearingDate;
   final String purpose;
+  final Map<String, String>? businessParams;
 
   HearingRecord({
     required this.judge,
     required this.businessOnDate,
     required this.hearingDate,
     required this.purpose,
+    this.businessParams,
   });
 
   factory HearingRecord.fromJson(Map<String, dynamic> json) => HearingRecord(
@@ -184,6 +216,9 @@ class HearingRecord {
         businessOnDate: json['businessOnDate'],
         hearingDate: json['hearingDate'],
         purpose: json['purpose'],
+        businessParams: json['businessParams'] != null
+            ? Map<String, String>.from(json['businessParams'])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -191,6 +226,7 @@ class HearingRecord {
         'businessOnDate': businessOnDate,
         'hearingDate': hearingDate,
         'purpose': purpose,
+        'businessParams': businessParams,
       };
 }
 

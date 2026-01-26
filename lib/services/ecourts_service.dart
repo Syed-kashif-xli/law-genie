@@ -171,6 +171,8 @@ class EcourtsService {
     if (historyResponse.statusCode == 200) {
       final historyDecrypted =
           EcourtEncryptionService.decryptResponse(historyResponse.body);
+      // ignore: avoid_print
+      print('DEBUG: Raw History Response: $historyDecrypted');
 
       if (historyDecrypted.trim().isNotEmpty) {
         final historyData = json.decode(historyDecrypted);
@@ -182,6 +184,71 @@ class EcourtsService {
     return null;
   }
 
+  Future<String?> getBusinessDetails(Map<String, String> params) async {
+    try {
+      if (!await _ensureAuthenticated()) return null;
+
+      final encryptedAuthToken =
+          EcourtEncryptionService.encryptRequest(_jwtToken);
+      final Map<String, String> authHeader = {
+        'Authorization': 'Bearer $encryptedAuthToken'
+      };
+
+      if (_sessionCookie != null) {
+        authHeader['Cookie'] = _sessionCookie!;
+      }
+
+      final userAgent = {
+        'User-Agent':
+            'Dalvik/2.1.0 (Linux; U; Android 11; Pixel 5 Build/RD2A.211001.002)'
+      };
+
+      final Map<String, dynamic> businessParams = {
+        "court_code": params['court_code'],
+        "dist_code": params['dist_code'],
+        "nextdate1": params['nextdate1'],
+        "case_number1": params['case_number1'],
+        "state_code": params['state_code'],
+        "disposal_flag": params['disposal_flag'],
+        "businessDate": params['businessDate'],
+        "court_no": params['court_no'],
+        "language_flag": "english",
+        "bilingual_flag": "0"
+      };
+
+      final encryptedPayload =
+          EcourtEncryptionService.encryptRequest(businessParams);
+      final encodedPayload = Uri.encodeComponent(encryptedPayload);
+
+      final url = '${_baseUrl}s_show_business.php?params=$encodedPayload';
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {...userAgent, ...authHeader},
+      );
+
+      if (response.statusCode == 200) {
+        final decrypted =
+            EcourtEncryptionService.decryptResponse(response.body);
+        if (decrypted.trim().isNotEmpty) {
+          final data = json.decode(decrypted);
+          if (data != null && data['viewBusiness'] != null) {
+            final String business = data['viewBusiness'].toString();
+            if (business.toLowerCase().contains('no record found') ||
+                business.trim().isEmpty) {
+              return null;
+            }
+            return business;
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching business details: $e');
+      return null;
+    }
+  }
+
   LegalCase? _parseOfficialResponse(Map<String, dynamic> history, String cnr) {
     try {
       String petitioner = history['pet_name'] ?? 'Unknown';
@@ -189,6 +256,9 @@ class EcourtsService {
       String title = '$petitioner vs $respondent';
 
       String regNo = '${history['reg_no']}/${history['reg_year']}';
+      String filNo = history['fil_no'] != null && history['fil_year'] != null
+          ? '${history['fil_no']}/${history['fil_year']}'
+          : 'N/A';
       String dtRegis = history['dt_regis'] ?? 'N/A';
       String dateFirstList = history['date_first_list'] ?? 'N/A';
       String dateNextList = history['date_next_list'] ?? 'Not Scheduled';
@@ -260,6 +330,15 @@ class EcourtsService {
         transfers: history['transfer'] != null
             ? _parseTransfers(history['transfer'])
             : null,
+        filingDate: history['date_of_filing'] ?? 'N/A',
+        filingNumber: filNo,
+        natureOfDisposal: history['disp_nature']?.toString() ?? 'N/A',
+        courtNumber: history['court_no']?.toString() ?? 'N/A',
+        judgeDesignation: history['desgname'] ?? 'N/A',
+        processes: history['processes']?.toString() ??
+            history['fir_details']
+                ?.toString(), // Use fir_details as fallback for processes if available
+        subordinateCourtInfo: _formatSubordinateCourtInfo(history),
       );
     } catch (e) {
       debugPrint('Error parsing response: $e');
@@ -303,6 +382,27 @@ class EcourtsService {
     final rows = html.split(RegExp(r'<tr>|<\/tr>'));
     for (var row in rows) {
       if (!row.contains('<td>') && !row.contains('<td')) continue;
+
+      // Extract viewBusiness params if exists: onclick=viewBusiness('1','50',...)
+      Map<String, String>? businessParams;
+      final businessMatch = RegExp(r"viewBusiness\(([^)]+)\)").firstMatch(row);
+      if (businessMatch != null) {
+        final args = businessMatch.group(1)!.replaceAll("'", "").split(',');
+        if (args.length >= 8) {
+          businessParams = {
+            'court_code': args[0].trim(),
+            'dist_code': args[1].trim(),
+            'nextdate1': args[2].trim(),
+            'case_number1': args[3].trim(),
+            'state_code': args[4].trim(),
+            'disposal_flag': args[5].trim(),
+            'businessDate': args[6].trim(),
+            'court_no': args[7].trim(),
+            'cnr': args.length > 8 ? args[8].trim() : '',
+          };
+        }
+      }
+
       final cols = row.split(RegExp(r'<td>|<\/td>|<td[^>]*>'));
       final cleanCols = cols
           .map((e) => stripHtml(e))
@@ -315,6 +415,7 @@ class EcourtsService {
           businessOnDate: cleanCols[1],
           hearingDate: cleanCols[2],
           purpose: cleanCols[3],
+          businessParams: businessParams,
         ));
       }
     }
@@ -375,5 +476,90 @@ class EcourtsService {
       }
     }
     return records;
+  }
+
+  String? _formatSubordinateCourtInfo(Map<String, dynamic> history) {
+    final strFromApi = history['subordinateCourtInfoStr']?.toString();
+
+    if (strFromApi != null && strFromApi.isNotEmpty && strFromApi != 'null') {
+      if (strFromApi.contains('^')) {
+        final parts = strFromApi.split('^');
+        if (parts.length >= 3) {
+          var courtName = parts[2].trim();
+          var caseNo = parts[1].trim();
+          var decisionDtRaw = parts[0].trim();
+          var formattedDate = 'N/A';
+
+          if (decisionDtRaw.isNotEmpty && decisionDtRaw != '0') {
+            final dateParts = decisionDtRaw.split('-');
+            if (dateParts.length == 3) {
+              formattedDate = '${dateParts[2]}-${dateParts[1]}-${dateParts[0]}';
+            } else {
+              formattedDate = decisionDtRaw;
+            }
+          }
+
+          return '''
+            <table border="0" class="table tbl-result">
+              <tbody>
+                <tr>
+                  <td width="50%"><b>Court Number and Name</b></td>
+                  <td width="50%">${courtName.isEmpty ? 'N/A' : courtName}</td>
+                </tr>
+                <tr>
+                  <td width="50%"><b>Case Number and Year</b></td>
+                  <td width="50%">${caseNo.isEmpty ? 'N/A' : caseNo}</td>
+                </tr>
+                <tr>
+                  <td width="50%"><b>Case Decision Date</b></td>
+                  <td width="50%">$formattedDate</td>
+                </tr>
+              </tbody>
+            </table>
+          ''';
+        }
+      }
+      // If we already have a complex HTML from API, use it
+      if (strFromApi.contains('<table')) {
+        return strFromApi;
+      }
+    }
+
+    // Otherwise, build a structured table from raw fields
+    var courtName = history['lower_court_name']?.toString() ??
+        history['lower_court']?.toString() ??
+        '';
+    var caseNo = history['lower_court_case_no']?.toString() ??
+        history['case_no']?.toString() ??
+        '';
+    var decisionDate = history['lower_court_dec_dt']?.toString() ?? '';
+
+    if (decisionDate == '0') decisionDate = 'N/A';
+    if (courtName.isEmpty) courtName = 'N/A';
+    if (caseNo.isEmpty) caseNo = 'N/A';
+
+    // If everything is N/A, fall back to null
+    if (courtName == 'N/A' && caseNo == 'N/A' && decisionDate == 'N/A') {
+      return null;
+    }
+
+    return '''
+      <table border="0" class="table tbl-result">
+        <tbody>
+          <tr>
+            <td width="50%"><b>Court Number and Name</b></td>
+            <td width="50%">$courtName</td>
+          </tr>
+          <tr>
+            <td width="50%"><b>Case Number and Year</b></td>
+            <td width="50%">$caseNo</td>
+          </tr>
+          <tr>
+            <td width="50%"><b>Case Decision Date</b></td>
+            <td width="50%">$decisionDate</td>
+          </tr>
+        </tbody>
+      </table>
+    ''';
   }
 }

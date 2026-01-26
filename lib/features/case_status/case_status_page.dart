@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
@@ -5,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import '../../services/ecourts_service.dart';
 import '../case_finder/models/legal_case.dart';
 import '../shared/pdf_viewer_page.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class CaseStatusPage extends StatefulWidget {
   const CaseStatusPage({super.key});
@@ -143,6 +145,9 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
                         _buildDetailSection('CASE DETAILS', [
                           _buildDetailRow('Case Type', _result?.caseType),
                           _buildDetailRow(
+                              'Filing Number', _result?.filingNumber),
+                          _buildDetailRow('Filing Date', _result?.filingDate),
+                          _buildDetailRow(
                               'Registration No', _result?.registrationNumber),
                           _buildDetailRow(
                               'Registration Date', _result?.registrationDate),
@@ -159,6 +164,10 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
                                   ? _ecourtsService
                                       .stripHtml(_result!.caseStage!)
                                   : 'N/A'),
+                          _buildDetailRow(
+                              'Nature of Disposal', _result?.natureOfDisposal),
+                          _buildDetailRow('Court Number', _result?.courtNumber),
+                          _buildDetailRow('Judge', _result?.judgeDesignation),
                           _buildDetailRow('Court', _result?.court),
                         ]),
                         if (_result?.acts != null && _result!.acts!.isNotEmpty)
@@ -205,6 +214,83 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
                         if (_result?.transfers != null &&
                             _result!.transfers!.isNotEmpty)
                           _buildTransfersSection(),
+                        if (_result?.processes != null &&
+                            _result!.processes!.isNotEmpty)
+                          _buildDetailSection('PROCESSES', [
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: HtmlWidget(
+                                _result!.processes!,
+                                customStylesBuilder: (element) {
+                                  if (element.localName == 'table') {
+                                    return {
+                                      'border-collapse': 'collapse',
+                                      'width': '100%',
+                                      'background-color': '#1A1440',
+                                      'border': '1px solid #33E5FF',
+                                    };
+                                  }
+                                  if (element.localName == 'th' ||
+                                      element.localName == 'b') {
+                                    return {
+                                      'background-color': '#2A2060',
+                                      'color': '#00E5FF',
+                                      'padding': '10px',
+                                      'font-weight': 'bold',
+                                    };
+                                  }
+                                  if (element.localName == 'td') {
+                                    return {
+                                      'border': '1px solid #ffffff1A',
+                                      'padding': '10px',
+                                      'color': '#FFFFFFE6',
+                                    };
+                                  }
+                                  return null;
+                                },
+                                textStyle: GoogleFonts.outfit(fontSize: 13),
+                              ),
+                            ),
+                          ]),
+                        if (_result?.subordinateCourtInfo != null &&
+                            _result!.subordinateCourtInfo!.isNotEmpty &&
+                            _result!.subordinateCourtInfo != 'null')
+                          _buildDetailSection('SUBORDINATE COURT INFORMATION', [
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: HtmlWidget(
+                                _result!.subordinateCourtInfo!,
+                                customStylesBuilder: (element) {
+                                  if (element.localName == 'table') {
+                                    return {
+                                      'border-collapse': 'collapse',
+                                      'width': '100%',
+                                      'background-color': '#1A1440',
+                                      'border': '1px solid #33E5FF',
+                                    };
+                                  }
+                                  if (element.localName == 'th' ||
+                                      element.localName == 'b') {
+                                    return {
+                                      'background-color': '#2A2060',
+                                      'color': '#00E5FF',
+                                      'padding': '10px',
+                                      'font-weight': 'bold',
+                                    };
+                                  }
+                                  if (element.localName == 'td') {
+                                    return {
+                                      'border': '1px solid #ffffff1A',
+                                      'padding': '10px',
+                                      'color': '#FFFFFFE6',
+                                    };
+                                  }
+                                  return null;
+                                },
+                                textStyle: GoogleFonts.outfit(fontSize: 13),
+                              ),
+                            ),
+                          ]),
                         const SizedBox(height: 20),
                         _buildNewSearchButton(),
                       ],
@@ -343,7 +429,8 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
         border: Border.all(color: const Color(0xFF00E5FF), width: 1.5),
         boxShadow: [
           BoxShadow(
-              color: const Color(0xFF00E5FF).withOpacity(0.2), blurRadius: 10),
+              color: const Color(0xFF00E5FF).withValues(alpha: 0.2),
+              blurRadius: 10),
         ],
       ),
       child: TextField(
@@ -521,50 +608,228 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
 
   Widget _buildHistorySection() {
     return _buildDetailSection('CASE HISTORY', [
-      ..._result!.hearingHistory!.map((h) => Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.black.withAlpha(30),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(h.hearingDate,
-                        style: GoogleFonts.outfit(
-                            color: const Color(0xFF00E5FF),
-                            fontWeight: FontWeight.bold)),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00E5FF).withAlpha(50),
-                        borderRadius: BorderRadius.circular(4),
+      ..._result!.hearingHistory!.map((h) => GestureDetector(
+            onTap:
+                h.businessParams != null ? () => _showBusinessDetails(h) : null,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(30),
+                borderRadius: BorderRadius.circular(12),
+                border: h.businessParams != null
+                    ? Border.all(color: const Color(0xFF00E5FF).withAlpha(50))
+                    : null,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(h.hearingDate,
+                          style: GoogleFonts.outfit(
+                              color: const Color(0xFF00E5FF),
+                              fontWeight: FontWeight.bold)),
+                      if (h.businessParams != null)
+                        const Icon(Icons.touch_app,
+                            color: Color(0xFF00E5FF), size: 14),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF00E5FF).withAlpha(50),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text('Business: ${h.businessOnDate}',
+                            style: GoogleFonts.poppins(
+                                color: Colors.white70, fontSize: 10)),
                       ),
-                      child: Text('Business: ${h.businessOnDate}',
-                          style: GoogleFonts.poppins(
-                              color: Colors.white70, fontSize: 10)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(h.judge,
-                    style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600)),
-                const SizedBox(height: 4),
-                Text('Purpose: ${h.purpose}',
-                    style: GoogleFonts.poppins(
-                        color: Colors.white54, fontSize: 12)),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(h.judge,
+                      style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text('Purpose: ${h.purpose}',
+                      style: GoogleFonts.poppins(
+                          color: Colors.white54, fontSize: 12)),
+                ],
+              ),
             ),
           )),
     ]);
+  }
+
+  void _showBusinessDetails(HearingRecord record) async {
+    if (record.businessParams == null) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF151038).withAlpha(230),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                  color: const Color(0xFF00E5FF).withAlpha(80), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00E5FF).withAlpha(30),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.white.withAlpha(20)),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'BUSINESS DETAILS',
+                        style: GoogleFonts.audiowide(
+                          color: const Color(0xFF00E5FF),
+                          fontSize: 18,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white70),
+                        onPressed: () => Navigator.pop(context),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                ),
+                // Content
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(20),
+                    child: FutureBuilder<String?>(
+                      future: _ecourtsService
+                          .getBusinessDetails(record.businessParams!),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: 40),
+                                const CircularProgressIndicator(
+                                  color: Color(0xFF00E5FF),
+                                  strokeWidth: 3,
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  'FETCHING RECORDS...',
+                                  style: GoogleFonts.outfit(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                    letterSpacing: 2,
+                                  ),
+                                ),
+                                const SizedBox(height: 40),
+                              ],
+                            ),
+                          );
+                        }
+
+                        if (snapshot.hasError ||
+                            snapshot.data == null ||
+                            snapshot.data!.isEmpty) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(40.0),
+                              child: Column(
+                                children: [
+                                  const Icon(Icons.info_outline,
+                                      color: Colors.amber, size: 48),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No business details found for this date.',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.outfit(
+                                        color: Colors.white70),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        return HtmlWidget(
+                          snapshot.data!,
+                          textStyle: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontSize: 14,
+                            height: 1.6,
+                          ),
+                          customStylesBuilder: (element) {
+                            if (element.localName == 'table') {
+                              return {
+                                'border-collapse': 'collapse',
+                                'width': '100%',
+                                'margin': '10px 0',
+                                'background-color': '#ffffff08',
+                              };
+                            }
+                            if (element.localName == 'td' ||
+                                element.localName == 'th') {
+                              return {
+                                'border': '1px solid #ffffff1a',
+                                'padding': '12px 8px',
+                                'color': '#FFFFFF',
+                              };
+                            }
+                            if (element.localName == 'th' ||
+                                element.localName == 'b') {
+                              return {
+                                'color': '#00E5FF',
+                                'font-weight': 'bold',
+                              };
+                            }
+                            if (element.localName == 'a') {
+                              return {
+                                'color': '#33E5FF',
+                                'text-decoration': 'underline',
+                              };
+                            }
+                            return null;
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                // Footer / Bottom spacing
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildOrdersSection(String title, List<OrderRecord> orders) {

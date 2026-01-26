@@ -24,6 +24,49 @@ class PdfViewerPage extends StatefulWidget {
 }
 
 class _PdfViewerPageState extends State<PdfViewerPage> {
+  Future<void> _downloadPdf() async {
+    try {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Downloading PDF...'),
+            duration: Duration(seconds: 2)),
+      );
+
+      final response = await http.get(
+        Uri.parse(widget.url),
+        headers: widget.headers,
+      );
+
+      if (response.statusCode == 200) {
+        final dir = await getApplicationDocumentsDirectory();
+        final fileName = 'Order_${DateTime.now().millisecondsSinceEpoch}.pdf';
+        final file = File('${dir.path}/$fileName');
+        await file.writeAsBytes(response.bodyBytes);
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Download complete!'),
+            action: SnackBarAction(
+              label: 'OPEN',
+              onPressed: () => OpenFile.open(file.path),
+            ),
+          ),
+        );
+      } else {
+        throw Exception('Failed to download PDF: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Error downloading PDF: $e'),
+            backgroundColor: Colors.red),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +82,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.download_rounded),
-            onPressed: () => _downloadPdf(context),
+            onPressed: () => _downloadPdf(),
             tooltip: 'Download PDF',
           ),
           IconButton(
@@ -83,47 +126,5 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         ),
       ),
     );
-  }
-
-  Future<void> _downloadPdf(BuildContext context) async {
-    try {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Downloading PDF...'),
-            duration: Duration(seconds: 2)),
-      );
-
-      final response = await http.get(
-        Uri.parse(widget.url),
-        headers: widget.headers,
-      );
-
-      if (response.statusCode == 200) {
-        final dir = await getApplicationDocumentsDirectory();
-        final fileName = 'Order_${DateTime.now().millisecondsSinceEpoch}.pdf';
-        final file = File('${dir.path}/$fileName');
-        await file.writeAsBytes(response.bodyBytes);
-
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Download complete!'),
-            action: SnackBarAction(
-              label: 'OPEN',
-              onPressed: () => OpenFile.open(file.path),
-            ),
-          ),
-        );
-      } else {
-        throw Exception('Failed to download PDF: ${response.statusCode}');
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Error downloading PDF: $e'),
-            backgroundColor: Colors.red),
-      );
-    }
   }
 }
