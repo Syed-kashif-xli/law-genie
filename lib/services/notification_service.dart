@@ -10,6 +10,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:open_file/open_file.dart';
 
 // Top-level background handler
 @pragma('vm:entry-point')
@@ -43,13 +44,22 @@ class NotificationService {
       requestAlertPermission: false,
     );
 
-    const InitializationSettings initializationSettings =
+    final InitializationSettings initializationSettings =
         InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
 
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        final String? payload = response.payload;
+        if (payload != null && payload.isNotEmpty) {
+          debugPrint('Notification payload: $payload');
+          await OpenFile.open(payload);
+        }
+      },
+    );
 
     // 2. Setup Firebase Messaging
     await _setupFirebaseMessaging();
@@ -260,6 +270,7 @@ class NotificationService {
     required String title,
     required String body,
     String? imageUrl,
+    String? payload,
   }) async {
     BigPictureStyleInformation? bigPictureStyleInformation;
 
@@ -294,12 +305,56 @@ class NotificationService {
     );
     final NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
+      iOS: const DarwinNotificationDetails(),
     );
     await flutterLocalNotificationsPlugin.show(
       id,
       title,
       body,
       platformChannelSpecifics,
+      payload: payload,
+    );
+  }
+
+  /// Specialized notification for finished downloads
+  Future<void> showDownloadNotification({
+    required String title,
+    required String body,
+    required String filePath,
+  }) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'download_channel',
+      'Downloads',
+      channelDescription: 'Notifications for finished downloads',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+    );
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: DarwinNotificationDetails(),
+    );
+
+    // Create the channel if it doesn't exist
+    final androidImplementation =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    await androidImplementation?.createNotificationChannel(
+      const AndroidNotificationChannel(
+        'download_channel',
+        'Downloads',
+        description: 'Notifications for finished downloads',
+        importance: Importance.max,
+      ),
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      DateTime.now().millisecond,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: filePath,
     );
   }
 

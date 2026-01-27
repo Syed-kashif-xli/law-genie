@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:myapp/services/pdf_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -20,7 +21,6 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
   final TextEditingController _cnrController = TextEditingController();
   bool _isLoading = false;
   LegalCase? _result;
-  int _selectedTab = 0;
 
   @override
   void dispose() {
@@ -103,205 +103,271 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F002C),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0F002C), Color(0xFF2E0054), Color(0xFF0F002C)],
+      body: Stack(
+        children: [
+          // Dynamic Background Elements
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF0F002C),
+                  Color(0xFF1A0033),
+                  Color(0xFF0F002C)
+                ],
+              ),
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildAppBar(),
-              const SizedBox(height: 10),
-              _buildTabs(),
-              const SizedBox(height: 20),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      if (_result == null) ...[
-                        _buildMainContainer(),
-                        const SizedBox(height: 24),
-                        _buildInfoBox(),
-                      ],
-                      if (_isLoading) ...[
-                        const SizedBox(height: 40),
-                        const CircularProgressIndicator(
-                            color: Color(0xFF00E5FF)),
-                        const SizedBox(height: 12),
-                        Text('Fetching detailed case history...',
-                            style: GoogleFonts.poppins(
-                                color: Colors.white38, fontSize: 12)),
-                      ],
-                      if (_result != null) ...[
-                        const SizedBox(height: 10),
-                        _buildDetailSection('CASE DETAILS', [
-                          _buildDetailRow('Case Type', _result?.caseType),
-                          _buildDetailRow(
-                              'Filing Number', _result?.filingNumber),
-                          _buildDetailRow('Filing Date', _result?.filingDate),
-                          _buildDetailRow(
-                              'Registration No', _result?.registrationNumber),
-                          _buildDetailRow(
-                              'Registration Date', _result?.registrationDate),
-                          _buildDetailRow('CNR Number', _result?.cnrNumber),
-                        ]),
-                        _buildDetailSection('CASE STATUS', [
-                          _buildDetailRow(
-                              'First Hearing Date', _result?.firstHearingDate),
-                          _buildDetailRow(
-                              'Next Hearing Date', _result?.nextHearingDate),
-                          _buildDetailRow(
-                              'Case Stage',
-                              _result?.caseStage != null
-                                  ? _ecourtsService
-                                      .stripHtml(_result!.caseStage!)
-                                  : 'N/A'),
-                          _buildDetailRow(
-                              'Nature of Disposal', _result?.natureOfDisposal),
-                          _buildDetailRow('Court Number', _result?.courtNumber),
-                          _buildDetailRow('Judge', _result?.judgeDesignation),
-                          _buildDetailRow('Court', _result?.court),
-                        ]),
-                        if (_result?.acts != null && _result!.acts!.isNotEmpty)
-                          _buildDetailSection('ACTS', [
-                            Text(
-                              _result!.acts!,
-                              style: GoogleFonts.outfit(
-                                  color: Colors.white, fontSize: 15),
+          Positioned(
+            top: -100,
+            right: -50,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF00E5FF).withAlpha(30),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 100,
+            left: -100,
+            child: Container(
+              width: 400,
+              height: 400,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF7000FF).withAlpha(20),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildAppBar(),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        if (_result == null) ...[
+                          _buildMainContainer(),
+                          const SizedBox(height: 30),
+                          _buildKeyPoints(),
+                        ],
+                        if (_isLoading) ...[
+                          const SizedBox(height: 40),
+                          const CircularProgressIndicator(
+                              color: Color(0xFF00E5FF)),
+                          const SizedBox(height: 12),
+                          Text('Fetching detailed case history...',
+                              style: GoogleFonts.poppins(
+                                  color: Colors.white38, fontSize: 12)),
+                        ],
+                        if (_result != null) ...[
+                          const SizedBox(height: 10),
+                          _buildDetailSection('CASE DETAILS', [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text('Basic case information',
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white54, fontSize: 12)),
+                                ),
+                                TextButton.icon(
+                                  onPressed: () =>
+                                      PdfService.generateCaseStatusPdf(
+                                          _result!),
+                                  icon: const Icon(Iconsax.document_download,
+                                      color: Color(0xFF00E5FF), size: 18),
+                                  label: Text('DOWNLOAD REPORT',
+                                      style: GoogleFonts.audiowide(
+                                          color: const Color(0xFF00E5FF),
+                                          fontSize: 10)),
+                                ),
+                              ],
                             ),
-                          ]),
-                        _buildDetailSection('PETITIONER & ADVOCATE', [
-                          _buildDetailRow('Petitioner', _result?.petitioner,
-                              isBold: true),
-                          if (_result?.extraPetitioners != null)
-                            ..._result!.extraPetitioners!.map((p) =>
-                                _buildDetailRow('Petitioner', p, isBold: true)),
-                          if (_result?.petitionerAdvocate != null &&
-                              _result!.petitionerAdvocate!.isNotEmpty)
+                            const SizedBox(height: 10),
+                            _buildDetailRow('Case Type', _result?.caseType),
                             _buildDetailRow(
-                                'Advocate', _result?.petitionerAdvocate),
-                        ]),
-                        _buildDetailSection('RESPONDENT & ADVOCATE', [
-                          _buildDetailRow('Respondent', _result?.respondent,
-                              isBold: true),
-                          if (_result?.extraRespondents != null)
-                            ..._result!.extraRespondents!.map((r) =>
-                                _buildDetailRow('Respondent', r, isBold: true)),
-                          if (_result?.respondentAdvocate != null &&
-                              _result!.respondentAdvocate!.isNotEmpty)
+                                'Filing Number', _result?.filingNumber),
+                            _buildDetailRow('Filing Date', _result?.filingDate),
                             _buildDetailRow(
-                                'Advocate', _result?.respondentAdvocate),
-                        ]),
-                        if (_result?.finalOrders != null &&
-                            _result!.finalOrders!.isNotEmpty)
-                          _buildOrdersSection(
-                              'FINAL ORDERS', _result!.finalOrders!),
-                        if (_result?.hearingHistory != null &&
-                            _result!.hearingHistory!.isNotEmpty)
-                          _buildHistorySection(),
-                        if (_result?.interimOrders != null &&
-                            _result!.interimOrders!.isNotEmpty)
-                          _buildOrdersSection(
-                              'INTERIM ORDERS', _result!.interimOrders!),
-                        if (_result?.transfers != null &&
-                            _result!.transfers!.isNotEmpty)
-                          _buildTransfersSection(),
-                        if (_result?.processes != null &&
-                            _result!.processes!.isNotEmpty)
-                          _buildDetailSection('PROCESSES', [
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: HtmlWidget(
-                                _result!.processes!,
-                                customStylesBuilder: (element) {
-                                  if (element.localName == 'table') {
-                                    return {
-                                      'border-collapse': 'collapse',
-                                      'width': '100%',
-                                      'background-color': '#1A1440',
-                                      'border': '1px solid #33E5FF',
-                                    };
-                                  }
-                                  if (element.localName == 'th' ||
-                                      element.localName == 'b') {
-                                    return {
-                                      'background-color': '#2A2060',
-                                      'color': '#00E5FF',
-                                      'padding': '10px',
-                                      'font-weight': 'bold',
-                                    };
-                                  }
-                                  if (element.localName == 'td') {
-                                    return {
-                                      'border': '1px solid #ffffff1A',
-                                      'padding': '10px',
-                                      'color': '#FFFFFFE6',
-                                    };
-                                  }
-                                  return null;
-                                },
-                                textStyle: GoogleFonts.outfit(fontSize: 13),
-                              ),
-                            ),
+                                'Registration No', _result?.registrationNumber),
+                            _buildDetailRow(
+                                'Registration Date', _result?.registrationDate),
+                            _buildDetailRow('CNR Number', _result?.cnrNumber),
                           ]),
-                        if (_result?.subordinateCourtInfo != null &&
-                            _result!.subordinateCourtInfo!.isNotEmpty &&
-                            _result!.subordinateCourtInfo != 'null')
-                          _buildDetailSection('SUBORDINATE COURT INFORMATION', [
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: HtmlWidget(
-                                _result!.subordinateCourtInfo!,
-                                customStylesBuilder: (element) {
-                                  if (element.localName == 'table') {
-                                    return {
-                                      'border-collapse': 'collapse',
-                                      'width': '100%',
-                                      'background-color': '#1A1440',
-                                      'border': '1px solid #33E5FF',
-                                    };
-                                  }
-                                  if (element.localName == 'th' ||
-                                      element.localName == 'b') {
-                                    return {
-                                      'background-color': '#2A2060',
-                                      'color': '#00E5FF',
-                                      'padding': '10px',
-                                      'font-weight': 'bold',
-                                    };
-                                  }
-                                  if (element.localName == 'td') {
-                                    return {
-                                      'border': '1px solid #ffffff1A',
-                                      'padding': '10px',
-                                      'color': '#FFFFFFE6',
-                                    };
-                                  }
-                                  return null;
-                                },
-                                textStyle: GoogleFonts.outfit(fontSize: 13),
-                              ),
-                            ),
+                          _buildDetailSection('CASE STATUS', [
+                            _buildDetailRow('First Hearing Date',
+                                _result?.firstHearingDate),
+                            _buildDetailRow(
+                                'Next Hearing Date', _result?.nextHearingDate),
+                            _buildDetailRow(
+                                'Case Stage',
+                                _result?.caseStage != null
+                                    ? _ecourtsService
+                                        .stripHtml(_result!.caseStage!)
+                                    : 'N/A'),
+                            _buildDetailRow('Nature of Disposal',
+                                _result?.natureOfDisposal),
+                            _buildDetailRow(
+                                'Court Number', _result?.courtNumber),
+                            _buildDetailRow('Judge', _result?.judgeDesignation),
+                            _buildDetailRow('Court', _result?.court),
                           ]),
-                        const SizedBox(height: 20),
-                        _buildNewSearchButton(),
+                          if (_result?.acts != null &&
+                              _result!.acts!.isNotEmpty)
+                            _buildDetailSection('ACTS', [
+                              Text(
+                                _result!.acts!,
+                                style: GoogleFonts.outfit(
+                                    color: Colors.white, fontSize: 15),
+                              ),
+                            ]),
+                          _buildDetailSection('PETITIONER & ADVOCATE', [
+                            _buildDetailRow('Petitioner', _result?.petitioner,
+                                isBold: true),
+                            if (_result?.extraPetitioners != null)
+                              ..._result!.extraPetitioners!.map((p) =>
+                                  _buildDetailRow('Petitioner', p,
+                                      isBold: true)),
+                            if (_result?.petitionerAdvocate != null &&
+                                _result!.petitionerAdvocate!.isNotEmpty)
+                              _buildDetailRow(
+                                  'Advocate', _result?.petitionerAdvocate),
+                          ]),
+                          _buildDetailSection('RESPONDENT & ADVOCATE', [
+                            _buildDetailRow('Respondent', _result?.respondent,
+                                isBold: true),
+                            if (_result?.extraRespondents != null)
+                              ..._result!.extraRespondents!.map((r) =>
+                                  _buildDetailRow('Respondent', r,
+                                      isBold: true)),
+                            if (_result?.respondentAdvocate != null &&
+                                _result!.respondentAdvocate!.isNotEmpty)
+                              _buildDetailRow(
+                                  'Advocate', _result?.respondentAdvocate),
+                          ]),
+                          if (_result?.finalOrders != null &&
+                              _result!.finalOrders!.isNotEmpty)
+                            _buildOrdersSection(
+                                'FINAL ORDERS', _result!.finalOrders!),
+                          if (_result?.hearingHistory != null &&
+                              _result!.hearingHistory!.isNotEmpty)
+                            _buildHistorySection(),
+                          if (_result?.interimOrders != null &&
+                              _result!.interimOrders!.isNotEmpty)
+                            _buildOrdersSection(
+                                'INTERIM ORDERS', _result!.interimOrders!),
+                          if (_result?.transfers != null &&
+                              _result!.transfers!.isNotEmpty)
+                            _buildTransfersSection(),
+                          if (_result?.processes != null &&
+                              _result!.processes!.isNotEmpty)
+                            _buildDetailSection('PROCESSES', [
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: HtmlWidget(
+                                  _result!.processes!,
+                                  customStylesBuilder: (element) {
+                                    if (element.localName == 'table') {
+                                      return {
+                                        'border-collapse': 'collapse',
+                                        'width': '100%',
+                                        'background-color': '#1A1440',
+                                        'border': '1px solid #33E5FF',
+                                      };
+                                    }
+                                    if (element.localName == 'th' ||
+                                        element.localName == 'b') {
+                                      return {
+                                        'background-color': '#2A2060',
+                                        'color': '#00E5FF',
+                                        'padding': '10px',
+                                        'font-weight': 'bold',
+                                      };
+                                    }
+                                    if (element.localName == 'td') {
+                                      return {
+                                        'border': '1px solid #ffffff1A',
+                                        'padding': '10px',
+                                        'color': '#FFFFFFE6',
+                                      };
+                                    }
+                                    return null;
+                                  },
+                                  textStyle: GoogleFonts.outfit(fontSize: 13),
+                                ),
+                              ),
+                            ]),
+                          if (_result?.subordinateCourtInfo != null &&
+                              _result!.subordinateCourtInfo!.isNotEmpty &&
+                              _result!.subordinateCourtInfo != 'null')
+                            _buildDetailSection(
+                                'SUBORDINATE COURT INFORMATION', [
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: HtmlWidget(
+                                  _result!.subordinateCourtInfo!,
+                                  customStylesBuilder: (element) {
+                                    if (element.localName == 'table') {
+                                      return {
+                                        'border-collapse': 'collapse',
+                                        'width': '100%',
+                                        'background-color': '#1A1440',
+                                        'border': '1px solid #33E5FF',
+                                      };
+                                    }
+                                    if (element.localName == 'th' ||
+                                        element.localName == 'b') {
+                                      return {
+                                        'background-color': '#2A2060',
+                                        'color': '#00E5FF',
+                                        'padding': '10px',
+                                        'font-weight': 'bold',
+                                      };
+                                    }
+                                    if (element.localName == 'td') {
+                                      return {
+                                        'border': '1px solid #ffffff1A',
+                                        'padding': '10px',
+                                        'color': '#FFFFFFE6',
+                                      };
+                                    }
+                                    return null;
+                                  },
+                                  textStyle: GoogleFonts.outfit(fontSize: 13),
+                                ),
+                              ),
+                            ]),
+                          const SizedBox(height: 20),
+                          _buildNewSearchButton(),
+                        ],
+                        const SizedBox(height: 60),
                       ],
-                      const SizedBox(height: 60),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -318,7 +384,7 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
             onPressed: () => Navigator.pop(context),
           ),
           Text(
-            'e-COURTS',
+            'CASE STATUS',
             style: GoogleFonts.audiowide(
               color: Colors.white,
               fontSize: 28,
@@ -331,91 +397,54 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
     );
   }
 
-  Widget _buildTabs() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(20),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          _buildTabItem(0, 'CNR QUICK'),
-          _buildTabItem(1, 'FILING NO'),
-          _buildTabItem(2, 'DETAILS'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabItem(int index, String title) {
-    bool isActive = _selectedTab == index;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _selectedTab = index),
+  Widget _buildMainContainer() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            gradient: isActive
-                ? const LinearGradient(
-                    colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
-                  )
-                : null,
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: const Color(0xFF00E5FF).withAlpha(100),
-                      blurRadius: 10,
-                    )
-                  ]
-                : [],
+            color: Colors.white.withAlpha(20),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.white.withAlpha(30), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(40),
+                blurRadius: 20,
+              ),
+            ],
           ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              color: isActive ? Colors.black : Colors.white60,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'CNR NUMBER',
+                    style: GoogleFonts.audiowide(
+                      color: const Color(0xFF00E5FF),
+                      fontSize: 18,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  const Icon(Iconsax.radar, color: Color(0xFF00E5FF), size: 24),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Identify your case instantly using its 16-digit CNR index.',
+                style: GoogleFonts.poppins(color: Colors.white60, fontSize: 13),
+              ),
+              const SizedBox(height: 30),
+              _buildInputField(),
+              const SizedBox(height: 30),
+              _buildLocateButton(),
+            ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildMainContainer() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(15),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withAlpha(20)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'CNR NUMBER',
-            style: GoogleFonts.audiowide(
-              color: const Color(0xFF00E5FF),
-              fontSize: 18,
-              letterSpacing: 1,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Identify your case instantly using its 16-digit CNR index.',
-            style: GoogleFonts.poppins(color: Colors.white38, fontSize: 13),
-          ),
-          const SizedBox(height: 30),
-          _buildInputField(),
-          const SizedBox(height: 30),
-          _buildLocateButton(),
-        ],
       ),
     );
   }
@@ -424,20 +453,23 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
     return Container(
       height: 64,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withAlpha(20),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF00E5FF), width: 1.5),
+        border: Border.all(
+            color: const Color(0xFF00E5FF).withAlpha(100), width: 1.5),
         boxShadow: [
           BoxShadow(
-              color: const Color(0xFF00E5FF).withValues(alpha: 0.2),
-              blurRadius: 10),
+            color: const Color(0xFF00E5FF).withAlpha(30),
+            blurRadius: 15,
+            spreadRadius: 2,
+          ),
         ],
       ),
       child: TextField(
         controller: _cnrController,
-        cursorColor: Colors.black,
+        cursorColor: const Color(0xFF00E5FF),
         style: GoogleFonts.exo2(
-          color: Colors.black,
+          color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
@@ -449,12 +481,89 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Icon(Iconsax.barcode, color: Color(0xFF00E5FF), size: 28),
           ),
-          hintText: 'MP04010244152024',
-          hintStyle: GoogleFonts.exo2(color: Colors.grey, fontSize: 18),
+          hintText: 'Enter CNR Number',
+          hintStyle: GoogleFonts.exo2(color: Colors.white30, fontSize: 18),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 18),
         ),
         onSubmitted: (_) => _searchByCnr(),
+      ),
+    );
+  }
+
+  Widget _buildKeyPoints() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white.withAlpha(15),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.white.withAlpha(20)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00E5FF).withAlpha(30),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Iconsax.flash_1,
+                        color: Color(0xFF00E5FF), size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'QUICK TIPS',
+                    style: GoogleFonts.audiowide(
+                      color: const Color(0xFF00E5FF),
+                      fontSize: 16,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildPointItem(Iconsax.search_status,
+                  'Ensure you enter the full 16-digit CNR number.'),
+              _buildPointItem(Iconsax.document_text,
+                  'CNR reflects the complete history of a case.'),
+              _buildPointItem(Iconsax.global,
+                  'Search covers all district and state courts across India.'),
+              _buildPointItem(Iconsax.info_circle,
+                  'Filing/Registration details are not needed.'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPointItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.white54, size: 18),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.poppins(
+                color: Colors.white70,
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -468,57 +577,57 @@ class _CaseStatusPageState extends State<CaseStatusPage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           gradient: const LinearGradient(
-            colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+            colors: [Color(0xFF00E5FF), Color(0xFF0095FF)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00E5FF).withAlpha(120),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            )
+              color: const Color(0xFF00E5FF).withAlpha(100),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+            BoxShadow(
+              color: Colors.black.withAlpha(60),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Iconsax.radar, color: Colors.black, size: 22),
-              const SizedBox(width: 12),
-              Text(
-                'LOCATE CASE',
-                style: GoogleFonts.audiowide(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: [Colors.white.withAlpha(40), Colors.transparent],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoBox() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E144D).withAlpha(150),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFF00E5FF).withAlpha(40)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Iconsax.info_circle, color: Color(0xFF00E5FF), size: 24),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              'Case Number and Registration details are not required for CNR search.',
-              style: GoogleFonts.poppins(
-                  color: Colors.white70, fontSize: 13, height: 1.4),
             ),
-          ),
-        ],
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Iconsax.flash_1, color: Colors.black, size: 22),
+                  const SizedBox(width: 12),
+                  Text(
+                    'SEARCH CASE',
+                    style: GoogleFonts.audiowide(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

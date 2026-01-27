@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/services/notification_service.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
@@ -53,6 +54,13 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
               onPressed: () => OpenFile.open(file.path),
             ),
           ),
+        );
+
+        // Notify user via local notification
+        await NotificationService().showDownloadNotification(
+          title: 'Download Complete',
+          body: 'Your document ${widget.title} is ready.',
+          filePath: file.path,
         );
       } else {
         throw Exception('Failed to download PDF: ${response.statusCode}');
