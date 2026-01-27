@@ -248,6 +248,34 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                               ],
+                              const SizedBox(height: 30),
+                              // Mandatory Disclaimer for Law/Gov apps
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.05),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.1)),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Icon(Icons.info_outline,
+                                        color: Colors.orangeAccent, size: 20),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'LawGenie is an AI-powered legal information platform. It is NOT affiliated with, authorized, or endorsed by the Government of India, e-Courts, or any judicial body. Information provided is for awareness and should not be treated as professional legal advice.',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 10,
+                                        color: Colors.white70,
+                                        height: 1.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               const SizedBox(height: 80),
                             ],
                           ),
@@ -689,28 +717,37 @@ class _NewsListSliver extends StatelessWidget {
           );
         }
 
-        final int displayNewsCount =
-            provider.news.length > 10 ? 10 : provider.news.length;
-        final int itemCount = displayNewsCount * 2;
+        final int newsCount =
+            provider.news.length > 20 ? 20 : provider.news.length;
+        // Reduce ad density: Show 1 ad every 6 items
+        const int adFrequency = 6;
+        final int adCount = (newsCount / adFrequency).floor();
+        final int itemCount = newsCount + adCount;
 
         return SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                if (index.isEven) {
+                // Determine if this index should be an ad
+                // Formula: if (index + 1) is multiple of (adFrequency + 1)
+                if ((index + 1) % (adFrequency + 1) == 0) {
+                  return const Padding(
+                    padding: EdgeInsets.only(bottom: 16),
+                    child: InlineBannerAdWidget(),
+                  );
+                } else {
                   // News Item
-                  final newsIndex = index ~/ 2;
+                  // Actual news index = index - (number of ads before it)
+                  final int adsBefore = (index / (adFrequency + 1)).floor();
+                  final int newsIndex = index - adsBefore;
+
+                  if (newsIndex >= provider.news.length) return null;
+
                   final item = provider.news[newsIndex];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: NewsCard(news: item),
-                  );
-                } else {
-                  // Ad Item
-                  return const Padding(
-                    padding: EdgeInsets.only(bottom: 16),
-                    child: InlineBannerAdWidget(),
                   );
                 }
               },

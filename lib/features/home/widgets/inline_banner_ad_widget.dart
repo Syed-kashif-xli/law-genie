@@ -48,15 +48,16 @@ class _InlineBannerAdWidgetState extends State<InlineBannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isAdLoaded && _bannerAd != null) {
-      return Center(
-        child: SizedBox(
-          width: _bannerAd!.size.width.toDouble(),
-          height: _bannerAd!.size.height.toDouble(),
-          child: AdWidget(ad: _bannerAd!),
-        ),
-      );
-    }
-    return const SizedBox.shrink();
+    // Return a fixed height container to avoid layout shifting (policy violation)
+    return Container(
+      width: double.infinity,
+      height: _isAdLoaded && _bannerAd != null
+          ? _bannerAd!.size.height.toDouble()
+          : 0, // We could use 50 here if we want a placeholder
+      alignment: Alignment.center,
+      child: _isAdLoaded && _bannerAd != null
+          ? AdWidget(ad: _bannerAd!)
+          : const SizedBox.shrink(),
+    );
   }
 }
